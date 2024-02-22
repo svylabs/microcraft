@@ -12,16 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import express, {Express, Request, Response} from 'express';
+import express, {Application, Express, Request, Response} from 'express';
+import { setDatastore } from './lib/database';
 const PORT = process.env.PORT || 8080;
-const app: Express = express();
+const app: Application = express();
+
+app.use(express.json());
+
+// Imports the Google Cloud client library
+const {Datastore} = require('@google-cloud/datastore');
+
+// Creates a client
+const datastore = new Datastore();
+setDatastore(datastore);
+import { dynamicComponentRouter } from './lib/routes/dynamic-component';
+
+app.use('/dynamic-component', dynamicComponentRouter);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('🎉 Hello TypeScript! 🎉');
 });
 
+function printAvailableAPIs() {
+  console.log('Available APIs:');
+  app._router.stack.forEach((middleware: any) => {
+    if (middleware.route) {
+      console.log(`${Object.keys(middleware.route.methods)} -> ${middleware.route.path}`);
+    }
+  });
+}
+
 const server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
+  printAvailableAPIs();
 });
 
 module.exports = server;
