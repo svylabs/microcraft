@@ -1,38 +1,28 @@
-# App Engine TypeScript sample
+# handycraft
 
-This sample provides an example of how to compile TypeScript files while
-deploying to App Engine.
+## Create Dynamic component
 
-The `gcp-build` NPM script is used to trigger the TypeScript compilation
-process. This step happens automatically when deploying to App Engine, but must
-be performed manually when developing locally.
+```
+   curl -X POST -H 'Content-Type: application/json' -d '{"title": "test-component", "description": "first component", "image_url": "http://...", "code": "console.log"}' https://handycraft-415122.oa.r.appspot.com/dynamic-component/new -v
+```
 
-## Setup
+## List Dynamic Components
 
-Install dependencies:
+This will list all approved components
 
-   npm install
+```
+    curl https://handycraft-415122.oa.r.appspot.com/dynamic-component/list
+```
 
-## Running locally
+The following will list pending components
 
-1. Perform the build step:
+```
+    curl https://handycraft-415122.oa.r.appspot.com/dynamic-component/list?approval_status=pending
+```
 
-    npm run gcp-build
 
-1. Run the completed program
+## Approve a Dynamic component
 
-    npm start
-
-## Deploying to App Engine
-
-Deploy your app:
-
-    npm run deploy
-
-By default, this application deploys to [App Engine Standard][appengine]. _(Recommended)_
-Deploy to App Engine Flexible by [modifying `app.yaml`][app_yaml].
-
-[appengine]: https://cloud.google.com/appengine/docs/standard/nodejs
-[app_yaml]: https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
-[tutorial]: https://cloud.google.com/appengine/docs/standard/nodejs/quickstart
-[contributing]: https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/main/CONTRIBUTING.md
+```
+   curl -X POST -H 'Content-Type: application/json' -d '{"id": "test-component"}' https://handycraft-415122.oa.r.appspot.com/dynamic-component/approve -v
+```
