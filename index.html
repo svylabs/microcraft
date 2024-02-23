@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+  <body>
+    <a href="https://github.com/login/oauth/authorize?client_id=4532a66d1d21f9b956e3">Login with github</a>
+    <script>
+        window.onload = function() {
+            const cookies = document.cookie;
+
+            // Split the cookies string into individual cookie key-value pairs
+            const cookieArray = cookies.split(';');
+
+            // Initialize an object to store cookie data
+            const cookieData = {};
+
+            // Iterate over each cookie key-value pair
+            cookieArray.forEach(cookie => {
+                // Split the cookie string into key and value
+                const [key, value] = cookie.trim().split('=');
+
+                // Store the key-value pair in the cookieData object
+                cookieData[key] = value;
+            });
+
+            console.log(cookieData['user']);
+        }
+    </script>
+  </body>
+</html>
