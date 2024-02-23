@@ -1,8 +1,8 @@
 import express, {Router, Request, Response} from 'express';
 import {getDatastore} from '../../database';
-const router: Router = express.Router();
+export const dynamicComponentRouter: Router = express.Router();
 
-router.post('new', async (req: Request, res: Response) => {
+dynamicComponentRouter.post('/new', async (req: Request, res: Response) => {
     const kind = 'DynamicComponent';
     const name =  req.body.title;
     const datastore = getDatastore();
@@ -40,7 +40,7 @@ router.post('new', async (req: Request, res: Response) => {
     res.send({status: 'success', message: 'Dynamic component created successfully', id: req.body.title});
 });
 
-router.post('approve', async (req: Request, res: Response) => {
+dynamicComponentRouter.post('/approve', async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const key = datastore.key(['DynamicComponent', req.body.id]);
     const [entity] = await datastore.get(key);
@@ -57,7 +57,7 @@ router.post('approve', async (req: Request, res: Response) => {
     }
 });
 
-router.get('list', async (req: Request, res: Response) => {
+dynamicComponentRouter.get('/list', async (req: Request, res: Response) => {
     const datastore = getDatastore();
     let query = datastore.createQuery('DynamicComponent');
     if (req.query.approval_status === undefined) {
@@ -68,5 +68,3 @@ router.get('list', async (req: Request, res: Response) => {
     const [dynamicComponents] = await datastore.runQuery(query);
     res.send(dynamicComponents);
 });
-
-export {router as dynamicComponentRouter};

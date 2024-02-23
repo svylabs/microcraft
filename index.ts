@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import express, {Application, Express, Request, Response} from 'express';
-import { setDatastore } from './lib/database';
+import { setDatastore, getDatastore } from './lib/database';
 const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
@@ -25,17 +25,14 @@ const {Datastore} = require('@google-cloud/datastore');
 // Creates a client
 const datastore = new Datastore();
 setDatastore(datastore);
-import { dynamicComponentRouter } from './lib/routes/dynamic-component';
+import {dynamicComponentRouter} from './lib/routes/dynamic-component';
 
 app.use('/dynamic-component', dynamicComponentRouter);
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('🎉 Hello TypeScript! 🎉');
-});
 
 function printAvailableAPIs() {
   console.log('Available APIs:');
   app._router.stack.forEach((middleware: any) => {
+    console.log(middleware);
     if (middleware.route) {
       console.log(`${Object.keys(middleware.route.methods)} -> ${middleware.route.path}`);
     }

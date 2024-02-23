@@ -31,6 +31,7 @@ app.use('/dynamic-component', dynamic_component_1.dynamicComponentRouter);
 function printAvailableAPIs() {
     console.log('Available APIs:');
     app._router.stack.forEach((middleware) => {
+        console.log(middleware);
         if (middleware.route) {
             console.log(`${Object.keys(middleware.route.methods)} -> ${middleware.route.path}`);
         }
