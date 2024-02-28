@@ -1,4 +1,4 @@
-import express, {Application, Express, Request, Response} from 'express';
+import express, {Application, Express, NextFunction, Request, Response} from 'express';
 import 'dotenv/config';
 import { setDatastore, getDatastore } from './lib/database';
 import path from 'path';
@@ -14,7 +14,29 @@ const {Datastore} = require('@google-cloud/datastore');
 const datastore = new Datastore();
 setDatastore(datastore);
 import {dynamicComponentRouter} from './lib/routes/dynamic-component';
-import {githubRouter} from './lib/routes/auth';
+import {HttpError, githubRouter} from './lib/routes/auth';
+
+const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+  // Handle the error
+  if (err instanceof HttpError) {
+    res.status = (err as any).status || 500;
+  } else {
+    res.status(500);
+  }
+  res.json({
+    error: {
+      message: err.message
+    }
+  });
+}
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optionally, you can throw the error to crash the process
+  // throw reason;
+});
+
+app.use(errorHandler);
 
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);

@@ -17,6 +17,27 @@ const datastore = new Datastore();
 (0, database_1.setDatastore)(datastore);
 const dynamic_component_1 = require("./lib/routes/dynamic-component");
 const auth_1 = require("./lib/routes/auth");
+const errorHandler = (err, req, res, next) => {
+    // Handle the error
+    console.log("In error handler");
+    if (err instanceof auth_1.HttpError) {
+        res.status = err.status || 500;
+    }
+    else {
+        res.status(500);
+    }
+    res.json({
+        error: {
+            message: err.message
+        }
+    });
+};
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    // Optionally, you can throw the error to crash the process
+    // throw reason;
+});
+app.use(errorHandler);
 app.use('/dynamic-component', dynamic_component_1.dynamicComponentRouter);
 app.use('/auth', auth_1.githubRouter);
 app.get('/', function (req, res) {

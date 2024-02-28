@@ -1,8 +1,9 @@
-import express, {Router, Request, Response} from 'express';
+import express, {Router, Request, Response, NextFunction} from 'express';
 import {getDatastore} from '../../database';
 export const dynamicComponentRouter: Router = express.Router();
+import { authenticatedUser } from '../auth';
 
-dynamicComponentRouter.post('/new', async (req: Request, res: Response) => {
+dynamicComponentRouter.post('/new', authenticatedUser, async (req: Request, res: Response) => {
     const kind = 'DynamicComponent';
     const name =  req.body.title;
     const datastore = getDatastore();
