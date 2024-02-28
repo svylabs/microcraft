@@ -19,8 +19,8 @@ dynamicComponentRouter.post('/new', async (req: Request, res: Response) => {
                 value: req.body.description
             },
             {
-                name: 'code',
-                value: req.body.code
+                name: 'component_definition',
+                value: req.body.component_definition
             },
             {
                 name: 'image_url',
