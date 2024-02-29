@@ -101,7 +101,7 @@ githubRouter.get('/github/callback', async (req, res) => {
        login: userData.data.login,
        id: userData.data.id,
        avatar_url: userData.data.avatar_url,
-      created_on: new Date().toISOString()
+       created_on: new Date().toISOString()
     }
     addUserToCookie(res, userDetail);
     addUserToDatastore(userDetail);

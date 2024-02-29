@@ -19,7 +19,6 @@ const dynamic_component_1 = require("./lib/routes/dynamic-component");
 const auth_1 = require("./lib/routes/auth");
 const errorHandler = (err, req, res, next) => {
     // Handle the error
-    console.log("In error handler");
     if (err instanceof auth_1.HttpError) {
         res.status = err.status || 500;
     }
