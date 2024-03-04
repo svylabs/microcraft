@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
 import Converter from "./components/Converter";
 import "./App.css";
+import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
 // import DynamicHome from "./components/converters/dynamic/DynamicHome";
 // import ConfigureBasicDetails from "./components/converters/dynamic/ConfigureBasicDetails";
 
@@ -34,6 +35,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/converter/:id" element={<Converter />} />
+          <Route path="/converter/configure/configureDetails/configureInputOutput" element={<ConfigureInputsOutputs />} />
         </Routes>
       </Router>
       {/* {currentPage === 1 && (

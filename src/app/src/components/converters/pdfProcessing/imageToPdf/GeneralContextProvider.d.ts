@@ -1,6 +1,10 @@
-/// <reference types="react" />
-export declare const GeneralContext: import("react").Context<any>;
-declare const GeneralContextProvider: ({ children }: {
-    children: any;
-}) => import("react/jsx-runtime").JSX.Element;
-export default GeneralContextProvider;
+import React from 'react';
+
+interface GeneralContextProviderProps {
+    children?: React.ReactNode;
+}
+
+declare module './converters/pdfProcessing/imageToPdf/GeneralContextProvider' {
+    const GeneralContextProvider: React.FC<GeneralContextProviderProps>;
+    export default GeneralContextProvider;
+}

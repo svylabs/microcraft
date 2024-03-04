@@ -103,22 +103,22 @@ const ActionPage = ({ output }) => {
       "http://localhost:5173/converter/Custom%20Components";
   }
 
-  // const goBack = () => {
-  //   window.location.href =
-  //     "http://localhost:5173/converter/Custom%20Components";
-  // };
+  const goBack = () => {
+    window.location.href =
+      "http://localhost:5173/converter/configure/configureDetails/configureInputOutput";
+  };
 
   return (
-    <div>
-      <div className="p-2 md:p-4 bg-gray-100 shadow-lg rounded-md">
+    <div className="bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
+      <div className="p-2 md:p-4 ">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">Added Components:</h1>
-          {/* <button
+          <button
             className="px-4 py-2 text-white bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none"
             onClick={goBack}
           >
             Back
-          </button> */}
+          </button>
         </div>
         <ul className="">
           {components.map((component, index) => (

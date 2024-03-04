@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ActionPage from "./ActionPage";
 import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
+import preview from "../../photos/eye-regular.svg";
 
 interface CustomComponent {
   id: string;
@@ -36,6 +37,16 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleAddComponent = () => {
+    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+      alert("Please provide both ID and Label.");
+      return;
+    }
+  
+    if (currentComponent.type === "button" && !currentComponent.code?.trim()) {
+      alert("Please provide code for Button type components.");
+      return;
+    }
+  
     setComponents((prevState) => [...prevState, currentComponent]);
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
@@ -49,6 +60,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       code: "",
     });
   };
+  
 
   const handlePreview = async () => {
     console.log(components);
@@ -107,7 +119,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-100 shadow-lg rounded-md">
+    <div className="bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
       <div className="p-1 md:p-4">
         <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
           <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
@@ -289,12 +301,12 @@ const ConfigureInputsOutputs: React.FC = () => {
             ))}
           </ul>
         </div>
-
-        <div className="flex justify-end mt-4">
+        <div className="flex mt-5 justify-end">
           <button
-            className="p-3 px-5 font-semibold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
+            className="preview text-[#21262C] flex gap-3 bg-[#DBE3ED] rounded xl:text-xl p-3 px-4"
             onClick={handlePreview}
           >
+            <img src={preview} alt="preview" className="self-center"></img>
             Preview
           </button>
         </div>
