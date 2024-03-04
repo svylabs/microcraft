@@ -18,7 +18,9 @@
     "clean": "gts clean",
     "compile": "tsc -p .",
     "fix": "gts fix",
-    "build": "tsc -p ./", 
+    "build:app": "cd src/app && npm install && npm run build",
+    "build": "tsc -p ./ && npm run build:app && npm run copy:app",
+    "copy:app": "rm -rf ./public && mkdir public && cp -R src/app/dist/* public/.",
     "gcp-build": "tsc -p ."
   },
   "dependencies": {

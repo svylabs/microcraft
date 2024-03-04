@@ -1,0 +1,62 @@
+.editor {
+    display: inline-flex;
+    gap: 15px;
+    padding: 8px;
+    font-family: Consolas, "Courier New", Courier, monospace;
+    line-height: 21px;
+    background-color: #282a3a;
+    color: white;
+    border-radius: 5px;
+ }
+
+ textarea {
+    overflow-y: hidden;
+    background: #282a3a;
+    font-family: Consolas, "Courier New", Courier, monospace;
+    padding-left: 2px !important;
+    outline: none;
+ }
+
+ .numbers {
+    width: 20px;
+    text-align: right;
+ }
+
+ .numbers span {
+    display: block;
+    color: #506882;
+}
+
+.converter-container {
+    gap: 15px;
+    font-family: Consolas, "Courier New", Courier, monospace;
+    line-height: 21px;
+    background-color: #282a3a;
+    color: white;
+    border-radius: 5px;
+ }
+ 
+ .converter-diff {
+    line-height: 21px;
+    overflow-y: hidden;
+    font-family: Consolas, "Courier New", Courier, monospace;
+    flex: 1;
+ }
+
+ .converter-num {
+    width: 20px;
+    text-align: right;
+ }
+
+ .converter-num span {
+    display: block;
+    color: #506882;
+}
+
+@media (min-width: 768px) {
+   
+      .converter-diff {
+        min-width: 500px;
+      }
+
+}

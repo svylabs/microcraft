@@ -1,0 +1,81 @@
+.selected_files_container {
+    height: 160px;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    justify-content: center;
+    animation: zoom-in-zoom-out 1s ease;
+    align-items: center;
+  }
+  
+  .no_files {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  #left_btn {
+    height: 50px;
+    width: 30px;
+    position: absolute;
+    font-size: 30px;
+    left: 12px;
+    margin: auto 0px;
+    display: flex;
+    z-index: 6;
+    justify-content: center;
+    cursor: pointer;
+    align-items: center;
+    color: darkgrey;
+  }
+  
+  #right_btn {
+    height: 50px;
+    position: absolute;
+    right: 12px;
+    margin: auto 0px;
+    width: 30px;
+    font-size: 30px;
+    display: flex;
+    z-index: 6;
+    justify-content: center;
+    cursor: pointer;
+    align-items: center;
+    color: darkgrey;
+  }
+  
+  .selected_files {
+    height: 160px;
+    width: 600px;
+    position: relative;
+    border-radius: 20px;
+    z-index: 3;
+    display: flex;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    margin: 10px;
+    align-items: center;
+    border: 2px solid white;
+    -ms-overflow-style: none; 
+    scrollbar-width: none; 
+    box-shadow: inset 0px 0px 15px 1px rgba(255,255,255,1);
+  }
+  
+  .selected_files::-webkit-scrollbar { 
+    display: none; 
+  }
+  
+  .image_container {
+    height: 140px;
+    width: 130px;
+    position: absolute;
+    scroll-snap-align: start;
+    scroll-margin: 10px;
+    user-select: none;
+    z-index: 0;
+  }

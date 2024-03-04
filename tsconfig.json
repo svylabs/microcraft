@@ -6,8 +6,15 @@
     "noImplicitAny": false,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "outDir": "dist/"
+    "outDir": "dist/",
+    "composite": true,
+    "paths": {
+      "app": ["./src/app"],
+    }
   },
+  "references": [
+    { "path": "./src/app" }
+  ],
   "include": [
     "src/**/*"
   ]

@@ -1,0 +1,7 @@
+.text-hover {
+    display: none;
+  }
+  
+  .common-button:hover .text-hover {
+    display: block;
+  }
