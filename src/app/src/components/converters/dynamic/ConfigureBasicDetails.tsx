@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import pin from "../../photos/paperclip-solid.svg";
-// import ConfigureInputsOutputs from "./ConfigureInputsOutputs";
 import "./ConfigureBasicDetails.scss";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
@@ -14,7 +13,6 @@ const ConfigureBasicDetails: React.FC = () => {
     title: false,
     image: false,
   });
-  // const [showNext, setShowNext] = useState(false);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -31,14 +29,16 @@ const ConfigureBasicDetails: React.FC = () => {
   };
 
   const handleSaveNext = () => {
-    // if (!title.trim() || !image.trim()) {
-    if (title.trim()) {
+    if (!title.trim() || !image.trim()) {
       setFieldErrors({
         title: !title.trim(),
         image: !image.trim(),
       });
       return;
     } else {
+
+      localStorage.removeItem("formData");
+      
       const data = { title, description, image };
       const existingData = localStorage.getItem("formData");
       const parsedExistingData = existingData ? JSON.parse(existingData) : [];
@@ -47,23 +47,10 @@ const ConfigureBasicDetails: React.FC = () => {
         JSON.stringify([...parsedExistingData, data])
       );
 
-      const codeId = localStorage.getItem("codeId");
-      const codeSets = localStorage.getItem("codeSets");
-      const parsedQuestionSets = codeSets ? JSON.parse(codeSets) : [];
-      const updatedSets = parsedQuestionSets.map((set) =>
-        codeId !== null && set.id === codeId ? { ...set, title } : set
-      );
-      localStorage.setItem("codeSets", JSON.stringify(updatedSets));
-
-      // setShowNext(true);
       window.location.href =
         "/converter/configure/configureDetails/configureInputOutput";
     }
-  };
-
-  // if (showNext) {
-  //   return <ConfigureInputsOutputs />;
-  // }
+  };  
 
   return (
     <div className="bg-gray-100 shadow-lg rounded-md">

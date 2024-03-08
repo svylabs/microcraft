@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import lucy from "./photos/lucy.jpg";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
-import ConfigureBasicDetails from "./converters/dynamic/ConfigureBasicDetails";
-import ConfigureInputsOutputs from "./converters/dynamic/ConfigureInputsOutputs";
-
 
 interface Converter {
   id: string;
@@ -14,43 +11,39 @@ interface Converter {
   image: string;
 }
 
+interface DynamicComponent {
+  created_on: string;
+  approval_status: string;
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  component_definition: any[];
+}
+
 const Home: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCodeId, setSelectedCodeId] = useState(null);
+  const navigate = useNavigate();
 
-  const handlePreviousPage = () => {
-    setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const handleBackToFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const handleImageClick = (id) => {
-    // console.log(id);
-    setSelectedCodeId(id);
-    setCurrentPage(4);
-  };
-
-  const savedFormDataString = localStorage.getItem("formData");
-  const savedFormData = savedFormDataString
-    ? JSON.parse(savedFormDataString)
-    : [];
-  const [loadedData, setLoadedData] = useState(savedFormData);
-
-  const allCodeIdsString = localStorage.getItem("allCodeIds");
-  const allCodeIds = allCodeIdsString ? JSON.parse(allCodeIdsString) : [];
-
-  const codeSetsString = localStorage.getItem("codeSets");
-  const codeSets = codeSetsString ? JSON.parse(codeSetsString) : [];
+  const [dynamicComponents, setDynamicComponents] = useState<
+    DynamicComponent[]
+  >([]);
 
   useEffect(() => {
-    setLoadedData(savedFormData);
+    fetch("http://localhost:8080/dynamic-component/new")
+      .then((response) => response.json())
+      .then((data: DynamicComponent[]) => {
+        setDynamicComponents(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching dynamic components:", error);
+      });
   }, []);
+
+  const handleImageClick = (componentDefinition: any) => {
+    navigate(`/converter/UserActionPage`, {
+      state: { output: componentDefinition },
+    });
+  };
 
   const allConverters: Converter[] = [
     {
@@ -165,6 +158,7 @@ const Home: React.FC = () => {
     "cryptography",
     "image",
   ];
+  const [customComponentCategory, setCustomComponentCategory] = useState("all");
 
   useEffect(() => {
     const storedRecentTools = localStorage.getItem("recentTools");
@@ -240,17 +234,7 @@ const Home: React.FC = () => {
   };
 
   const handleCreateComponents = (converter: Converter) => {
-    const codeId = new Date().getTime().toString();
-    localStorage.setItem("codeId", codeId);
-    localStorage.setItem("allCodeIds", JSON.stringify([...allCodeIds, codeId]));
-
-    const newSet = { id: codeId, codes: [] };
-    localStorage.setItem("codeSets", JSON.stringify([...codeSets, newSet]));
-
-    // handleNext();
-
     addToRecentTools(converter.id);
-    console.log("hh");
   };
 
   const toggleMobileMenu = () => {
@@ -302,6 +286,54 @@ const Home: React.FC = () => {
             </div>
           </div>
         )}
+      </div>
+    );
+  };
+
+  const handleCustomComponentCategoryChange = (category: string) => {
+    setCustomComponentCategory(category);
+  };
+
+  // Filter custom components based on category
+  let filteredCustomComponents: DynamicComponent[] = [];
+  switch (customComponentCategory) {
+    case "all":
+      filteredCustomComponents = dynamicComponents;
+      break;
+    case "pending":
+      filteredCustomComponents = dynamicComponents.filter(
+        (component) => component.approval_status === "pending"
+      );
+      break;
+    case "approved":
+      filteredCustomComponents = dynamicComponents.filter(
+        (component) => component.approval_status === "approved"
+      );
+      break;
+    default:
+      filteredCustomComponents = dynamicComponents;
+      break;
+  }
+
+  // Render custom component category buttons
+  const renderCustomComponentCategories = () => {
+    return (
+      <div className="flex gap-3 mb-4">
+        {["all", "pending", "approved"].map((category) => (
+          <button
+            key={category}
+            className={`px-4 py-2 rounded ${
+              customComponentCategory === category
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            } hover:bg-blue-600 focus:outline-none`}
+            onClick={() => handleCustomComponentCategoryChange(category)}
+          >
+            {category === "all"
+              ? "All"
+              : category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
+        ))}
       </div>
     );
   };
@@ -470,9 +502,6 @@ const Home: React.FC = () => {
                       {converter.title}
                     </strong>
                   </div>
-                  {/* {currentPage === 1 && <ConfigureBasicDetails />} */}
-                  {/* {currentPage === 2 && <ConfigureInputsOutputs handleNext={handleNext}/>} */}
-
                 </Link>
               ) : (
                 <Link
@@ -503,32 +532,47 @@ const Home: React.FC = () => {
         </ul>
       </div>
 
-      <h3 className="text-lg md:text-xl font-semibold mb-2">Custom Components:</h3>
-      <div className="flex flex-wrap -mx-2">
-        {loadedData.map((data, index) => (
-          <div
-            className="flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.7%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2"
-            key={index}
-            onClick={() => handleImageClick(allCodeIds[index])}
-          >
-            <div className="home-image">
-              {data.image && (
-                <img
-                  className="w-full rounded container h-40 object-cover mb-2"
-                  src={data.image}
-                  alt="code-thumbnail"
-                />
-              )}
-              <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                <span>{data.description}</span>
+      <div>
+        <h2 className="text-lg md:text-xl font-semibold mb-2">
+          Custom Components
+        </h2>
+        {renderCustomComponentCategories()}
+        {filteredCustomComponents.length === 0 ? (
+          <div className="text-gray-600">No custom components found.</div>
+        ) : (
+          <div className="flex flex-wrap -mx-2">
+            {filteredCustomComponents.map((data, index) => (
+              <div
+                key={index}
+                className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.7%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
+                  data.approval_status === "pending"
+                    ? "border border-dashed border-red-400"
+                    : ""
+                }`}
+                onClick={() => handleImageClick(data)}
+              >
+                <div className="home-image">
+                  {data.image_url && (
+                    <img
+                      className="w-full rounded container h-40 object-cover mb-2"
+                      src={data.image_url}
+                      alt="image-thumbnail"
+                    />
+                  )}
+                  <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                    <span>{data.description}</span>
+                  </div>
+                </div>
+                <p className="block text-lg font-bold mb-1">{data.title}</p>
+                {data.approval_status === "pending" && (
+                  <span className="absolute text-hover text-red-500 text-center font-medium bg-black bg-opacity-50 p-2 rounded-md z-50 animate-puls">
+                    ⚠️ Caution: Component under review. Use with care.
+                  </span>
+                )}
               </div>
-            </div>
-
-            <p className="block text-lg font-bold mb-1">
-              {data.title}
-            </p>
+            ))}
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
