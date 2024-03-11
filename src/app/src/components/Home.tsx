@@ -163,7 +163,6 @@ const Home: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleLogin = () => {
-    // console.log("first")
     setIsModalOpen(true);
   };
 
