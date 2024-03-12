@@ -359,7 +359,7 @@ const Home: React.FC = () => {
             <div className="flex gap-3 self-center mx-auto md:mx-0">
               {/* <Link to="/"> */}
               <img
-                className="w-[3rem] h-[3rem] rounded-full"
+                className="w-[3rem] h-[3rem] rounded-full cursor-pointer"
                 src={lucy}
                 alt="john"
                 onClick={handleLogin}

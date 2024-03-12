@@ -1,14 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
-  const [showLoginForm, setShowLoginForm] = useState(true);
-  const [showSignupForm, setShowSignupForm] = useState(false);
-  const [showForgotForm, setShowForgotForm] = useState(false);
+  // State to store the user ID retrieved from cookies
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const handleToggleForms = (formType: string) => {
-    setShowLoginForm(formType === "login");
-    setShowSignupForm(formType === "signup");
-    setShowForgotForm(formType === "forgot");
+  // Function to read cookies and update state
+  useEffect(() => {
+    // Function to retrieve the value of a cookie by its name
+    const getCookie = (name: string) => {
+      const cookies = document.cookie.split('; ');
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split('=');
+        if (cookieName === name) {
+          return decodeURIComponent(cookieValue);
+        }
+      }
+      return null;
+    };
+
+    // Read the value of the 'userid' cookie
+    const userIdFromCookie = getCookie('userid');
+    setUserId(userIdFromCookie);
+  }, []);
+
+  const handleRedirect = () => {
+    if (userId) {
+      // User is logged in, redirect to the add component page
+      window.location.href = "http://localhost:5173/converter/Custom%20Components";
+    } else {
+      // User is not logged in, redirect to the login with GitHub page
+      window.location.href = "https://github.com/login/oauth/authorize?client_id=585042cc21ce245f7c54";
+    }
   };
 
   return (
@@ -20,138 +42,8 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
         >
           &times;
         </span>
-        {showLoginForm && (
-          <div className="form">
-            <header className="text-2xl font-bold mb-4">Login</header>
-            <form>
-              <input
-                type="text"
-                id="inUsr"
-                placeholder="Enter your email"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="password"
-                id="inPass"
-                placeholder="Enter your password"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <a
-                href="#"
-                id="forgotLabel"
-                className="text-blue-500 mb-4 inline-block"
-                onClick={() => handleToggleForms("forgot")}
-              >
-                Forgot password?
-              </a>
-              <input
-                type="button"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                value="Login"
-              />
-            </form>
-            <div className="mt-4 text-center">
-              <span>Don't have an account?</span>
-              <a
-                href="#"
-                id="signupLabel"
-                className="text-blue-500 ml-1"
-                onClick={() => handleToggleForms("signup")}
-              >
-                Signup
-              </a>
-            </div>
-          </div>
-        )}
-
-        {showSignupForm && (
-          <div className="form">
-            <header className="text-2xl font-bold mb-4">Signup</header>
-            <form>
-              <input
-                type="text"
-                id="name"
-                placeholder="Enter your name"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="text"
-                id="username"
-                placeholder="Enter your username"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="text"
-                id="email"
-                placeholder="Enter your email"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="password"
-                id="password"
-                placeholder="Create a password"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="button"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                value="Signup"
-              />
-            </form>
-            <div className="mt-4 text-center">
-              <span>Already have an account?</span>
-              <a
-                href="#"
-                id="loginLabel"
-                className="text-blue-500 ml-1"
-                onClick={() => handleToggleForms("login")}
-              >
-                Login
-              </a>
-            </div>
-          </div>
-        )}
-
-        {showForgotForm && (
-          <div className="form">
-            <header className="text-2xl font-bold mb-4">Forgot Password</header>
-            <form>
-              <input
-                type="text"
-                id="forgotinp"
-                placeholder="Enter your email"
-                className="w-full mb-2 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-              />
-              <input
-                type="button"
-                className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
-                value="Submit"
-              />
-            </form>
-            <div className="mt-4 text-center">
-              <span>Don't have an account?</span>
-              <a
-                href="#"
-                id="signupLabel"
-                className="text-blue-500 ml-1"
-                onClick={() => handleToggleForms("signup")}
-              >
-                Signup
-              </a>
-            </div>
-            <div className="mt-2 text-center">
-              <span>Already have an account?</span>
-              <a
-                href="#"
-                id="loginLabel"
-                className="text-blue-500 ml-1"
-                onClick={() => handleToggleForms("login")}
-              >
-                Login
-              </a>
-            </div>
-          </div>
-        )}
+        
+        <button onClick={handleRedirect}>Login with GitHub</button>
       </div>
     </div>
   );
