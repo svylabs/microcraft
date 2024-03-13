@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import lucy from "./photos/lucy.jpg";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
 import LoginSignupModal from "./LoginSignupModal";
@@ -28,8 +27,11 @@ const Home: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<
     DynamicComponent[]
   >([]);
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
+    // Fetch dynamic components
     fetch("http://localhost:8080/dynamic-component/new")
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
@@ -38,7 +40,32 @@ const Home: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching dynamic components:", error);
       });
+
+    // Fetch user data
+    fetchUserData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/auth/user", {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const userData = await response.json();
+          setUserName(userData.login);
+          setUserAvatar(userData.avatar_url);
+        } else {
+          console.error("Response is not valid JSON");
+        }
+      } else {
+        console.error("Failed to fetch user data:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const handleImageClick = (componentDefinition: any) => {
     navigate(`/converter/UserActionPage`, {
@@ -357,17 +384,29 @@ const Home: React.FC = () => {
               Converter App / HandyCraft
             </h1>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
-              {/* <Link to="/"> */}
-              <img
-                className="w-[3rem] h-[3rem] rounded-full cursor-pointer"
-                src={lucy}
-                alt="john"
-                onClick={handleLogin}
-              ></img>
-              {/* </Link> */}
-              <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
-                <span className="font-bold">Hello!</span> Lucy
-              </p>
+              {userName && (
+                <>
+                  <img
+                    className="w-[3rem] h-[3rem] rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                    src={userAvatar}
+                    alt={userName}
+                    onClick={handleLogin}
+                  ></img>
+                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                    <span className="font-bold">Hello!</span> {userName}
+                  </p>
+                </>
+              )}
+              {!userName && (
+                <div className="flex gap-3 self-center mx-auto md:mx-0">
+                  <div className="w-[3rem] h-[3rem] bg-gray-300 rounded-full flex items-center justify-center">
+                    <span className="text-gray-600">Avatar</span>
+                  </div>
+                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                    <span className="font-bold">Hello!</span> Guest
+                  </p>
+                </div>
+              )}
             </div>
           </div>
           <input
