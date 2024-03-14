@@ -120,7 +120,6 @@ const saveClick = async () => {
         setPopup(true);
         setTimeout(() => {
             setPopup(false);
-            // setFeedback(true);
             window.location.href = "http://localhost:5173/";
         }, 5000);
     } catch (error) {
