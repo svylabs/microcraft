@@ -13,7 +13,7 @@ const UserActionPage = () => {
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
-  const [feedback, setFeedback] = useState(false);
+  // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -96,13 +96,14 @@ const UserActionPage = () => {
   };
 
   const goBack = () => {
-    setFeedback(true);
+    // setFeedback(true);
+    window.location.href = "http://localhost:5173/";
   };
 
-  function submitFeedback() {
-    setFeedback(false);
-    window.location.href = "http://localhost:5173/";
-  }
+  // function submitFeedback() {
+  //   setFeedback(false);
+  //   window.location.href = "http://localhost:5173/";
+  // }
 
   return (
     <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
@@ -191,7 +192,7 @@ const UserActionPage = () => {
         </div>
       </div>
 
-      {feedback && (
+      {/* {feedback && (
         <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
           <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
             <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
@@ -222,7 +223,7 @@ const UserActionPage = () => {
             </label>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
