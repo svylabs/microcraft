@@ -1,22 +1,26 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'; //comment
+import 'dotenv/config';
 import { setDatastore, getDatastore } from './lib/database';
 import path from 'path';
 
-dotenv.config();
+dotenv.config(); //comment
 
-const PORT: number = parseInt(process.env.PORT || '8080');
+// const PORT: number = parseInt(process.env.PORT || '8080');
+const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
 app.use(cors());
 app.use(express.json());
 
 // Imports the Google Cloud client library
-import { Datastore } from '@google-cloud/datastore';
+const {Datastore} = require('@google-cloud/datastore');
+// import { Datastore } from '@google-cloud/datastore';
 
 // Creates a client
-const datastore: Datastore = new Datastore();
+const datastore = new Datastore();
+// const datastore: Datastore = new Datastore();
 setDatastore(datastore);
 
 import { dynamicComponentRouter } from './lib/routes/dynamic-component';
