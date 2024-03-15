@@ -29,10 +29,12 @@ const Home: React.FC = () => {
   >([]);
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
+  
 
   useEffect(() => {
     // Fetch dynamic components
     fetch("http://localhost:8080/dynamic-component/new")
+    // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
         setDynamicComponents(data);
@@ -48,6 +50,7 @@ const Home: React.FC = () => {
   const fetchUserData = async () => {
     try {
       const response = await fetch("http://localhost:8080/auth/user", {
+        // const response = await fetch(`${process.env.VITE_API_BASE_URL}/auth/user`, {
         credentials: "include",
       });
       if (response.ok) {

@@ -7,7 +7,6 @@ import path from 'path';
 
 dotenv.config(); //comment
 
-// const PORT: number = parseInt(process.env.PORT || '8080');
 const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
@@ -16,11 +15,9 @@ app.use(express.json());
 
 // Imports the Google Cloud client library
 const {Datastore} = require('@google-cloud/datastore');
-// import { Datastore } from '@google-cloud/datastore';
 
 // Creates a client
 const datastore = new Datastore();
-// const datastore: Datastore = new Datastore();
 setDatastore(datastore);
 
 import { dynamicComponentRouter } from './lib/routes/dynamic-component';
