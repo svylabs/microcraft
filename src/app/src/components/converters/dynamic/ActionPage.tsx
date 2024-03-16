@@ -93,39 +93,38 @@ const ActionPage = ({ output }) => {
     return data;
   };
 
-
-const saveClick = async () => {
+  const saveClick = async () => {
     try {
-        const response = await fetch(
-            "http://localhost:8080/dynamic-component/new",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: loadedData[0].title,
-                    description: loadedData[0].description,
-                    image_url: loadedData[0].image,
-                    component_definition: components,
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to save data");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/dynamic-component/new`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: loadedData[0].title,
+            description: loadedData[0].description,
+            image_url: loadedData[0].image,
+            component_definition: components,
+          }),
         }
+      );
 
-        localStorage.removeItem("formData");
-        setPopup(true);
-        setTimeout(() => {
-            setPopup(false);
-            window.location.href = "http://localhost:5173/";
-        }, 5000);
+      if (!response.ok) {
+        throw new Error("Failed to save data");
+      }
+
+      localStorage.removeItem("formData");
+      setPopup(true);
+      setTimeout(() => {
+        setPopup(false);
+        window.location.href = "/";
+      }, 5000);
     } catch (error) {
-        console.error("Error saving data:", error);
+      console.error("Error saving data:", error);
     }
-};
+  };
 
   const goBack = (components) => {
     const queryParams = new URLSearchParams({
@@ -144,7 +143,7 @@ const saveClick = async () => {
             onClick={() => goBack(components)}
           >
             <span className="absolute text-hover text-white font-medium mt-10 -ml-10 px-2 bg-slate-500 p-1 rounded-md z-50">
-            Return to I/O
+              Return to I/O
             </span>
             Back
           </button>
@@ -210,7 +209,9 @@ const saveClick = async () => {
           {outputFormat === "json" ? (
             <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
               {/* {JSON.stringify(outputCode, null, 2)} */}
-              {outputCode ? JSON.stringify(outputCode, null, 2) : "No output available"}
+              {outputCode
+                ? JSON.stringify(outputCode, null, 2)
+                : "No output available"}
             </pre>
           ) : (
             <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">

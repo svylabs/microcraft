@@ -97,12 +97,12 @@ const UserActionPage = () => {
 
   const goBack = () => {
     // setFeedback(true);
-    window.location.href = "http://localhost:5173/";
+    window.location.href = "/";
   };
 
   // function submitFeedback() {
   //   setFeedback(false);
-  //   window.location.href = "http://localhost:5173/";
+  //   window.location.href = "/";
   // }
 
   return (
