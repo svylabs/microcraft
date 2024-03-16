@@ -9,9 +9,13 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch("http://localhost:8080/auth/user", {
-        credentials: "include",
-      });
+      // const response = await fetch("http://localhost:8080/auth/user", {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/user`,
+        {
+          credentials: "include",
+        }
+      );
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
@@ -37,12 +41,20 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
         >
           &times;
         </span>
-        
+
         {userData && (
           <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">Welcome, {userData.login}</h2>
-            <p className="text-gray-600 mb-4">Created on: {userData.created_on}</p>
-            <img className="mx-auto w-32 h-32 rounded-full object-cover mb-4" src={userData.avatar_url} alt="User Avatar" />
+            <h2 className="text-2xl font-bold mb-4">
+              Welcome, {userData.login}
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Created on: {userData.created_on}
+            </p>
+            <img
+              className="mx-auto w-32 h-32 rounded-full object-cover mb-4"
+              src={userData.avatar_url}
+              alt="User Avatar"
+            />
           </div>
         )}
       </div>
