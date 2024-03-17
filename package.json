@@ -21,7 +21,7 @@
     "build:app": "cd src/app && npm install && npm run build",
     "build:server": "tsc -p ./",
     "build": "npm run build:server && npm run build:app && npm run copy:app",
-    "copy:app": "rm -rf dist/public && mkdir dist/public && cp -R src/app/dist/* dist/public/. && cp dist/public/index.html dist/.",
+    "copy:app": "rm -rf public && rm -rf dist/public && mkdir dist/public && cp -R src/app/dist/* dist/public/. && cp dist/public/index.html dist/. && cp -R dist/public .",
     "gcp-build": "tsc -p ."
   },
   "dependencies": {
