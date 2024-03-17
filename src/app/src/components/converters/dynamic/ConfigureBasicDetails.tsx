@@ -13,11 +13,11 @@ const ConfigureBasicDetails: React.FC = () => {
     title: false,
     image: false,
   });
-  const [userId, setUserId] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   useEffect(() => {
-    const userIdFromCookie = getCookie("userid");
-    setUserId(userIdFromCookie);
+    const sessionId = getCookie("connect.sid");
+    setSessionId(sessionId);
   }, []);
 
   const getCookie = (name: string) => {
@@ -71,7 +71,7 @@ const ConfigureBasicDetails: React.FC = () => {
   return (
     <div className="bg-gray-100 shadow-lg rounded-md">
       <div className="p-1 md:p-4 flex flex-col gap-5">
-        {userId ? (
+        {sessionId ? (
           <div className="p-1 md:p-4 flex flex-col gap-5">
             <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
               <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
