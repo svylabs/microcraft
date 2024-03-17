@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 export const githubRouter: Router = express.Router();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173","https://handycraft.io","http://handycraft.io","www.handycraft.io", "https://handycraft-415122.oa.r.appspot.com"],
   credentials: true,
 };
 

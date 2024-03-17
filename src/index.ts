@@ -70,7 +70,7 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
 });
 
 app.use(errorHandler);
-app.use(express.static('../public'));
+app.use(express.static('public'));
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 
