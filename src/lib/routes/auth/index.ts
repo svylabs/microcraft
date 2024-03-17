@@ -49,7 +49,7 @@ const addUserToSession = (req: Request, res: Response, user: User) => {
 const addUserToDatastore = async (user: User) => {
   const kind = "User";
   const datastore = getDatastore();
-  const key = datastore.key([kind, user.id.toString()]);
+  const key = datastore.key([kind, user.id]);
   const entity = {
     key: key,
     data: [
@@ -91,7 +91,7 @@ export const authenticatedUser = async (
       const userid = session.userid;
       const datastore = getDatastore();
       const result = await datastore.get(
-        datastore.key(["User", userid.toString()])
+        datastore.key(["User", userid])
       );
       if (result[0]) {
         (req as any).user = result[0];
@@ -115,11 +115,11 @@ githubRouter.get("/user", authenticatedUser, async (req: Request, res: Response)
     if (result[0]) {
       res.send(result[0]);
     } else {
-      res.status(401).send({ message: "User not found" });
+      res.status(401).send({ message: "User not found in DB" });
     }
     // });
   } else {
-    res.status(401).send({ message: "User not found" });
+    res.status(401).send({ message: "User not found in session" });
   }
 });
 
@@ -157,7 +157,7 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
 
-    res.redirect("http://localhost:5173/converter/Custom%20Components");
+    res.redirect("/");
   } catch (error) {
     next(error); // Forward error to error handler middleware
   }
