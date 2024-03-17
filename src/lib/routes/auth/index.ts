@@ -81,11 +81,32 @@ const addUserToDatastore = async (user: User) => {
   }
 };
 
-githubRouter.get("/user", async (req: Request, res: Response) => {
-  console.log(req.cookies);
+export const authenticatedUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const session = req.session as CustomSession;
+    if (session.userid !== undefined) {
+      const userid = session.userid;
+      const datastore = getDatastore();
+      const result = await datastore.get(
+        datastore.key(["User", userid.toString()])
+      );
+      if (result[0]) {
+        (req as any).user = result[0];
+        return next();
+      }
+    }
+    const error = new HttpError("Unauthorized", 401);
+    return next(error);
+  };
+
+githubRouter.get("/user", authenticatedUser, async (req: Request, res: Response) => {
+  const session = req.session as CustomSession;
   //   if (req.cookies.userid) {
-  if (req.cookies && req.cookies.userid) {
-    const userid = req.cookies.userid;
+  if (session.userid !== undefined) {
+    const userid = session.userid;
     // const userid: string = req.cookies.userid;
     const datastore = getDatastore();
     const key = datastore.key(["User", userid]);
@@ -141,24 +162,3 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     next(error); // Forward error to error handler middleware
   }
 });
-
-export const authenticatedUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const session = req.session as CustomSession;
-  if (session.userid !== undefined) {
-    const userid = session.userid;
-    const datastore = getDatastore();
-    const result = await datastore.get(
-      datastore.key(["User", userid.toString()])
-    );
-    if (result[0]) {
-      (req as any).user = result[0];
-      return next();
-    }
-  }
-  const error = new HttpError("Unauthorized", 401);
-  return next(error);
-};
