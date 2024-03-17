@@ -70,16 +70,16 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
 });
 
 app.use(errorHandler);
-app.use(express.static('public'));
+app.use(express.static('../public'));
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 
 app.get('/', function(req: Request, res: Response) {
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 function printAvailableAPIs(): void {
