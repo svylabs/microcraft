@@ -30,9 +30,17 @@ const Home: React.FC = () => {
   >([]);
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
-  
 
   useEffect(() => {
+
+    const storedRecentTools = localStorage.getItem("recentTools");
+    if (storedRecentTools) {
+      setRecentTools(JSON.parse(storedRecentTools));
+      setActiveCategory("recent");
+    } else {
+      setActiveCategory("all");
+    }
+    
     // Fetch dynamic components
     fetch(`${BASE_API_URL}/dynamic-component/new`)
     // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
@@ -200,16 +208,6 @@ const Home: React.FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    const storedRecentTools = localStorage.getItem("recentTools");
-    if (storedRecentTools) {
-      setRecentTools(JSON.parse(storedRecentTools));
-      setActiveCategory("recent");
-    } else {
-      setActiveCategory("all");
-    }
-  }, []);
 
   const addToRecentTools = (toolId: string) => {
     const updatedRecentTools = [
@@ -388,7 +386,7 @@ const Home: React.FC = () => {
               Converter App / HandyCraft
             </h1>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
-              {userName && (
+              {userName !== "" && (
                 <>
                   <img
                     className="w-[3rem] h-[3rem] rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
@@ -401,7 +399,7 @@ const Home: React.FC = () => {
                   </p>
                 </>
               )}
-              {!userName && (
+              {userName === "" && (
                 <div className="flex gap-3 self-center mx-auto md:mx-0">
                   <div className="w-[3rem] h-[3rem] bg-gray-300 rounded-full flex items-center justify-center">
                     <span className="text-gray-600">Avatar</span>
