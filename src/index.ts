@@ -82,16 +82,6 @@ app.get('/converter/*', function(req: Request, res: Response) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-function printAvailableAPIs(): void {
-  console.log('Available APIs:');
-  (app as any)._router.stack.forEach((middleware: any) => {
-    console.log(middleware);
-    if (middleware.route) {
-      console.log(`${Object.keys(middleware.route.methods)} -> ${middleware.route.path}`);
-    }
-  });
-}
-
 const server = app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
   //printAvailableAPIs();

@@ -40,7 +40,7 @@ const Home: React.FC = () => {
     } else {
       setActiveCategory("all");
     }
-    
+
     // Fetch dynamic components
     fetch(`${BASE_API_URL}/dynamic-component/new`)
     // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
@@ -68,6 +68,7 @@ const Home: React.FC = () => {
           const userData = await response.json();
           setUserName(userData.login);
           setUserAvatar(userData.avatar_url);
+          localStorage.setItem("userDetails", JSON.stringify(userData));
         } else {
           console.error("Response is not valid JSON");
         }

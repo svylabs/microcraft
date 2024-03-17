@@ -13,17 +13,17 @@ const ConfigureBasicDetails: React.FC = () => {
     title: false,
     image: false,
   });
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [userDetails, setUserDetails] = useState<string | null>(null);
 
   useEffect(() => {
-    const sessionId = getCookie("connect.sid");
-    setSessionId(sessionId);
+    const userDetails = localStorage.getItem("userDetails");
+    setUserDetails(userDetails);
   }, []);
 
   const getCookie = (name: string) => {
-    const cookies = document.cookie.split("; ");
+    const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.split("=");
+      const [cookieName, cookieValue] = cookie.trim().split("=");
       if (cookieName === name) {
         return decodeURIComponent(cookieValue);
       }
@@ -71,7 +71,7 @@ const ConfigureBasicDetails: React.FC = () => {
   return (
     <div className="bg-gray-100 shadow-lg rounded-md">
       <div className="p-1 md:p-4 flex flex-col gap-5">
-        {sessionId ? (
+        {userDetails != null ? (
           <div className="p-1 md:p-4 flex flex-col gap-5">
             <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
               <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
@@ -177,7 +177,7 @@ const ConfigureBasicDetails: React.FC = () => {
               You need to log in to create custom components.
             </p>
             <a
-              href="https://github.com/login/oauth/authorize?client_id=585042cc21ce245f7c54"
+              href="https://github.com/login/oauth/authorize?client_id=4532a66d1d21f9b956e3"
               className="mx-auto md:mx-0"
             >
               <button
