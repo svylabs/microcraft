@@ -78,7 +78,7 @@ app.get('/', function(req: Request, res: Response) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('*', (req, res) => {
+app.get('/converter/*', function(req: Request, res: Response) {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
