@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
+import { BASE_API_URL } from "~/components/constants";
+import { redirect } from "react-router-dom";
 
 interface Output {
   [key: string]: any;
@@ -95,32 +97,32 @@ const ActionPage = ({ output }) => {
 
   const saveClick = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/dynamic-component/new`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: loadedData[0].title,
-            description: loadedData[0].description,
-            image_url: loadedData[0].image,
-            component_definition: components,
-          }),
+        const response = await fetch(
+            `${BASE_API_URL}/dynamic-component/new`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: loadedData[0].title,
+                    description: loadedData[0].description,
+                    image_url: loadedData[0].image,
+                    component_definition: components,
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to save data");
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Failed to save data");
-      }
-
-      localStorage.removeItem("formData");
-      setPopup(true);
-      setTimeout(() => {
-        setPopup(false);
-        window.location.href = "/";
-      }, 5000);
+        localStorage.removeItem("formData");
+        setPopup(true);
+        setTimeout(() => {
+            setPopup(false);
+            redirect("/");
+        }, 5000);
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -130,7 +132,7 @@ const ActionPage = ({ output }) => {
     const queryParams = new URLSearchParams({
       components: JSON.stringify(components),
     });
-    window.location.href = `http://localhost:5173/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
+    window.location.href = `${BASE_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
   };
 
   return (

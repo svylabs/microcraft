@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
 import LoginSignupModal from "./LoginSignupModal";
+import { BASE_API_URL } from "./constants";
 
 interface Converter {
   id: string;
@@ -33,8 +34,8 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     // Fetch dynamic components
-    // fetch("http://localhost:8080/dynamic-component/new")
-    fetch(`${import.meta.env.VITE_API_BASE_URL}/dynamic-component/new`)
+    fetch(`${BASE_API_URL}/dynamic-component/new`)
+    // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
         setDynamicComponents(data);
@@ -49,8 +50,8 @@ const Home: React.FC = () => {
 
   const fetchUserData = async () => {
     try {
-      // const response = await fetch("http://localhost:8080/auth/user", {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/auth/user`, {
+      const response = await fetch(`${BASE_API_URL}/auth/user`, {
+        // const response = await fetch(`${process.env.VITE_API_BASE_URL}/auth/user`, {
         credentials: "include",
       });
       if (response.ok) {

@@ -1,17 +1,17 @@
 import express, { Router, Request, Response } from "express";
 import { getDatastore } from "../../database";
-// import { authenticatedUser } from "../auth";
+import { authenticatedUser } from "../auth";
 const cors = require("cors");
 
 export const dynamicComponentRouter: Router = express.Router();
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173","https://handycraft.io","http://handycraft.io","www.handycraft.io", "https://handycraft-415122.oa.r.appspot.com"],
   credentials: true,
 };
 dynamicComponentRouter.use(cors(corsOptions));
 
-dynamicComponentRouter.post("/new", async (req: Request, res: Response) => {
+dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     console.log(req.body);
     const kind: string = "DynamicComponent";
     const name: string = req.body.title;
@@ -89,7 +89,7 @@ dynamicComponentRouter.get("/list", async (req: Request, res: Response) => {
   res.send(dynamicComponents);
 });
 
-exports.dynamicComponentRouter.get("/new", async (req, res) => {
+dynamicComponentRouter.get("/new", async (req, res) => {
     try {
       const datastore = getDatastore();
       let query = datastore.createQuery("DynamicComponent");
@@ -100,6 +100,7 @@ exports.dynamicComponentRouter.get("/new", async (req, res) => {
       res.status(500).send({ error: error.message });
     }
   });
+
 
 dynamicComponentRouter.delete(
   "/new",  async (req: Request, res: Response) => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BASE_API_URL } from "./constants";
 
 const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
   const [userData, setUserData] = useState<any>(null);
@@ -9,13 +10,9 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
 
   const fetchUserData = async () => {
     try {
-      // const response = await fetch("http://localhost:8080/auth/user", {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/user`,
-        {
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`${BASE_API_URL}/auth/user`, {
+        credentials: "include",
+      });
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {

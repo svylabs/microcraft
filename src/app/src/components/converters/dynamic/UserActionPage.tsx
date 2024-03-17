@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import { useLocation } from "react-router-dom";
+import { redirect, useLocation } from "react-router-dom";
 
 interface Output {
   [key: string]: any;
@@ -97,7 +97,7 @@ const UserActionPage = () => {
 
   const goBack = () => {
     // setFeedback(true);
-    window.location.href = "/";
+    redirect("/");
   };
 
   // function submitFeedback() {

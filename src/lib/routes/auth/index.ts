@@ -2,13 +2,13 @@ import express, { Router, Request, Response, NextFunction } from "express";
 import { getDatastore } from "../../database";
 import axios from "axios";
 import { encode } from "url-safe-base64";
+import { Session } from "express-session";
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 export const githubRouter: Router = express.Router();
 
-const auth_1 = require("../auth");
 const corsOptions = {
   origin: "http://localhost:5173",
   credentials: true,
@@ -37,8 +37,13 @@ interface User {
   created_on: string;
 }
 
-const addUserToCookie = (res: Response, user: User) => {
-  res.cookie("userid", user.id, { maxAge: 900000, secure: true });
+interface CustomSession extends Session {
+    userid?: number;
+}
+
+const addUserToSession = (req: Request, res: Response, user: User) => {
+    const session = req.session as CustomSession;
+    session.userid = user.id;
 };
 
 const addUserToDatastore = async (user: User) => {
@@ -97,7 +102,7 @@ githubRouter.get("/user", async (req: Request, res: Response) => {
   }
 });
 
-exports.githubRouter.get("/github/callback", async (req, res, next) => {
+githubRouter.get("/github/callback", async (req, res, next) => {
   // The req.query object has the query params that were sent to this route.
   const requestToken = req.query.code;
   let result = await axios({
@@ -128,7 +133,7 @@ exports.githubRouter.get("/github/callback", async (req, res, next) => {
   // addUserToCookie(res, userDetail);
   // addUserToDatastore(userDetail);
   try {
-    await addUserToCookie(res, userDetail);
+    addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
 
     res.redirect("http://localhost:5173/converter/Custom%20Components");
@@ -142,8 +147,9 @@ export const authenticatedUser = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (req.cookies?.userid) {
-    const userid = JSON.parse(req.cookies.userid);
+  const session = req.session as CustomSession;
+  if (session.userid !== undefined) {
+    const userid = session.userid;
     const datastore = getDatastore();
     const result = await datastore.get(
       datastore.key(["User", userid.toString()])
