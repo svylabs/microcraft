@@ -97,7 +97,8 @@ const UserActionPage = () => {
 
   const goBack = () => {
     // setFeedback(true);
-    redirect("/");
+    window.location.href = "/";
+    // redirect("/");
   };
 
   // function submitFeedback() {
@@ -106,7 +107,9 @@ const UserActionPage = () => {
   // }
 
   return (
-    <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
+    <div className="image-pdf p-4 xl:py-10">
+      <h1 className="text-xl md:text-2xl font-bold py-2 lg:mx-20 xl:mx-40 underline hover:decoration-dashed">{output.title}</h1>
+      <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
       {output.approval_status === "pending" && (
         <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
           <p>
@@ -115,11 +118,11 @@ const UserActionPage = () => {
           </p>
         </div>
       )}
-      <div className="p-2 md:p-4 ">
-        <div className="flex justify-between mb-4">
-          <h1 className="text-xl md:text-2xl font-bold">{output.title}:</h1>
+      <div className="px-2 md:p- text-wrap">            
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+          <h1 className="font-semibold md:text-xl hidden md:block">Interactive Elements</h1>
           <button
-            className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
+            className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
             onClick={() => goBack()}
           >
             <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
@@ -127,8 +130,9 @@ const UserActionPage = () => {
             </span>
             Back
           </button>
+          <h1 className="block md:hidden font-semibold text-lg mt-2">Interactive Elements</h1>
         </div>
-        <ul className="">
+        <ul className="whitespace-normal break-words">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
               ID: {component.id}, Label: {component.label}, Type:{" "}
@@ -179,7 +183,6 @@ const UserActionPage = () => {
           <h2 className="text-xl font-bold">Output:</h2>
           {outputFormat === "json" ? (
             <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {/* {JSON.stringify(outputCode, null, 2)} */}
               {outputCode
                 ? JSON.stringify(outputCode, null, 2)
                 : "No output available"}
@@ -224,6 +227,7 @@ const UserActionPage = () => {
           </div>
         </div>
       )} */}
+    </div>
     </div>
   );
 };

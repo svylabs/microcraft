@@ -66,7 +66,7 @@ const Home: React.FC = () => {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const userData = await response.json();
-          setUserName(userData.login);
+          setUserName(userData.name);
           setUserAvatar(userData.avatar_url);
           localStorage.setItem("userDetails", JSON.stringify(userData));
         } else {

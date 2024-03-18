@@ -39,7 +39,9 @@ app.use(session({
       keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS
     })
   }),
-  secret: process.env.SESSION_SECRET || 'local-secret'
+  secret: process.env.SESSION_SECRET || 'local-secret',
+  resave: false,
+  saveUninitialized: false,
 }));
 
 // Creates a client
@@ -75,11 +77,11 @@ app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 
 app.get('/', function(req: Request, res: Response) {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 app.get('/converter/*', function(req: Request, res: Response) {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 const server = app.listen(PORT, () => {

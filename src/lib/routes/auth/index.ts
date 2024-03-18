@@ -10,7 +10,13 @@ const cookieParser = require("cookie-parser");
 export const githubRouter: Router = express.Router();
 
 const corsOptions = {
-  origin: ["http://localhost:5173","https://handycraft.io","http://handycraft.io","www.handycraft.io", "https://handycraft-415122.oa.r.appspot.com"],
+  origin: [
+    "http://localhost:5173",
+    "https://handycraft.io",
+    "http://handycraft.io",
+    "www.handycraft.io",
+    "https://handycraft-415122.oa.r.appspot.com",
+  ],
   credentials: true,
 };
 
@@ -38,18 +44,19 @@ interface User {
 }
 
 interface CustomSession extends Session {
-    userid?: number;
+  userid?: number;
 }
 
 const addUserToSession = (req: Request, res: Response, user: User) => {
-    const session = req.session as CustomSession;
-    session.userid = user.id;
+  const session = req.session as CustomSession;
+  session.userid = user.id;
 };
 
 const addUserToDatastore = async (user: User) => {
   const kind = "User";
   const datastore = getDatastore();
-  const key = datastore.key([kind, user.id]);
+  // const key = datastore.key([kind, user.id]);
+  const key = datastore.key([kind, user.id.toString()]);
   const entity = {
     key: key,
     data: [
@@ -82,46 +89,49 @@ const addUserToDatastore = async (user: User) => {
 };
 
 export const authenticatedUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const session = req.session as CustomSession;
-    if (session.userid !== undefined) {
-      const userid = session.userid;
-      const datastore = getDatastore();
-      const result = await datastore.get(
-        datastore.key(["User", userid])
-      );
-      if (result[0]) {
-        (req as any).user = result[0];
-        return next();
-      }
-    }
-    const error = new HttpError("Unauthorized", 401);
-    return next(error);
-  };
-
-githubRouter.get("/user", authenticatedUser, async (req: Request, res: Response) => {
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log(req.session);
   const session = req.session as CustomSession;
-  //   if (req.cookies.userid) {
   if (session.userid !== undefined) {
     const userid = session.userid;
-    // const userid: string = req.cookies.userid;
     const datastore = getDatastore();
-    const key = datastore.key(["User", userid]);
-    const result = await datastore.get(key);
-    // datastore.get(key).then((result: any) => {
+    const result = await datastore.get(datastore.key(["User", userid]));
     if (result[0]) {
-      res.send(result[0]);
-    } else {
-      res.status(401).send({ message: "User not found in DB" });
+      (req as any).user = result[0];
+      return next();
     }
-    // });
-  } else {
-    res.status(401).send({ message: "User not found in session" });
   }
-});
+  const error = new HttpError("Unauthorized", 401);
+  return next(error);
+};
+
+githubRouter.get(
+  "/user",
+  authenticatedUser,
+  async (req: Request, res: Response) => {
+    const session = req.session as CustomSession;
+    //   if (req.cookies.userid) {
+    if (session.userid !== undefined) {
+      const userid = session.userid;
+      // const userid: string = req.cookies.userid;
+      const datastore = getDatastore();
+      const key = datastore.key(["User", userid]);
+      const result = await datastore.get(key);
+      // datastore.get(key).then((result: any) => {
+      if (result[0]) {
+        res.send(result[0]);
+      } else {
+        res.status(401).send({ message: "User not found in DB" });
+      }
+      // });
+    } else {
+      res.status(401).send({ message: "User not found in session" });
+    }
+  }
+);
 
 githubRouter.get("/github/callback", async (req, res, next) => {
   // The req.query object has the query params that were sent to this route.
@@ -151,14 +161,14 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     created_on: new Date().toISOString(),
   };
   console.log("user details:-", userDetail);
-  // addUserToCookie(res, userDetail);
-  // addUserToDatastore(userDetail);
   try {
     addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
 
-    res.redirect("/");
+    // res.redirect("/");
+    res.redirect("https://handycraft-415122.oa.r.appspot.com/converter/Custom%20Components");
+    // res.redirect("http://localhost:5173/converter/Custom%20Components");
   } catch (error) {
-    next(error); // Forward error to error handler middleware
+    next(error);
   }
 });

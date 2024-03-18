@@ -3,6 +3,7 @@ import ActionPage from "./ActionPage";
 import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
+import edit from "../../photos/pen-to-square-solid.svg";
 
 interface CustomComponent {
   id: string;
@@ -25,6 +26,14 @@ const ConfigureInputsOutputs: React.FC = () => {
     code: "",
   });
   const [showOutput, setShowOutput] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [editIndex, setEditIndex] = useState<number>(-1);
+  
+  const handleEditComponent = (index: number) => {
+    setIsEditMode(true);
+    setEditIndex(index);
+    setCurrentComponent(components[index]);
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -44,7 +53,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       return;
     }
   
-    if (components.some(component => component.id.trim() === currentComponent.id.trim())) {
+    if (components.some(component => component.id.trim() === currentComponent.id.trim() && components.indexOf(component) !== editIndex)) {
       alert("Component with the same ID already exists. Please use a different ID.");
       return;
     }
@@ -54,11 +63,19 @@ const ConfigureInputsOutputs: React.FC = () => {
       return;
     }
   
-    setComponents((prevState) => [...prevState, currentComponent]);
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
-      [currentComponent.id]: "",
-    }));
+    if (isEditMode) {
+      const updatedComponents = [...components];
+      updatedComponents[editIndex] = currentComponent;
+      setComponents(updatedComponents);
+      setIsEditMode(false);
+      setEditIndex(-1);
+    } else {
+      setComponents((prevState) => [...prevState, currentComponent]);
+      setInputValues((prevInputValues) => ({
+        ...prevInputValues,
+        [currentComponent.id]: "",
+      }));
+    }
     setCurrentComponent({
       id: "",
       label: "",
@@ -126,8 +143,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   }
 
   return (
-    <div className="bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
-      <div className="p-1 md:p-4">
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
+      <div className="p-1 md:p-4 bg-gray-100">
         <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
           <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
             <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
@@ -260,11 +277,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                         {component.label}:
                       </label>
+                      <div className="flex gap-3 md:gap-5">
+                      <button onClick={() => handleEditComponent(index)}><img src={edit} alt="edit"></img></button>
                       <button
                         onClick={() => handleDeleteComponent(component.id)}
                       >
                         <img src={trash} alt="trash"></img>
                       </button>
+                      </div>
                     </div>
                     <input
                       className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
@@ -284,11 +304,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                         {component.label}:
                       </label>
+                      <div className="flex gap-3 md:gap-5">
+                      <button onClick={() => handleEditComponent(index)}><img src={edit} alt="edit"></img></button>
                       <button
                         onClick={() => handleDeleteComponent(component.id)}
                       >
                         <img src={trash} alt="trash"></img>
                       </button>
+                      </div>
                     </div>
                     <button
                       className="block p-2 w-full text-white bg-red-500 border border-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
