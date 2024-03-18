@@ -10,7 +10,7 @@ const UserActionPage = () => {
   const location = useLocation();
   const output = location.state && location.state.output;
   const [components, setComponents] = useState(output.component_definition);
-  const [data, setData] = useState<{ [key: string]: string }>({});
+  const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   // const [feedback, setFeedback] = useState(false);

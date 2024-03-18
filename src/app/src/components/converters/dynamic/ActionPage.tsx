@@ -13,7 +13,7 @@ const ActionPage = ({ output }) => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [popup, setPopup] = useState(false);
-  const [values, setValues] = useState<{ [key: string]: string}>({});
+  const [data, setData] = useState<{ [key: string]: any}>({});
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -26,7 +26,7 @@ const ActionPage = ({ output }) => {
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
-    setValues((prevValues) => ({
+    setData((prevValues) => ({
       ...prevValues,
       [id]: value,
     }));
@@ -34,17 +34,18 @@ const ActionPage = ({ output }) => {
 
   const handleRun = async (
     code: string,
-    values: { [key: string]: string }
+    data: { [key: string]: string }
   ) => {
     try {
       const result = await eval(code);
-      let vals = values;
+      let vals = data;
       if (typeof result === "object") {
          for (const key in result) {
            vals[key] = result[key];
          }
-         setValues(vals);
+         setData(vals);
       }
+      console.log(vals);
       console.log(result);
       setOutputCode(vals);
     } catch (error) {
@@ -173,7 +174,7 @@ const ActionPage = ({ output }) => {
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     type={component.type}
                     id={component.id}
-                    value={values[component.id] || ""}
+                    value={data[component.id] || ""}
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
@@ -184,7 +185,7 @@ const ActionPage = ({ output }) => {
                 <button
                   className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   id={component.id}
-                  onClick={() => handleRun(component.code!, values)}
+                  onClick={() => handleRun(component.code!, data)}
                 >
                   {component.label}
                 </button>
