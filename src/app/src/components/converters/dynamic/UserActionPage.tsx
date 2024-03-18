@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
-import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
-import { BASE_API_URL } from "~/components/constants";
-import { redirect } from "react-router-dom";
+import { redirect, useLocation } from "react-router-dom";
 
 interface Output {
   [key: string]: any;
 }
 
-const ActionPage = ({ output }) => {
-  const [components, setComponents] = useState(output);
+const UserActionPage = () => {
+  const location = useLocation();
+  const output = location.state && location.state.output;
+  const [components, setComponents] = useState(output.component_definition);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
-  const [popup, setPopup] = useState(false);
+  // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -95,57 +95,35 @@ const ActionPage = ({ output }) => {
     return data;
   };
 
-  const saveClick = async () => {
-    try {
-        const response = await fetch(
-            `${BASE_API_URL}/dynamic-component/new`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: loadedData[0].title,
-                    description: loadedData[0].description,
-                    image_url: loadedData[0].image,
-                    component_definition: components,
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to save data");
-        }
-
-        localStorage.removeItem("formData");
-        setPopup(true);
-        setTimeout(() => {
-            setPopup(false);
-            redirect("/");
-        }, 5000);
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
+  const goBack = () => {
+    // setFeedback(true);
+    redirect("/");
   };
 
-  const goBack = (components) => {
-    const queryParams = new URLSearchParams({
-      components: JSON.stringify(components),
-    });
-    window.location.href = `${BASE_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
-  };
+  // function submitFeedback() {
+  //   setFeedback(false);
+  //   window.location.href = "/";
+  // }
 
   return (
-    <div className="bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
+    <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
+      {output.approval_status === "pending" && (
+        <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
+          <p>
+            <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
+            This tool is currently under review. Proceed with caution.
+          </p>
+        </div>
+      )}
       <div className="p-2 md:p-4 ">
         <div className="flex justify-between mb-4">
-          <h1 className="text-xl md:text-2xl font-bold">Added Components:</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{output.title}:</h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
-            onClick={() => goBack(components)}
+            onClick={() => goBack()}
           >
-            <span className="absolute text-hover text-white font-medium mt-10 -ml-10 px-2 bg-slate-500 p-1 rounded-md z-50">
-              Return to I/O
+            <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
+              Back To Home
             </span>
             Back
           </button>
@@ -186,15 +164,6 @@ const ActionPage = ({ output }) => {
           ))}
         </ul>
 
-        <div className="flex justify-end">
-          <button
-            className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
-            onClick={saveClick}
-          >
-            Save
-          </button>
-        </div>
-
         <div className="mb-4">
           <h2 className="text-xl font-bold">Output Format:</h2>
           <select
@@ -223,29 +192,40 @@ const ActionPage = ({ output }) => {
         </div>
       </div>
 
-      {popup && (
-        <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
-          <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">
-            <img
-              src={flower}
-              alt="flowers"
-              className="w-[3rem] md:w-[5rem]"
-            ></img>
-            <p className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-              Congratulations!
+      {/* {feedback && (
+        <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
+          <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
+            <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
+              What is your level of satisfaction with this tool app?
+            </h2>
+            <p className="text-[#85909B] xl:text-xl text-center">
+              This will help us improve your experience.
             </p>
-            <p className="lg:text-lg xl:text-xl text-[#85909B] text-center">
-              Fantastic work! Your custom components have been seamlessly
-              integrated.
-            </p>
-            <p className="md:mt-2 text-green-600 text-lg lg:text-xl text-center">
-              Keep innovating and sharing your creativity!
-            </p>
+            <label className="flex gap-5 md:mt-1 text-4xl md:text-5xl lg:text-6xl lg:gap-6 text-[#85909B] mx-5 xl:mx-10">
+              <button onClick={submitFeedback}>
+                &#128545;
+                <span className="text-lg md:text-xl xl:text-2xl text-red-600">
+                  Unhappy
+                </span>
+              </button>
+              <button onClick={submitFeedback}>
+                &#128528;
+                <span className="text-lg md:text-xl xl:text-2xl text-yellow-500">
+                  Neutral
+                </span>
+              </button>
+              <button onClick={submitFeedback}>
+                &#128525;
+                <span className="text-lg md:text-xl xl:text-2xl text-green-600">
+                  Satisfied
+                </span>
+              </button>
+            </label>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
 
-export default ActionPage;
+export default UserActionPage;

@@ -13,7 +13,9 @@ interface CustomComponent {
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
-  const [components, setComponents] = useState<CustomComponent[]>([]);
+  const queryParams = new URLSearchParams(window.location.search);
+  const savedComponents = JSON.parse(queryParams.get('components') || '[]');
+  const [components, setComponents] = useState<CustomComponent[]>(savedComponents);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
@@ -42,6 +44,11 @@ const ConfigureInputsOutputs: React.FC = () => {
       return;
     }
   
+    if (components.some(component => component.id.trim() === currentComponent.id.trim())) {
+      alert("Component with the same ID already exists. Please use a different ID.");
+      return;
+    }
+  
     if (currentComponent.type === "button" && !currentComponent.code?.trim()) {
       alert("Please provide code for Button type components.");
       return;
@@ -59,7 +66,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       placement: "input",
       code: "",
     });
-  };
+  };  
   
 
   const handlePreview = async () => {
@@ -291,12 +298,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     </button>
                   </div>
                 )}
-                {/* <button
-                    className=""
-                    onClick={() => handleDeleteComponent(component.id)}
-                  >
-                    <img src={trash} alt="trash"></img>
-                  </button> */}
               </li>
             ))}
           </ul>
@@ -311,6 +312,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </button>
         </div>
       </div>
+      
     </div>
   );
 };

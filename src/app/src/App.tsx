@@ -4,30 +4,9 @@ import Home from "./components/Home";
 import Converter from "./components/Converter";
 import "./App.css";
 import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
-// import DynamicHome from "./components/converters/dynamic/DynamicHome";
-// import ConfigureBasicDetails from "./components/converters/dynamic/ConfigureBasicDetails";
+import UserActionPage from "./components/converters/dynamic/UserActionPage";
 
 const App: React.FC = () => {
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [selectedCodeId, setSelectedCodeId] = useState(null);
-
-  // const handlePreviousPage = () => {
-  //   setCurrentPage(currentPage - 1);
-  // };
-
-  // const handleNext = () => {
-  //   setCurrentPage(currentPage + 1);
-  // };
-
-  // const handleBackToFirstPage = () => {
-  //   setCurrentPage(1);
-  // };
-
-  // const handleImageClick = (id) => {
-  //   // console.log(id);
-  //   setSelectedCodeId(id);
-  //   setCurrentPage(4);
-  // };
 
   return (
     <>
@@ -36,17 +15,9 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/converter/:id" element={<Converter />} />
           <Route path="/converter/configure/configureDetails/configureInputOutput" element={<ConfigureInputsOutputs />} />
+          <Route path="/converter/UserActionPage" element={<UserActionPage />} />
         </Routes>
-      </Router>
-      {/* {currentPage === 1 && (
-        <DynamicHome
-          handleNext={handleNext}
-          handleImageClick={handleImageClick}
-        />
-      )} */}
-
-      {/* {currentPage === 2 && <ConfigureBasicDetails />} */}
-      
+      </Router>      
     </>
   );
 };

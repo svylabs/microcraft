@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import lucy from "./photos/lucy.jpg";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
-import ConfigureBasicDetails from "./converters/dynamic/ConfigureBasicDetails";
-import ConfigureInputsOutputs from "./converters/dynamic/ConfigureInputsOutputs";
-
+import LoginSignupModal from "./LoginSignupModal";
+import { BASE_API_URL } from "./constants";
 
 interface Converter {
   id: string;
@@ -14,43 +12,79 @@ interface Converter {
   image: string;
 }
 
+interface DynamicComponent {
+  created_on: string;
+  approval_status: string;
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  component_definition: any[];
+}
+
 const Home: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCodeId, setSelectedCodeId] = useState(null);
+  const navigate = useNavigate();
 
-  const handlePreviousPage = () => {
-    setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const handleBackToFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const handleImageClick = (id) => {
-    // console.log(id);
-    setSelectedCodeId(id);
-    setCurrentPage(4);
-  };
-
-  const savedFormDataString = localStorage.getItem("formData");
-  const savedFormData = savedFormDataString
-    ? JSON.parse(savedFormDataString)
-    : [];
-  const [loadedData, setLoadedData] = useState(savedFormData);
-
-  const allCodeIdsString = localStorage.getItem("allCodeIds");
-  const allCodeIds = allCodeIdsString ? JSON.parse(allCodeIdsString) : [];
-
-  const codeSetsString = localStorage.getItem("codeSets");
-  const codeSets = codeSetsString ? JSON.parse(codeSetsString) : [];
+  const [dynamicComponents, setDynamicComponents] = useState<
+    DynamicComponent[]
+  >([]);
+  const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
-    setLoadedData(savedFormData);
+
+    const storedRecentTools = localStorage.getItem("recentTools");
+    if (storedRecentTools) {
+      setRecentTools(JSON.parse(storedRecentTools));
+      setActiveCategory("recent");
+    } else {
+      setActiveCategory("all");
+    }
+
+    // Fetch dynamic components
+    fetch(`${BASE_API_URL}/dynamic-component/new`)
+    // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
+      .then((response) => response.json())
+      .then((data: DynamicComponent[]) => {
+        setDynamicComponents(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching dynamic components:", error);
+      });
+
+    // Fetch user data
+    fetchUserData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/auth/user`, {
+        // const response = await fetch(`${process.env.VITE_API_BASE_URL}/auth/user`, {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const userData = await response.json();
+          setUserName(userData.login);
+          setUserAvatar(userData.avatar_url);
+          localStorage.setItem("userDetails", JSON.stringify(userData));
+        } else {
+          console.error("Response is not valid JSON");
+        }
+      } else {
+        console.error("Failed to fetch user data:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  const handleImageClick = (componentDefinition: any) => {
+    navigate(`/converter/UserActionPage`, {
+      state: { output: componentDefinition },
+    });
+  };
 
   const allConverters: Converter[] = [
     {
@@ -165,16 +199,16 @@ const Home: React.FC = () => {
     "cryptography",
     "image",
   ];
+  const [customComponentCategory, setCustomComponentCategory] = useState("all");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const storedRecentTools = localStorage.getItem("recentTools");
-    if (storedRecentTools) {
-      setRecentTools(JSON.parse(storedRecentTools));
-      setActiveCategory("recent");
-    } else {
-      setActiveCategory("all");
-    }
-  }, []);
+  const handleLogin = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const addToRecentTools = (toolId: string) => {
     const updatedRecentTools = [
@@ -240,17 +274,7 @@ const Home: React.FC = () => {
   };
 
   const handleCreateComponents = (converter: Converter) => {
-    const codeId = new Date().getTime().toString();
-    localStorage.setItem("codeId", codeId);
-    localStorage.setItem("allCodeIds", JSON.stringify([...allCodeIds, codeId]));
-
-    const newSet = { id: codeId, codes: [] };
-    localStorage.setItem("codeSets", JSON.stringify([...codeSets, newSet]));
-
-    // handleNext();
-
     addToRecentTools(converter.id);
-    console.log("hh");
   };
 
   const toggleMobileMenu = () => {
@@ -306,231 +330,309 @@ const Home: React.FC = () => {
     );
   };
 
-  return (
-    <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
-      <div className="sticky top-0 bg-white z-50 pb-3">
-        <div className="flex flex-wrap md:justify-between mb-6">
-          <h1 className="py-2 text-center text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-            Converter App / HandyCraft
-          </h1>
-          <div className="flex md:gap-3 self-center mx-auto md:mx-0">
-            <Link to="/">
-              <img
-                className="w-[3rem] h-[3rem] rounded-full"
-                src={lucy}
-                alt="john"
-              ></img>
-            </Link>
-            <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
-              <span className="font-bold">Hello!</span> Lucy
-            </p>
-          </div>
-        </div>
-        <input
-          type="text"
-          className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
+  const handleCustomComponentCategoryChange = (category: string) => {
+    setCustomComponentCategory(category);
+  };
 
-        <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
-        <div className="hidden md:flex justify-center space-x-4 mb-1">
-          {categories.map((category) => (
-            <button
-              key={category}
-              className={`px-4 py-2 rounded ${
-                activeCategory === category
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              } hover:bg-blue-600 focus:outline-none`}
-              onClick={() => handleCategoryChange(category)}
-            >
-              {category === "recent" ? "Recently Used" : category.toUpperCase()}
-            </button>
-          ))}
-        </div>
-      </div>
+  // Filter custom components based on category
+  let filteredCustomComponents: DynamicComponent[] = [];
+  switch (customComponentCategory) {
+    case "all":
+      filteredCustomComponents = dynamicComponents;
+      break;
+    case "pending":
+      filteredCustomComponents = dynamicComponents.filter(
+        (component) => component.approval_status === "pending"
+      );
+      break;
+    case "approved":
+      filteredCustomComponents = dynamicComponents.filter(
+        (component) => component.approval_status === "approved"
+      );
+      break;
+    default:
+      filteredCustomComponents = dynamicComponents;
+      break;
+  }
 
-      {activeCategory === "recent" && (
-        <div className="mb-6">
-          {recentTools.length === 0 && (
-            <div>
-              <h2 className="text-lg md:text-xl font-semibold mb-2">
-                Recently Used Tools
-              </h2>
-              <div className="text-lg text-center text-gray-600">
-                No recently used tools.
-              </div>
-            </div>
-          )}
-          {recentTools.length > 0 && (
-            <div>
-              <h2 className="text-lg md:text-xl font-semibold mb-2">
-                Recently Used Tools
-              </h2>
-              <ul className="flex flex-wrap -mx-2">
-                {recentTools.map((toolId) => {
-                  const tool = allConverters.find(
-                    (converter) => converter.id === toolId
-                  );
-                  return (
-                    <li
-                      key={toolId}
-                      className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
-                    >
-                      <div className="relative">
-                        <button
-                          className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-gray-200 focus:outline-none"
-                          onClick={() => {
-                            const updatedTools = recentTools.filter(
-                              (id) => id !== toolId
-                            );
-                            setRecentTools(updatedTools);
-                            localStorage.setItem(
-                              "recentTools",
-                              JSON.stringify(updatedTools)
-                            );
-                          }}
-                        >
-                          <FiTrash2 />
-                        </button>
-                        <Link
-                          to={`/converter/${toolId}`}
-                          onClick={() => addToRecentTools(toolId)}
-                        >
-                          <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                            <div className="home-image relative">
-                              <img
-                                src={tool?.image}
-                                alt={tool?.title}
-                                className="w-full rounded container h-40 object-cover mb-2"
-                              />
-                              <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                                <span className="text-white">
-                                  {tool?.description}
-                                </span>
-                              </div>
-                            </div>
-                            <strong className="block text-lg font-bold mb-1">
-                              {tool?.title}
-                            </strong>
-                          </div>
-                        </Link>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-              <button
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                onClick={() => {
-                  setRecentTools([]);
-                  localStorage.removeItem("recentTools");
-                }}
-              >
-                Clear history
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="mb-6">
-        <h2 className="text-lg md:text-xl font-semibold mb-2">
-          {activeCategory === "recent"
-            ? "All Tools"
-            : activeCategory.toUpperCase() + " Tools"}
-        </h2>
-        <ul className="flex flex-wrap -mx-2">
-          {filteredConverters.map((converter) => (
-            <li
-              key={converter.id}
-              className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
-            >
-              {converter.id === "Custom Components" ? (
-                <Link
-                  to={`/converter/${converter.id}`}
-                  onClick={() => handleCreateComponents(converter)}
-                >
-                  <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                    <div className="home-image relative">
-                      <img
-                        src={converter.image}
-                        alt={`${converter.title} Icon`}
-                        className="w-full rounded container h-40 object-cover mb-2"
-                      />
-                      <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                        <span className="text-white">
-                          {converter.description}
-                        </span>
-                      </div>
-                    </div>
-                    <strong className="block text-lg font-bold mb-1">
-                      {converter.title}
-                    </strong>
-                  </div>
-                  {/* {currentPage === 1 && <ConfigureBasicDetails />} */}
-                  {/* {currentPage === 2 && <ConfigureInputsOutputs handleNext={handleNext}/>} */}
-
-                </Link>
-              ) : (
-                <Link
-                  to={`/converter/${converter.id}`}
-                  onClick={() => addToRecentTools(converter.id)}
-                >
-                  <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                    <div className="home-image relative">
-                      <img
-                        src={converter.image}
-                        alt={`${converter.title} Icon`}
-                        className="w-full rounded container h-40 object-cover mb-2"
-                      />
-                      <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                        <span className="text-white">
-                          {converter.description}
-                        </span>
-                      </div>
-                    </div>
-                    <strong className="block text-lg font-bold mb-1">
-                      {converter.title}
-                    </strong>
-                  </div>
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <h3 className="text-lg md:text-xl font-semibold mb-2">Custom Components:</h3>
-      <div className="flex flex-wrap -mx-2">
-        {loadedData.map((data, index) => (
-          <div
-            className="flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.7%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2"
-            key={index}
-            onClick={() => handleImageClick(allCodeIds[index])}
+  // Render custom component category buttons
+  const renderCustomComponentCategories = () => {
+    return (
+      <div className="flex gap-3 mb-4">
+        {["all", "pending", "approved"].map((category) => (
+          <button
+            key={category}
+            className={`px-4 py-2 rounded ${
+              customComponentCategory === category
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200 text-gray-800"
+            } hover:bg-blue-600 focus:outline-none`}
+            onClick={() => handleCustomComponentCategoryChange(category)}
           >
-            <div className="home-image">
-              {data.image && (
-                <img
-                  className="w-full rounded container h-40 object-cover mb-2"
-                  src={data.image}
-                  alt="code-thumbnail"
-                />
-              )}
-              <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                <span>{data.description}</span>
-              </div>
-            </div>
-
-            <p className="block text-lg font-bold mb-1">
-              {data.title}
-            </p>
-          </div>
+            {category === "all"
+              ? "All"
+              : category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
         ))}
       </div>
-    </div>
+    );
+  };
+
+  return (
+    <>
+      <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
+        <div className="sticky top-0 bg-white z-40 pb-3">
+          <div className="flex flex-wrap md:justify-between mb-6">
+            <h1 className="py-2 text-center text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+              Converter App / HandyCraft
+            </h1>
+            <div className="flex gap-3 self-center mx-auto md:mx-0">
+              {userName !== "" && (
+                <>
+                  <img
+                    className="w-[3rem] h-[3rem] rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                    src={userAvatar}
+                    alt={userName}
+                    onClick={handleLogin}
+                  ></img>
+                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                    <span className="font-bold">Hello!</span> {userName}
+                  </p>
+                </>
+              )}
+              {userName === "" && (
+                <div className="flex gap-3 self-center mx-auto md:mx-0">
+                  <div className="w-[3rem] h-[3rem] bg-gray-300 rounded-full flex items-center justify-center">
+                    <span className="text-gray-600">Avatar</span>
+                  </div>
+                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                    <span className="font-bold">Hello!</span> Guest
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+          <input
+            type="text"
+            className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+          />
+
+          <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
+          <div className="hidden md:flex justify-center space-x-4 mb-1">
+            {categories.map((category) => (
+              <button
+                key={category}
+                className={`px-4 py-2 rounded ${
+                  activeCategory === category
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-800"
+                } hover:bg-blue-600 focus:outline-none`}
+                onClick={() => handleCategoryChange(category)}
+              >
+                {category === "recent"
+                  ? "Recently Used"
+                  : category.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {activeCategory === "recent" && (
+          <div className="mb-6">
+            {recentTools.length === 0 && (
+              <div>
+                <h2 className="text-lg md:text-xl font-semibold mb-2">
+                  Recently Used Tools
+                </h2>
+                <div className="text-lg text-center text-gray-600">
+                  No recently used tools.
+                </div>
+              </div>
+            )}
+            {recentTools.length > 0 && (
+              <div>
+                <h2 className="text-lg md:text-xl font-semibold mb-2">
+                  Recently Used Tools
+                </h2>
+                <ul className="flex flex-wrap -mx-2">
+                  {recentTools.map((toolId) => {
+                    const tool = allConverters.find(
+                      (converter) => converter.id === toolId
+                    );
+                    return (
+                      <li
+                        key={toolId}
+                        className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
+                      >
+                        <div className="relative">
+                          <button
+                            className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-gray-200 focus:outline-none"
+                            onClick={() => {
+                              const updatedTools = recentTools.filter(
+                                (id) => id !== toolId
+                              );
+                              setRecentTools(updatedTools);
+                              localStorage.setItem(
+                                "recentTools",
+                                JSON.stringify(updatedTools)
+                              );
+                            }}
+                          >
+                            <FiTrash2 />
+                          </button>
+                          <Link
+                            to={`/converter/${toolId}`}
+                            onClick={() => addToRecentTools(toolId)}
+                          >
+                            <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                              <div className="home-image relative">
+                                <img
+                                  src={tool?.image}
+                                  alt={tool?.title}
+                                  className="w-full rounded container h-40 object-cover mb-2"
+                                />
+                                <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                                  <span className="text-white">
+                                    {tool?.description}
+                                  </span>
+                                </div>
+                              </div>
+                              <strong className="block text-lg font-bold mb-1">
+                                {tool?.title}
+                              </strong>
+                            </div>
+                          </Link>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <button
+                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                  onClick={() => {
+                    setRecentTools([]);
+                    localStorage.removeItem("recentTools");
+                  }}
+                >
+                  Clear history
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="mb-6">
+          <h2 className="text-lg md:text-xl font-semibold mb-2">
+            {activeCategory === "recent"
+              ? "All Tools"
+              : activeCategory.toUpperCase() + " Tools"}
+          </h2>
+          <ul className="flex flex-wrap -mx-2">
+            {filteredConverters.map((converter) => (
+              <li
+                key={converter.id}
+                className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
+              >
+                {converter.id === "Custom Components" ? (
+                  <Link
+                    to={`/converter/${converter.id}`}
+                    onClick={() => handleCreateComponents(converter)}
+                  >
+                    <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                      <div className="home-image relative">
+                        <img
+                          src={converter.image}
+                          alt={`${converter.title} Icon`}
+                          className="w-full rounded container h-40 object-cover mb-2"
+                        />
+                        <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <span className="text-white">
+                            {converter.description}
+                          </span>
+                        </div>
+                      </div>
+                      <strong className="block text-lg font-bold mb-1">
+                        {converter.title}
+                      </strong>
+                    </div>
+                  </Link>
+                ) : (
+                  <Link
+                    to={`/converter/${converter.id}`}
+                    onClick={() => addToRecentTools(converter.id)}
+                  >
+                    <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                      <div className="home-image relative">
+                        <img
+                          src={converter.image}
+                          alt={`${converter.title} Icon`}
+                          className="w-full rounded container h-40 object-cover mb-2"
+                        />
+                        <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <span className="text-white">
+                            {converter.description}
+                          </span>
+                        </div>
+                      </div>
+                      <strong className="block text-lg font-bold mb-1">
+                        {converter.title}
+                      </strong>
+                    </div>
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold mb-2">
+            Custom Components
+          </h2>
+          {renderCustomComponentCategories()}
+          {filteredCustomComponents.length === 0 ? (
+            <div className="text-gray-600">No custom components found.</div>
+          ) : (
+            <div className="flex flex-wrap -mx-2">
+              {filteredCustomComponents.map((data, index) => (
+                <div
+                  key={index}
+                  className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.7%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
+                    data.approval_status === "pending"
+                      ? "border border-dashed border-red-400"
+                      : ""
+                  }`}
+                  onClick={() => handleImageClick(data)}
+                >
+                  <div className="home-image">
+                    {data.image_url && (
+                      <img
+                        className="w-full rounded container h-40 object-cover mb-2"
+                        src={data.image_url}
+                        alt="image-thumbnail"
+                      />
+                    )}
+                    <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                      <span>{data.description}</span>
+                    </div>
+                  </div>
+                  <p className="block text-lg font-bold mb-1">{data.title}</p>
+                  {data.approval_status === "pending" && (
+                    <span className="absolute text-hover text-red-500 text-center font-medium bg-black bg-opacity-50 p-2 rounded-md z-50 animate-puls">
+                      ⚠️ Caution: Component under review. Use with care.
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
+    </>
   );
 };
 
