@@ -16,6 +16,8 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
+/*
+
 app.use(session({
   store: new DatastoreStore({
     kind: 'express-sessions',
@@ -41,12 +43,14 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET || 'local-secret'
 }));
+*/
 
 // Creates a client
 const datastore = new Datastore();
 setDatastore(datastore);
 
 import { dynamicComponentRouter } from './lib/routes/dynamic-component';
+import { datasetRouter } from './lib/routes/datasets';
 import { HttpError, githubRouter } from './lib/routes/auth';
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -73,6 +77,7 @@ app.use(errorHandler);
 app.use(express.static('public'));
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
+app.use('/datasets', datasetRouter);
 
 app.get('/', function(req: Request, res: Response) {
   res.sendFile(path.join(__dirname, 'index.html'));
