@@ -10,10 +10,10 @@ interface Output {
 
 const ActionPage = ({ output }) => {
   const [components, setComponents] = useState(output);
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [popup, setPopup] = useState(false);
+  const [values, setValues] = useState<{ [key: string]: string}>({});
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -26,20 +26,27 @@ const ActionPage = ({ output }) => {
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
+    setValues((prevValues) => ({
+      ...prevValues,
       [id]: value,
     }));
   };
 
   const handleRun = async (
     code: string,
-    inputValues: { [key: string]: string }
+    values: { [key: string]: string }
   ) => {
     try {
       const result = await eval(code);
+      let vals = values;
+      if (typeof result === "object") {
+         for (const key in result) {
+           vals[key] = result[key];
+         }
+         setValues(vals);
+      }
       console.log(result);
-      setOutputCode(result);
+      setOutputCode(vals);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
@@ -166,7 +173,7 @@ const ActionPage = ({ output }) => {
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     type={component.type}
                     id={component.id}
-                    value={inputValues[component.id] || ""}
+                    value={values[component.id] || ""}
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
@@ -177,7 +184,7 @@ const ActionPage = ({ output }) => {
                 <button
                   className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   id={component.id}
-                  onClick={() => handleRun(component.code!, inputValues)}
+                  onClick={() => handleRun(component.code!, values)}
                 >
                   {component.label}
                 </button>

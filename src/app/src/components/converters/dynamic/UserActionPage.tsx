@@ -10,7 +10,7 @@ const UserActionPage = () => {
   const location = useLocation();
   const output = location.state && location.state.output;
   const [components, setComponents] = useState(output.component_definition);
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
+  const [data, setData] = useState<{ [key: string]: string }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   // const [feedback, setFeedback] = useState(false);
@@ -26,7 +26,7 @@ const UserActionPage = () => {
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
-    setInputValues((prevInputValues) => ({
+    setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
@@ -38,6 +38,13 @@ const UserActionPage = () => {
   ) => {
     try {
       const result = await eval(code);
+      let vals = data;
+      if (typeof result === "object") {
+         for (const key in result) {
+           vals[key] = result[key];
+         }
+         setData(vals);
+      }
       console.log(result);
       setOutputCode(result);
     } catch (error) {
@@ -144,7 +151,7 @@ const UserActionPage = () => {
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     type={component.type}
                     id={component.id}
-                    value={inputValues[component.id] || ""}
+                    value={data[component.id] || ""}
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
@@ -155,7 +162,7 @@ const UserActionPage = () => {
                 <button
                   className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   id={component.id}
-                  onClick={() => handleRun(component.code!, inputValues)}
+                  onClick={() => handleRun(component.code!, data)}
                 >
                   {component.label}
                 </button>
