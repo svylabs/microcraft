@@ -5,7 +5,7 @@ import cors from 'cors';
 export const datasetRouter = express.Router();
 
 const corsOptions = {
-    origin: ["http://localhost:5173","https://handycraft.io","http://handycraft.io","www.handycraft.io", "https://handycraft-415122.oa.r.appspot.com"],
+    origin: ["http://localhost:5173","https://microcraft.dev","http://microcraft.dev","www.microcraft.dev", "https://handycraft-415122.oa.r.appspot.com"],
     credentials: true,
   };
 
