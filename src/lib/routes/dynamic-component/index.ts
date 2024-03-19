@@ -121,11 +121,6 @@ dynamicComponentRouter.delete(
         message: "All data from /new endpoint deleted successfully",
       });
     } catch (error: any) {
-    //   if (error instanceof Error) {
-    //     res.status(500).send({ error: error.message });
-    //   } else {
-    //     res.status(500).send({ error: "An unknown error occurred" });
-    //   }
     res.status(500).send({ error: error.message });
     }
   }

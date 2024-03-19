@@ -105,32 +105,29 @@ const ActionPage = ({ output }) => {
 
   const saveClick = async () => {
     try {
-        const response = await fetch(
-            `${BASE_API_URL}/dynamic-component/new`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    title: loadedData[0].title,
-                    description: loadedData[0].description,
-                    image_url: loadedData[0].image,
-                    component_definition: components,
-                }),
-            }
-        );
+      const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: loadedData[0].title,
+          description: loadedData[0].description,
+          image_url: loadedData[0].image,
+          component_definition: components,
+        }),
+      });
 
-        if (!response.ok) {
-            throw new Error("Failed to save data");
-        }
+      if (!response.ok) {
+        throw new Error("Failed to save data");
+      }
 
-        localStorage.removeItem("formData");
-        setPopup(true);
-        setTimeout(() => {
-            setPopup(false);
-            redirect("/");
-        }, 5000);
+      localStorage.removeItem("formData");
+      setPopup(true);
+      setTimeout(() => {
+        setPopup(false);
+        redirect("/");
+      }, 5000);
     } catch (error) {
       console.error("Error saving data:", error);
     }
@@ -144,8 +141,8 @@ const ActionPage = ({ output }) => {
   };
 
   return (
-    <div className="bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40">
-      <div className="p-2 md:p-4 ">
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
+      <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">Added Components:</h1>
           <button

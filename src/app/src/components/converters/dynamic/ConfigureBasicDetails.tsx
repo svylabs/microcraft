@@ -17,19 +17,20 @@ const ConfigureBasicDetails: React.FC = () => {
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
+    console.log(userDetails)
     setUserDetails(userDetails);
   }, []);
 
-  const getCookie = (name: string) => {
-    const cookies = document.cookie.split(";");
-    for (const cookie of cookies) {
-      const [cookieName, cookieValue] = cookie.trim().split("=");
-      if (cookieName === name) {
-        return decodeURIComponent(cookieValue);
-      }
-    }
-    return null;
-  };
+  // const getCookie = (name: string) => {
+  //   const cookies = document.cookie.split(";");
+  //   for (const cookie of cookies) {
+  //     const [cookieName, cookieValue] = cookie.trim().split("=");
+  //     if (cookieName === name) {
+  //       return decodeURIComponent(cookieValue);
+  //     }
+  //   }
+  //   return null;
+  // };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -69,19 +70,19 @@ const ConfigureBasicDetails: React.FC = () => {
   };
 
   return (
-    <div className="bg-gray-100 shadow-lg rounded-md">
-      <div className="p-1 md:p-4 flex flex-col gap-5">
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md">
+      <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100">
         {userDetails != null ? (
           <div className="p-1 md:p-4 flex flex-col gap-5">
             <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
-              <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
+              <p className="flex gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
                 <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
                   1
                 </span>
                 Configure basic details
               </p>
               <img src={arrow} alt="arrow"></img>
-              <p className="flex gap-3 items-center text-[#414A53] text-lg xl:text-2xl">
+              <p className="flex gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
