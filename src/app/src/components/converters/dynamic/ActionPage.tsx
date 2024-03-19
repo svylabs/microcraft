@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { BASE_API_URL } from "~/components/constants";
+import { LOCALHOST_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
 
 interface Output {
@@ -126,7 +127,8 @@ const ActionPage = ({ output }) => {
       setPopup(true);
       setTimeout(() => {
         setPopup(false);
-        redirect("/");
+        // redirect("/");
+        window.location.href = "/";
       }, 5000);
     } catch (error) {
       console.error("Error saving data:", error);
@@ -137,7 +139,8 @@ const ActionPage = ({ output }) => {
     const queryParams = new URLSearchParams({
       components: JSON.stringify(components),
     });
-    window.location.href = `${BASE_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
+    // window.location.href = `${LOCALHOST_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
+    window.location.href = `/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
   };
 
   return (
@@ -229,7 +232,7 @@ const ActionPage = ({ output }) => {
       </div>
 
       {popup && (
-        <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
+        <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[13rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
           <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">
             <img
               src={flower}
