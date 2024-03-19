@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { BASE_API_URL } from "~/components/constants";
-import { LOCALHOST_API_URL } from "~/components/constants";
+// import { LOCALHOST_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
 
 interface Output {

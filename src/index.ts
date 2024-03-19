@@ -16,8 +16,6 @@ const app: Application = express();
 app.use(cors());
 app.use(express.json());
 
-/*
-
 app.use(session({
   store: new DatastoreStore({
     kind: 'express-sessions',
@@ -45,7 +43,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
-*/
+
 
 // Creates a client
 const datastore = new Datastore();
