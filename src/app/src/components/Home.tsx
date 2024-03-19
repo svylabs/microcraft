@@ -43,7 +43,6 @@ const Home: React.FC = () => {
 
     // Fetch dynamic components
     fetch(`${BASE_API_URL}/dynamic-component/new`)
-    // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
         setDynamicComponents(data);
@@ -59,7 +58,6 @@ const Home: React.FC = () => {
   const fetchUserData = async () => {
     try {
       const response = await fetch(`${BASE_API_URL}/auth/user`, {
-        // const response = await fetch(`${process.env.VITE_API_BASE_URL}/auth/user`, {
         credentials: "include",
       });
       if (response.ok) {
@@ -390,7 +388,7 @@ const Home: React.FC = () => {
               {userName !== "" && (
                 <>
                   <img
-                    className="w-[3rem] h-[3rem] rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                    className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
                     src={userAvatar}
                     alt={userName}
                     onClick={handleLogin}
@@ -402,8 +400,8 @@ const Home: React.FC = () => {
               )}
               {userName === "" && (
                 <div className="flex gap-3 self-center mx-auto md:mx-0">
-                  <div className="w-[3rem] h-[3rem] bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600">Avatar</span>
+                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                    <span className="text-gray-600" onClick={handleLogin}>Avatar</span>
                   </div>
                   <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
                     <span className="font-bold">Hello!</span> Guest

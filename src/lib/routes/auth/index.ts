@@ -168,3 +168,15 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     next(error);
   }
 });
+
+githubRouter.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      res.clearCookie("connect.sid"); // Clear session cookie
+      res.sendStatus(200);
+    }
+  });
+});
