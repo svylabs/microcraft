@@ -64,7 +64,7 @@ const Home: React.FC = () => {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const userData = await response.json();
-          setUserName(userData.name);
+          setUserName(userData.name || userData.login);
           setUserAvatar(userData.avatar_url);
           localStorage.setItem("userDetails", JSON.stringify(userData));
         } else {
@@ -79,7 +79,7 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/converter/UserActionPage`, {
+    navigate(`/app/published/` + componentDefinition.id, {
       state: { output: componentDefinition },
     });
   };
@@ -176,7 +176,7 @@ const Home: React.FC = () => {
       image: "./photos/image-editor.jpg",
     },
     {
-      id: "User Apps",
+      id: "New App",
       title: "Publish your own",
       description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
@@ -394,8 +394,8 @@ const Home: React.FC = () => {
                 </h2>
               </div>
               <h6 className="py-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
-                   <span className="text-sm md:text-2sm lg:text-3sm">
-                    Unlock the unexpected: Apps you never knew you needed
+                   <span className="text-xs md:text-3sm lg:text-base">
+                    Apps you never knew you needed
                     </span>
                 </h6>
             </div>
@@ -497,7 +497,7 @@ const Home: React.FC = () => {
                             <FiTrash2 />
                           </button>
                           <Link
-                            to={`/converter/${toolId}`}
+                            to={`/app/inbuilt/${toolId}`}
                             onClick={() => addToRecentTools(toolId)}
                           >
                             <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
@@ -551,7 +551,7 @@ const Home: React.FC = () => {
               >
                 {converter.id === "Custom Components" ? (
                   <Link
-                    to={`/converter/${converter.id}`}
+                    to={`/app/inbuilt/${converter.id}`}
                     onClick={() => handleCreateComponents(converter)}
                   >
                     <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
@@ -574,7 +574,7 @@ const Home: React.FC = () => {
                   </Link>
                 ) : (
                   <Link
-                    to={`/converter/${converter.id}`}
+                    to={`/app/inbuilt/${converter.id}`}
                     onClick={() => addToRecentTools(converter.id)}
                   >
                     <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">

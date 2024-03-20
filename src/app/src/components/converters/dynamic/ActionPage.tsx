@@ -140,7 +140,7 @@ const ActionPage = ({ output }) => {
       components: JSON.stringify(components),
     });
     // window.location.href = `${LOCALHOST_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
-    window.location.href = `/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
+    window.location.href = `/app/new?${queryParams}`;
   };
 
   return (

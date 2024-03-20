@@ -54,7 +54,7 @@ const ConfigureBasicDetails: React.FC = () => {
       );
 
       window.location.href =
-        "/converter/configure/configureDetails/configureInputOutput";
+        "/app/new";
     }
   };
 
