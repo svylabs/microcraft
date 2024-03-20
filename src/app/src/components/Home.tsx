@@ -387,12 +387,17 @@ const Home: React.FC = () => {
         <div className="sticky top-0 bg-white z-40 pb-3">
           <div className="flex flex-wrap md:justify-between mb-6">
             <div>
-              <h2 className="py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-                Microcraft
-              </h2>
-              <h4 className="text-2s md:text-3s lg:text-5s bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-                Unleash the Unexpected: Apps you never knew you needed
-              </h4>
+              <div className="flex items-center">
+                <img src="/microcraft.png" alt="Microcraft" className="w-12 h-12" /> 
+                <h2 className="py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500" style={{marginLeft: 20}}>
+                    Microcraft
+                </h2>
+              </div>
+              <h6 className="py-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
+                   <span className="text-sm md:text-2sm lg:text-3sm">
+                    Unlock the unexpected: Apps you never knew you needed
+                    </span>
+                </h6>
             </div>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
               {userName !== "" && (
