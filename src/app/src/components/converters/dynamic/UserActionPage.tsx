@@ -10,8 +10,8 @@ interface Output {
 const UserActionPage = () => {
   const location = useLocation();
   const { appId } = useParams<{appId: string}>();
-  const [output, setOutput] = useState<any>(location.state?.output || {});
-  const [components, setComponents] = useState(output?.component_definition || null);
+  const [output, setOutput] = useState<any>(location?.state?.output || {});
+  const [components, setComponents] = useState(output?.component_definition || []);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
