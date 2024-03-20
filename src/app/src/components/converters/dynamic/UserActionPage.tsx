@@ -25,12 +25,12 @@ const UserActionPage = () => {
 
   useEffect(() => {
     setLoadedData(savedFormData);
-    if (components == null) {
+    if (components.length === 0) {
        fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
         .then((data) => {
           console.log("Component detail: ", data);
-          setComponents(data.component_definition);
+          setComponents(data.component_definition || []);
           setOutput(data);
         });
     }

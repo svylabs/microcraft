@@ -119,7 +119,7 @@ dynamicComponentRouter.get("/all", async (req, res) => {
     try {
       const componentId = req.params.id;
       const datastore = getDatastore();
-      let result = datastore.get(datastore.key(["DynamicComponent", componentId]));
+      let result = await datastore.get(datastore.key(["DynamicComponent", componentId]));
       // console.log("Data fetched successfully:", dynamicComponents);
       res.send(result);
     } catch (error: any) {
