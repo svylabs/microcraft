@@ -42,8 +42,7 @@ const Home: React.FC = () => {
     }
 
     // Fetch dynamic components
-    fetch(`${BASE_API_URL}/dynamic-component/new`)
-    // fetch(`${process.env.VITE_API_BASE_URL}/dynamic-component/new`)
+    fetch(`${BASE_API_URL}/dynamic-component/all`)
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
         setDynamicComponents(data);
@@ -59,14 +58,13 @@ const Home: React.FC = () => {
   const fetchUserData = async () => {
     try {
       const response = await fetch(`${BASE_API_URL}/auth/user`, {
-        // const response = await fetch(`${process.env.VITE_API_BASE_URL}/auth/user`, {
         credentials: "include",
       });
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const userData = await response.json();
-          setUserName(userData.name);
+          setUserName(userData.name || userData.login);
           setUserAvatar(userData.avatar_url);
           localStorage.setItem("userDetails", JSON.stringify(userData));
         } else {
@@ -81,7 +79,7 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/converter/UserActionPage`, {
+    navigate(`/app/published/` + (componentDefinition.id || componentDefinition.title), {
       state: { output: componentDefinition },
     });
   };
@@ -138,16 +136,16 @@ const Home: React.FC = () => {
     },
     {
       id: "ECC-Tools",
-      title: "ECC Toolbox",
+      title: "Elliptic Curve Toolbox",
       description:
         "Tools for Elliptic Curve Cryptography, covering key generation, digital signature operations, and verification.",
       image: "./photos/ecc.png",
     },
     {
       id: "Cryptographic Hash",
-      title: "Exploring Cryptographic Hash",
+      title: "Cryptographic Hash",
       description:
-        "Discover SHA-256, SHA-3, and Poseidon: powerful tools for secure data hashing.",
+        "Tinker with SHA-256, SHA-3, and Poseidon: powerful tools for secure data hashing.",
       image: "./photos/crypto-hash.png",
     },
     {
@@ -178,9 +176,9 @@ const Home: React.FC = () => {
       image: "./photos/image-editor.jpg",
     },
     {
-      id: "Custom Components",
-      title: "Add Custom Components",
-      description: "Add Custom Components",
+      id: "New App",
+      title: "Publish your own",
+      description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
     },
   ];
@@ -330,6 +328,11 @@ const Home: React.FC = () => {
     );
   };
 
+  const capitalize = (str: string) => {
+    if (str.length <= 4) return str.toUpperCase();
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   const handleCustomComponentCategoryChange = (category: string) => {
     setCustomComponentCategory(category);
   };
@@ -383,14 +386,24 @@ const Home: React.FC = () => {
       <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
         <div className="sticky top-0 bg-white z-40 pb-3">
           <div className="flex flex-wrap md:justify-between mb-6">
-            <h1 className="py-2 text-center text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-              Converter App / HandyCraft
-            </h1>
+            <div>
+              <div className="flex items-center">
+                <img src="/microcraft.png" alt="Microcraft" className="w-12 h-12" /> 
+                <h2 className="py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500" style={{marginLeft: 20}}>
+                    Microcraft
+                </h2>
+              </div>
+              <h6 className="py-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
+                   <span className="text-xs md:text-3sm lg:text-base">
+                    Apps you never knew you needed
+                    </span>
+                </h6>
+            </div>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
               {userName !== "" && (
                 <>
                   <img
-                    className="w-[3rem] h-[3rem] rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                    className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
                     src={userAvatar}
                     alt={userName}
                     onClick={handleLogin}
@@ -402,8 +415,8 @@ const Home: React.FC = () => {
               )}
               {userName === "" && (
                 <div className="flex gap-3 self-center mx-auto md:mx-0">
-                  <div className="w-[3rem] h-[3rem] bg-gray-300 rounded-full flex items-center justify-center">
-                    <span className="text-gray-600">Avatar</span>
+                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                    <span className="text-gray-600" onClick={handleLogin}>Avatar</span>
                   </div>
                   <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
                     <span className="font-bold">Hello!</span> Guest
@@ -455,7 +468,7 @@ const Home: React.FC = () => {
             {recentTools.length > 0 && (
               <div>
                 <h2 className="text-lg md:text-xl font-semibold mb-2">
-                  Recently Used Tools
+                  Recently Used Apps
                 </h2>
                 <ul className="flex flex-wrap -mx-2">
                   {recentTools.map((toolId) => {
@@ -484,7 +497,7 @@ const Home: React.FC = () => {
                             <FiTrash2 />
                           </button>
                           <Link
-                            to={`/converter/${toolId}`}
+                            to={`/app/inbuilt/${toolId}`}
                             onClick={() => addToRecentTools(toolId)}
                           >
                             <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
@@ -527,8 +540,8 @@ const Home: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-lg md:text-xl font-semibold mb-2">
             {activeCategory === "recent"
-              ? "All Tools"
-              : activeCategory.toUpperCase() + " Tools"}
+              ? "All Apps"
+              : capitalize(activeCategory) + " Apps"}
           </h2>
           <ul className="flex flex-wrap -mx-2">
             {filteredConverters.map((converter) => (
@@ -538,7 +551,7 @@ const Home: React.FC = () => {
               >
                 {converter.id === "Custom Components" ? (
                   <Link
-                    to={`/converter/${converter.id}`}
+                    to={`/app/inbuilt/${converter.id}`}
                     onClick={() => handleCreateComponents(converter)}
                   >
                     <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
@@ -561,7 +574,7 @@ const Home: React.FC = () => {
                   </Link>
                 ) : (
                   <Link
-                    to={`/converter/${converter.id}`}
+                    to={`/app/inbuilt/${converter.id}`}
                     onClick={() => addToRecentTools(converter.id)}
                   >
                     <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
@@ -590,11 +603,11 @@ const Home: React.FC = () => {
 
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-2">
-            Custom Components
+            Community published apps
           </h2>
           {renderCustomComponentCategories()}
           {filteredCustomComponents.length === 0 ? (
-            <div className="text-gray-600">No custom components found.</div>
+            <div className="text-gray-600">None found.</div>
           ) : (
             <div className="flex flex-wrap -mx-2">
               {filteredCustomComponents.map((data, index) => (

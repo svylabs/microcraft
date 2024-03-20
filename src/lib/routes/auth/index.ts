@@ -10,13 +10,7 @@ const cookieParser = require("cookie-parser");
 export const githubRouter: Router = express.Router();
 
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "https://handycraft.io",
-    "http://handycraft.io",
-    "www.handycraft.io",
-    "https://handycraft-415122.oa.r.appspot.com",
-  ],
+  origin: ["http://localhost:5173","https://microcraft.dev","http://microcraft.dev","www.microcraft.dev", "https://handycraft-415122.oa.r.appspot.com"],
   credentials: true,
 };
 
@@ -43,8 +37,9 @@ interface User {
   created_on: string;
 }
 
-interface CustomSession extends Session {
+export interface CustomSession extends Session {
   userid?: number;
+  user?: User;
 }
 
 const addUserToSession = (req: Request, res: Response, user: User) => {
@@ -100,7 +95,8 @@ export const authenticatedUser = async (
     const datastore = getDatastore();
     const result = await datastore.get(datastore.key(["User", userid]));
     if (result[0]) {
-      (req as any).user = result[0];
+      //(req as any).user = result[0];
+      session.user = result[0];
       return next();
     }
   }
@@ -108,25 +104,33 @@ export const authenticatedUser = async (
   return next(error);
 };
 
+export const onlyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const session = req.session as CustomSession;
+    if (session.user) {
+        if (session.user.login === "svylabs" || session.user.login === 'rohitbharti279') {
+            return next();
+        }
+    }
+    const error = new HttpError("Unauthorized", 401);
+    return next(error);
+};
+
 githubRouter.get(
   "/user",
   authenticatedUser,
   async (req: Request, res: Response) => {
     const session = req.session as CustomSession;
-    //   if (req.cookies.userid) {
+    console.log(session);
     if (session.userid !== undefined) {
       const userid = session.userid;
-      // const userid: string = req.cookies.userid;
       const datastore = getDatastore();
       const key = datastore.key(["User", userid]);
       const result = await datastore.get(key);
-      // datastore.get(key).then((result: any) => {
       if (result[0]) {
         res.send(result[0]);
       } else {
         res.status(401).send({ message: "User not found in DB" });
       }
-      // });
     } else {
       res.status(401).send({ message: "User not found in session" });
     }
@@ -164,11 +168,22 @@ githubRouter.get("/github/callback", async (req, res, next) => {
   try {
     addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
-
-    // res.redirect("/");
-    res.redirect("https://handycraft-415122.oa.r.appspot.com/converter/Custom%20Components");
-    // res.redirect("http://localhost:5173/converter/Custom%20Components");
+    res.redirect("/");
+    // res.redirect("https://handycraft-415122.oa.r.appspot.com/converter/Custom%20Components");
+    //res.redirect("http://localhost:5173/");
   } catch (error) {
     next(error);
   }
+});
+
+githubRouter.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      res.status(500).send("Internal Server Error");
+    } else {
+      res.clearCookie("connect.sid"); // Clear session cookie
+      res.sendStatus(200);
+    }
+  });
 });

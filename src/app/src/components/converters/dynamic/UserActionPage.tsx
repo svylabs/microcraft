@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import { redirect, useLocation } from "react-router-dom";
+import { redirect, useLocation, useParams } from "react-router-dom";
+import { BASE_API_URL } from "~/components/constants";
 
 interface Output {
   [key: string]: any;
@@ -8,8 +9,9 @@ interface Output {
 
 const UserActionPage = () => {
   const location = useLocation();
-  const output = location.state && location.state.output;
-  const [components, setComponents] = useState(output.component_definition);
+  const { appId } = useParams<{appId: string}>();
+  const [output, setOutput] = useState<any>(location?.state?.output || {});
+  const [components, setComponents] = useState(output?.component_definition || []);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
@@ -23,6 +25,15 @@ const UserActionPage = () => {
 
   useEffect(() => {
     setLoadedData(savedFormData);
+    if (components.length === 0) {
+       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Component detail: ", data);
+          setComponents(data.component_definition || []);
+          setOutput(data);
+        });
+    }
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
@@ -105,7 +116,6 @@ const UserActionPage = () => {
   const goBack = () => {
     // setFeedback(true);
     window.location.href = "/";
-    // redirect("/");
   };
 
   // function submitFeedback() {
@@ -114,10 +124,10 @@ const UserActionPage = () => {
   // }
 
   return (
-    <div className="image-pdf p-4 xl:py-10">
-      <h1 className="text-xl md:text-2xl font-bold py-2 lg:mx-20 xl:mx-40 underline hover:decoration-dashed">{output.title}</h1>
+    <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
+      <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">{output.title || appId}</h1>
       <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
-      {output.approval_status === "pending" && (
+      {(output.approval_status || 'pending') === "pending" && (
         <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
           <p>
             <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
@@ -127,7 +137,7 @@ const UserActionPage = () => {
       )}
       <div className="px-2 md:p- text-wrap">            
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-          <h1 className="font-semibold md:text-xl hidden md:block">Interactive Elements</h1>
+          <h1 className="font-semibold md:text-xl hidden md:block">{appId}</h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
             onClick={() => goBack()}
@@ -137,7 +147,7 @@ const UserActionPage = () => {
             </span>
             Back
           </button>
-          <h1 className="block md:hidden font-semibold text-lg mt-2">Interactive Elements</h1>
+          <h1 className="block md:hidden font-semibold text-lg mt-2">{appId}</h1>
         </div>
         <ul className="whitespace-normal break-words">
           {components.map((component, index) => (

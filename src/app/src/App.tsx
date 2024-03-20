@@ -13,9 +13,9 @@ const App: React.FC = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/converter/:id" element={<Converter />} />
-          <Route path="/converter/configure/configureDetails/configureInputOutput" element={<ConfigureInputsOutputs />} />
-          <Route path="/converter/UserActionPage" element={<UserActionPage />} />
+          <Route path="/app/inbuilt/:id" element={<Converter />} />
+          <Route path="/app/new" element={<ConfigureInputsOutputs />} />
+          <Route path="/app/published/:appId" element={<UserActionPage />} />
         </Routes>
       </Router>      
     </>
