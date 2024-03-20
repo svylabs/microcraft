@@ -167,7 +167,7 @@ const ConfigureBasicDetails: React.FC = () => {
               You need to log in to create custom apps.
             </p>
             <a
-              href="https://github.com/login/oauth/authorize?client_id=4532a66d1d21f9b956e3"
+              href="https://github.com/login/oauth/authorize?client_id=b1e5e5404f5c20d849ae"
               className="mx-auto md:mx-0"
             >
               <button

@@ -103,7 +103,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
             </p>
 
             <a
-              href="https://github.com/login/oauth/authorize?client_id=585042cc21ce245f7c54"
+              href="https://github.com/login/oauth/authorize?client_id=b1e5e5404f5c20d849ae"
               className="mx-auto md:mx-0"
             >
               <button
