@@ -89,7 +89,7 @@ dynamicComponentRouter.get("/list", async (req: Request, res: Response) => {
   res.send(dynamicComponents);
 });
 
-dynamicComponentRouter.get("/new", async (req, res) => {
+dynamicComponentRouter.get("/all", async (req, res) => {
     try {
       const datastore = getDatastore();
       let query = datastore.createQuery("DynamicComponent");
@@ -102,6 +102,7 @@ dynamicComponentRouter.get("/new", async (req, res) => {
   });
 
 
+/*
 dynamicComponentRouter.delete(
   "/new",  async (req: Request, res: Response) => {
     try {
@@ -125,5 +126,6 @@ dynamicComponentRouter.delete(
     }
   }
 );
+*/
 
 

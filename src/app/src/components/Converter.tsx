@@ -70,7 +70,7 @@ const Converter: React.FC = () => {
         return <ECDHKeySharing />;
         case "Image Editor":
         return <ImageEditor />;
-        case "Custom Components":
+        case "User Apps":
         return <ConfigureBasicDetails />;
       default:
         return <p>Converter not found</p>;

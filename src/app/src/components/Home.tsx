@@ -42,7 +42,7 @@ const Home: React.FC = () => {
     }
 
     // Fetch dynamic components
-    fetch(`${BASE_API_URL}/dynamic-component/new`)
+    fetch(`${BASE_API_URL}/dynamic-component/all`)
       .then((response) => response.json())
       .then((data: DynamicComponent[]) => {
         setDynamicComponents(data);
@@ -136,16 +136,16 @@ const Home: React.FC = () => {
     },
     {
       id: "ECC-Tools",
-      title: "ECC Toolbox",
+      title: "Elliptic Curve Toolbox",
       description:
         "Tools for Elliptic Curve Cryptography, covering key generation, digital signature operations, and verification.",
       image: "./photos/ecc.png",
     },
     {
       id: "Cryptographic Hash",
-      title: "Exploring Cryptographic Hash",
+      title: "Cryptographic Hash",
       description:
-        "Discover SHA-256, SHA-3, and Poseidon: powerful tools for secure data hashing.",
+        "Tinker with SHA-256, SHA-3, and Poseidon: powerful tools for secure data hashing.",
       image: "./photos/crypto-hash.png",
     },
     {
@@ -176,9 +176,9 @@ const Home: React.FC = () => {
       image: "./photos/image-editor.jpg",
     },
     {
-      id: "Custom Components",
-      title: "Add Custom Components",
-      description: "Add Custom Components",
+      id: "User Apps",
+      title: "Publish your own",
+      description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
     },
   ];
@@ -381,9 +381,14 @@ const Home: React.FC = () => {
       <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
         <div className="sticky top-0 bg-white z-40 pb-3">
           <div className="flex flex-wrap md:justify-between mb-6">
-            <h1 className="py-2 text-center text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
-              Converter App / HandyCraft
-            </h1>
+            <div>
+              <h2 className="py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+                Microcraft
+              </h2>
+              <h4 className="text-2s md:text-3s lg:text-5s bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-violet-500">
+                Unleash the Unexpected: Apps you never knew you needed
+              </h4>
+            </div>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
               {userName !== "" && (
                 <>
@@ -588,11 +593,11 @@ const Home: React.FC = () => {
 
         <div>
           <h2 className="text-lg md:text-xl font-semibold mb-2">
-            Custom Components
+            Community published apps
           </h2>
           {renderCustomComponentCategories()}
           {filteredCustomComponents.length === 0 ? (
-            <div className="text-gray-600">No custom components found.</div>
+            <div className="text-gray-600">None found.</div>
           ) : (
             <div className="flex flex-wrap -mx-2">
               {filteredCustomComponents.map((data, index) => (

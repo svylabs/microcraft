@@ -99,8 +99,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5 bg-gray-100 rounded-md shadow-md">
             <p className="text-[#727679] mb-4 text-center font-medium">
-              Elevate your experience! Sign in to unlock exclusive features and
-              create custom components.
+              Elevate your experience! Sign in to build and publish custom apps.
             </p>
 
             <a
@@ -111,7 +110,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
                 className="cursor-pointer bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
                 type="submit"
               >
-                Log in with GitHub
+                Login with GitHub
               </button>
             </a>
           </div>

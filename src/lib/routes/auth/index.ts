@@ -155,9 +155,9 @@ githubRouter.get("/github/callback", async (req, res, next) => {
   try {
     addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
-    // res.redirect("/");
+    res.redirect("/");
     // res.redirect("https://handycraft-415122.oa.r.appspot.com/converter/Custom%20Components");
-    res.redirect("http://localhost:5173/");
+    //res.redirect("http://localhost:5173/");
   } catch (error) {
     next(error);
   }

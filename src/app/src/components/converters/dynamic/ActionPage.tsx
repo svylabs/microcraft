@@ -243,8 +243,7 @@ const ActionPage = ({ output }) => {
               Congratulations!
             </p>
             <p className="lg:text-lg xl:text-xl text-[#85909B] text-center">
-              Fantastic work! Your custom components have been seamlessly
-              integrated.
+              Fantastic work! Your custom component has been submitted for approval.
             </p>
             <p className="md:mt-2 text-green-600 text-lg lg:text-xl text-center">
               Keep innovating and sharing your creativity!

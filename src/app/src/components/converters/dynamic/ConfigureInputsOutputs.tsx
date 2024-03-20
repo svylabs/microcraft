@@ -54,12 +54,12 @@ const ConfigureInputsOutputs: React.FC = () => {
     }
   
     if (components.some(component => component.id.trim() === currentComponent.id.trim() && components.indexOf(component) !== editIndex)) {
-      alert("Component with the same ID already exists. Please use a different ID.");
+      alert("Field with the same ID already exists. Please use a different ID.");
       return;
     }
   
     if (currentComponent.type === "button" && !currentComponent.code?.trim()) {
-      alert("Please provide code for Button type components.");
+      alert("Please provide code for Button type.");
       return;
     }
   
@@ -177,6 +177,18 @@ const ConfigureInputsOutputs: React.FC = () => {
         </label>
 
         <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+          Label:
+          <input
+            className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
+            type="text"
+            name="label"
+            value={currentComponent.label}
+            onChange={handleChange}
+            placeholder="Type label here.."
+          />
+        </label>
+
+        <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
           ID:
           <input
             className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
@@ -188,17 +200,6 @@ const ConfigureInputsOutputs: React.FC = () => {
           />
         </label>
 
-        <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-          Label:
-          <input
-            className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
-            type="text"
-            name="label"
-            value={currentComponent.label}
-            onChange={handleChange}
-            placeholder="Type label here.."
-          />
-        </label>
 
         {currentComponent.type !== "button" && (
           <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -259,11 +260,11 @@ const ConfigureInputsOutputs: React.FC = () => {
           className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
           onClick={handleAddComponent}
         >
-          Add Component
+          Add Field
         </button>
 
         <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-          <h2 className="mt-6 text-2xl font-bold">Added Components:</h2>
+          <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
           <ul>
             {components.map((component, index) => (
               <li key={index} className="mb-4">

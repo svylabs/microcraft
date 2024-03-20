@@ -83,7 +83,7 @@ const ConfigureBasicDetails: React.FC = () => {
                 htmlFor="title"
                 className="text-[#727679] font-semibold text-lg xl:text-xl"
               >
-                Components Title (Limit: 22 characters)
+                Title (Limit: 22 characters)
               </label>
               <input
                 type="text"
@@ -102,7 +102,7 @@ const ConfigureBasicDetails: React.FC = () => {
                 htmlFor="description"
                 className="text-[#727679] font-semibold text-lg xl:text-xl"
               >
-                Components Description
+                Description
               </label>
               <textarea
                 className="description focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 bg-[#F7F8FB] xl:text-2xl text-[#21262C] resize-none placeholder:italic"
@@ -121,7 +121,7 @@ const ConfigureBasicDetails: React.FC = () => {
                     className="object-scale-down self-center lg:w-6 lg:h-7"
                   ></img>
                   <span className="text-[#2E4055] font-medium self-center ">
-                    Attach file
+                    App Thumbnail
                   </span>
                   <input
                     type="file"
@@ -151,7 +151,7 @@ const ConfigureBasicDetails: React.FC = () => {
                   className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
                   type="submit"
                 >
-                  Save & Next
+                  Next
                 </button>
               </Link>
             </div>
@@ -164,17 +164,17 @@ const ConfigureBasicDetails: React.FC = () => {
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5">
             <p className="text-[#727679] mb-4">
-              You need to log in to create custom components.
+              You need to log in to create custom apps.
             </p>
             <a
-              href="https://github.com/login/oauth/authorize?client_id=585042cc21ce245f7c54"
+              href="https://github.com/login/oauth/authorize?client_id=4532a66d1d21f9b956e3"
               className="mx-auto md:mx-0"
             >
               <button
                 className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
                 type="submit"
               >
-                Log in with GitHub
+                Login with GitHub
               </button>
             </a>
           </div>
