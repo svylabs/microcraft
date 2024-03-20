@@ -37,8 +37,9 @@ interface User {
   created_on: string;
 }
 
-interface CustomSession extends Session {
+export interface CustomSession extends Session {
   userid?: number;
+  user?: User;
 }
 
 const addUserToSession = (req: Request, res: Response, user: User) => {
@@ -94,12 +95,24 @@ export const authenticatedUser = async (
     const datastore = getDatastore();
     const result = await datastore.get(datastore.key(["User", userid]));
     if (result[0]) {
-      (req as any).user = result[0];
+      //(req as any).user = result[0];
+      session.user = result[0];
       return next();
     }
   }
   const error = new HttpError("Unauthorized", 401);
   return next(error);
+};
+
+export const onlyAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const session = req.session as CustomSession;
+    if (session.user) {
+        if (session.user.login === "svylabs" || session.user.login === 'rohitbharti239') {
+            return next();
+        }
+    }
+    const error = new HttpError("Unauthorized", 401);
+    return next(error);
 };
 
 githubRouter.get(

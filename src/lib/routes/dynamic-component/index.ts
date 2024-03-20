@@ -1,6 +1,6 @@
 import express, { Router, Request, Response } from "express";
 import { getDatastore } from "../../database";
-import { authenticatedUser } from "../auth";
+import { CustomSession, authenticatedUser, onlyAdmin } from "../auth";
 const cors = require("cors");
 
 export const dynamicComponentRouter: Router = express.Router();
@@ -12,10 +12,10 @@ const corsOptions = {
 dynamicComponentRouter.use(cors(corsOptions));
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
-    console.log(req.body);
     const kind: string = "DynamicComponent";
     const name: string = req.body.title;
     const datastore = getDatastore();
+    const creator = (req.session as CustomSession).user?.id;
     const key = datastore.key([kind, name]);
     const entity = {
       key: key,
@@ -43,9 +43,13 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
           value: new Date().toISOString(),
         },
         {
+            name: "creator",
+            value: creator,
+        },
+        {
           name: "approval_status",
           value: "pending",
-        },
+        }
       ],
     };
     await datastore.save(entity);
@@ -57,13 +61,14 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
   }
 );
 
-dynamicComponentRouter.post("/approve", async (req: Request, res: Response) => {
+dynamicComponentRouter.post("/approve", authenticatedUser, onlyAdmin, async (req: Request, res: Response) => {
   const datastore = getDatastore();
   const key = datastore.key(["DynamicComponent", req.body.id]);
   const [entity] = await datastore.get(key);
   if (entity) {
     entity.approval_status = "approved";
     entity.approved_on = new Date().toISOString();
+    entity.approved_by = (req.session as CustomSession).user?.id;
     await datastore.save({
       key: key,
       data: entity,
