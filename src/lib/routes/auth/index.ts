@@ -107,7 +107,7 @@ export const authenticatedUser = async (
 export const onlyAdmin = async (req: Request, res: Response, next: NextFunction) => {
     const session = req.session as CustomSession;
     if (session.user) {
-        if (session.user.login === "svylabs" || session.user.login === 'rohitbharti239') {
+        if (session.user.login === "svylabs" || session.user.login === 'rohitbharti279') {
             return next();
         }
     }
