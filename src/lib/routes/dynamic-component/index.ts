@@ -1,6 +1,6 @@
 import express, { Router, Request, Response } from "express";
 import { getDatastore } from "../../database";
-import { CustomSession, authenticatedUser, onlyAdmin } from "../auth";
+import { CustomSession, HttpError, authenticatedUser, onlyAdmin } from "../auth";
 const cors = require("cors");
 
 export const dynamicComponentRouter: Router = express.Router();
@@ -17,9 +17,18 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
     const datastore = getDatastore();
     const creator = (req.session as CustomSession).user?.id;
     const key = datastore.key([kind, name]);
+    const [existing_record] = await datastore.get(key);
+    if (existing_record) {
+        res.status(400).send({ status: "error", message: "Dynamic component already exists" });
+        return;
+    }
     const entity = {
       key: key,
       data: [
+        {
+          name: "id",
+          value: req.body.title,
+        },
         {
           name: "title",
           value: req.body.title,
@@ -106,6 +115,17 @@ dynamicComponentRouter.get("/all", async (req, res) => {
     }
   });
 
+  dynamicComponentRouter.get("/:id", async (req, res) => {
+    try {
+      const componentId = req.params.id;
+      const datastore = getDatastore();
+      let result = datastore.get(datastore.key(["DynamicComponent", componentId]));
+      // console.log("Data fetched successfully:", dynamicComponents);
+      res.send(result);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  });
 
 /*
 dynamicComponentRouter.delete(

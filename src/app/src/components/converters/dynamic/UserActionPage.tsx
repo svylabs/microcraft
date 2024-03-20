@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import { redirect, useLocation } from "react-router-dom";
+import { redirect, useLocation, useParams } from "react-router-dom";
+import { BASE_API_URL } from "~/components/constants";
 
 interface Output {
   [key: string]: any;
@@ -8,8 +9,9 @@ interface Output {
 
 const UserActionPage = () => {
   const location = useLocation();
-  const output = location.state && location.state.output;
-  const [components, setComponents] = useState(output.component_definition);
+  const { appId } = useParams<{appId: string}>();
+  const [output, setOutput] = useState<any>(location.state?.output || {});
+  const [components, setComponents] = useState(output?.component_definition || null);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
@@ -23,6 +25,15 @@ const UserActionPage = () => {
 
   useEffect(() => {
     setLoadedData(savedFormData);
+    if (components == null) {
+       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Component detail: ", data);
+          setComponents(data.component_definition);
+          setOutput(data);
+        });
+    }
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
@@ -126,7 +137,7 @@ const UserActionPage = () => {
       )}
       <div className="px-2 md:p- text-wrap">            
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-          <h1 className="font-semibold md:text-xl hidden md:block">Interactive Elements</h1>
+          <h1 className="font-semibold md:text-xl hidden md:block">{appId}</h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
             onClick={() => goBack()}
@@ -136,7 +147,7 @@ const UserActionPage = () => {
             </span>
             Back
           </button>
-          <h1 className="block md:hidden font-semibold text-lg mt-2">Interactive Elements</h1>
+          <h1 className="block md:hidden font-semibold text-lg mt-2">{appId}</h1>
         </div>
         <ul className="whitespace-normal break-words">
           {components.map((component, index) => (
