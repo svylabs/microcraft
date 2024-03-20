@@ -328,6 +328,11 @@ const Home: React.FC = () => {
     );
   };
 
+  const capitalize = (str: string) => {
+    if (str.length <= 4) return str.toUpperCase();
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   const handleCustomComponentCategoryChange = (category: string) => {
     setCustomComponentCategory(category);
   };
@@ -458,7 +463,7 @@ const Home: React.FC = () => {
             {recentTools.length > 0 && (
               <div>
                 <h2 className="text-lg md:text-xl font-semibold mb-2">
-                  Recently Used Tools
+                  Recently Used Apps
                 </h2>
                 <ul className="flex flex-wrap -mx-2">
                   {recentTools.map((toolId) => {
@@ -530,8 +535,8 @@ const Home: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-lg md:text-xl font-semibold mb-2">
             {activeCategory === "recent"
-              ? "All Tools"
-              : activeCategory.toUpperCase() + " Tools"}
+              ? "All Apps"
+              : capitalize(activeCategory) + " Apps"}
           </h2>
           <ul className="flex flex-wrap -mx-2">
             {filteredConverters.map((converter) => (
