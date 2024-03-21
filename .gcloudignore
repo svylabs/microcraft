@@ -12,6 +12,7 @@
 # below:
 .git
 .gitignore
+datastore/
 
 # Node.js dependencies:
 node_modules/
