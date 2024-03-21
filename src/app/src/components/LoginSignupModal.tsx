@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { BASE_API_URL } from "./constants";
+import { BASE_API_URL, GITHUB_CLIENT_ID } from "./constants";
 
 const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
   const [userData, setUserData] = useState<any>(null);
@@ -103,7 +103,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
             </p>
 
             <a
-              href="https://github.com/login/oauth/authorize?client_id=b1e5e5404f5c20d849ae"
+              href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
               className="mx-auto md:mx-0"
             >
               <button

@@ -3,6 +3,7 @@ import pin from "../../photos/paperclip-solid.svg";
 import "./ConfigureBasicDetails.scss";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
+import { GITHUB_CLIENT_ID } from "~/components/constants";
 
 const ConfigureBasicDetails: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -167,7 +168,7 @@ const ConfigureBasicDetails: React.FC = () => {
               You need to log in to create custom apps.
             </p>
             <a
-              href="https://github.com/login/oauth/authorize?client_id=b1e5e5404f5c20d849ae"
+              href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
               className="mx-auto md:mx-0"
             >
               <button
