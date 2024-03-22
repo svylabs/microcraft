@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { BASE_API_URL } from "~/components/constants";
-// import { LOCALHOST_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
 
 interface Output {
@@ -14,7 +13,7 @@ const ActionPage = ({ output }) => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [popup, setPopup] = useState(false);
-  const [data, setData] = useState<{ [key: string]: any}>({});
+  const [data, setData] = useState<{ [key: string]: any }>({});
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -33,22 +32,20 @@ const ActionPage = ({ output }) => {
     }));
   };
 
-  const handleRun = async (
-    code: string,
-    data: { [key: string]: string }
-  ) => {
+  const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
-         for (const key in result) {
-           vals[key] = result[key];
-         }
-         setData(vals);
+        for (const key in result) {
+          vals[key] = result[key];
+        }
+        setData(vals);
       }
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
+      // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
@@ -125,6 +122,7 @@ const ActionPage = ({ output }) => {
       }
 
       localStorage.removeItem("formData");
+      localStorage.removeItem("components");
       setPopup(true);
       setTimeout(() => {
         setPopup(false);
@@ -137,23 +135,27 @@ const ActionPage = ({ output }) => {
   };
 
   const goBack = (components) => {
-    const queryParams = new URLSearchParams({
-      components: JSON.stringify(components),
-    });
-    // window.location.href = `${LOCALHOST_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
-    window.location.href = `/app/new?${queryParams}`;
+    // const queryParams = new URLSearchParams({
+    //   components: JSON.stringify(components),
+    // });
+    
+    // window.location.href = `/app/new?${queryParams}`;
+    
+    window.location.href = `/app/new`;
   };
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
-          <h1 className="text-xl md:text-2xl font-bold">Showing preview of the {savedFormData.title} app</h1>
+          <h1 className="text-xl md:text-2xl font-bold">
+            Showing preview of the {savedFormData.title} app
+          </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
             onClick={() => goBack(components)}
           >
-            <span className="absolute text-hover text-white font-medium mt-10 -ml-10 px-2 bg-slate-500 p-1 rounded-md z-50">
+            <span className="absolute text-hover text-white font-medium mt-10 -ml-10 mr-2 md:mr-10 lg:-ml-20 px-2 bg-slate-500 p-1 rounded-md z-50">
               Return to edit the app
             </span>
             Back
@@ -244,7 +246,8 @@ const ActionPage = ({ output }) => {
               Congratulations!
             </p>
             <p className="lg:text-lg xl:text-xl text-[#85909B] text-center">
-              Fantastic work! Your app has been created and submitted for review.
+              Fantastic work! Your app has been created and submitted for
+              review.
             </p>
             <p className="md:mt-2 text-green-600 text-lg lg:text-xl text-center">
               Keep innovating and sharing your creativity!
