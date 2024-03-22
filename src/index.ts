@@ -13,7 +13,6 @@ dotenv.config(); //comment
 const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
-app.use(cors());
 app.use(express.json());
 
 app.use(session({
@@ -42,6 +41,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'local-secret',
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: true,
+    httpOnly: true,
+    sameSite: 'none',
+    maxAge: 60 * 60 * 24 * 14 * 1000
+  },
 }));
 
 
@@ -80,10 +85,12 @@ app.use('/auth', githubRouter);
 app.use('/datasets', datasetRouter);
 
 app.get('/', function(req: Request, res: Response) {
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 app.get('/app/*', function(req: Request, res: Response) {
+  res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
