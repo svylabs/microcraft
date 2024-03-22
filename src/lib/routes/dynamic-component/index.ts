@@ -2,6 +2,7 @@ import express, { Router, Request, Response } from "express";
 import { getDatastore } from "../../database";
 import { CustomSession, HttpError, authenticatedUser, onlyAdmin } from "../auth";
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 export const dynamicComponentRouter: Router = express.Router();
 
@@ -10,6 +11,7 @@ const corsOptions = {
   credentials: true,
 };
 dynamicComponentRouter.use(cors(corsOptions));
+dynamicComponentRouter.use(cookieParser());
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     const kind: string = "DynamicComponent";

@@ -105,8 +105,9 @@ const ActionPage = ({ output }) => {
   };
 
   const saveClick = async () => {
-    try {
+      try {
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
+        credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
