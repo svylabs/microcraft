@@ -54,6 +54,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
       if (response.ok) {
         setUserData(null); // Reset user data
         closeModal();
+        localStorage.removeItem("userDetails");
         window.location.reload(); // Reload the page after logout
       } else {
         console.error("Failed to logout:", response.status);

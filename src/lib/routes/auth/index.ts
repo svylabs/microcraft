@@ -51,7 +51,7 @@ const addUserToDatastore = async (user: User) => {
   const kind = "User";
   const datastore = getDatastore();
   // const key = datastore.key([kind, user.id]);
-  const key = datastore.key([kind, user.id.toString()]);
+  const key = datastore.key([kind, user.id]);
   const entity = {
     key: key,
     data: [
@@ -186,7 +186,7 @@ githubRouter.get("/logout", (req, res) => {
       console.error("Error destroying session:", err);
       res.status(500).send("Internal Server Error");
     } else {
-      res.clearCookie("connect.sid"); // Clear session cookie
+      //res.clearCookie("connect.sid"); // Clear session cookie
       res.sendStatus(200);
     }
   });
