@@ -38,7 +38,7 @@ The following will list pending components
 ## Run the image
 
 ```
-  docker run -v <fullpath-to-local-handycraft-repo>:/app/microcraft -it microcraft-dev-img
+  docker run -it -v <fullpath-to-local-handycraft-repo>:/app/microcraft -p 8081:8081 -p 8080:8080 -p 5173:5173  microcraft-dev-img
 ```
 
 This will run the docker image and also run the datastore by default

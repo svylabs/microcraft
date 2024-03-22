@@ -40,13 +40,7 @@ app.use(session({
   }),
   secret: process.env.SESSION_SECRET || 'local-secret',
   resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: true,
-    httpOnly: true,
-    sameSite: 'none',
-    maxAge: 60 * 60 * 24 * 14 * 1000
-  },
+  saveUninitialized: false
 }));
 
 
