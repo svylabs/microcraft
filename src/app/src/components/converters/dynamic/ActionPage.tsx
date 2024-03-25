@@ -16,6 +16,7 @@ const ActionPage = ({ output }) => {
   const [graphType, setGraphType] = useState<string>("bar");
   const [popup, setPopup] = useState(false);
   const [data, setData] = useState<{ [key: string]: any }>({});
+  const [graphOutput, setGraphOutput] = useState();
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -31,20 +32,20 @@ const ActionPage = ({ output }) => {
     if (outputFormat === "graph") {
       renderGraph();
     }
-  }, [outputFormat, outputCode, graphType]);
+  }, [outputFormat, graphOutput, graphType]);
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
   
-    if (outputCode && typeof outputCode === "object") {
+    if (graphOutput && typeof graphOutput === "object") {
       const svg = d3
         .select("#graph-container")
         .append("svg")
         .attr("width", 500) 
         .attr("height", 400); 
   
-      const dataValues = Object.values(outputCode);
-      const dataLabels = Object.keys(outputCode);
+      const dataValues = Object.values(graphOutput);
+      const dataLabels = Object.keys(graphOutput);
   
       const xScale = d3
         .scaleBand()
@@ -139,6 +140,7 @@ const ActionPage = ({ output }) => {
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
+      setGraphOutput(result);
       // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
