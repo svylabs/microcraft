@@ -19,6 +19,7 @@ const UserActionPage = () => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
+  // const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
     if (components.length === 0) {
@@ -38,132 +39,40 @@ const UserActionPage = () => {
     }
   }, [outputFormat, outputCode, graphType]);
 
-  // const renderGraph = () => {
-  //   // Remove any existing graph before rendering a new one
-  //   d3.select("#graph-container").selectAll("*").remove();
-  
-  //   if (outputCode && typeof outputCode === "object") {
-  //     const svg = d3
-  //       .select("#graph-container")
-  //       .append("svg")
-  //       .attr("width", 500) // Increased width for better axis visibility
-  //       .attr("height", 400); // Increased height for better axis visibility
-  
-  //     const dataValues = Object.values(outputCode);
-  //     const dataLabels = Object.keys(outputCode); // Assuming data labels are keys
-  
-  //     const xScale = d3
-  //       .scaleBand()
-  //       .domain(dataLabels)
-  //       .range([50, 450]) // Adjusted range for better axis placement
-  //       .padding(0.1);
-  
-  //     const yScale = d3
-  //       .scaleLinear()
-  //       .domain([0, d3.max(dataValues) || 0])
-  //       .range([350, 50]); // Adjusted range for better axis placement
-  
-  //     // Render x-axis
-  //     svg
-  //       .append("g")
-  //       .attr("transform", "translate(0,350)")
-  //       .call(d3.axisBottom(xScale))
-  //       .selectAll("text")
-  //       .attr("transform", "rotate(-45)") // Rotate x-axis labels for better readability
-  //       .style("text-anchor", "end");
-  
-  //     // Render y-axis labels
-  //     svg
-  //       .selectAll(".y-label")
-  //       .data(yScale.ticks())
-  //       .enter()
-  //       .append("text")
-  //       .attr("class", "y-label")
-  //       .attr("x", 40) // Adjusted x position for y-axis labels
-  //       .attr("y", (d) => yScale(d) + 5) // Adjusted y position for y-axis labels
-  //       .text((d) => d.toFixed(2)) // Adjusted formatting for y-axis labels
-  //       .style("text-anchor", "end")
-  //       .attr("alignment-baseline", "middle");
-  
-  //     // Render y-axis line
-  //     svg
-  //       .append("line")
-  //       .attr("x1", 50) // Adjusted x position for y-axis line
-  //       .attr("y1", 50)
-  //       .attr("x2", 50) // Adjusted x position for y-axis line
-  //       .attr("y2", 350)
-  //       .attr("stroke", "black")
-  //       .attr("stroke-width", 1);
-  
-  //     if (graphType === "bar") {
-  //       // Render bars
-  //       svg
-  //         .selectAll("rect")
-  //         .data(dataValues)
-  //         .enter()
-  //         .append("rect")
-  //         .attr("x", (d, i) => xScale(dataLabels[i]))
-  //         .attr("y", (d) => yScale(d))
-  //         .attr("width", xScale.bandwidth())
-  //         .attr("height", (d) => 350 - yScale(d))
-  //         .attr("fill", "steelblue");
-  //     } else if (graphType === "line") {
-  //       // Render line
-  //       const line = d3
-  //         .line()
-  //         .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
-  //         .y((d) => yScale(d));
-  
-  //       svg
-  //         .append("path")
-  //         .datum(dataValues)
-  //         .attr("fill", "none")
-  //         .attr("stroke", "steelblue")
-  //         .attr("stroke-width", 1.5)
-  //         .attr("d", line);
-  //     }
-  //   } else {
-  //     console.log("Output code is not an object or is undefined.");
-  //   }
-  // };
-
   const renderGraph = () => {
-    // Remove any existing graph before rendering a new one
     d3.select("#graph-container").selectAll("*").remove();
   
     if (outputCode && typeof outputCode === "object") {
       const svg = d3
         .select("#graph-container")
         .append("svg")
-        .attr("width", 500) // Increased width for better axis visibility
-        .attr("height", 400); // Increased height for better axis visibility
+        .attr("width", 500) 
+        .attr("height", 400); 
   
       const dataValues = Object.values(outputCode);
-      const dataLabels = Object.keys(outputCode); // Assuming data labels are keys
+      const dataLabels = Object.keys(outputCode);
   
       const xScale = d3
         .scaleBand()
         .domain(dataLabels)
-        .range([50, 450]) // Adjusted range for better axis placement
+        .range([50, 450])
         .padding(0.1);
   
       const yScale = d3
         .scaleLinear()
         .domain([0, d3.max(dataValues) || 0])
-        .range([350, 50]); // Adjusted range for better axis placement
-  
-      // Render x-axis
+        .range([350, 50]);
+
       svg
         .append("g")
         .attr("transform", "translate(0,350)")
         .call(d3.axisBottom(xScale))
         .selectAll("text")
-        .attr("transform", "rotate(-45)") // Rotate x-axis labels for better readability
+        .attr("transform", "rotate(-45)")
         .style("text-anchor", "end");
-  
-      // Render y-axis labels
+
       const yAxisTicks = yScale.ticks();
-      const yAxisLabelOffset = (400 - 50) / yAxisTicks.length; // Calculate offset based on SVG height and number of ticks
+      const yAxisLabelOffset = (400 - 50) / yAxisTicks.length;
   
       svg
         .selectAll(".y-label")
@@ -171,24 +80,22 @@ const UserActionPage = () => {
         .enter()
         .append("text")
         .attr("class", "y-label")
-        .attr("x", 40) // Adjusted x position for y-axis labels
-        .attr("y", (d) => yScale(d) + yAxisLabelOffset / 2) // Adjusted y position for y-axis labels
-        .text((d) => d.toFixed(2)) // Adjusted formatting for y-axis labels
+        .attr("x", 40)
+        .attr("y", (d) => yScale(d) + yAxisLabelOffset / 2)
+        .text((d) => d.toFixed(2))
         .style("text-anchor", "end")
         .attr("alignment-baseline", "middle");
   
-      // Render y-axis line
       svg
         .append("line")
-        .attr("x1", 50) // Adjusted x position for y-axis line
+        .attr("x1", 50)
         .attr("y1", 50)
-        .attr("x2", 50) // Adjusted x position for y-axis line
+        .attr("x2", 50)
         .attr("y2", 350)
         .attr("stroke", "black")
         .attr("stroke-width", 1);
   
       if (graphType === "bar") {
-        // Render bars
         svg
           .selectAll("rect")
           .data(dataValues)
@@ -200,7 +107,6 @@ const UserActionPage = () => {
           .attr("height", (d) => 350 - yScale(d))
           .attr("fill", "steelblue");
       } else if (graphType === "line") {
-        // Render line
         const line = d3
           .line()
           .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
@@ -218,8 +124,6 @@ const UserActionPage = () => {
       console.log("Output code is not an object or is undefined.");
     }
   };
-  
-  
   
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
@@ -299,8 +203,14 @@ const UserActionPage = () => {
   };
 
   const goBack = () => {
+    // setFeedback(true);
     window.location.href = "/";
   };
+
+  // function submitFeedback() {
+  //   setFeedback(false);
+  //   window.location.href = "/";
+  // }
 
   return (
     <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
@@ -429,10 +339,47 @@ const UserActionPage = () => {
                 className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
               ></div>
             ) : (
-              <div>hello rohit</div> // Render nothing for graph output, as it's handled separately
-            )}
+              <div></div>
+            )
+            // : null
+            }
+          </div>
+
+        </div>
+
+        {/* {feedback && (
+        <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
+          <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
+            <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
+              What is your level of satisfaction with this tool app?
+            </h2>
+            <p className="text-[#85909B] xl:text-xl text-center">
+              This will help us improve your experience.
+            </p>
+            <label className="flex gap-5 md:mt-1 text-4xl md:text-5xl lg:text-6xl lg:gap-6 text-[#85909B] mx-5 xl:mx-10">
+              <button onClick={submitFeedback}>
+                &#128545;
+                <span className="text-lg md:text-xl xl:text-2xl text-red-600">
+                  Unhappy
+                </span>
+              </button>
+              <button onClick={submitFeedback}>
+                &#128528;
+                <span className="text-lg md:text-xl xl:text-2xl text-yellow-500">
+                  Neutral
+                </span>
+              </button>
+              <button onClick={submitFeedback}>
+                &#128525;
+                <span className="text-lg md:text-xl xl:text-2xl text-green-600">
+                  Satisfied
+                </span>
+              </button>
+            </label>
           </div>
         </div>
+      )} */}
+      
       </div>
     </div>
   );

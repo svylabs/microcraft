@@ -3,6 +3,7 @@ import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
+import * as d3 from "d3";
 
 interface Output {
   [key: string]: any;
@@ -12,6 +13,7 @@ const ActionPage = ({ output }) => {
   const [components, setComponents] = useState(output);
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
+  const [graphType, setGraphType] = useState<string>("bar");
   const [popup, setPopup] = useState(false);
   const [data, setData] = useState<{ [key: string]: any }>({});
 
@@ -24,6 +26,98 @@ const ActionPage = ({ output }) => {
   useEffect(() => {
     setLoadedData(savedFormData);
   }, []);
+
+  useEffect(() => {
+    if (outputFormat === "graph") {
+      renderGraph();
+    }
+  }, [outputFormat, outputCode, graphType]);
+
+  const renderGraph = () => {
+    d3.select("#graph-container").selectAll("*").remove();
+  
+    if (outputCode && typeof outputCode === "object") {
+      const svg = d3
+        .select("#graph-container")
+        .append("svg")
+        .attr("width", 500) 
+        .attr("height", 400); 
+  
+      const dataValues = Object.values(outputCode);
+      const dataLabels = Object.keys(outputCode);
+  
+      const xScale = d3
+        .scaleBand()
+        .domain(dataLabels)
+        .range([50, 450])
+        .padding(0.1);
+  
+      const yScale = d3
+        .scaleLinear()
+        .domain([0, d3.max(dataValues) || 0])
+        .range([350, 50]);
+
+      svg
+        .append("g")
+        .attr("transform", "translate(0,350)")
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .attr("transform", "rotate(-45)")
+        .style("text-anchor", "end");
+
+      const yAxisTicks = yScale.ticks();
+      const yAxisLabelOffset = (400 - 50) / yAxisTicks.length;
+  
+      svg
+        .selectAll(".y-label")
+        .data(yAxisTicks)
+        .enter()
+        .append("text")
+        .attr("class", "y-label")
+        .attr("x", 40)
+        .attr("y", (d) => yScale(d) + yAxisLabelOffset / 2)
+        .text((d) => d.toFixed(2))
+        .style("text-anchor", "end")
+        .attr("alignment-baseline", "middle");
+  
+      svg
+        .append("line")
+        .attr("x1", 50)
+        .attr("y1", 50)
+        .attr("x2", 50)
+        .attr("y2", 350)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1);
+  
+      if (graphType === "bar") {
+        svg
+          .selectAll("rect")
+          .data(dataValues)
+          .enter()
+          .append("rect")
+          .attr("x", (d, i) => xScale(dataLabels[i]))
+          .attr("y", (d) => yScale(d))
+          .attr("width", xScale.bandwidth())
+          .attr("height", (d) => 350 - yScale(d))
+          .attr("fill", "steelblue");
+      } else if (graphType === "line") {
+        const line = d3
+          .line()
+          .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
+          .y((d) => yScale(d));
+  
+        svg
+          .append("path")
+          .datum(dataValues)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 1.5)
+          .attr("d", line);
+      }
+    } else {
+      console.log("Output code is not an object or is undefined.");
+    }
+  };
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevValues) => ({
@@ -215,22 +309,60 @@ const ActionPage = ({ output }) => {
           >
             <option value="json">JSON</option>
             <option value="table">Table</option>
+              <option value="graph">Graph</option>
           </select>
         </div>
+
+        {outputFormat === "graph" && (
+            <div className="mb-4">
+              <h2 className="text-xl font-bold">Graph Type:</h2>
+              <div className="flex items-center mt-2">
+                <input
+                  type="radio"
+                  id="barGraph"
+                  name="graphType"
+                  value="bar"
+                  checked={graphType === "bar"}
+                  onChange={() => setGraphType("bar")}
+                  className="mr-2"
+                />
+                <label htmlFor="barGraph">Bar Graph</label>
+                <input
+                  type="radio"
+                  id="lineGraph"
+                  name="graphType"
+                  value="line"
+                  checked={graphType === "line"}
+                  onChange={() => setGraphType("line")}
+                  className="ml-4 mr-2"
+                />
+                <label htmlFor="lineGraph">Line Graph</label>
+              </div>
+            </div>
+          )}
+
         <div className="mt-4">
           <h2 className="text-xl font-bold">Output:</h2>
           {outputFormat === "json" ? (
-            <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {/* {JSON.stringify(outputCode, null, 2)} */}
-              {outputCode
-                ? JSON.stringify(outputCode, null, 2)
-                : "No output available"}
-            </pre>
-          ) : (
-            <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {formatOutput(outputCode)}
-            </div>
-          )}
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {outputCode
+                  ? JSON.stringify(outputCode, null, 2)
+                  : "No output available"}
+              </pre>
+            ) : outputFormat === "table" ? (
+              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {formatOutput(outputCode)}
+              </div>
+            ) : outputFormat === "graph" ? (
+              <div
+                id="graph-container"
+                className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
+              ></div>
+            ) : (
+              <div></div> 
+            )
+            // : null
+            }
         </div>
       </div>
 
