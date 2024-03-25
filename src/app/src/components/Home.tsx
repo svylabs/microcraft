@@ -403,28 +403,28 @@ const Home: React.FC = () => {
             </div>
             <div className="flex gap-3 self-center">
               {userName !== "" && (
-                <div>
+                <div className="flex gap-3 self-center">
                   <img
                     className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
                     src={userAvatar}
                     alt={userName}
                     onClick={handleLogin}
                   ></img>
-                  {/* <p className="self-center text-[#092C4C] text-lg xl:text-xl">
+                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
                     <span className="font-bold">Hello!</span> {userName}
-                  </p> */}
+                  </p>
                 </div>
               )}
               {userName === "" && (
-                <div className="flex gap-3 self-center mx-auto md:mx-0">
+                <div className="flex gap-3 self-center">
                   <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
                     <span className="text-gray-600" onClick={handleLogin}>
                       Avatar
                     </span>
                   </div>
-                  {/* <p className="self-center text-[#092C4C] text-lg xl:text-xl">
+                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
                     <span className="font-bold">Hello!</span> Guest
-                  </p> */}
+                  </p>
                 </div>
               )}
             </div>
