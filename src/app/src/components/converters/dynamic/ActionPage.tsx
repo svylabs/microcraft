@@ -36,23 +36,23 @@ const ActionPage = ({ output }) => {
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
-  
+
     if (graphOutput && typeof graphOutput === "object") {
       const svg = d3
         .select("#graph-container")
         .append("svg")
-        .attr("width", 500) 
-        .attr("height", 400); 
-  
+        .attr("width", 500)
+        .attr("height", 400);
+
       const dataValues = Object.values(graphOutput);
       const dataLabels = Object.keys(graphOutput);
-  
+
       const xScale = d3
         .scaleBand()
         .domain(dataLabels)
         .range([50, 450])
         .padding(0.1);
-  
+
       const yScale = d3
         .scaleLinear()
         .domain([0, d3.max(dataValues) || 0])
@@ -68,7 +68,7 @@ const ActionPage = ({ output }) => {
 
       const yAxisTicks = yScale.ticks();
       const yAxisLabelOffset = 50 / yAxisTicks.length;
-  
+
       svg
         .selectAll(".y-label")
         .data(yAxisTicks)
@@ -80,7 +80,7 @@ const ActionPage = ({ output }) => {
         .text((d) => d.toFixed(2))
         .style("text-anchor", "end")
         .attr("alignment-baseline", "middle");
-  
+
       svg
         .append("line")
         .attr("x1", 50)
@@ -89,7 +89,7 @@ const ActionPage = ({ output }) => {
         .attr("y2", 350)
         .attr("stroke", "black")
         .attr("stroke-width", 1);
-  
+
       if (graphType === "bar") {
         svg
           .selectAll("rect")
@@ -100,13 +100,32 @@ const ActionPage = ({ output }) => {
           .attr("y", (d) => yScale(d))
           .attr("width", xScale.bandwidth())
           .attr("height", (d) => 350 - yScale(d))
-          .attr("fill", "steelblue");
+          .attr("fill", "steelblue")
+          .on("mouseover", (event, d) => {
+            d3.select(event.target).attr("fill", "orange");
+            const xPos =
+              parseFloat(d3.select(event.target).attr("x")) +
+              xScale.bandwidth() / 2;
+            const yPos = parseFloat(d3.select(event.target).attr("y")) + 10;
+            svg
+              .append("text")
+              .attr("class", "tooltip")
+              .attr("x", xPos)
+              .attr("y", yPos)
+              .attr("text-anchor", "middle")
+              .text(d)
+              .style("font-size", "12px");
+          })
+          .on("mouseout", (event) => {
+            d3.select(event.target).attr("fill", "steelblue");
+            svg.select(".tooltip").remove();
+          });
       } else if (graphType === "line") {
         const line = d3
           .line()
           .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
           .y((d) => yScale(d));
-  
+
         svg
           .append("path")
           .datum(dataValues)
@@ -198,7 +217,7 @@ const ActionPage = ({ output }) => {
   };
 
   const saveClick = async () => {
-      try {
+    try {
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
         credentials: "include",
         method: "POST",
@@ -234,9 +253,9 @@ const ActionPage = ({ output }) => {
     // const queryParams = new URLSearchParams({
     //   components: JSON.stringify(components),
     // });
-    
+
     // window.location.href = `/app/new?${queryParams}`;
-    
+
     window.location.href = `/app/new`;
   };
 
@@ -311,41 +330,42 @@ const ActionPage = ({ output }) => {
           >
             <option value="json">JSON</option>
             <option value="table">Table</option>
-              <option value="graph">Graph</option>
+            <option value="graph">Graph</option>
           </select>
         </div>
 
         {outputFormat === "graph" && (
-            <div className="mb-4">
-              <h2 className="text-xl font-bold">Graph Type:</h2>
-              <div className="flex items-center mt-2">
-                <input
-                  type="radio"
-                  id="barGraph"
-                  name="graphType"
-                  value="bar"
-                  checked={graphType === "bar"}
-                  onChange={() => setGraphType("bar")}
-                  className="mr-2"
-                />
-                <label htmlFor="barGraph">Bar Graph</label>
-                <input
-                  type="radio"
-                  id="lineGraph"
-                  name="graphType"
-                  value="line"
-                  checked={graphType === "line"}
-                  onChange={() => setGraphType("line")}
-                  className="ml-4 mr-2"
-                />
-                <label htmlFor="lineGraph">Line Graph</label>
-              </div>
+          <div className="mb-4">
+            <h2 className="text-xl font-bold">Graph Type:</h2>
+            <div className="flex items-center mt-2">
+              <input
+                type="radio"
+                id="barGraph"
+                name="graphType"
+                value="bar"
+                checked={graphType === "bar"}
+                onChange={() => setGraphType("bar")}
+                className="mr-2"
+              />
+              <label htmlFor="barGraph">Bar Graph</label>
+              <input
+                type="radio"
+                id="lineGraph"
+                name="graphType"
+                value="line"
+                checked={graphType === "line"}
+                onChange={() => setGraphType("line")}
+                className="ml-4 mr-2"
+              />
+              <label htmlFor="lineGraph">Line Graph</label>
             </div>
-          )}
+          </div>
+        )}
 
         <div className="mt-4">
           <h2 className="text-xl font-bold">Output:</h2>
-          {outputFormat === "json" ? (
+          {
+            outputFormat === "json" ? (
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
@@ -361,10 +381,10 @@ const ActionPage = ({ output }) => {
                 className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
               ></div>
             ) : (
-              <div></div> 
+              <div></div>
             )
             // : null
-            }
+          }
         </div>
       </div>
 
