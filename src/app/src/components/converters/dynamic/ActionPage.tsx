@@ -63,7 +63,7 @@ const ActionPage = ({ output }) => {
         .attr("transform", "translate(0,350)")
         .call(d3.axisBottom(xScale))
         .selectAll("text")
-        .attr("transform", "rotate(-45)")
+        .attr("transform", "rotate(-20)")
         .style("text-anchor", "end");
 
       const yAxisTicks = yScale.ticks();
@@ -301,7 +301,7 @@ const ActionPage = ({ output }) => {
               )}
               {component.type === "button" && component.code && (
                 <button
-                  className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                  className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   id={component.id}
                   onClick={() => handleRun(component.code!, data)}
                 >

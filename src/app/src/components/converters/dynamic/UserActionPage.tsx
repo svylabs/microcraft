@@ -19,6 +19,7 @@ const UserActionPage = () => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
+  const [graphOutput, setGraphOutput] = useState();
   // const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
@@ -37,20 +38,20 @@ const UserActionPage = () => {
     if (outputFormat === "graph") {
       renderGraph();
     }
-  }, [outputFormat, outputCode, graphType]);
+  }, [outputFormat, graphOutput, graphType]);
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
 
-    if (outputCode && typeof outputCode === "object") {
+    if (graphOutput && typeof graphOutput === "object") {
       const svg = d3
         .select("#graph-container")
         .append("svg")
         .attr("width", 500)
         .attr("height", 400);
 
-      const dataValues = Object.values(outputCode);
-      const dataLabels = Object.keys(outputCode);
+      const dataValues = Object.values(graphOutput);
+      const dataLabels = Object.keys(graphOutput);
 
       const xScale = d3
         .scaleBand()
@@ -68,7 +69,7 @@ const UserActionPage = () => {
         .attr("transform", "translate(0,350)")
         .call(d3.axisBottom(xScale))
         .selectAll("text")
-        .attr("transform", "rotate(-45)")
+        .attr("transform", "rotate(-20)")
         .style("text-anchor", "end");
 
       const yAxisTicks = yScale.ticks();
@@ -165,7 +166,9 @@ const UserActionPage = () => {
         setData(vals);
       }
       console.log(result);
-      setOutputCode(result);
+      setOutputCode(vals);
+      setGraphOutput(result);
+      // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
@@ -288,7 +291,7 @@ const UserActionPage = () => {
                 )}
                 {component.type === "button" && component.code && (
                   <button
-                    className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                    className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                     id={component.id}
                     onClick={() => handleRun(component.code!, data)}
                   >
