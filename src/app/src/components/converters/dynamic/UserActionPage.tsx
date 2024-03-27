@@ -44,60 +44,60 @@ const UserActionPage = () => {
     d3.select("#graph-container").selectAll("*").remove();
 
     if (graphOutput && typeof graphOutput === "object") {
+      const svgWidth = 500;
+      const svgHeight = 400;
+      const margin = { top: 20, right: 30, bottom: 50, left: 60 };
+      const graphWidth = svgWidth - margin.left - margin.right;
+      const graphHeight = svgHeight - margin.top - margin.bottom;
+
       const svg = d3
         .select("#graph-container")
         .append("svg")
-        .attr("width", 500)
-        .attr("height", 400);
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
 
-      const dataValues = Object.values(graphOutput);
+      const graph = svg
+        .append("g")
+        .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+      const dataValues = Object.values(graphOutput).map(value => typeof value === 'number' ? value : typeof value === 'boolean' ? value ? true : 0 : 0);
       const dataLabels = Object.keys(graphOutput);
 
       const xScale = d3
         .scaleBand()
         .domain(dataLabels)
-        .range([50, 450])
+        .range([0, graphWidth])
         .padding(0.1);
 
       const yScale = d3
         .scaleLinear()
         .domain([0, d3.max(dataValues) || 0])
-        .range([350, 50]);
+        .range([graphHeight, 0]);
 
-      svg
+      graph
         .append("g")
-        .attr("transform", "translate(0,350)")
+        .attr("transform", `translate(0, ${graphHeight})`)
         .call(d3.axisBottom(xScale))
         .selectAll("text")
         .attr("transform", "rotate(-20)")
         .style("text-anchor", "end");
 
-      const yAxisTicks = yScale.ticks();
-      const yAxisLabelOffset = 50 / yAxisTicks.length;
+      graph
+        .append("g")
+        .call(d3.axisLeft(yScale))
+        .attr("transform", `translate(0, 0)`);
 
-      svg
-        .selectAll(".y-label")
-        .data(yAxisTicks)
-        .enter()
-        .append("text")
-        .attr("class", "y-label")
-        .attr("x", 40)
-        .attr("y", (d) => yScale(d) + yAxisLabelOffset / 2)
-        .text((d) => d.toFixed(2))
-        .style("text-anchor", "end")
-        .attr("alignment-baseline", "middle");
-
-      svg
+      graph
         .append("line")
-        .attr("x1", 50)
-        .attr("y1", 50)
-        .attr("x2", 50)
-        .attr("y2", 350)
+        .attr("x1", 0)
+        .attr("y1", graphHeight)
+        .attr("x2", graphWidth)
+        .attr("y2", graphHeight)
         .attr("stroke", "black")
         .attr("stroke-width", 1);
 
       if (graphType === "bar") {
-        svg
+        graph
           .selectAll("rect")
           .data(dataValues)
           .enter()
@@ -105,7 +105,7 @@ const UserActionPage = () => {
           .attr("x", (d, i) => xScale(dataLabels[i]))
           .attr("y", (d) => yScale(d))
           .attr("width", xScale.bandwidth())
-          .attr("height", (d) => 350 - yScale(d))
+          .attr("height", (d) => graphHeight - yScale(d))
           .attr("fill", "steelblue")
           .on("mouseover", (event, d) => {
             d3.select(event.target).attr("fill", "orange");
@@ -113,6 +113,47 @@ const UserActionPage = () => {
               parseFloat(d3.select(event.target).attr("x")) +
               xScale.bandwidth() / 2;
             const yPos = parseFloat(d3.select(event.target).attr("y")) + 10;
+            graph
+              .append("text")
+              .attr("class", "tooltip")
+              .attr("x", xPos)
+              .attr("y", yPos)
+              .attr("text-anchor", "middle")
+              .text(d)
+              .style("font-size", "12px");
+          })
+          .on("mouseout", (event) => {
+            d3.select(event.target).attr("fill", "steelblue");
+            graph.select(".tooltip").remove();
+          });
+      } else if (graphType === "line") {
+        const line = d3
+          .line()
+          .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
+          .y((d) => yScale(d))
+          .curve(d3.curveLinear);
+
+        graph
+          .append("path")
+          .datum(dataValues)
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 2)
+          .attr("d", line);
+
+        graph
+          .selectAll("circle")
+          .data(dataValues)
+          .enter()
+          .append("circle")
+          .attr("cx", (d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
+          .attr("cy", (d) => yScale(d))
+          .attr("r", 4)
+          .attr("fill", "steelblue")
+          .on("mouseover", (event, d) => {
+            d3.select(event.target).attr("fill", "orange");
+            const xPos = parseFloat(d3.select(event.target).attr("cx")) + 60;
+            const yPos = parseFloat(d3.select(event.target).attr("cy")) + 10;
             svg
               .append("text")
               .attr("class", "tooltip")
@@ -126,19 +167,6 @@ const UserActionPage = () => {
             d3.select(event.target).attr("fill", "steelblue");
             svg.select(".tooltip").remove();
           });
-      } else if (graphType === "line") {
-        const line = d3
-          .line()
-          .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
-          .y((d) => yScale(d));
-
-        svg
-          .append("path")
-          .datum(dataValues)
-          .attr("fill", "none")
-          .attr("stroke", "steelblue")
-          .attr("stroke-width", 1.5)
-          .attr("d", line);
       }
     } else {
       console.log("Output code is not an object or is undefined.");
