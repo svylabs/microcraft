@@ -67,7 +67,7 @@ const ActionPage = ({ output }) => {
         .style("text-anchor", "end");
 
       const yAxisTicks = yScale.ticks();
-      const yAxisLabelOffset = (400 - 50) / yAxisTicks.length;
+      const yAxisLabelOffset = 50 / yAxisTicks.length;
   
       svg
         .selectAll(".y-label")

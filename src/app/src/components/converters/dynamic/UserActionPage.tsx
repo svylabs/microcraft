@@ -41,23 +41,23 @@ const UserActionPage = () => {
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
-  
+
     if (outputCode && typeof outputCode === "object") {
       const svg = d3
         .select("#graph-container")
         .append("svg")
-        .attr("width", 500) 
-        .attr("height", 400); 
-  
+        .attr("width", 500)
+        .attr("height", 400);
+
       const dataValues = Object.values(outputCode);
       const dataLabels = Object.keys(outputCode);
-  
+
       const xScale = d3
         .scaleBand()
         .domain(dataLabels)
         .range([50, 450])
         .padding(0.1);
-  
+
       const yScale = d3
         .scaleLinear()
         .domain([0, d3.max(dataValues) || 0])
@@ -72,8 +72,8 @@ const UserActionPage = () => {
         .style("text-anchor", "end");
 
       const yAxisTicks = yScale.ticks();
-      const yAxisLabelOffset = (400 - 50) / yAxisTicks.length;
-  
+      const yAxisLabelOffset = 50 / yAxisTicks.length;
+
       svg
         .selectAll(".y-label")
         .data(yAxisTicks)
@@ -85,7 +85,7 @@ const UserActionPage = () => {
         .text((d) => d.toFixed(2))
         .style("text-anchor", "end")
         .attr("alignment-baseline", "middle");
-  
+
       svg
         .append("line")
         .attr("x1", 50)
@@ -94,7 +94,7 @@ const UserActionPage = () => {
         .attr("y2", 350)
         .attr("stroke", "black")
         .attr("stroke-width", 1);
-  
+
       if (graphType === "bar") {
         svg
           .selectAll("rect")
@@ -105,13 +105,32 @@ const UserActionPage = () => {
           .attr("y", (d) => yScale(d))
           .attr("width", xScale.bandwidth())
           .attr("height", (d) => 350 - yScale(d))
-          .attr("fill", "steelblue");
+          .attr("fill", "steelblue")
+          .on("mouseover", (event, d) => {
+            d3.select(event.target).attr("fill", "orange");
+            const xPos =
+              parseFloat(d3.select(event.target).attr("x")) +
+              xScale.bandwidth() / 2;
+            const yPos = parseFloat(d3.select(event.target).attr("y")) + 10;
+            svg
+              .append("text")
+              .attr("class", "tooltip")
+              .attr("x", xPos)
+              .attr("y", yPos)
+              .attr("text-anchor", "middle")
+              .text(d)
+              .style("font-size", "12px");
+          })
+          .on("mouseout", (event) => {
+            d3.select(event.target).attr("fill", "steelblue");
+            svg.select(".tooltip").remove();
+          });
       } else if (graphType === "line") {
         const line = d3
           .line()
           .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
           .y((d) => yScale(d));
-  
+
         svg
           .append("path")
           .datum(dataValues)
@@ -124,7 +143,7 @@ const UserActionPage = () => {
       console.log("Output code is not an object or is undefined.");
     }
   };
-  
+
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
@@ -323,28 +342,28 @@ const UserActionPage = () => {
 
           <div className="mt-4">
             <h2 className="text-xl font-bold">Output:</h2>
-            {outputFormat === "json" ? (
-              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {outputCode
-                  ? JSON.stringify(outputCode, null, 2)
-                  : "No output available"}
-              </pre>
-            ) : outputFormat === "table" ? (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {formatOutput(outputCode)}
-              </div>
-            ) : outputFormat === "graph" ? (
-              <div
-                id="graph-container"
-                className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
-              ></div>
-            ) : (
-              <div></div>
-            )
-            // : null
+            {
+              outputFormat === "json" ? (
+                <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                  {outputCode
+                    ? JSON.stringify(outputCode, null, 2)
+                    : "No output available"}
+                </pre>
+              ) : outputFormat === "table" ? (
+                <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                  {formatOutput(outputCode)}
+                </div>
+              ) : outputFormat === "graph" ? (
+                <div
+                  id="graph-container"
+                  className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
+                ></div>
+              ) : (
+                <div></div>
+              )
+              // : null
             }
           </div>
-
         </div>
 
         {/* {feedback && (
@@ -379,7 +398,6 @@ const UserActionPage = () => {
           </div>
         </div>
       )} */}
-      
       </div>
     </div>
   );
