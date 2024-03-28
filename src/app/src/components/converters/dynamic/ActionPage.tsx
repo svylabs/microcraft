@@ -54,7 +54,21 @@ const ActionPage = ({ output }) => {
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-      const dataValues = Object.values(graphOutput).map(value => typeof value === 'number' ? value : typeof value === 'boolean' ? value ? true : 0 : 0);
+      // const dataValues = Object.values(graphOutput);
+      const dataValues = Object.values(graphOutput).map((value) => {
+        if (typeof value === "number") {
+          return value;
+        } else if (typeof value === "boolean") {
+          return value ? true : 0;
+        } else if (
+          !isNaN(parseFloat(value as string)) &&
+          isFinite(value as number)
+        ) {
+          return parseFloat(value as string);
+        } else {
+          return 0;
+        }
+      });
       const dataLabels = Object.keys(graphOutput);
 
       const xScale = d3
