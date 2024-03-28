@@ -54,17 +54,41 @@ const ActionPage = ({ output }) => {
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-      // const dataValues = Object.values(graphOutput);
-      const dataValues = Object.values(graphOutput).map((value) => {
+        // const dataValues = Object.values(graphOutput).map((value) => {
+      //   if (typeof value === "number") {
+      //     return value;
+      //   } else if (typeof value === "boolean") {
+      //     return value ? true : 0;
+      //   } else if (
+      //     !isNaN(parseFloat(value as string)) &&
+      //     isFinite(value as number)
+      //   ) {
+      //     return parseFloat(value as string);
+      //   } else {
+      //     return 0;
+      //   }
+      // });
+
+      const dataValues = Object.values(graphOutput).map((value: any) => {
         if (typeof value === "number") {
           return value;
         } else if (typeof value === "boolean") {
           return value ? true : 0;
         } else if (
-          !isNaN(parseFloat(value as string)) &&
-          isFinite(value as number)
+          typeof value === "string" &&
+          !isNaN(parseFloat(value)) &&
+          isFinite(parseFloat(value))
         ) {
-          return parseFloat(value as string);
+          return parseFloat(value);
+        } else if (
+          Array.isArray(value) &&
+          value.every((item: any) => typeof item === "number")
+        ) {
+          return value.reduce((acc: number, curr: number) => acc + curr, 0);
+        } else if (typeof value === "object" && value !== null) {
+          return Object.values(value).reduce((acc: number, curr: any) => {
+            return acc + (typeof curr === "number" ? curr : 0);
+          }, 0);
         } else {
           return 0;
         }
