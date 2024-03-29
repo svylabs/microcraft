@@ -19,7 +19,7 @@ const UserActionPage = () => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
-  const [graphOutput, setGraphOutput] = useState();
+  const [graphOutput, setGraphOutput] = useState<Output | string>();
   // const [feedback, setFeedback] = useState(false);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const UserActionPage = () => {
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
       // const dataValues = Object.values(graphOutput);
-      
+
       // const dataValues = Object.values(graphOutput).map((value) => {
       //   if (typeof value === "number") {
       //     return value;
@@ -339,6 +339,7 @@ const UserActionPage = () => {
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
+                {component.title && `, Title: ${component.title}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {component.type !== "button" && (
@@ -369,6 +370,48 @@ const UserActionPage = () => {
               </li>
             ))}
           </ul>
+
+          {components.map((component, index) => (
+            <div key={index}>
+              {component.placement === "output" &&
+                component.type === "text" && <div>{output}</div>}
+              {component.placement === "output" &&
+                component.type === "json" && (
+                  // <div>{JSON.stringify(output)}</div>
+                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {outputCode
+                      ? JSON.stringify(outputCode, null, 2)
+                      : "No output available"}
+                  </pre>
+                )}
+              {component.placement === "output" &&
+                component.type === "table" && (
+                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {components.map((component, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center"
+                      >
+                        <p className="text-center text-lg md:text-xl text-gray-800 font-semibold">
+                          {component.title && `Title: ${component.title}`}
+                        </p>
+                      </div>
+                    ))}
+
+                    {formatOutput(outputCode)}
+                  </div>
+                )}
+              {component.placement === "output" &&
+                component.type === "graph" && (
+                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    <div id="graph-container">
+                      {component.title && ` Title: ${component.title}`}
+                      {graphOutput && renderGraph()}
+                    </div>
+                  </div>
+                )}
+            </div>
+          ))}
 
           <div className="mb-4">
             <h2 className="text-xl font-bold">Output Format:</h2>
@@ -422,13 +465,37 @@ const UserActionPage = () => {
                 </pre>
               ) : outputFormat === "table" ? (
                 <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                  {components.map((component, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-center"
+                    >
+                      <p className="text-center text-lg md:text-xl text-gray-800 font-semibold">
+                        {component.title && `Title: ${component.title}`}
+                      </p>
+                    </div>
+                  ))}
+
                   {formatOutput(outputCode)}
                 </div>
               ) : outputFormat === "graph" ? (
-                <div
-                  id="graph-container"
-                  className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
-                ></div>
+                <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                  {components.map((component, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-center"
+                    >
+                      <p className="text-center text-lg md:text-xl lg:text-2xl text-gray-800 font-semibold">
+                        {component.title && `Title: ${component.title}`}
+                      </p>
+                    </div>
+                  ))}
+
+                  <div
+                    id="graph-container"
+                    // className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
+                  ></div>
+                </div>
               ) : (
                 <div></div>
               )

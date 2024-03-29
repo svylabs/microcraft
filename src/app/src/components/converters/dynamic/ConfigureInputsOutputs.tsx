@@ -20,6 +20,7 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
+  title?: string;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -29,6 +30,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     type: "text",
     placement: "input",
     code: "",
+    // title: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -42,8 +44,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       setComponents(savedComponents);
     }
   }, []);
-  
-  
 
   const handleEditComponent = (index: number) => {
     setIsEditMode(true);
@@ -57,8 +57,12 @@ const ConfigureInputsOutputs: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
- 
-    if (((name === "placement") && (value === "action" || value === "output")) && currentComponent.type === "text") {
+
+    if (
+      name === "placement" &&
+      (value === "action" || value === "output") &&
+      currentComponent.type === "text"
+    ) {
       setCurrentComponent((prevState) => ({
         ...prevState,
         [name]: value,
@@ -71,19 +75,22 @@ const ConfigureInputsOutputs: React.FC = () => {
       }));
     }
   };
-  
 
   const handleAddComponent = () => {
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
       alert("Please provide both ID and Label.");
       return;
     }
-  
-    if ((currentComponent.placement === "action" || currentComponent.placement === "output") && !currentComponent.code?.trim()) {
+
+    if (
+      (currentComponent.placement === "action" ||
+        currentComponent.placement === "output") &&
+      !currentComponent.code?.trim()
+    ) {
       alert("Please provide code for action/output placement.");
       return;
     }
-  
+
     const updatedComponents = [...components];
     if (isEditMode && editIndex !== -1) {
       updatedComponents[editIndex] = currentComponent;
@@ -104,24 +111,24 @@ const ConfigureInputsOutputs: React.FC = () => {
       }
       updatedComponents.push(currentComponent);
     }
-  
+
     setComponents(updatedComponents);
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
       [currentComponent.id]: "",
     }));
-  
+
     saveDataToLocalStorage("components", updatedComponents);
-  
+
     setCurrentComponent({
       id: "",
       label: "",
       type: "text",
       placement: "input",
       code: "",
+      // title: "",
     });
   };
-  
 
   const handlePreview = async () => {
     console.log(components);
@@ -144,9 +151,11 @@ const ConfigureInputsOutputs: React.FC = () => {
       delete updatedInputValues[id];
       return updatedInputValues;
     });
-    saveDataToLocalStorage("components", components.filter((component) => component.id !== id));
+    saveDataToLocalStorage(
+      "components",
+      components.filter((component) => component.id !== id)
+    );
   };
-  
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const numbersRef = useRef<HTMLDivElement>(null);
@@ -203,19 +212,20 @@ const ConfigureInputsOutputs: React.FC = () => {
         </div>
 
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-        Placement:
-        <select
-          className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-          name="placement"
-          value={currentComponent.placement}
-          onChange={handleChange}
-        >
-          <option value="input">Input</option>
-          <option value="action">Action</option>
-          <option value="output">Output</option>
-        </select>
-      </label>
-      {currentComponent.placement === "input" && (
+          Placement:
+          <select
+            className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
+            name="placement"
+            value={currentComponent.placement}
+            onChange={handleChange}
+          >
+            <option value="input">Input</option>
+            <option value="action">Action</option>
+            <option value="output">Output</option>
+          </select>
+        </label>
+
+        {currentComponent.placement === "input" && (
           <div>
             <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
               Type:
@@ -268,6 +278,22 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         )}
 
+        {currentComponent.placement === "output" && (currentComponent.type === "table" || currentComponent.type === "graph") && (
+          <div>
+            <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+              Title:
+              <input
+                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
+                type="text"
+                name="title"
+                value={currentComponent.title}
+                onChange={handleChange}
+                placeholder="Type title here.."
+              />
+            </label>
+          </div>
+        )}
+
         <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
           Label:
           <input
@@ -292,7 +318,8 @@ const ConfigureInputsOutputs: React.FC = () => {
           />
         </label>
 
-        {(currentComponent.placement === "action" || currentComponent.placement === "output") && (
+        {(currentComponent.placement === "action" ||
+          currentComponent.placement === "output") && (
           <div>
             <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
               Code:
@@ -332,6 +359,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
+                {component.title && `, Title: ${component.title}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {component.type !== "button" && (
