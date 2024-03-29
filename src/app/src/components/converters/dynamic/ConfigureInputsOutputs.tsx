@@ -20,7 +20,6 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
-  title?: string;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -30,7 +29,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     type: "text",
     placement: "input",
     code: "",
-    // title: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -126,7 +124,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       type: "text",
       placement: "input",
       code: "",
-      // title: "",
     });
   };
 
@@ -278,22 +275,6 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         )}
 
-        {currentComponent.placement === "output" && (currentComponent.type === "table" || currentComponent.type === "graph") && (
-          <div>
-            <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-              Title:
-              <input
-                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
-                type="text"
-                name="title"
-                value={currentComponent.title}
-                onChange={handleChange}
-                placeholder="Type title here.."
-              />
-            </label>
-          </div>
-        )}
-
         <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
           Label:
           <input
@@ -359,7 +340,6 @@ const ConfigureInputsOutputs: React.FC = () => {
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
-                {component.title && `, Title: ${component.title}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {component.type !== "button" && (

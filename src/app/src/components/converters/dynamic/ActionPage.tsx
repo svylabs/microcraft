@@ -3,7 +3,7 @@ import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
-import * as d3 from "d3";
+import GraphComponent from "./GraphComponent";
 
 interface Output {
   [key: string]: any;
@@ -16,8 +16,7 @@ const ActionPage = ({ output }) => {
   const [graphType, setGraphType] = useState<string>("bar");
   const [popup, setPopup] = useState(false);
   const [data, setData] = useState<{ [key: string]: any }>({});
-  // const [graphOutput, setGraphOutput] = useState();
-  const [graphOutput, setGraphOutput] = useState<Output | string>();
+  const [graphData, setgraphData] = useState<Output | string>();
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -29,167 +28,11 @@ const ActionPage = ({ output }) => {
     setLoadedData(savedFormData);
   }, []);
 
-  useEffect(() => {
-    if (outputFormat === "graph") {
-      renderGraph();
-    }
-  }, [outputFormat, graphOutput, graphType]);
-
-  const renderGraph = () => {
-    d3.select("#graph-container").selectAll("*").remove();
-
-    if (graphOutput && typeof graphOutput === "object") {
-      const svgWidth = 500;
-      const svgHeight = 400;
-      const margin = { top: 20, right: 30, bottom: 50, left: 60 };
-      const graphWidth = svgWidth - margin.left - margin.right;
-      const graphHeight = svgHeight - margin.top - margin.bottom;
-
-      const svg = d3
-        .select("#graph-container")
-        .append("svg")
-        .attr("width", svgWidth)
-        .attr("height", svgHeight);
-
-      const graph = svg
-        .append("g")
-        .attr("transform", `translate(${margin.left}, ${margin.top})`);
-
-      const dataValues = Object.values(graphOutput).map((value: any) => {
-        if (typeof value === "number") {
-          return value;
-        } else if (typeof value === "boolean") {
-          return value ? true : 0;
-        } else if (
-          typeof value === "string" &&
-          !isNaN(parseFloat(value)) &&
-          isFinite(parseFloat(value))
-        ) {
-          return parseFloat(value);
-        } else if (
-          Array.isArray(value) &&
-          value.every((item: any) => typeof item === "number")
-        ) {
-          return value.reduce((acc: number, curr: number) => acc + curr, 0);
-        } else if (typeof value === "object" && value !== null) {
-          return Object.values(value).reduce((acc: number, curr: any) => {
-            return acc + (typeof curr === "number" ? curr : 0);
-          }, 0);
-        } else {
-          return 0;
-        }
-      });
-      const dataLabels = Object.keys(graphOutput);
-
-      const xScale = d3
-        .scaleBand()
-        .domain(dataLabels)
-        .range([0, graphWidth])
-        .padding(0.1);
-
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, d3.max(dataValues) || 0])
-        .range([graphHeight, 0]);
-
-      graph
-        .append("g")
-        .attr("transform", `translate(0, ${graphHeight})`)
-        .call(d3.axisBottom(xScale))
-        .selectAll("text")
-        .attr("transform", "rotate(-20)")
-        .style("text-anchor", "end");
-
-      graph
-        .append("g")
-        .call(d3.axisLeft(yScale))
-        .attr("transform", `translate(0, 0)`);
-
-      graph
-        .append("line")
-        .attr("x1", 0)
-        .attr("y1", graphHeight)
-        .attr("x2", graphWidth)
-        .attr("y2", graphHeight)
-        .attr("stroke", "black")
-        .attr("stroke-width", 1);
-
-      if (graphType === "bar") {
-        graph
-          .selectAll("rect")
-          .data(dataValues)
-          .enter()
-          .append("rect")
-          .attr("x", (d, i) => xScale(dataLabels[i]))
-          .attr("y", (d) => yScale(d))
-          .attr("width", xScale.bandwidth())
-          .attr("height", (d) => graphHeight - yScale(d))
-          .attr("fill", "steelblue")
-          .on("mouseover", (event, d) => {
-            d3.select(event.target).attr("fill", "orange");
-            const xPos =
-              parseFloat(d3.select(event.target).attr("x")) +
-              xScale.bandwidth() / 2;
-            const yPos = parseFloat(d3.select(event.target).attr("y")) + 10;
-            graph
-              .append("text")
-              .attr("class", "tooltip")
-              .attr("x", xPos)
-              .attr("y", yPos)
-              .attr("text-anchor", "middle")
-              .text(d)
-              .style("font-size", "12px");
-          })
-          .on("mouseout", (event) => {
-            d3.select(event.target).attr("fill", "steelblue");
-            graph.select(".tooltip").remove();
-          });
-      } else if (graphType === "line") {
-        const line = d3
-          .line()
-          .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
-          .y((d) => yScale(d))
-          .curve(d3.curveLinear);
-
-        graph
-          .append("path")
-          .datum(dataValues)
-          .attr("fill", "none")
-          .attr("stroke", "steelblue")
-          .attr("stroke-width", 2)
-          .attr("d", line);
-
-        graph
-          .selectAll("circle")
-          .data(dataValues)
-          .enter()
-          .append("circle")
-          .attr("cx", (d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)
-          .attr("cy", (d) => yScale(d))
-          .attr("r", 4)
-          .attr("fill", "steelblue")
-          .on("mouseover", (event, d) => {
-            d3.select(event.target).attr("fill", "orange");
-            const xPos = parseFloat(d3.select(event.target).attr("cx")) + 60;
-            const yPos = parseFloat(d3.select(event.target).attr("cy")) + 10;
-            svg
-              .append("text")
-              .attr("class", "tooltip")
-              .attr("x", xPos)
-              .attr("y", yPos)
-              .attr("text-anchor", "middle")
-              .text(d)
-              .style("font-size", "12px");
-          })
-          .on("mouseout", (event) => {
-            d3.select(event.target).attr("fill", "steelblue");
-            svg.select(".tooltip").remove();
-          });
-      }
-    } else {
-      console.log("Output code is not an object or is undefined.");
-    }
-  };
+  // useEffect(() => {
+  //   if (outputFormat === "graph") {
+  //     renderGraph();
+  //   }
+  // }, [outputFormat, graphData, graphType]);
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevValues) => ({
@@ -211,7 +54,7 @@ const ActionPage = ({ output }) => {
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
-      setGraphOutput(result);
+      setgraphData(result);
       // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
@@ -333,7 +176,6 @@ const ActionPage = ({ output }) => {
             <li key={index} className="mb-4">
               ID: {component.id}, Label: {component.label}, Type:{" "}
               {component.type}, Placement: {component.placement}
-              {component.title && `, Title: ${component.title}`}
               {component.code && `, Code: ${component.code}`}
               <br />
               {component.type !== "button" && (
@@ -374,54 +216,31 @@ const ActionPage = ({ output }) => {
           </button>
         </div>
 
-
-
         {components.map((component, index) => (
-            <div key={index}>
-              {component.placement === "output" &&
-                component.type === "text" && <div>{output}</div>}
-              {component.placement === "output" &&
-                component.type === "json" && (
-                  // <div>{JSON.stringify(output)}</div>
-                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    {outputCode
-                      ? JSON.stringify(outputCode, null, 2)
-                      : "No output available"}
-                  </pre>
-                )}
-              {component.placement === "output" &&
-                component.type === "table" && (
-                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    {components.map((component, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center"
-                      >
-                        <p className="text-center text-lg md:text-xl text-gray-800 font-semibold">
-                          {component.title && `Title: ${component.title}`}
-                        </p>
-                      </div>
-                    ))}
-
-                    {formatOutput(outputCode)}
-                  </div>
-                )}
-              {component.placement === "output" &&
-                component.type === "graph" && (
-                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    <div id="graph-container">
-                      {component.title && ` Title: ${component.title}`}
-                      {graphOutput && renderGraph()}
-                    </div>
-                  </div>
-                )}
-            </div>
-          ))}
-        
-
-
-
-
+          <div key={index}>
+            {component.placement === "output" && component.type === "text" && (
+              <div>{output}</div>
+            )}
+            {component.placement === "output" && component.type === "json" && (
+              // <div>{JSON.stringify(output)}</div>
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {outputCode
+                  ? JSON.stringify(outputCode, null, 2)
+                  : "No output available"}
+              </pre>
+            )}
+            {component.placement === "output" && component.type === "table" && (
+              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {formatOutput(outputCode)}
+              </div>
+            )}
+            {component.placement === "output" && component.type === "graph" && (
+              <div>
+                <GraphComponent output={graphData} graphType={graphType} />
+              </div>
+            )}
+          </div>
+        ))}
 
         <div className="mb-4">
           <h2 className="text-xl font-bold">Output Format:</h2>
@@ -475,30 +294,11 @@ const ActionPage = ({ output }) => {
               </pre>
             ) : outputFormat === "table" ? (
               <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {components.map((component, index) => (
-                  <div key={index} className="flex items-center justify-center">
-                    <p className="text-center text-lg md:text-xl text-gray-800 font-semibold">
-                      {component.title && `Title: ${component.title}`}
-                    </p>
-                  </div>
-                ))}
-
                 {formatOutput(outputCode)}
               </div>
             ) : outputFormat === "graph" ? (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {components.map((component, index) => (
-                  <div key={index} className="flex items-center justify-center">
-                    <p className="text-center text-lg md:text-xl lg:text-2xl text-gray-800 font-semibold">
-                      {component.title && `Title: ${component.title}`}
-                    </p>
-                  </div>
-                ))}
-
-                <div
-                  id="graph-container"
-                  // className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg"
-                ></div>
+              <div>
+                <GraphComponent output={graphData} graphType={graphType} />
               </div>
             ) : (
               <div></div>
