@@ -78,12 +78,9 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(
-      `/app/published/` + (componentDefinition.id || componentDefinition.title),
-      {
-        state: { output: componentDefinition },
-      }
-    );
+    navigate(`/app/view/` + componentDefinition.id + "/" + componentDefinition.title), {
+      state: { output: componentDefinition },
+    };
   };
 
   const allConverters: Converter[] = [
@@ -397,7 +394,7 @@ const Home: React.FC = () => {
               <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
                 Microcraft
                 <span className="text-xs md:text-3sm lg:text-base">
-                  Apps you wish you had
+                  Tiny apps for whiny situations
                 </span>
               </h2>
             </div>

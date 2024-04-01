@@ -3,6 +3,7 @@ import { getDatastore } from "../../database";
 import { CustomSession, HttpError, authenticatedUser, onlyAdmin } from "../auth";
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+import crypto from "crypto";
 
 export const dynamicComponentRouter: Router = express.Router();
 
@@ -15,10 +16,10 @@ dynamicComponentRouter.use(cookieParser());
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     const kind: string = "DynamicComponent";
-    const name: string = req.body.title;
+    const id: string = crypto.createHash('sha256').update(crypto.randomUUID()).digest('hex').toString().toLowerCase().substring(0, 8);
     const datastore = getDatastore();
     const creator = (req.session as CustomSession).user?.id;
-    const key = datastore.key([kind, name]);
+    const key = datastore.key([kind, id]);
     const [existing_record] = await datastore.get(key);
     if (existing_record) {
         res.status(400).send({ status: "error", message: "Dynamic component already exists" });
@@ -29,7 +30,7 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
       data: [
         {
           name: "id",
-          value: req.body.title,
+          value: id
         },
         {
           name: "title",
@@ -38,6 +39,7 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         {
           name: "description",
           value: req.body.description,
+          excludeFromIndexes: true,
         },
         {
           name: "component_definition",
@@ -67,7 +69,7 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
     res.send({
       status: "success",
       message: "Dynamic component created successfully",
-      id: req.body.title,
+      id: id,
     });
   }
 );
@@ -107,6 +109,87 @@ dynamicComponentRouter.get("/list", async (req: Request, res: Response) => {
   const [dynamicComponents] = await datastore.runQuery(query);
   res.send(dynamicComponents);
 });
+
+
+dynamicComponentRouter.post("/suggest", authenticatedUser, async (req, res) => {
+    try {
+      const datastore = getDatastore();
+      const { title, description } = req.body;
+      const id = crypto.randomUUID();
+      const entity = {
+         key: datastore.key(["DynamicComponentSuggestion", id]),
+         data: [
+            {
+                name: "title",
+                value: title,
+                excludeFromIndexes: true,
+            },
+            {
+                name: "description",
+                value: description,
+                excludeFromIndexes: true
+            },
+            {
+                name: "created_on",
+                value: new Date().toISOString(),
+            },
+            {
+                name: "creator",
+                value: (req.session as CustomSession).userid,
+            }
+        ]
+      };
+      await datastore.save(entity);
+      // console.log("Data fetched successfully:", dynamicComponents);
+      res.send(entity);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
+
+  dynamicComponentRouter.post("/suggestion-feedback", authenticatedUser, async (req, res) => {
+    try {
+      const datastore = getDatastore();
+      const { id, feedback } = req.body;
+      const entity = {
+         key: datastore.key(["DynamicComponentSuggestionFeedback", id + ":" + (req.session as CustomSession).userid]),
+         data: [
+            {
+                name: "feedback",
+                value: feedback
+            },
+            {
+                name: "created_on",
+                value: new Date().toISOString(),
+            },
+            {
+                name: "creator",
+                value: (req.session as CustomSession).userid,
+            }
+        ]
+      };
+      await datastore.save(entity);
+      // console.log("Data fetched successfully:", dynamicComponents);
+      res.send(entity);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
+
+  dynamicComponentRouter.get("/suggestion-list", authenticatedUser, async (req, res) => {
+    try {
+      const datastore = getDatastore();
+      let query = datastore.createQuery("DynamicComponentSuggestion");
+      const [suggestions] = await datastore.runQuery(query);
+      // console.log("Data fetched successfully:", dynamicComponents);
+      res.send(suggestions);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
 
 dynamicComponentRouter.get("/all", async (req, res) => {
     try {
