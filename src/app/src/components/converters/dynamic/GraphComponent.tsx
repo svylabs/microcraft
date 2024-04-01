@@ -1,22 +1,49 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as d3 from "d3";
 
 interface Props {
   output: any;
   graphType: string;
+  configurations: any;
 }
 
-const GraphComponent: React.FC<Props> = ({ output, graphType }) => {
+const GraphComponent: React.FC<Props> = ({
+  output,
+  graphType: defaultGraphType,
+  configurations,
+}) => {
+  const [config, setConfig] = useState<Props["configurations"] | null>(null);
+  const [graphType, setGraphType] = useState<string>(defaultGraphType);
+
   useEffect(() => {
+    if (typeof configurations === 'string') {
+      try {
+        setConfig(JSON.parse(configurations));
+      } catch (error) {
+        console.error('Error parsing configurations:', error);
+      }
+    } else if (typeof configurations === 'object') {
+      setConfig(configurations);
+    } else {
+      console.warn('Configurations are not a valid string or object.');
+    }
+  
     renderGraph();
-  }, [output, graphType]);
+  }, [output, defaultGraphType, configurations]);  
+
+  
+  // const getGraphType = () => {
+  //   // Check if config.graphType is available, if yes, use it; otherwise, use graphType
+  //   return config?.graphType || graphType;
+  // };
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
+    const selectedGraphType = config?.graphType || graphType;
 
     if (output && typeof output === "object") {
-      const svgWidth = 500;
-      const svgHeight = 400;
+      const svgWidth = config?.size?.width || 500;
+      const svgHeight = config?.size.height || 400;
       const margin = { top: 20, right: 30, bottom: 50, left: 60 };
       const graphWidth = svgWidth - margin.left - margin.right;
       const graphHeight = svgHeight - margin.top - margin.bottom;
@@ -30,6 +57,37 @@ const GraphComponent: React.FC<Props> = ({ output, graphType }) => {
       const graph = svg
         .append("g")
         .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+      // Add graph title
+      svg
+        .append("text")
+        .attr("x", svgWidth / 2)
+        .attr("y", margin.top / 1.8)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text(config?.graphTitle);
+
+      // Add x-axis title
+      svg
+        .append("text")
+        .attr("x", svgWidth / 2)
+        .attr("y", svgHeight - margin.bottom / 4 + 5)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "600")
+        .text("⟵ " + config?.axis.xAxis.titleX + " ⟶");
+
+      // Add y-axis title
+      svg
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -(svgHeight / 2))
+        .attr("y", margin.left / 3)
+        .attr("text-anchor", "middle")
+        .style("font-size", "14px")
+        .style("font-weight", "600")
+        .text("⟵ " + config?.axis.yAxis.titleY + " ⟶");
 
       const dataValues = Object.values(output).map((value: any) => {
         if (typeof value === "number") {
@@ -90,7 +148,7 @@ const GraphComponent: React.FC<Props> = ({ output, graphType }) => {
         .attr("stroke", "black")
         .attr("stroke-width", 1);
 
-      if (graphType === "bar") {
+        if (selectedGraphType === "bar") {
         graph
           .selectAll("rect")
           .data(dataValues)
@@ -120,7 +178,7 @@ const GraphComponent: React.FC<Props> = ({ output, graphType }) => {
             d3.select(event.target).attr("fill", "steelblue");
             graph.select(".tooltip").remove();
           });
-      } else if (graphType === "line") {
+      } else if (selectedGraphType === "line") {
         const line = d3
           .line()
           .x((d, i) => xScale(dataLabels[i]) + xScale.bandwidth() / 2)

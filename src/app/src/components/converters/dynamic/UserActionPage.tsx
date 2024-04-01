@@ -258,7 +258,11 @@ const UserActionPage = () => {
               {component.placement === "output" &&
                 component.type === "graph" && (
                   <div>
-                    <GraphComponent output={graphData} graphType={graphType} />
+                    <GraphComponent
+                      output={graphData}
+                      graphType={graphType}
+                      configurations={component.config}
+                    />
                   </div>
                 )}
             </div>
@@ -319,8 +323,14 @@ const UserActionPage = () => {
                   {formatOutput(outputCode)}
                 </div>
               ) : outputFormat === "graph" ? (
-                <div>
-                  <GraphComponent output={graphData} graphType={graphType} />
+                <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                  {components.map((component) => (
+                    <GraphComponent
+                      output={graphData}
+                      graphType={graphType}
+                      configurations={component.config}
+                    />
+                  ))}
                 </div>
               ) : (
                 <div></div>

@@ -239,7 +239,7 @@ const ActionPage = ({ output }) => {
             )}
             {component.placement === "output" && component.type === "graph" && (
               <div>
-                <GraphComponent output={graphData} graphType={graphType} />
+                <GraphComponent output={graphData} graphType={graphType} configurations={component.config} />
               </div>
             )}
           </div>
@@ -263,11 +263,11 @@ const ActionPage = ({ output }) => {
           >
             <option value="json">JSON</option>
             <option value="table">Table</option>
-            <option value="graph">Graph</option>
+            {/* <option value="graph">Graph</option> */}
           </select>
         </div>
 
-        {outputFormat === "graph" && (
+        {/* {outputFormat === "graph" && (
           <div className="mb-4">
             <h2 className="text-xl font-bold">Graph Type:</h2>
             <div className="flex items-center mt-2">
@@ -293,7 +293,7 @@ const ActionPage = ({ output }) => {
               <label htmlFor="lineGraph">Line Graph</label>
             </div>
           </div>
-        )}
+        )} */}
 
         <div className="mt-4">
           <h2 className="text-xl font-bold">Output:</h2>
@@ -309,8 +309,10 @@ const ActionPage = ({ output }) => {
                 {formatOutput(outputCode)}
               </div>
             ) : outputFormat === "graph" ? (
-              <div>
-                <GraphComponent output={graphData} graphType={graphType} />
+              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {components.map((component) => (
+                    <GraphComponent output={graphData} graphType={graphType} configurations={component.config}/>
+                ))}
               </div>
             ) : (
               <div></div>

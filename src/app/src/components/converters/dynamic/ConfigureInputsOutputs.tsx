@@ -20,7 +20,7 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
-  config?: string;
+  config?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -38,18 +38,18 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
   const [graphConfig, setGraphConfig] = useState<any>({
-    titleG: "Enter Graph Title",
+    graphTitle: "Enter Graph Title",
     graphType: "bar/line",
     size: {
-      Width: 500,
-      Height: 400,
+      width: 500,
+      height: 400,
     },
     axis: {
       xAxis: {
-        titleX: "...",
+        titleX: "title-x",
       },
       yAxis: {
-        titleY: "...",
+        titleY: "title-y",
       },
     },
   });
