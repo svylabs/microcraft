@@ -79,7 +79,7 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/app/published/` + componentDefinition.id + "/" + componentDefinition.title), {
+    navigate(`/app/view/` + componentDefinition.id + "/" + componentDefinition.title), {
       state: { output: componentDefinition },
     };
   };

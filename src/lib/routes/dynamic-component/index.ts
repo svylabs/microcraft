@@ -28,6 +28,10 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
       key: key,
       data: [
         {
+          name: "id",
+          value: id
+        },
+        {
           name: "title",
           value: req.body.title,
         },
