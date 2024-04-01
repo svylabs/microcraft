@@ -38,18 +38,18 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
   const [graphConfig, setGraphConfig] = useState<any>({
-    Title: "",
-    "Graph Type": "bar/line",
-    Size: {
+    titleG: "Enter Graph Title",
+    graphType: "bar/line",
+    size: {
       Width: 500,
-      Height: 500,
+      Height: 400,
     },
-    Axis: {
-      "X-axis": {
-        Title: "...",
+    axis: {
+      xAxis: {
+        titleX: "...",
       },
-      "Y-axis": {
-        Title: "...",
+      yAxis: {
+        titleY: "...",
       },
     },
   });
@@ -113,9 +113,13 @@ const ConfigureInputsOutputs: React.FC = () => {
 
     if (isEditMode && editIndex !== -1) {
       updatedComponents[editIndex] = {
-      ...currentComponent,
-      config: currentComponent.config || JSON.stringify(graphConfig, null, 2),
-    };
+        ...currentComponent,
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+      };
       setIsEditMode(false);
       setEditIndex(-1);
     } else {
@@ -133,7 +137,11 @@ const ConfigureInputsOutputs: React.FC = () => {
       }
       updatedComponents.push({
         ...currentComponent,
-        config: currentComponent.config || JSON.stringify(graphConfig, null, 2),
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
       });
     }
 
@@ -297,7 +305,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 value={currentComponent.type}
                 onChange={handleChange}
               >
-                <option value="text">Text</option>
+                <option value="">Select Type</option>
                 <option value="json">JSON</option>
                 <option value="table">Table</option>
                 <option value="graph">Graph</option>
@@ -330,8 +338,6 @@ const ConfigureInputsOutputs: React.FC = () => {
           />
         </label>
 
-        {/* {(currentComponent.placement === "action" ||
-          currentComponent.placement === "output") && ( */}
         {currentComponent.placement === "action" && (
           <div>
             <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -358,32 +364,35 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         )}
 
-{currentComponent.placement === "output" &&
-        currentComponent.type === "graph" && (
-          <div>
-            <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-              Configuration:
-            </label>
-            <div className="flex bg-gray-900 rounded-md p-2">
-              <div
-                className="px-2 text-gray-500"
-                ref={numbersRef}
-                style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-              ></div>
-              <textarea
-                ref={textareaRef}
-                className="flex-1 bg-gray-900 text-white outline-none"
-                style={{ overflowY: "hidden" }}
-                placeholder="Enter graph configuration"
-                cols={30}
-                rows={10}
-                name="config"
-                value={currentComponent.config || JSON.stringify(graphConfig, null, 2)}
-                onChange={handleChange}
-              ></textarea>
+        {currentComponent.placement === "output" &&
+          currentComponent.type === "graph" && (
+            <div>
+              <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+                Configuration:
+              </label>
+              <div className="flex bg-gray-900 rounded-md p-2">
+                <div
+                  className="px-2 text-gray-500"
+                  ref={numbersRef}
+                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                ></div>
+                <textarea
+                  ref={textareaRef}
+                  className="flex-1 bg-gray-900 text-white outline-none"
+                  style={{ overflowY: "hidden" }}
+                  placeholder="Enter graph configuration"
+                  cols={30}
+                  rows={10}
+                  name="config"
+                  value={
+                    currentComponent.config ||
+                    JSON.stringify(graphConfig, null, 2)
+                  }
+                  onChange={handleChange}
+                ></textarea>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
         <button
           className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"

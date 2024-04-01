@@ -31,28 +31,31 @@ const UserActionPage = () => {
   const [loadedData, setLoadedData] = useState(savedFormData);
 
   const isAuthenticated = () => {
-    if (localStorage.getItem("userDetails")) { 
+    if (localStorage.getItem("userDetails")) {
       return true;
     }
     return false;
-  }
+  };
 
   const setSelectedApp = (appId: string | undefined) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "credentials": "include"},
-     body: JSON.stringify({selected_app: appId })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ selected_app: appId }),
     }).then((response) => {
       if (response.ok) {
-         console.log("App selected successfully");
+        console.log("App selected successfully");
       } else {
         if (toast) {
-         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+          toast.error(
+            "Error initializing the app - some features of the app may not function properly. Please refresh the page and try again."
+          );
         }
       }
-    })
+    });
   };
 
   useEffect(() => {
@@ -65,11 +68,13 @@ const UserActionPage = () => {
           setComponents(data.component_definition || []);
           setOutput(data);
           if (data.is_authentication_required) {
-             if (isAuthenticated()) {
-               setSelectedApp(appId);
-             } else {
-               toast.error("Some features of this app may work only if you are logged into the platform.");
-             }
+            if (isAuthenticated()) {
+              setSelectedApp(appId);
+            } else {
+              toast.error(
+                "Some features of this app may work only if you are logged into the platform."
+              );
+            }
           }
         });
     }
@@ -237,10 +242,7 @@ const UserActionPage = () => {
           {components.map((component, index) => (
             <div key={index}>
               {component.placement === "output" &&
-                component.type === "text" && <div>{output}</div>}
-              {component.placement === "output" &&
                 component.type === "json" && (
-                  // <div>{JSON.stringify(output)}</div>
                   <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                     {outputCode
                       ? JSON.stringify(outputCode, null, 2)
@@ -256,8 +258,8 @@ const UserActionPage = () => {
               {component.placement === "output" &&
                 component.type === "graph" && (
                   <div>
-                  <GraphComponent output={graphData} graphType={graphType} />
-                </div>
+                    <GraphComponent output={graphData} graphType={graphType} />
+                  </div>
                 )}
             </div>
           ))}

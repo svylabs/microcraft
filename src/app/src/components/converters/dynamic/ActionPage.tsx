@@ -48,12 +48,6 @@ const ActionPage = ({ output }) => {
     setSelectedApp("sandbox-" + savedFormData[0].title);
   }, []);
 
-  // useEffect(() => {
-  //   if (outputFormat === "graph") {
-  //     renderGraph();
-  //   }
-  // }, [outputFormat, graphData, graphType]);
-
   const handleInputChange = (id: string, value: string) => {
     setData((prevValues) => ({
       ...prevValues,
@@ -229,22 +223,9 @@ const ActionPage = ({ output }) => {
           ))}
         </ul>
 
-        <div className="flex justify-end">
-          <button
-            className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
-            onClick={saveClick}
-          >
-            Save
-          </button>
-        </div>
-
         {components.map((component, index) => (
-          <div key={index}>
-            {component.placement === "output" && component.type === "text" && (
-              <div>{output}</div>
-            )}
+          <div key={index} className="mb-5">
             {component.placement === "output" && component.type === "json" && (
-              // <div>{JSON.stringify(output)}</div>
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
@@ -264,7 +245,16 @@ const ActionPage = ({ output }) => {
           </div>
         ))}
 
-        <div className="mb-4">
+        <div className="flex justify-end">
+          <button
+            className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
+            onClick={saveClick}
+          >
+            Save
+          </button>
+        </div>        
+
+        <div className="mb-4 mt-2">
           <h2 className="text-xl font-bold">Output Format:</h2>
           <select
             value={outputFormat}
