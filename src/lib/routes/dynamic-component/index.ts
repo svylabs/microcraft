@@ -108,6 +108,28 @@ dynamicComponentRouter.get("/list", async (req: Request, res: Response) => {
   res.send(dynamicComponents);
 });
 
+
+dynamicComponentRouter.post("/suggestion", authenticatedUser, async (req, res) => {
+    try {
+      const datastore = getDatastore();
+      const { title, description } = req.body;
+      const entity = {
+         key: datastore.key(["DynamicComponentSuggestion", title]),
+         data: {
+            title: title,
+            description: description,
+            suggested_by: (req.session as CustomSession).userid,
+            created_on: new Date().toISOString()
+         }
+      };
+      await datastore.save(entity);
+      // console.log("Data fetched successfully:", dynamicComponents);
+      res.send(entity);
+    } catch (error: any) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+
 dynamicComponentRouter.get("/all", async (req, res) => {
     try {
       const datastore = getDatastore();
