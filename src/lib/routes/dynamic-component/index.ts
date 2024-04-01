@@ -3,6 +3,7 @@ import { getDatastore } from "../../database";
 import { CustomSession, HttpError, authenticatedUser, onlyAdmin } from "../auth";
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+import crypto from "crypto";
 
 export const dynamicComponentRouter: Router = express.Router();
 
@@ -15,7 +16,7 @@ dynamicComponentRouter.use(cookieParser());
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     const kind: string = "DynamicComponent";
-    const id: string = crypto.randomUUID();
+    const id: string = crypto.createHash('sha256').update(crypto.randomUUID()).digest('hex').toString().toLowerCase().substring(0, 8);
     const datastore = getDatastore();
     const creator = (req.session as CustomSession).user?.id;
     const key = datastore.key([kind, id]);

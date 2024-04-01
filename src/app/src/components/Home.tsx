@@ -395,8 +395,8 @@ const Home: React.FC = () => {
               </div>
               <h6 className="py-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
                    <span className="text-xs md:text-3sm lg:text-base">
-                    Apps you wish you had
-                    </span>
+                    Tiny apps for whiny situations
+                   </span>
                 </h6>
             </div>
             <div className="flex gap-3 self-center mx-auto md:mx-0">
