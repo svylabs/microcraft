@@ -3,6 +3,7 @@ import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
+import { isAuthenticated, setSelectedApp } from "./common";
 
 interface Output {
   [key: string]: any;
@@ -24,29 +25,6 @@ const UserActionPage = () => {
     : [];
   const [loadedData, setLoadedData] = useState(savedFormData);
 
-  const setSelectedApp = () => {
-    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "credentials": "include"},
-     body: JSON.stringify({selected_app: appId })
-    }).then((response) => {
-      if (response.ok) {
-         console.log("App selected successfully");
-      } else {
-         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
-      }
-    })
- }
-
- const isAuthenticated = () => {
-    if (localStorage.getItem("userDetails")) { 
-      return true;
-    }
-    return false;
- }
-
   useEffect(() => {
     setLoadedData(savedFormData);
 
@@ -59,7 +37,7 @@ const UserActionPage = () => {
           setOutput(data);
           if (data.is_authentication_required) {
              if (isAuthenticated()) {
-               setSelectedApp();
+               setSelectedApp(appId, toast);
              } else {
                toast.error("Some features of this app may work only if you are logged into the platform.");
              }
