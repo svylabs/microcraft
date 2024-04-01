@@ -50,6 +50,7 @@ setDatastore(datastore);
 
 import { dynamicComponentRouter } from './lib/routes/dynamic-component';
 import { datasetRouter } from './lib/routes/datasets';
+import { appDataRouter  } from './lib/routes/appdata';
 import { HttpError, githubRouter } from './lib/routes/auth';
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
@@ -77,6 +78,7 @@ app.use(express.static('public'));
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 app.use('/datasets', datasetRouter);
+app.use('/appdata', appDataRouter);
 
 app.get('/', function(req: Request, res: Response) {
   res.setHeader('Cache-Control', 'no-store');
