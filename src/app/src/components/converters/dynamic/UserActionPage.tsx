@@ -187,7 +187,7 @@ const UserActionPage = () => {
         <div className="px-2 md:p- text-wrap">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
             <h1 className="font-semibold md:text-xl hidden md:block">
-              {appId}
+              {output.title || appId}
             </h1>
             <button
               className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
@@ -199,7 +199,7 @@ const UserActionPage = () => {
               Back
             </button>
             <h1 className="block md:hidden font-semibold text-lg mt-2">
-              {appId}
+              {output.title || appId}
             </h1>
           </div>
           <ul className="whitespace-normal break-words">
