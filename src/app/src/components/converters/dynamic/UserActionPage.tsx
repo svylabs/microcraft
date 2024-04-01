@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 
 interface Output {
@@ -23,8 +24,32 @@ const UserActionPage = () => {
     : [];
   const [loadedData, setLoadedData] = useState(savedFormData);
 
+  const setSelectedApp = () => {
+    fetch(`${BASE_API_URL}/set-selected-app`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "credentials": "include"},
+     body: JSON.stringify({selected_app: appId })
+    }).then((response) => {
+      if (response.ok) {
+         console.log("App selected successfully");
+      } else {
+         toast.error("Error initializing the app, and some features of the app may not function properly. Please refresh the page and try again.");
+      }
+    })
+ }
+
+ const isAuthenticated = () => {
+    if (localStorage.getItem("userDetails")) { 
+      return true;
+    }
+    return false;
+ }
+
   useEffect(() => {
     setLoadedData(savedFormData);
+
     if (components.length === 0) {
        fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
@@ -32,6 +57,13 @@ const UserActionPage = () => {
           console.log("Component detail: ", data);
           setComponents(data.component_definition || []);
           setOutput(data);
+          if (data.is_authentication_required) {
+             if (isAuthenticated()) {
+               setSelectedApp();
+             } else {
+               toast.error("Some features of this app may work only if you are logged into the platform.");
+             }
+          }
         });
     }
   }, []);
@@ -125,6 +157,7 @@ const UserActionPage = () => {
 
   return (
     <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
+      <ToastContainer />
       <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">{output.title || appId}</h1>
       <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
       {(output.approval_status || 'pending') === "pending" && (
