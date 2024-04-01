@@ -5,7 +5,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 // import { LOCALHOST_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
-import { setSelectedApp } from "./common";
 
 interface Output {
   [key: string]: any;
@@ -24,9 +23,27 @@ const ActionPage = ({ output }) => {
     : [];
   const [loadedData, setLoadedData] = useState(savedFormData);
 
+  const setSelectedApp = (appId: string) => {
+    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "credentials": "include"},
+     body: JSON.stringify({selected_app: appId })
+    }).then((response) => {
+      if (response.ok) {
+         console.log("App selected successfully");
+      } else {
+        if (toast) {
+         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+        }
+      }
+    })
+ }
+
   useEffect(() => {
     setLoadedData(savedFormData);
-    setSelectedApp("sandbox-" + savedFormData[0].title, toast);
+    setSelectedApp("sandbox-" + savedFormData[0].title);
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
