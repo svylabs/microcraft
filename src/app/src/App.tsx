@@ -16,6 +16,7 @@ const App: React.FC = () => {
           <Route path="/app/inbuilt/:id" element={<Converter />} />
           <Route path="/app/new" element={<ConfigureInputsOutputs />} />
           <Route path="/app/published/:appId" element={<UserActionPage />} />
+          <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
       </Router>      
     </>
