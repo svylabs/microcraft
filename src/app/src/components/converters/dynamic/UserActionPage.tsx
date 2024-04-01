@@ -9,7 +9,7 @@ interface Output {
 
 const UserActionPage = () => {
   const location = useLocation();
-  const { appId } = useParams<{appId: string}>();
+  const { appId } = useParams<{appId: string, title?: string}>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
   const [components, setComponents] = useState(output?.component_definition || []);
   const [data, setData] = useState<{ [key: string]: any }>({});

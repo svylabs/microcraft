@@ -79,9 +79,9 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/app/published/` + (componentDefinition.id || componentDefinition.title), {
+    navigate(`/app/published/` + componentDefinition.id + "/" + componentDefinition.title), {
       state: { output: componentDefinition },
-    });
+    };
   };
 
   const allConverters: Converter[] = [
