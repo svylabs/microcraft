@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import * as d3 from "d3";
 import GraphComponent from "./GraphComponent";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
