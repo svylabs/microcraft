@@ -40,6 +40,7 @@ interface User {
 export interface CustomSession extends Session {
   userid?: number;
   user?: User;
+  selectedApp?: string;
 }
 
 const addUserToSession = (req: Request, res: Response, user: User) => {

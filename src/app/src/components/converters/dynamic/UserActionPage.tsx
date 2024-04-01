@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import { useLocation, useParams } from "react-router-dom";
-import { BASE_API_URL } from "~/components/constants";
 import * as d3 from "d3";
 import GraphComponent from "./GraphComponent";
+import { redirect, useLocation, useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import { BASE_API_URL } from "~/components/constants";
 
 interface Output {
   [key: string]: any;
@@ -23,7 +24,39 @@ const UserActionPage = () => {
   const [graphData, setgraphData] = useState<Output | string>();
   // const [feedback, setFeedback] = useState(false);
 
+  const savedFormDataString = localStorage.getItem("formData");
+  const savedFormData = savedFormDataString
+    ? JSON.parse(savedFormDataString)
+    : [];
+  const [loadedData, setLoadedData] = useState(savedFormData);
+
+  const isAuthenticated = () => {
+    if (localStorage.getItem("userDetails")) { 
+      return true;
+    }
+    return false;
+  }
+
+  const setSelectedApp = (appId: string | undefined) => {
+    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "credentials": "include"},
+     body: JSON.stringify({selected_app: appId })
+    }).then((response) => {
+      if (response.ok) {
+         console.log("App selected successfully");
+      } else {
+        if (toast) {
+         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+        }
+      }
+    })
+  };
+
   useEffect(() => {
+    setLoadedData(savedFormData);
     if (components.length === 0) {
       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
@@ -31,6 +64,13 @@ const UserActionPage = () => {
           console.log("Component detail: ", data);
           setComponents(data.component_definition || []);
           setOutput(data);
+          if (data.is_authentication_required) {
+             if (isAuthenticated()) {
+               setSelectedApp(appId);
+             } else {
+               toast.error("Some features of this app may work only if you are logged into the platform.");
+             }
+          }
         });
     }
   }, []);
@@ -126,6 +166,7 @@ const UserActionPage = () => {
 
   return (
     <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
+      <ToastContainer />
       <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
         {output.title || appId}
       </h1>

@@ -80,6 +80,9 @@ dynamicComponentRouter.post("/approve", authenticatedUser, onlyAdmin, async (req
     entity.approval_status = "approved";
     entity.approved_on = new Date().toISOString();
     entity.approved_by = (req.session as CustomSession).user?.id;
+    if (req.body.is_authentication_required) {
+        entity.is_authentication_required = req.body.is_authentication_required;
+    }
     await datastore.save({
       key: key,
       data: entity,

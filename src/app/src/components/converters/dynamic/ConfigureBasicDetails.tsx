@@ -90,7 +90,7 @@ const ConfigureBasicDetails: React.FC = () => {
                 type="text"
                 maxLength={22}
                 className="focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 p-3 px-4 bg-[#F7F8FB] xl:text-2xl text-[#21262C] placeholder:italic"
-                placeholder="Enter components title.."
+                placeholder="Enter app title.."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               ></input>
@@ -107,7 +107,7 @@ const ConfigureBasicDetails: React.FC = () => {
               </label>
               <textarea
                 className="description focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 bg-[#F7F8FB] xl:text-2xl text-[#21262C] resize-none placeholder:italic"
-                placeholder="Enter components description.."
+                placeholder="Enter app description.."
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

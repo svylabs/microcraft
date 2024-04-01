@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
+import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
 import GraphComponent from "./GraphComponent";
@@ -24,8 +25,27 @@ const ActionPage = ({ output }) => {
     : [];
   const [loadedData, setLoadedData] = useState(savedFormData);
 
+  const setSelectedApp = (appId: string) => {
+    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
+     method: "POST",
+     headers: {
+       "Content-Type": "application/json",
+       "credentials": "include"},
+     body: JSON.stringify({selected_app: appId })
+    }).then((response) => {
+      if (response.ok) {
+         console.log("App selected successfully");
+      } else {
+        if (toast) {
+         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+        }
+      }
+    })
+ }
+
   useEffect(() => {
     setLoadedData(savedFormData);
+    setSelectedApp("sandbox-" + savedFormData[0].title);
   }, []);
 
   // useEffect(() => {
@@ -156,6 +176,7 @@ const ActionPage = ({ output }) => {
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
+      <ToastContainer />
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">
