@@ -25,7 +25,7 @@ const UserActionPage = () => {
   const [loadedData, setLoadedData] = useState(savedFormData);
 
   const setSelectedApp = () => {
-    fetch(`${BASE_API_URL}/set-selected-app`, {
+    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
      method: "POST",
      headers: {
        "Content-Type": "application/json",
@@ -35,7 +35,7 @@ const UserActionPage = () => {
       if (response.ok) {
          console.log("App selected successfully");
       } else {
-         toast.error("Error initializing the app, and some features of the app may not function properly. Please refresh the page and try again.");
+         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
       }
     })
  }
