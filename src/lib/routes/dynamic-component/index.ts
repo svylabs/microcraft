@@ -38,6 +38,7 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         {
           name: "description",
           value: req.body.description,
+          excludeFromIndexes: true,
         },
         {
           name: "component_definition",
