@@ -457,7 +457,7 @@ const Home: React.FC = () => {
           </div>
         </header>
 
-        <div className="bg-slate-200 p-3 lg:p-5 rounded">
+        <div className="bg-slate-100 p-3 lg:p-5 rounded">
           {activeCategory === "recent" && (
             <div className="mb-6">
               {recentTools.length === 0 && (
