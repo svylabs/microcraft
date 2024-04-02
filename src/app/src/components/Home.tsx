@@ -78,9 +78,12 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/app/view/` + componentDefinition.id + "/" + componentDefinition.title), {
-      state: { output: componentDefinition },
-    };
+    navigate(
+      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title
+    ),
+      {
+        state: { output: componentDefinition },
+      };
   };
 
   const allConverters: Converter[] = [
@@ -360,14 +363,14 @@ const Home: React.FC = () => {
   // Render custom component category buttons
   const renderCustomComponentCategories = () => {
     return (
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-4 ">
         {["all", "pending", "approved"].map((category) => (
           <button
             key={category}
             className={`px-4 py-2 rounded ${
               customComponentCategory === category
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-800"
+                : "bg-slate-400 text-gray-800"
             } hover:bg-blue-600 focus:outline-none`}
             onClick={() => handleCustomComponentCategoryChange(category)}
           >
@@ -382,78 +385,75 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
-        <div className="sticky top-0 bg-white z-40 pb-3">
-          <div className="flex flex-wrap md:justify-between mb-6">
-            <div className="flex gap-5 items-center mx-auto md:mx-0">
-              <img
-                src="/microcraft.png"
-                alt="Microcraft"
-                className="w-10 h-10 lg:w-16 lg:h-16"
-              />
-              <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
-                Microcraft
-                <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                  Tiny apps for whiny situations
-                </span>
-              </h2>
-            </div>
-            <div className="flex gap-3 self-center">
-              {userName !== "" && (
-                <div className="flex gap-3 self-center">
-                  <img
-                    className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
-                    src={userAvatar}
-                    alt={userName}
-                    onClick={handleLogin}
-                  ></img>
-                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="font-bold">Hello!</span> {userName}
-                  </p>
-                </div>
-              )}
-              {userName === "" && (
-                <div className="flex gap-3 self-center">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                    <span className="text-gray-600" onClick={handleLogin}>
-                      Avatar
-                    </span>
-                  </div>
-                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="font-bold">Hello!</span> Guest
-                  </p>
-                </div>
-              )}
-            </div>
+      <header className="sticky top-0 bg-white z-40 pb-3 p-4 xl:px-6 ">
+        <div className="flex flex-wrap justify-between mb-3">
+          <div className="flex gap-5 items-center">
+            <img
+              src="/microcraft.png"
+              alt="Microcraft"
+              className="w-10 h-10 lg:w-16 lg:h-16"
+            />
+            <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
+              Microcraft
+              <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
+                Tiny apps for whiny situations
+              </span>
+            </h2>
           </div>
-          <input
-            type="text"
-            className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-
-          <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
-          <div className="hidden md:flex justify-center space-x-4 mb-1">
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`px-4 py-2 rounded ${
-                  activeCategory === category
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-800"
-                } hover:bg-blue-600 focus:outline-none`}
-                onClick={() => handleCategoryChange(category)}
-              >
-                {category === "recent"
-                  ? "Recently Used"
-                  : category.toUpperCase()}
-              </button>
-            ))}
+          <div className="flex gap-3 self-center">
+            {userName !== "" && (
+              <div className="flex gap-3 self-center">
+                <img
+                  className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                  src={userAvatar}
+                  alt={userName}
+                  onClick={handleLogin}
+                ></img>
+                <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
+                  <span className="font-bold">Hello!</span> {userName}
+                </p>
+              </div>
+            )}
+            {userName === "" && (
+              <div className="flex gap-3 self-center">
+                <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                  <span className="text-gray-600" onClick={handleLogin}>
+                    Avatar
+                  </span>
+                </div>
+                <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
+                  <span className="font-bold">Hello!</span> Guest
+                </p>
+              </div>
+            )}
           </div>
         </div>
+        <input
+          type="text"
+          className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
 
+        <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
+        <div className="hidden md:flex justify-center space-x-4 mb-1">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`px-4 py-2 rounded ${
+                activeCategory === category
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-800"
+              } hover:bg-blue-600 focus:outline-none`}
+              onClick={() => handleCategoryChange(category)}
+            >
+              {category === "recent" ? "Recently Used" : category.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      </header>
+      <div className="max-w-screen-xl mx-auto p-4 lg:px-8 bg-slate-200 rounded">
         {activeCategory === "recent" && (
           <div className="mb-6">
             {recentTools.length === 0 && (
@@ -483,7 +483,7 @@ const Home: React.FC = () => {
                       >
                         <div className="relative">
                           <button
-                            className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-gray-200 focus:outline-none"
+                            className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-red-300 hover:text-red-700 focus:outline-none"
                             onClick={() => {
                               const updatedTools = recentTools.filter(
                                 (id) => id !== toolId
@@ -645,6 +645,14 @@ const Home: React.FC = () => {
           )}
         </div>
       </div>
+      <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
+        <div className="text-center py-4">
+          <p className="text-sm font-semibold">
+            &copy; 2024 Microcraft. All Rights Reserved.
+          </p>
+        </div>
+      </footer>
+
       {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
     </>
   );
