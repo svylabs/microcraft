@@ -397,7 +397,7 @@ const Home: React.FC = () => {
               <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
                 Microcraft
                 <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                  Tiny apps for whiny situations
+                  Small is beautiful: Tiny apps for whiny needs
                 </span>
               </h2>
             </div>
@@ -457,7 +457,7 @@ const Home: React.FC = () => {
           </div>
         </header>
 
-        <div className="bg-slate-200 p-3 lg:p-5 rounded">
+        <div className="bg-slate-100 p-3 lg:p-5 rounded">
           {activeCategory === "recent" && (
             <div className="mb-6">
               {recentTools.length === 0 && (
