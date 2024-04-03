@@ -28,7 +28,6 @@ const GraphComponent: React.FC<Props> = ({ output, configurations }) => {
 
   const renderGraph = () => {
     d3.select("#graph-container").selectAll("*").remove();
-    // const selectedGraphType = config?.graphType || graphType;
 
     // const selectedGraphType =
     //   config?.graphType === "bar" || config?.graphType === "line"
