@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import GraphComponent from "./GraphComponent";
+import Graph from "./GraphComponent";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
@@ -11,7 +11,7 @@ interface Output {
 
 const UserActionPage = () => {
   const location = useLocation();
-  const { appId } = useParams<{appId: string, title?: string}>();
+  const { appId } = useParams<{ appId: string; title?: string }>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
   const [components, setComponents] = useState(
     output?.component_definition || []
@@ -20,7 +20,6 @@ const UserActionPage = () => {
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
-  const [graphData, setgraphData] = useState<Output | string>();
   // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
@@ -101,7 +100,6 @@ const UserActionPage = () => {
       }
       console.log(result);
       setOutputCode(vals);
-      setgraphData(result);
       // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
@@ -112,7 +110,7 @@ const UserActionPage = () => {
   const formatOutput = (data: any) => {
     if (data === null || data === undefined) {
       console.error("Error: Data is null or undefined");
-      return "Error: Data is null or undefined";
+      return "No output available for Table.";
     }
 
     if (typeof data === "object") {
@@ -120,34 +118,54 @@ const UserActionPage = () => {
         if (data.length > 0 && typeof data[0] === "object") {
           const tableHeaders = Object.keys(data[0]);
           return (
-            <table>
-              <thead>
-                <tr>
-                  {tableHeaders.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item: any, index: number) => (
-                  <tr key={index}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-200">
+                  <tr>
                     {tableHeaders.map((header) => (
-                      <td key={header}>{formatOutput(item[header])}</td>
+                      <th
+                        key={header}
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {header}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.map((item: any, index: number) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
+                      {tableHeaders.map((header) => (
+                        <td
+                          key={header}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                        >
+                          {formatOutput(item[header])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
       } else {
         return (
-          <table>
-            <tbody>
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               {Object.entries(data).map(([key, value]: [string, any]) => (
                 <tr key={key}>
-                  <td>{key}</td>
-                  <td>{formatOutput(value)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {key}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatOutput(value)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -241,11 +259,19 @@ const UserActionPage = () => {
           {components.map((component, index) => (
             <div key={index}>
               {component.placement === "output" &&
+                component.type === "text" && (
+                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {data[component.id]
+                      ? data[component.id]
+                      : "No output available for Text."}
+                  </pre>
+                )}
+              {component.placement === "output" &&
                 component.type === "json" && (
                   <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    {outputCode
-                      ? JSON.stringify(outputCode, null, 2)
-                      : "No output available"}
+                    {data[component.id]
+                      ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
+                      : "No output available for JSON"}
                   </pre>
                 )}
               {component.placement === "output" &&
@@ -257,9 +283,8 @@ const UserActionPage = () => {
               {component.placement === "output" &&
                 component.type === "graph" && (
                   <div>
-                    <GraphComponent
-                      output={graphData}
-                      graphType={graphType}
+                    <Graph
+                      output={data[component.id]}
                       configurations={component.config}
                     />
                   </div>
@@ -267,76 +292,6 @@ const UserActionPage = () => {
             </div>
           ))}
 
-          <div className="mb-4">
-            <h2 className="text-xl font-bold">Output Format:</h2>
-            <select
-              value={outputFormat}
-              onChange={(e) => setOutputFormat(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded focus:outline-none"
-            >
-              <option value="json">JSON</option>
-              <option value="table">Table</option>
-              <option value="graph">Graph</option>
-            </select>
-          </div>
-
-          {outputFormat === "graph" && (
-            <div className="mb-4">
-              <h2 className="text-xl font-bold">Graph Type:</h2>
-              <div className="flex items-center mt-2">
-                <input
-                  type="radio"
-                  id="barGraph"
-                  name="graphType"
-                  value="bar"
-                  checked={graphType === "bar"}
-                  onChange={() => setGraphType("bar")}
-                  className="mr-2"
-                />
-                <label htmlFor="barGraph">Bar Graph</label>
-                <input
-                  type="radio"
-                  id="lineGraph"
-                  name="graphType"
-                  value="line"
-                  checked={graphType === "line"}
-                  onChange={() => setGraphType("line")}
-                  className="ml-4 mr-2"
-                />
-                <label htmlFor="lineGraph">Line Graph</label>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-4">
-            <h2 className="text-xl font-bold">Output:</h2>
-            {
-              outputFormat === "json" ? (
-                <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                  {outputCode
-                    ? JSON.stringify(outputCode, null, 2)
-                    : "No output available"}
-                </pre>
-              ) : outputFormat === "table" ? (
-                <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                  {formatOutput(outputCode)}
-                </div>
-              ) : outputFormat === "graph" ? (
-                <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                  {components.map((component) => (
-                    <GraphComponent
-                      output={graphData}
-                      graphType={graphType}
-                      configurations={component.config}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div></div>
-              )
-              // : null
-            }
-          </div>
         </div>
 
         {/* {feedback && (

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ActionPage from "./ActionPage";
 import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
@@ -46,12 +48,13 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
     axis: {
       xAxis: {
-        titleX: "title-x",
+        titleX: "Enter X-axis Title",
       },
       yAxis: {
-        titleY: "title-y",
+        titleY: "Enter Y-axis Title",
       },
     },
+    message: "Please fill in the required information to generate your graph. Choose between bar or line graph.",
   });
 
   useEffect(() => {
@@ -97,7 +100,7 @@ const ConfigureInputsOutputs: React.FC = () => {
 
   const handleAddComponent = () => {
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
-      alert("Please provide both ID and Label.");
+      toast.error("Please provide both ID and Label.");
       return;
     }
 
@@ -105,7 +108,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       currentComponent.placement === "action" &&
       !currentComponent.code?.trim()
     ) {
-      alert("Please provide code for action placement.");
+      toast.error("Please provide code for action placement.");
       return;
     }
 
@@ -130,7 +133,7 @@ const ConfigureInputsOutputs: React.FC = () => {
             updatedComponents.indexOf(component) !== editIndex
         )
       ) {
-        alert(
+        toast.error(
           "Field with the same ID already exists. Please use a different ID."
         );
         return;
@@ -306,6 +309,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 onChange={handleChange}
               >
                 <option value="">Select Type</option>
+                <option value="text">Text</option>
                 <option value="json">JSON</option>
                 <option value="table">Table</option>
                 <option value="graph">Graph</option>
@@ -479,6 +483,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

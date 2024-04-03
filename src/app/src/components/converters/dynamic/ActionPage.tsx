@@ -4,7 +4,7 @@ import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
-import GraphComponent from "./GraphComponent";
+import Graph from "./GraphComponent";
 
 interface Output {
   [key: string]: any;
@@ -17,7 +17,7 @@ const ActionPage = ({ output }) => {
   const [graphType, setGraphType] = useState<string>("bar");
   const [popup, setPopup] = useState(false);
   const [data, setData] = useState<{ [key: string]: any }>({});
-  const [graphData, setgraphData] = useState<Output | string>();
+  // const [graphData, setgraphData] = useState<Output | string>();
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -27,21 +27,24 @@ const ActionPage = ({ output }) => {
 
   const setSelectedApp = (appId: string) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "credentials": "include"},
-     body: JSON.stringify({selected_app: appId })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ selected_app: appId }),
     }).then((response) => {
       if (response.ok) {
-         console.log("App selected successfully");
+        console.log("App selected successfully");
       } else {
         if (toast) {
-         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+          toast.error(
+            "Error initializing the app - some features of the app may not function properly. Please refresh the page and try again."
+          );
         }
       }
-    })
- }
+    });
+  };
 
   useEffect(() => {
     setLoadedData(savedFormData);
@@ -68,7 +71,7 @@ const ActionPage = ({ output }) => {
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
-      setgraphData(result);
+      // setgraphData(result);
       // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
@@ -79,7 +82,7 @@ const ActionPage = ({ output }) => {
   const formatOutput = (data: any) => {
     if (data === null || data === undefined) {
       console.error("Error: Data is null or undefined");
-      return "Error: Data is null or undefined";
+      return "No output available for Table.";
     }
 
     if (typeof data === "object") {
@@ -87,34 +90,54 @@ const ActionPage = ({ output }) => {
         if (data.length > 0 && typeof data[0] === "object") {
           const tableHeaders = Object.keys(data[0]);
           return (
-            <table>
-              <thead>
-                <tr>
-                  {tableHeaders.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item: any, index: number) => (
-                  <tr key={index}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-200">
+                  <tr>
                     {tableHeaders.map((header) => (
-                      <td key={header}>{formatOutput(item[header])}</td>
+                      <th
+                        key={header}
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {header}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.map((item: any, index: number) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
+                      {tableHeaders.map((header) => (
+                        <td
+                          key={header}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                        >
+                          {formatOutput(item[header])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
       } else {
         return (
-          <table>
-            <tbody>
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               {Object.entries(data).map(([key, value]: [string, any]) => (
                 <tr key={key}>
-                  <td>{key}</td>
-                  <td>{formatOutput(value)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {key}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatOutput(value)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -168,6 +191,7 @@ const ActionPage = ({ output }) => {
     window.location.href = `/app/new`;
   };
 
+  console.log(data);
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
       <ToastContainer />
@@ -225,21 +249,31 @@ const ActionPage = ({ output }) => {
 
         {components.map((component, index) => (
           <div key={index} className="mb-5">
+            {component.placement === "output" && component.type === "text" && (
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {data[component.id]
+                  ? data[component.id]
+                  : "No output available for Text."}
+              </pre>
+            )}
             {component.placement === "output" && component.type === "json" && (
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {outputCode
-                  ? JSON.stringify(outputCode, null, 2)
-                  : "No output available"}
+                {data[component.id]
+                  ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
+                  : "No output available for JSON."}
               </pre>
             )}
             {component.placement === "output" && component.type === "table" && (
               <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {formatOutput(outputCode)}
+                {formatOutput(data[component.id])}
               </div>
             )}
             {component.placement === "output" && component.type === "graph" && (
               <div>
-                <GraphComponent output={graphData} graphType={graphType} configurations={component.config} />
+                <Graph
+                  output={data[component.id]}
+                  configurations={component.config}
+                />
               </div>
             )}
           </div>
@@ -252,7 +286,7 @@ const ActionPage = ({ output }) => {
           >
             Save
           </button>
-        </div>        
+        </div>
 
         <div className="mb-4 mt-2">
           <h2 className="text-xl font-bold">Output Format:</h2>
@@ -263,40 +297,11 @@ const ActionPage = ({ output }) => {
           >
             <option value="json">JSON</option>
             <option value="table">Table</option>
-            {/* <option value="graph">Graph</option> */}
           </select>
         </div>
 
-        {/* {outputFormat === "graph" && (
-          <div className="mb-4">
-            <h2 className="text-xl font-bold">Graph Type:</h2>
-            <div className="flex items-center mt-2">
-              <input
-                type="radio"
-                id="barGraph"
-                name="graphType"
-                value="bar"
-                checked={graphType === "bar"}
-                onChange={() => setGraphType("bar")}
-                className="mr-2"
-              />
-              <label htmlFor="barGraph">Bar Graph</label>
-              <input
-                type="radio"
-                id="lineGraph"
-                name="graphType"
-                value="line"
-                checked={graphType === "line"}
-                onChange={() => setGraphType("line")}
-                className="ml-4 mr-2"
-              />
-              <label htmlFor="lineGraph">Line Graph</label>
-            </div>
-          </div>
-        )} */}
-
         <div className="mt-4">
-          <h2 className="text-xl font-bold">Output:</h2>
+          <h2 className="text-xl font-bold">Execution log:</h2>
           {
             outputFormat === "json" ? (
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
@@ -308,13 +313,14 @@ const ActionPage = ({ output }) => {
               <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {formatOutput(outputCode)}
               </div>
-            ) : outputFormat === "graph" ? (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {components.map((component) => (
-                    <GraphComponent output={graphData} graphType={graphType} configurations={component.config}/>
-                ))}
-              </div>
             ) : (
+              // : outputFormat === "graph" ? (
+              //   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+              //     {components.map((component) => (
+              //         <Graph output={data[component.id]} configurations={component.config}/>
+              //     ))}
+              //   </div>
+              // )
               <div></div>
             )
             // : null
