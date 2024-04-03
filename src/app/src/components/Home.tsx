@@ -32,7 +32,6 @@ const Home: React.FC = () => {
   const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
-
     const storedRecentTools = localStorage.getItem("recentTools");
     if (storedRecentTools) {
       setRecentTools(JSON.parse(storedRecentTools));
@@ -79,9 +78,12 @@ const Home: React.FC = () => {
   };
 
   const handleImageClick = (componentDefinition: any) => {
-    navigate(`/app/view/` + componentDefinition.id + "/" + componentDefinition.title), {
-      state: { output: componentDefinition },
-    };
+    navigate(
+      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title
+    ),
+      {
+        state: { output: componentDefinition },
+      };
   };
 
   const allConverters: Converter[] = [
@@ -331,7 +333,7 @@ const Home: React.FC = () => {
   const capitalize = (str: string) => {
     if (str.length <= 4) return str.toUpperCase();
     return str.charAt(0).toUpperCase() + str.slice(1);
-  }
+  };
 
   const handleCustomComponentCategoryChange = (category: string) => {
     setCustomComponentCategory(category);
@@ -361,14 +363,14 @@ const Home: React.FC = () => {
   // Render custom component category buttons
   const renderCustomComponentCategories = () => {
     return (
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-4 ">
         {["all", "pending", "approved"].map((category) => (
           <button
             key={category}
             className={`px-4 py-2 rounded ${
               customComponentCategory === category
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-800"
+                : "bg-slate-400 text-gray-800"
             } hover:bg-blue-600 focus:outline-none`}
             onClick={() => handleCustomComponentCategoryChange(category)}
           >
@@ -383,42 +385,44 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto p-4 lg:px-8">
-        <div className="sticky top-0 bg-white z-40 pb-3">
-          <div className="flex flex-wrap md:justify-between mb-6">
-            <div>
-              <div className="flex items-center">
-                <img src="/microcraft.png" alt="Microcraft" className="w-12 h-12" /> 
-                <h2 className="py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500" style={{marginLeft: 20}}>
-                    Microcraft
-                </h2>
-              </div>
-              <h6 className="py-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
-                   <span className="text-xs md:text-3sm lg:text-base">
-                    Tiny apps for whiny situations
-                   </span>
-                </h6>
+      <div className="max-w-screen-xl mx-auto p-3 md:p-4 lg:px-8 ">
+        <header className="sticky top-0 bg-white z-40 pb-3">
+          <div className="flex flex-wrap justify-between mb-3">
+            <div className="flex gap-5 items-center">
+              <img
+                src="/microcraft.png"
+                alt="Microcraft"
+                className="w-10 h-10 lg:w-16 lg:h-16"
+              />
+              <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
+                Microcraft
+                <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
+                Small is Beautiful: Tiny apps to Rescue Time
+                </span>
+              </h2>
             </div>
-            <div className="flex gap-3 self-center mx-auto md:mx-0">
+            <div className="flex gap-3 self-center">
               {userName !== "" && (
-                <>
+                <div className="flex gap-3 self-center">
                   <img
                     className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
                     src={userAvatar}
                     alt={userName}
                     onClick={handleLogin}
                   ></img>
-                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
                     <span className="font-bold">Hello!</span> {userName}
                   </p>
-                </>
+                </div>
               )}
               {userName === "" && (
-                <div className="flex gap-3 self-center mx-auto md:mx-0">
+                <div className="flex gap-3 self-center">
                   <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                    <span className="text-gray-600" onClick={handleLogin}>Avatar</span>
+                    <span className="text-gray-600" onClick={handleLogin}>
+                      Avatar
+                    </span>
                   </div>
-                  <p className="self-center text-[#092C4C] text-lg xl:text-2xl">
+                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
                     <span className="font-bold">Hello!</span> Guest
                   </p>
                 </div>
@@ -451,199 +455,209 @@ const Home: React.FC = () => {
               </button>
             ))}
           </div>
-        </div>
+        </header>
 
-        {activeCategory === "recent" && (
-          <div className="mb-6">
-            {recentTools.length === 0 && (
-              <div>
-                <h2 className="text-lg md:text-xl font-semibold mb-2">
-                  Recently Used Tools
-                </h2>
-                <div className="text-lg text-center text-gray-600">
-                  No recently used tools.
+        <div className="bg-slate-100 p-3 lg:p-5 rounded">
+          {activeCategory === "recent" && (
+            <div className="mb-6">
+              {recentTools.length === 0 && (
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-2">
+                    Recently Used Tools
+                  </h2>
+                  <div className="text-lg text-center text-gray-600">
+                    No recently used tools.
+                  </div>
                 </div>
-              </div>
-            )}
-            {recentTools.length > 0 && (
-              <div>
-                <h2 className="text-lg md:text-xl font-semibold mb-2">
-                  Recently Used Apps
-                </h2>
-                <ul className="flex flex-wrap -mx-2">
-                  {recentTools.map((toolId) => {
-                    const tool = allConverters.find(
-                      (converter) => converter.id === toolId
-                    );
-                    return (
-                      <li
-                        key={toolId}
-                        className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
-                      >
-                        <div className="relative">
-                          <button
-                            className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-gray-200 focus:outline-none"
-                            onClick={() => {
-                              const updatedTools = recentTools.filter(
-                                (id) => id !== toolId
-                              );
-                              setRecentTools(updatedTools);
-                              localStorage.setItem(
-                                "recentTools",
-                                JSON.stringify(updatedTools)
-                              );
-                            }}
-                          >
-                            <FiTrash2 />
-                          </button>
-                          <Link
-                            to={`/app/inbuilt/${toolId}`}
-                            onClick={() => addToRecentTools(toolId)}
-                          >
-                            <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                              <div className="home-image relative">
-                                <img
-                                  src={tool?.image}
-                                  alt={tool?.title}
-                                  className="w-full rounded container h-40 object-cover mb-2"
-                                />
-                                <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                                  <span className="text-white">
-                                    {tool?.description}
-                                  </span>
+              )}
+              {recentTools.length > 0 && (
+                <div>
+                  <h2 className="text-lg md:text-xl font-semibold mb-2">
+                    Recently Used Apps
+                  </h2>
+                  <ul className="flex flex-wrap -mx-2">
+                    {recentTools.map((toolId) => {
+                      const tool = allConverters.find(
+                        (converter) => converter.id === toolId
+                      );
+                      return (
+                        <li
+                          key={toolId}
+                          className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
+                        >
+                          <div className="relative">
+                            <button
+                              className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full hover:bg-red-300 hover:text-red-700 focus:outline-none"
+                              onClick={() => {
+                                const updatedTools = recentTools.filter(
+                                  (id) => id !== toolId
+                                );
+                                setRecentTools(updatedTools);
+                                localStorage.setItem(
+                                  "recentTools",
+                                  JSON.stringify(updatedTools)
+                                );
+                              }}
+                            >
+                              <FiTrash2 />
+                            </button>
+                            <Link
+                              to={`/app/inbuilt/${toolId}`}
+                              onClick={() => addToRecentTools(toolId)}
+                            >
+                              <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                                <div className="home-image relative">
+                                  <img
+                                    src={tool?.image}
+                                    alt={tool?.title}
+                                    className="w-full rounded container h-40 object-cover mb-2"
+                                  />
+                                  <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                                    <span className="text-white">
+                                      {tool?.description}
+                                    </span>
+                                  </div>
                                 </div>
+                                <strong className="block text-lg font-bold mb-1">
+                                  {tool?.title}
+                                </strong>
                               </div>
-                              <strong className="block text-lg font-bold mb-1">
-                                {tool?.title}
-                              </strong>
-                            </div>
-                          </Link>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <button
-                  className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
-                  onClick={() => {
-                    setRecentTools([]);
-                    localStorage.removeItem("recentTools");
-                  }}
+                            </Link>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <button
+                    className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none"
+                    onClick={() => {
+                      setRecentTools([]);
+                      localStorage.removeItem("recentTools");
+                    }}
+                  >
+                    Clear history
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="mb-6">
+            <h2 className="text-lg md:text-xl font-semibold mb-2">
+              {activeCategory === "recent"
+                ? "All Apps"
+                : capitalize(activeCategory) + " Apps"}
+            </h2>
+            <ul className="flex flex-wrap -mx-2">
+              {filteredConverters.map((converter) => (
+                <li
+                  key={converter.id}
+                  className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
                 >
-                  Clear history
-                </button>
+                  {converter.id === "Custom Components" ? (
+                    <Link
+                      to={`/app/inbuilt/${converter.id}`}
+                      onClick={() => handleCreateComponents(converter)}
+                    >
+                      <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                        <div className="home-image relative">
+                          <img
+                            src={converter.image}
+                            alt={`${converter.title} Icon`}
+                            className="w-full rounded container h-40 object-cover mb-2"
+                          />
+                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                            <span className="text-white">
+                              {converter.description}
+                            </span>
+                          </div>
+                        </div>
+                        <strong className="block text-lg font-bold mb-1">
+                          {converter.title}
+                        </strong>
+                      </div>
+                    </Link>
+                  ) : (
+                    <Link
+                      to={`/app/inbuilt/${converter.id}`}
+                      onClick={() => addToRecentTools(converter.id)}
+                    >
+                      <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
+                        <div className="home-image relative">
+                          <img
+                            src={converter.image}
+                            alt={`${converter.title} Icon`}
+                            className="w-full rounded container h-40 object-cover mb-2"
+                          />
+                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                            <span className="text-white">
+                              {converter.description}
+                            </span>
+                          </div>
+                        </div>
+                        <strong className="block text-lg font-bold mb-1">
+                          {converter.title}
+                        </strong>
+                      </div>
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-lg md:text-xl font-semibold mb-2">
+              Community published apps
+            </h2>
+            {renderCustomComponentCategories()}
+            {filteredCustomComponents.length === 0 ? (
+              <div className="text-gray-600">None found.</div>
+            ) : (
+              <div className="flex flex-wrap -mx-2">
+                {filteredCustomComponents.map((data, index) => (
+                  <div
+                    key={index}
+                    className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
+                      data.approval_status === "pending"
+                        ? "border border-dashed border-red-400"
+                        : ""
+                    }`}
+                    onClick={() => handleImageClick(data)}
+                  >
+                    <div className="home-image">
+                      {data.image_url && (
+                        <img
+                          className="w-full rounded container h-40 object-cover mb-2"
+                          src={data.image_url}
+                          alt="image-thumbnail"
+                        />
+                      )}
+                      <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                        <span>{data.description}</span>
+                      </div>
+                    </div>
+                    <p className="block text-lg font-bold mb-1">{data.title}</p>
+                    {data.approval_status === "pending" && (
+                      <span className="absolute text-hover text-red-500 text-center font-medium bg-black bg-opacity-50 p-2 rounded-md z-50 animate-puls">
+                        ⚠️ Caution: Component under review. Use with care.
+                      </span>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
-        )}
-
-        <div className="mb-6">
-          <h2 className="text-lg md:text-xl font-semibold mb-2">
-            {activeCategory === "recent"
-              ? "All Apps"
-              : capitalize(activeCategory) + " Apps"}
-          </h2>
-          <ul className="flex flex-wrap -mx-2">
-            {filteredConverters.map((converter) => (
-              <li
-                key={converter.id}
-                className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-2 transform transition-transform hover:scale-105"
-              >
-                {converter.id === "Custom Components" ? (
-                  <Link
-                    to={`/app/inbuilt/${converter.id}`}
-                    onClick={() => handleCreateComponents(converter)}
-                  >
-                    <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                      <div className="home-image relative">
-                        <img
-                          src={converter.image}
-                          alt={`${converter.title} Icon`}
-                          className="w-full rounded container h-40 object-cover mb-2"
-                        />
-                        <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                          <span className="text-white">
-                            {converter.description}
-                          </span>
-                        </div>
-                      </div>
-                      <strong className="block text-lg font-bold mb-1">
-                        {converter.title}
-                      </strong>
-                    </div>
-                  </Link>
-                ) : (
-                  <Link
-                    to={`/app/inbuilt/${converter.id}`}
-                    onClick={() => addToRecentTools(converter.id)}
-                  >
-                    <div className="flex flex-col justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg">
-                      <div className="home-image relative">
-                        <img
-                          src={converter.image}
-                          alt={`${converter.title} Icon`}
-                          className="w-full rounded container h-40 object-cover mb-2"
-                        />
-                        <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                          <span className="text-white">
-                            {converter.description}
-                          </span>
-                        </div>
-                      </div>
-                      <strong className="block text-lg font-bold mb-1">
-                        {converter.title}
-                      </strong>
-                    </div>
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h2 className="text-lg md:text-xl font-semibold mb-2">
-            Community published apps
-          </h2>
-          {renderCustomComponentCategories()}
-          {filteredCustomComponents.length === 0 ? (
-            <div className="text-gray-600">None found.</div>
-          ) : (
-            <div className="flex flex-wrap -mx-2">
-              {filteredCustomComponents.map((data, index) => (
-                <div
-                  key={index}
-                  className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.7%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
-                    data.approval_status === "pending"
-                      ? "border border-dashed border-red-400"
-                      : ""
-                  }`}
-                  onClick={() => handleImageClick(data)}
-                >
-                  <div className="home-image">
-                    {data.image_url && (
-                      <img
-                        className="w-full rounded container h-40 object-cover mb-2"
-                        src={data.image_url}
-                        alt="image-thumbnail"
-                      />
-                    )}
-                    <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
-                      <span>{data.description}</span>
-                    </div>
-                  </div>
-                  <p className="block text-lg font-bold mb-1">{data.title}</p>
-                  {data.approval_status === "pending" && (
-                    <span className="absolute text-hover text-red-500 text-center font-medium bg-black bg-opacity-50 p-2 rounded-md z-50 animate-puls">
-                      ⚠️ Caution: Component under review. Use with care.
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
+      <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
+        <div className="text-center py-4">
+          <p className="text-sm font-semibold">
+            &copy; 2024 Microcraft. All Rights Reserved.
+          </p>
+        </div>
+      </footer>
+
       {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
     </>
   );

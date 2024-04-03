@@ -3,8 +3,8 @@ import flower from "../../photos/flower.png";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
-// import { LOCALHOST_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
+import Graph from "./GraphComponent";
 
 interface Output {
   [key: string]: any;
@@ -14,8 +14,10 @@ const ActionPage = ({ output }) => {
   const [components, setComponents] = useState(output);
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
+  const [graphType, setGraphType] = useState<string>("bar");
   const [popup, setPopup] = useState(false);
-  const [data, setData] = useState<{ [key: string]: any}>({});
+  const [data, setData] = useState<{ [key: string]: any }>({});
+  // const [graphData, setgraphData] = useState<Output | string>();
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -25,21 +27,24 @@ const ActionPage = ({ output }) => {
 
   const setSelectedApp = (appId: string) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "credentials": "include"},
-     body: JSON.stringify({selected_app: appId })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ selected_app: appId }),
     }).then((response) => {
       if (response.ok) {
-         console.log("App selected successfully");
+        console.log("App selected successfully");
       } else {
         if (toast) {
-         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+          toast.error(
+            "Error initializing the app - some features of the app may not function properly. Please refresh the page and try again."
+          );
         }
       }
-    })
- }
+    });
+  };
 
   useEffect(() => {
     setLoadedData(savedFormData);
@@ -53,22 +58,21 @@ const ActionPage = ({ output }) => {
     }));
   };
 
-  const handleRun = async (
-    code: string,
-    data: { [key: string]: string }
-  ) => {
+  const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
-         for (const key in result) {
-           vals[key] = result[key];
-         }
-         setData(vals);
+        for (const key in result) {
+          vals[key] = result[key];
+        }
+        setData(vals);
       }
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
+      // setgraphData(result);
+      // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
@@ -78,7 +82,7 @@ const ActionPage = ({ output }) => {
   const formatOutput = (data: any) => {
     if (data === null || data === undefined) {
       console.error("Error: Data is null or undefined");
-      return "Error: Data is null or undefined";
+      return "No output available for Table.";
     }
 
     if (typeof data === "object") {
@@ -86,34 +90,54 @@ const ActionPage = ({ output }) => {
         if (data.length > 0 && typeof data[0] === "object") {
           const tableHeaders = Object.keys(data[0]);
           return (
-            <table>
-              <thead>
-                <tr>
-                  {tableHeaders.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item: any, index: number) => (
-                  <tr key={index}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-200">
+                  <tr>
                     {tableHeaders.map((header) => (
-                      <td key={header}>{formatOutput(item[header])}</td>
+                      <th
+                        key={header}
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {header}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.map((item: any, index: number) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
+                      {tableHeaders.map((header) => (
+                        <td
+                          key={header}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                        >
+                          {formatOutput(item[header])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
       } else {
         return (
-          <table>
-            <tbody>
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               {Object.entries(data).map(([key, value]: [string, any]) => (
                 <tr key={key}>
-                  <td>{key}</td>
-                  <td>{formatOutput(value)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {key}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatOutput(value)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -125,7 +149,7 @@ const ActionPage = ({ output }) => {
   };
 
   const saveClick = async () => {
-      try {
+    try {
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
         credentials: "include",
         method: "POST",
@@ -145,6 +169,7 @@ const ActionPage = ({ output }) => {
       }
 
       localStorage.removeItem("formData");
+      localStorage.removeItem("components");
       setPopup(true);
       setTimeout(() => {
         setPopup(false);
@@ -157,24 +182,29 @@ const ActionPage = ({ output }) => {
   };
 
   const goBack = (components) => {
-    const queryParams = new URLSearchParams({
-      components: JSON.stringify(components),
-    });
-    // window.location.href = `${LOCALHOST_API_URL}/converter/configure/configureDetails/configureInputOutput?${queryParams}`;
-    window.location.href = `/app/new?${queryParams}`;
+    // const queryParams = new URLSearchParams({
+    //   components: JSON.stringify(components),
+    // });
+
+    // window.location.href = `/app/new?${queryParams}`;
+
+    window.location.href = `/app/new`;
   };
 
+  console.log(data);
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
       <ToastContainer />
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
-          <h1 className="text-xl md:text-2xl font-bold">Showing preview of the {savedFormData.title} app</h1>
+          <h1 className="text-xl md:text-2xl font-bold">
+            Showing preview of the {savedFormData.title} app
+          </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
             onClick={() => goBack(components)}
           >
-            <span className="absolute text-hover text-white font-medium mt-10 -ml-10 px-2 bg-slate-500 p-1 rounded-md z-50">
+            <span className="absolute text-hover text-white font-medium mt-10 -ml-10 mr-2 md:mr-10 lg:-ml-20 px-2 bg-slate-500 p-1 rounded-md z-50">
               Return to edit the app
             </span>
             Back
@@ -185,6 +215,7 @@ const ActionPage = ({ output }) => {
             <li key={index} className="mb-4">
               ID: {component.id}, Label: {component.label}, Type:{" "}
               {component.type}, Placement: {component.placement}
+              {component.config && `, Config: ${component.config}`}
               {component.code && `, Code: ${component.code}`}
               <br />
               {component.type !== "button" && (
@@ -205,7 +236,7 @@ const ActionPage = ({ output }) => {
               )}
               {component.type === "button" && component.code && (
                 <button
-                  className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                  className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   id={component.id}
                   onClick={() => handleRun(component.code!, data)}
                 >
@@ -216,6 +247,38 @@ const ActionPage = ({ output }) => {
           ))}
         </ul>
 
+        {components.map((component, index) => (
+          <div key={index} className="mb-5">
+            {component.placement === "output" && component.type === "text" && (
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {data[component.id]
+                  ? data[component.id]
+                  : "No output available for Text."}
+              </pre>
+            )}
+            {component.placement === "output" && component.type === "json" && (
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {data[component.id]
+                  ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
+                  : "No output available for JSON."}
+              </pre>
+            )}
+            {component.placement === "output" && component.type === "table" && (
+              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {formatOutput(data[component.id])}
+              </div>
+            )}
+            {component.placement === "output" && component.type === "graph" && (
+              <div>
+                <Graph
+                  output={data[component.id]}
+                  configurations={component.config}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+
         <div className="flex justify-end">
           <button
             className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
@@ -225,7 +288,7 @@ const ActionPage = ({ output }) => {
           </button>
         </div>
 
-        <div className="mb-4">
+        <div className="mb-4 mt-2">
           <h2 className="text-xl font-bold">Output Format:</h2>
           <select
             value={outputFormat}
@@ -236,20 +299,32 @@ const ActionPage = ({ output }) => {
             <option value="table">Table</option>
           </select>
         </div>
+
         <div className="mt-4">
-          <h2 className="text-xl font-bold">Output:</h2>
-          {outputFormat === "json" ? (
-            <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {/* {JSON.stringify(outputCode, null, 2)} */}
-              {outputCode
-                ? JSON.stringify(outputCode, null, 2)
-                : "No output available"}
-            </pre>
-          ) : (
-            <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {formatOutput(outputCode)}
-            </div>
-          )}
+          <h2 className="text-xl font-bold">Execution log:</h2>
+          {
+            outputFormat === "json" ? (
+              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {outputCode
+                  ? JSON.stringify(outputCode, null, 2)
+                  : "No output available"}
+              </pre>
+            ) : outputFormat === "table" ? (
+              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                {formatOutput(outputCode)}
+              </div>
+            ) : (
+              // : outputFormat === "graph" ? (
+              //   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+              //     {components.map((component) => (
+              //         <Graph output={data[component.id]} configurations={component.config}/>
+              //     ))}
+              //   </div>
+              // )
+              <div></div>
+            )
+            // : null
+          }
         </div>
       </div>
 
@@ -265,7 +340,8 @@ const ActionPage = ({ output }) => {
               Congratulations!
             </p>
             <p className="lg:text-lg xl:text-xl text-[#85909B] text-center">
-              Fantastic work! Your app has been created and submitted for review.
+              Fantastic work! Your app has been created and submitted for
+              review.
             </p>
             <p className="md:mt-2 text-green-600 text-lg lg:text-xl text-center">
               Keep innovating and sharing your creativity!

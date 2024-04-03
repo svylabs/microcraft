@@ -1,9 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ActionPage from "./ActionPage";
 import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
+
+const saveDataToLocalStorage = (key, data) => {
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+const getDataFromLocalStorage = (key) => {
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : null;
+};
 
 interface CustomComponent {
   id: string;
@@ -11,28 +22,55 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
+  config?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
-  const queryParams = new URLSearchParams(window.location.search);
-  const savedComponents = JSON.parse(queryParams.get('components') || '[]');
-  const [components, setComponents] = useState<CustomComponent[]>(savedComponents);
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
     label: "",
     type: "text",
     placement: "input",
     code: "",
+    config: "",
   });
+  const [components, setComponents] = useState<CustomComponent[]>([]);
+  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [showOutput, setShowOutput] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
-  
+  const [graphConfig, setGraphConfig] = useState<any>({
+    graphTitle: "Enter Graph Title",
+    graphType: "bar/line",
+    size: {
+      width: 500,
+      height: 400,
+    },
+    axis: {
+      xAxis: {
+        titleX: "Enter X-axis Title",
+      },
+      yAxis: {
+        titleY: "Enter Y-axis Title",
+      },
+    },
+    message: "Please fill in the required information to generate your graph. Choose between bar or line graph.",
+  });
+
+  useEffect(() => {
+    const savedComponents = getDataFromLocalStorage("components");
+    if (savedComponents && Array.isArray(savedComponents)) {
+      setComponents(savedComponents);
+    }
+  }, []);
+
   const handleEditComponent = (index: number) => {
     setIsEditMode(true);
     setEditIndex(index);
-    setCurrentComponent(components[index]);
+    setCurrentComponent({
+      ...components[index],
+      config: components[index].config || JSON.stringify(graphConfig, null, 2),
+    });
   };
 
   const handleChange = (
@@ -41,50 +79,93 @@ const ConfigureInputsOutputs: React.FC = () => {
     >
   ) => {
     const { name, value } = e.target;
-    setCurrentComponent((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+
+    if (
+      name === "placement" &&
+      (value === "action" || value === "output") &&
+      currentComponent.type === "text"
+    ) {
+      setCurrentComponent((prevState) => ({
+        ...prevState,
+        [name]: value,
+        type: "button",
+      }));
+    } else {
+      setCurrentComponent((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   const handleAddComponent = () => {
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
-      alert("Please provide both ID and Label.");
+      toast.error("Please provide both ID and Label.");
       return;
     }
-  
-    if (components.some(component => component.id.trim() === currentComponent.id.trim() && components.indexOf(component) !== editIndex)) {
-      alert("Field with the same ID already exists. Please use a different ID.");
+
+    if (
+      currentComponent.placement === "action" &&
+      !currentComponent.code?.trim()
+    ) {
+      toast.error("Please provide code for action placement.");
       return;
     }
-  
-    if (currentComponent.type === "button" && !currentComponent.code?.trim()) {
-      alert("Please provide code for Button type.");
-      return;
-    }
-  
-    if (isEditMode) {
-      const updatedComponents = [...components];
-      updatedComponents[editIndex] = currentComponent;
-      setComponents(updatedComponents);
+
+    const updatedComponents = [...components];
+
+    if (isEditMode && editIndex !== -1) {
+      updatedComponents[editIndex] = {
+        ...currentComponent,
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+      };
       setIsEditMode(false);
       setEditIndex(-1);
     } else {
-      setComponents((prevState) => [...prevState, currentComponent]);
-      setInputValues((prevInputValues) => ({
-        ...prevInputValues,
-        [currentComponent.id]: "",
-      }));
+      if (
+        updatedComponents.some(
+          (component) =>
+            component.id.trim() === currentComponent.id.trim() &&
+            updatedComponents.indexOf(component) !== editIndex
+        )
+      ) {
+        toast.error(
+          "Field with the same ID already exists. Please use a different ID."
+        );
+        return;
+      }
+      updatedComponents.push({
+        ...currentComponent,
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+      });
     }
+
+    setComponents(updatedComponents);
+
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [currentComponent.id]: "",
+    }));
+
+    saveDataToLocalStorage("components", updatedComponents);
+
     setCurrentComponent({
       id: "",
       label: "",
       type: "text",
       placement: "input",
       code: "",
+      config: "",
     });
-  };  
-  
+  };
 
   const handlePreview = async () => {
     console.log(components);
@@ -107,6 +188,10 @@ const ConfigureInputsOutputs: React.FC = () => {
       delete updatedInputValues[id];
       return updatedInputValues;
     });
+    saveDataToLocalStorage(
+      "components",
+      components.filter((component) => component.id !== id)
+    );
   };
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -142,6 +227,10 @@ const ConfigureInputsOutputs: React.FC = () => {
     return <ActionPage output={components} />;
   }
 
+  // const handleGraphConfigChange = (configKey: string, value: string) => {
+  //   setGraphConfig(JSON.parse(value));
+  // };
+
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
       <div className="p-1 md:p-4 bg-gray-100">
@@ -160,21 +249,74 @@ const ConfigureInputsOutputs: React.FC = () => {
             Configure inputs / outputs
           </p>
         </div>
+
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-          Type:
+          Placement:
           <select
             className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-            name="type"
-            value={currentComponent.type}
+            name="placement"
+            value={currentComponent.placement}
             onChange={handleChange}
           >
-            <option value="text">Text</option>
-            <option value="number">Number</option>
-            <option value="image">Image</option>
-            <option value="file">File</option>
-            <option value="button">Button</option>
+            <option value="input">Input</option>
+            <option value="action">Action</option>
+            <option value="output">Output</option>
           </select>
         </label>
+
+        {currentComponent.placement === "input" && (
+          <div>
+            <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+              Type:
+              <select
+                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
+                name="type"
+                value={currentComponent.type}
+                onChange={handleChange}
+              >
+                <option value="text">Text</option>
+                <option value="number">Number</option>
+                <option value="file">File</option>
+              </select>
+            </label>
+          </div>
+        )}
+
+        {currentComponent.placement === "action" && (
+          <div>
+            <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+              Type:
+              <select
+                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
+                name="type"
+                value={currentComponent.type}
+                onChange={handleChange}
+              >
+                <option value="button">Button</option>
+              </select>
+            </label>
+          </div>
+        )}
+
+        {currentComponent.placement === "output" && (
+          <div>
+            <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+              Type:
+              <select
+                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
+                name="type"
+                value={currentComponent.type}
+                onChange={handleChange}
+              >
+                <option value="">Select Type</option>
+                <option value="text">Text</option>
+                <option value="json">JSON</option>
+                <option value="table">Table</option>
+                <option value="graph">Graph</option>
+              </select>
+            </label>
+          </div>
+        )}
 
         <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
           Label:
@@ -200,38 +342,8 @@ const ConfigureInputsOutputs: React.FC = () => {
           />
         </label>
 
-
-        {currentComponent.type !== "button" && (
-          <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-            Placement:
-            <select
-              className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-              name="placement"
-              value={currentComponent.placement}
-              onChange={handleChange}
-            >
-              <option value="input">Input</option>
-              <option value="output">Output</option>
-              <option value="action">Action</option>
-            </select>
-          </label>
-        )}
-
-        {currentComponent.type === "button" && (
+        {currentComponent.placement === "action" && (
           <div>
-            <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-              Placement:
-              <select
-                className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                name="placement"
-                value={currentComponent.placement}
-                onChange={handleChange}
-              >
-                <option value="output">Output</option>
-                <option value="action">Action</option>
-              </select>
-            </label>
-
             <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
               Code:
             </label>
@@ -256,6 +368,36 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         )}
 
+        {currentComponent.placement === "output" &&
+          currentComponent.type === "graph" && (
+            <div>
+              <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+                Configuration:
+              </label>
+              <div className="flex bg-gray-900 rounded-md p-2">
+                <div
+                  className="px-2 text-gray-500"
+                  ref={numbersRef}
+                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                ></div>
+                <textarea
+                  ref={textareaRef}
+                  className="flex-1 bg-gray-900 text-white outline-none"
+                  style={{ overflowY: "hidden" }}
+                  placeholder="Enter graph configuration"
+                  cols={30}
+                  rows={10}
+                  name="config"
+                  value={
+                    currentComponent.config ||
+                    JSON.stringify(graphConfig, null, 2)
+                  }
+                  onChange={handleChange}
+                ></textarea>
+              </div>
+            </div>
+          )}
+
         <button
           className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
           onClick={handleAddComponent}
@@ -270,6 +412,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
+                {component.config && `, Config: ${component.config}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {component.type !== "button" && (
@@ -279,12 +422,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                         {component.label}:
                       </label>
                       <div className="flex gap-3 md:gap-5">
-                      <button onClick={() => handleEditComponent(index)}><img src={edit} alt="edit"></img></button>
-                      <button
-                        onClick={() => handleDeleteComponent(component.id)}
-                      >
-                        <img src={trash} alt="trash"></img>
-                      </button>
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
                       </div>
                     </div>
                     <input
@@ -306,12 +451,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                         {component.label}:
                       </label>
                       <div className="flex gap-3 md:gap-5">
-                      <button onClick={() => handleEditComponent(index)}><img src={edit} alt="edit"></img></button>
-                      <button
-                        onClick={() => handleDeleteComponent(component.id)}
-                      >
-                        <img src={trash} alt="trash"></img>
-                      </button>
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
                       </div>
                     </div>
                     <button
@@ -336,7 +483,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </button>
         </div>
       </div>
-      
+      <ToastContainer />
     </div>
   );
 };

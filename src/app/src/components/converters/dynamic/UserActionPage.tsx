@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
+import Graph from "./GraphComponent";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
+
 interface Output {
   [key: string]: any;
 }
 
 const UserActionPage = () => {
   const location = useLocation();
-  const { appId } = useParams<{appId: string, title?: string}>();
+  const { appId } = useParams<{ appId: string; title?: string }>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
-  const [components, setComponents] = useState(output?.component_definition || []);
+  const [components, setComponents] = useState(
+    output?.component_definition || []
+  );
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
+  const [graphType, setGraphType] = useState<string>("bar");
   // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
@@ -24,46 +29,50 @@ const UserActionPage = () => {
   const [loadedData, setLoadedData] = useState(savedFormData);
 
   const isAuthenticated = () => {
-    if (localStorage.getItem("userDetails")) { 
+    if (localStorage.getItem("userDetails")) {
       return true;
     }
     return false;
-  }
+  };
 
   const setSelectedApp = (appId: string | undefined) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
-     method: "POST",
-     headers: {
-       "Content-Type": "application/json",
-       "credentials": "include"},
-     body: JSON.stringify({selected_app: appId })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ selected_app: appId }),
     }).then((response) => {
       if (response.ok) {
-         console.log("App selected successfully");
+        console.log("App selected successfully");
       } else {
         if (toast) {
-         toast.error("Error initializing the app - some features of the app may not function properly. Please refresh the page and try again.");
+          toast.error(
+            "Error initializing the app - some features of the app may not function properly. Please refresh the page and try again."
+          );
         }
       }
-    })
+    });
   };
 
   useEffect(() => {
     setLoadedData(savedFormData);
-
     if (components.length === 0) {
-       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
+      fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
         .then((data) => {
           console.log("Component detail: ", data);
           setComponents(data.component_definition || []);
           setOutput(data);
           if (data.is_authentication_required) {
-             if (isAuthenticated()) {
-               setSelectedApp(appId);
-             } else {
-               toast.error("Some features of this app may work only if you are logged into the platform.");
-             }
+            if (isAuthenticated()) {
+              setSelectedApp(appId);
+            } else {
+              toast.error(
+                "Some features of this app may work only if you are logged into the platform."
+              );
+            }
           }
         });
     }
@@ -84,13 +93,14 @@ const UserActionPage = () => {
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
-         for (const key in result) {
-           vals[key] = result[key];
-         }
-         setData(vals);
+        for (const key in result) {
+          vals[key] = result[key];
+        }
+        setData(vals);
       }
       console.log(result);
-      setOutputCode(result);
+      setOutputCode(vals);
+      // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
@@ -100,7 +110,7 @@ const UserActionPage = () => {
   const formatOutput = (data: any) => {
     if (data === null || data === undefined) {
       console.error("Error: Data is null or undefined");
-      return "Error: Data is null or undefined";
+      return "No output available for Table.";
     }
 
     if (typeof data === "object") {
@@ -108,34 +118,54 @@ const UserActionPage = () => {
         if (data.length > 0 && typeof data[0] === "object") {
           const tableHeaders = Object.keys(data[0]);
           return (
-            <table>
-              <thead>
-                <tr>
-                  {tableHeaders.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item: any, index: number) => (
-                  <tr key={index}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-200">
+                  <tr>
                     {tableHeaders.map((header) => (
-                      <td key={header}>{formatOutput(item[header])}</td>
+                      <th
+                        key={header}
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        {header}
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {data.map((item: any, index: number) => (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
+                      {tableHeaders.map((header) => (
+                        <td
+                          key={header}
+                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                        >
+                          {formatOutput(item[header])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           );
         }
       } else {
         return (
-          <table>
-            <tbody>
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
               {Object.entries(data).map(([key, value]: [string, any]) => (
                 <tr key={key}>
-                  <td>{key}</td>
-                  <td>{formatOutput(value)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {key}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {formatOutput(value)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -159,94 +189,112 @@ const UserActionPage = () => {
   return (
     <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
       <ToastContainer />
-      <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">{output.title || appId}</h1>
+      <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
+        {output.title || appId}
+      </h1>
       <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
-      {(output.approval_status || 'pending') === "pending" && (
-        <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
-          <p>
-            <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
-            This tool is currently under review. Proceed with caution.
-          </p>
-        </div>
-      )}
-      <div className="px-2 md:p- text-wrap">            
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-          <h1 className="font-semibold md:text-xl hidden md:block">{output.title || appId}</h1>
-          <button
-            className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
-            onClick={() => goBack()}
-          >
-            <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
-              Back To Home
-            </span>
-            Back
-          </button>
-          <h1 className="block md:hidden font-semibold text-lg mt-2">{output.title || appId}</h1>
-        </div>
-        <ul className="whitespace-normal break-words">
-          {components.map((component, index) => (
-            <li key={index} className="mb-4">
-              ID: {component.id}, Label: {component.label}, Type:{" "}
-              {component.type}, Placement: {component.placement}
-              {component.code && `, Code: ${component.code}`}
-              <br />
-              {component.type !== "button" && (
-                <div>
-                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                    {component.label}:
-                  </label>
-                  <input
-                    className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                    type={component.type}
+        {(output.approval_status || "pending") === "pending" && (
+          <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
+            <p>
+              <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
+              This tool is currently under review. Proceed with caution.
+            </p>
+          </div>
+        )}
+        <div className="px-2 md:p- text-wrap">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+            <h1 className="font-semibold md:text-xl hidden md:block">
+              {output.title || appId}
+            </h1>
+            <button
+              className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
+              onClick={goBack}
+            >
+              <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
+                Back To Home
+              </span>
+              Back
+            </button>
+            <h1 className="block md:hidden font-semibold text-lg mt-2">
+              {output.title || appId}
+            </h1>
+          </div>
+          <ul className="whitespace-normal break-words">
+            {components.map((component, index) => (
+              <li key={index} className="mb-4">
+                ID: {component.id}, Label: {component.label}, Type:{" "}
+                {component.type}, Placement: {component.placement}
+                {component.config && `, Config: ${component.config}`}
+                {component.code && `, Code: ${component.code}`}
+                <br />
+                {component.type !== "button" && (
+                  <div>
+                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                      {component.label}:
+                    </label>
+                    <input
+                      className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                      type={component.type}
+                      id={component.id}
+                      value={data[component.id] || ""}
+                      onChange={(e) =>
+                        handleInputChange(component.id, e.target.value)
+                      }
+                    />
+                  </div>
+                )}
+                {component.type === "button" && component.code && (
+                  <button
+                    className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                     id={component.id}
-                    value={data[component.id] || ""}
-                    onChange={(e) =>
-                      handleInputChange(component.id, e.target.value)
-                    }
-                  />
-                </div>
-              )}
-              {component.type === "button" && component.code && (
-                <button
-                  className="px-4 p-2 mt-2 font-semibold w-full md:w-40 overflow-x-hidden text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
-                  id={component.id}
-                  onClick={() => handleRun(component.code!, data)}
-                >
-                  {component.label}
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
+                    onClick={() => handleRun(component.code!, data)}
+                  >
+                    {component.label}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
 
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">Output Format:</h2>
-          <select
-            value={outputFormat}
-            onChange={(e) => setOutputFormat(e.target.value)}
-            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded focus:outline-none"
-          >
-            <option value="json">JSON</option>
-            <option value="table">Table</option>
-          </select>
-        </div>
-        <div className="mt-4">
-          <h2 className="text-xl font-bold">Output:</h2>
-          {outputFormat === "json" ? (
-            <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {outputCode
-                ? JSON.stringify(outputCode, null, 2)
-                : "No output available"}
-            </pre>
-          ) : (
-            <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              {formatOutput(outputCode)}
+          {components.map((component, index) => (
+            <div key={index}>
+              {component.placement === "output" &&
+                component.type === "text" && (
+                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {data[component.id]
+                      ? data[component.id]
+                      : "No output available for Text."}
+                  </pre>
+                )}
+              {component.placement === "output" &&
+                component.type === "json" && (
+                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {data[component.id]
+                      ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
+                      : "No output available for JSON"}
+                  </pre>
+                )}
+              {component.placement === "output" &&
+                component.type === "table" && (
+                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
+                    {formatOutput(outputCode)}
+                  </div>
+                )}
+              {component.placement === "output" &&
+                component.type === "graph" && (
+                  <div>
+                    <Graph
+                      output={data[component.id]}
+                      configurations={component.config}
+                    />
+                  </div>
+                )}
             </div>
-          )}
-        </div>
-      </div>
+          ))}
 
-      {/* {feedback && (
+        </div>
+
+        {/* {feedback && (
         <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
           <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
             <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
@@ -278,7 +326,7 @@ const UserActionPage = () => {
           </div>
         </div>
       )} */}
-    </div>
+      </div>
     </div>
   );
 };
