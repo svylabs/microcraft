@@ -222,11 +222,6 @@ const UserActionPage = () => {
           <ul className="whitespace-normal break-words">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                ID: {component.id}, Label: {component.label}, Type:{" "}
-                {component.type}, Placement: {component.placement}
-                {component.config && `, Config: ${component.config}`}
-                {component.code && `, Code: ${component.code}`}
-                <br />
                 {component.type !== "button" && (
                   <div>
                     <label className="text-slate-500 font-semibold text-lg xl:text-xl">
