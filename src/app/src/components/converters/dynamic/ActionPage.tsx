@@ -273,6 +273,8 @@ const ActionPage = ({ output }) => {
                 <Graph
                   output={data[component.id]}
                   configurations={component.config}
+                  // id={`graph-container-${index}`}
+                  graphId={`graph-container-${component.id}`}
                 />
               </div>
             )}
@@ -313,14 +315,17 @@ const ActionPage = ({ output }) => {
               <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {formatOutput(outputCode)}
               </div>
-            ) : (
-              // : outputFormat === "graph" ? (
+            )
+            
+            // : outputFormat === "graph" ? (
               //   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
               //     {components.map((component) => (
-              //         <Graph output={data[component.id]} configurations={component.config}/>
+              //         <Graph output={data[component.id]} configurations={component.config} id={`graph-container-${component.id}`} />
               //     ))}
               //   </div>
               // )
+
+            : (
               <div></div>
             )
             // : null
