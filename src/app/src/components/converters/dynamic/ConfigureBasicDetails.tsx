@@ -84,11 +84,11 @@ const ConfigureBasicDetails: React.FC = () => {
                 htmlFor="title"
                 className="text-[#727679] font-semibold text-lg xl:text-xl"
               >
-                Title (Limit: 22 characters)
+                Title (Limit: 32 characters)
               </label>
               <input
                 type="text"
-                maxLength={22}
+                maxLength={32}
                 className="focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 p-3 px-4 bg-[#F7F8FB] xl:text-2xl text-[#21262C] placeholder:italic"
                 placeholder="Enter app title.."
                 value={title}
