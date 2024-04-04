@@ -286,6 +286,7 @@ const UserActionPage = () => {
                     <Graph
                       output={data[component.id]}
                       configurations={component.config}
+                      graphId={`graph-container-${component.id}`}
                     />
                   </div>
                 )}
