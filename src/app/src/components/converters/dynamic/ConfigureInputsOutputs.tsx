@@ -23,6 +23,7 @@ interface CustomComponent {
   placement: string;
   code?: string;
   config?: any;
+  dropdownRadioConfig?:any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -33,6 +34,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     placement: "input",
     code: "",
     config: "",
+    dropdownRadioConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -57,6 +59,10 @@ const ConfigureInputsOutputs: React.FC = () => {
     message: "Please fill in the required information to generate your graph. Choose between bar or line graph.",
   });
 
+  const [dropdownRadioConfig, setDropdownRadioConfig] = useState<any>({
+    value: "Enter value",
+   });
+
   useEffect(() => {
     const savedComponents = getDataFromLocalStorage("components");
     if (savedComponents && Array.isArray(savedComponents)) {
@@ -70,6 +76,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       ...components[index],
       config: components[index].config || JSON.stringify(graphConfig, null, 2),
+      dropdownRadioConfig: components[index].dropdownRadioConfig || JSON.stringify(dropdownRadioConfig, null, 2)
     });
   };
 
@@ -122,6 +129,11 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
+        dropdownRadioConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" || currentComponent.type === "radio")
+            ? currentComponent.dropdownRadioConfig || JSON.stringify(dropdownRadioConfig, null, 2)
+            : ""
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -145,6 +157,11 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
+        dropdownRadioConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" || currentComponent.type === "radio")
+            ? currentComponent.dropdownRadioConfig || JSON.stringify(dropdownRadioConfig, null, 2)
+            : ""
       });
     }
 
@@ -164,6 +181,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       placement: "input",
       code: "",
       config: "",
+      dropdownRadioConfig: ""
     });
   };
 
@@ -265,7 +283,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         </label>
 
         {currentComponent.placement === "input" && (
-          <div>
+          <>
             <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
               Type:
               <select
@@ -277,9 +295,49 @@ const ConfigureInputsOutputs: React.FC = () => {
                 <option value="text">Text</option>
                 <option value="number">Number</option>
                 <option value="file">File</option>
+                <option value="dropdown">Dropdown</option>
+                <option value="radio">Radio</option>
               </select>
             </label>
-          </div>
+
+            {(currentComponent.type === "dropdown" ||
+              currentComponent.type === "radio") && (
+              <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Dropdown/Radio Options:
+                </label>
+                {/* <textarea
+                  className="block w-full p-2 mt-1 bg-gray-900 text-white border border-gray-300 rounded-md focus:outline-none"
+                  placeholder="Enter options separated by commas"
+                  name="dropdownRadioConfig"
+                  value={currentComponent.dropdownRadioConfig}
+                  onChange={handleChange}
+                  rows={3}
+                ></textarea> */}
+                <div className="flex bg-gray-900 rounded-md p-2">
+                <div
+                  className="px-2 text-gray-500"
+                  ref={numbersRef}
+                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                ></div>
+                <textarea
+                  ref={textareaRef}
+                  className="flex-1 bg-gray-900 text-white outline-none"
+                  style={{ overflowY: "hidden" }}
+                  placeholder="Enter options separated by commas"
+                  name="dropdownRadioConfig"
+                  cols={30}
+                  rows={10}
+                  value={
+                    currentComponent.dropdownRadioConfig ||
+                    JSON.stringify(dropdownRadioConfig, null, 2)
+                  }
+                  onChange={handleChange}
+                ></textarea>
+              </div>
+              </div>
+            )}
+          </>
         )}
 
         {currentComponent.placement === "action" && (
@@ -413,6 +471,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
                 {component.config && `, Config: ${component.config}`}
+                {component.dropdownRadioConfig && `, DropdownRadioConfig: ${component.dropdownRadioConfig}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {component.type !== "button" && (
@@ -444,6 +503,51 @@ const ConfigureInputsOutputs: React.FC = () => {
                     />
                   </div>
                 )}
+
+                {component.type === "dropdown" && (
+      <div>
+        <label htmlFor={component.id} className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+          {component.label}:
+        </label>
+        <select
+          className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+          id={component.id}
+          value={inputValues[component.id]}
+          onChange={(e) => handleInputChange(component.id, e.target.value)}
+        >
+          {/* Options for dropdown */}
+          {component.dropdownRadioConfig && component.dropdownRadioConfig.split(",").map((option, idx) => (
+            <option key={idx} value={option.trim()}>
+              {option.trim()}
+            </option>
+          ))}
+        </select>
+      </div>
+    )}
+
+    {component.type === "radio" && (
+      <div>
+        <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+          {component.label}:
+        </label>
+        {/* Options for radio */}
+        {component.dropdownRadioConfig && component.dropdownRadioConfig.split(",").map((option, idx) => (
+          <div key={idx} className="flex items-center">
+            <input
+              type="radio"
+              id={`${component.id}_${idx}`}
+              name={component.id}
+              value={option.trim()}
+              checked={inputValues[component.id] === option.trim()}
+              onChange={(e) => handleInputChange(component.id, e.target.value)}
+              className="mr-2"
+            />
+            <label htmlFor={`${component.id}_${idx}`}>{option.trim()}</label>
+          </div>
+        ))}
+      </div>
+    )}
+                
                 {component.type === "button" && component.code && (
                   <div>
                     <div className="flex justify-between">
