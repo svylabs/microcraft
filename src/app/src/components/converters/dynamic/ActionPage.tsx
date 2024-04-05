@@ -193,9 +193,7 @@ const ActionPage = ({ output }) => {
               </pre>
             )}
             {component.placement === "output" && component.type === "table" && (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                <Table data={data[component.id]} />
-              </div>
+              <Table data={data[component.id]} />
             )}
             {component.placement === "output" && component.type === "graph" && (
               <div>
@@ -237,22 +235,11 @@ const ActionPage = ({ output }) => {
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
-                  : "No output available"}
+                  : "No output available for JSON."}
               </pre>
             ) : outputFormat === "table" ? (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {/* {formatOutput(outputCode)} */}
-                <Table data={outputCode} />
-              </div>
+              <Table data={outputCode} />
             ) : (
-              // : outputFormat === "graph" ? (
-              //   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              //     {components.map((component) => (
-              //         <Graph output={data[component.id]} configurations={component.config} id={`graph-container-${component.id}`} />
-              //     ))}
-              //   </div>
-              // )
-
               <div></div>
             )
             // : null

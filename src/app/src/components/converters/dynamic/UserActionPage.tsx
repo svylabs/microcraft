@@ -203,9 +203,7 @@ const UserActionPage = () => {
                 )}
               {component.placement === "output" &&
                 component.type === "table" && (
-                  <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    <Table data={data[component.id]} />
-                  </div>
+                  <Table data={data[component.id]} />
                 )}
               {component.placement === "output" &&
                 component.type === "graph" && (
