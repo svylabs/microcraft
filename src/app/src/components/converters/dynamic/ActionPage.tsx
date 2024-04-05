@@ -6,6 +6,7 @@ import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
 import Graph from "./GraphComponent";
 import Table from "./TableComponent";
+import TextOutput from "./TextOutput";
 
 interface Output {
   [key: string]: any;
@@ -182,11 +183,7 @@ const ActionPage = ({ output }) => {
         {components.map((component, index) => (
           <div key={index} className="mb-5">
             {component.placement === "output" && component.type === "text" && (
-              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {data[component.id]
-                  ? data[component.id]
-                  : "No output available for Text."}
-              </pre>
+              <TextOutput data={data[component.id]} />
             )}
             {component.placement === "output" && component.type === "json" && (
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
@@ -205,7 +202,6 @@ const ActionPage = ({ output }) => {
                 <Graph
                   output={data[component.id]}
                   configurations={component.config}
-                  // id={`graph-container-${index}`}
                   graphId={`graph-container-${component.id}`}
                 />
               </div>

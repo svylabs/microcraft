@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import Graph from "./GraphComponent";
 import Table from "./TableComponent";
+import TextOutput from "./TextOutput";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
@@ -190,11 +191,7 @@ const UserActionPage = () => {
             <div key={index}>
               {component.placement === "output" &&
                 component.type === "text" && (
-                  <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    {data[component.id]
-                      ? data[component.id]
-                      : "No output available for Text."}
-                  </pre>
+                  <TextOutput data={data[component.id]} />
                 )}
               {component.placement === "output" &&
                 component.type === "json" && (
