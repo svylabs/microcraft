@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
-import Graph from "./GraphComponent";
-import Table from "./TableComponent";
-import TextOutput from "./TextOutput";
+import Graph from "./outputPlacement/GraphComponent";
+import Table from "./outputPlacement/TableComponent";
+import TextOutput from "./outputPlacement/TextOutput";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
@@ -158,7 +158,7 @@ const UserActionPage = () => {
                 {component.config && `, Config: ${component.config}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
-                {component.type !== "button" && (
+                {(component.type === "text" || component.type === "number" || component.type === "file" || component.type === "table" || component.type === "json" || component.type === "graph") && (
                   <div>
                     <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                       {component.label}:
