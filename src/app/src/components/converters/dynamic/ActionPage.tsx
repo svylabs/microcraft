@@ -149,6 +149,8 @@ const ActionPage = ({ output }) => {
               ID: {component.id}, Label: {component.label}, Type:{" "}
               {component.type}, Placement: {component.placement}
               {component.config && `, Config: ${component.config}`}
+              {component.optionsConfig &&
+                `, optionsConfig: ${component.optionsConfig}`}
               {component.code && `, Code: ${component.code}`}
               <br />
               {(component.type === "text" ||
@@ -170,6 +172,74 @@ const ActionPage = ({ output }) => {
                       handleInputChange(component.id, e.target.value)
                     }
                   />
+                </div>
+              )}
+              {component.type === "dropdown" && (
+                <select
+                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                  id={component.id}
+                  value={data[component.id] || ""}
+                  onChange={(e) =>
+                    handleInputChange(component.id, e.target.value)
+                  }
+                >
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => (
+                        <option key={idx} value={option.trim()}>
+                          {option.trim()}
+                        </option>
+                      )
+                    )}
+                </select>
+              )}
+              {component.type === "radio" && (
+                <div className="flex flex-col gap-2">
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => (
+                        <div key={idx} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={`${component.id}_${idx}`}
+                            name={component.id}
+                            value={option.trim()}
+                            checked={data[component.id] === option}
+                            onChange={(e) =>
+                              handleInputChange(component.id, e.target.value)
+                            }
+                            className="mr-2"
+                          />
+                          <label htmlFor={`${component.id}_${idx}`}>
+                            {option.trim()}
+                          </label>
+                        </div>
+                      )
+                    )}
+                </div>
+              )}
+              {component.type === "checkbox" && (
+                <div className="flex flex-col gap-2">
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => (
+                        <div key={idx} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id={`${component.id}_${idx}`}
+                            name={component.id}
+                            value={option.trim()}
+                            onChange={(e) =>
+                              handleInputChange(component.id, e.target.value)
+                            }
+                            className="mr-2"
+                          />
+                          <label htmlFor={`${component.id}_${idx}`}>
+                            {option.trim()}
+                          </label>
+                        </div>
+                      )
+                    )}
                 </div>
               )}
               {component.type === "button" && component.code && (

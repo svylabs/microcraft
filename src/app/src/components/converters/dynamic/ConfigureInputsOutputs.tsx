@@ -514,6 +514,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                     />
                   </div>
                 )}
+                
                 {component.type === "dropdown" && (
                   <div>
                     <div className="flex justify-between">
