@@ -38,6 +38,31 @@ const GraphComponent: React.FC<Props> = ({
   const renderGraph = () => {
     if (!config || !output) return;
 
+    const convertToArray = (data: any): [string, any][] => {
+      if (Array.isArray(data)) {
+        return data;
+      } else if (typeof data === "object") {
+        return Object.entries(data);
+      } else {
+        console.error("Output data format is not supported.");
+        return [];
+      }
+    };
+
+    let dataValues: number[];
+    let dataLabels: string[];
+    const keyValueArray = convertToArray(output);
+    dataValues = keyValueArray.map(([key, value]: [string, any]) => {
+      if (typeof value === "boolean") {
+        return value ? 1 : 0;
+      } else if (!isNaN(parseFloat(value))) {
+        return parseFloat(value);
+      } else {
+        return 0; // other text values as 0
+      }
+    });
+    dataLabels = keyValueArray.map(([key, value]: [string, any]) => key);
+
     const containerId = `graph-container-${graphId}`;
     const container = d3.select(`#${containerId}`);
 
@@ -56,20 +81,20 @@ const GraphComponent: React.FC<Props> = ({
               return null;
             })();
 
-      let dataValues, dataLabels;
+      // let dataValues, dataLabels;
 
-      if (Array.isArray(output)) {
-        dataValues = output.map((value: any) => parseFloat(value[1]));
-        dataLabels = output.map((value: any) => value[0]);
-      } else if (typeof output === "object") {
-        dataValues = Object.values(output).map((value: any) =>
-          parseFloat(value)
-        );
-        dataLabels = Object.keys(output);
-      } else {
-        console.error("Output is not an array or object.");
-        return;
-      }
+      // if (Array.isArray(output)) {
+      //   dataValues = output.map((value: any) => parseFloat(value[1]));
+      //   dataLabels = output.map((value: any) => value[0]);
+      // } else if (typeof output === "object") {
+      //   dataValues = Object.values(output).map((value: any) =>
+      //     parseFloat(value)
+      //   );
+      //   dataLabels = Object.keys(output);
+      // } else {
+      //   console.error("Output is not an array or object.");
+      //   return;
+      // }
 
       const svgWidth = config?.size?.width || 500;
       const svgHeight = config?.size.height || 400;

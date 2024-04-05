@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import Graph from "./GraphComponent";
+import Table from "./TableComponent";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
@@ -18,8 +19,6 @@ const UserActionPage = () => {
   );
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
-  const [outputFormat, setOutputFormat] = useState<string>("json");
-  const [graphType, setGraphType] = useState<string>("bar");
   // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
@@ -107,75 +106,6 @@ const UserActionPage = () => {
     }
   };
 
-  const formatOutput = (data: any) => {
-    if (data === null || data === undefined) {
-      console.error("Error: Data is null or undefined");
-      return "No output available for Table.";
-    }
-
-    if (typeof data === "object") {
-      if (Array.isArray(data)) {
-        if (data.length > 0 && typeof data[0] === "object") {
-          const tableHeaders = Object.keys(data[0]);
-          return (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-200">
-                  <tr>
-                    {tableHeaders.map((header) => (
-                      <th
-                        key={header}
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {data.map((item: any, index: number) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-100 transition-colors"
-                    >
-                      {tableHeaders.map((header) => (
-                        <td
-                          key={header}
-                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                        >
-                          {formatOutput(item[header])}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
-        }
-      } else {
-        return (
-          <table className="min-w-full divide-y divide-gray-200">
-            <tbody className="bg-white divide-y divide-gray-200">
-              {Object.entries(data).map(([key, value]: [string, any]) => (
-                <tr key={key}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {key}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatOutput(value)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      }
-    }
-    return data;
-  };
-
   const goBack = () => {
     // setFeedback(true);
     window.location.href = "/";
@@ -222,6 +152,11 @@ const UserActionPage = () => {
           <ul className="whitespace-normal break-words">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
+                ID: {component.id}, Label: {component.label}, Type:{" "}
+                {component.type}, Placement: {component.placement}
+                {component.config && `, Config: ${component.config}`}
+                {component.code && `, Code: ${component.code}`}
+                <br />
                 {component.type !== "button" && (
                   <div>
                     <label className="text-slate-500 font-semibold text-lg xl:text-xl">
@@ -272,7 +207,7 @@ const UserActionPage = () => {
               {component.placement === "output" &&
                 component.type === "table" && (
                   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                    {formatOutput(outputCode)}
+                    <Table data={data[component.id]} />
                   </div>
                 )}
               {component.placement === "output" &&
