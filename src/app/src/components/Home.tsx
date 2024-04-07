@@ -397,7 +397,7 @@ const Home: React.FC = () => {
               <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
                 Microcraft
                 <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                Ad free tools: minimum distraction, maximum utility
+                Minimum distraction, maximum utility
                 </span>
               </h2>
             </div>
@@ -432,7 +432,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search..."
+            placeholder="Search in a growing set of ad-free apps.."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
