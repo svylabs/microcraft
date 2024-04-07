@@ -432,7 +432,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search in a growing set of ad-free apps.."
+            placeholder="Search in a growing set of ad-free micro apps"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
