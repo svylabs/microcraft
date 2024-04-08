@@ -470,7 +470,7 @@ const ConfigureInputsOutputs: React.FC = () => {
 
         <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
           <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
-          <ul>
+          <ul className="whitespace-normal break-words">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
@@ -517,10 +517,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {component.type === "dropdown" && (
                   <div>
                     <div className="flex justify-between">
-                      <label
-                        // htmlFor={component.id}
-                        className="text-slate-500 font-semibold text-lg xl:text-xl"
-                      >
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                         {component.label}:
                       </label>
                       <div className="flex gap-3 md:gap-5">
@@ -573,30 +570,49 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                     </div>
                     {/* Options for radio */}
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
-                          (option, idx) => (
-                            <div key={idx} className="flex items-center">
-                              <input
-                                type="radio"
-                                id={`${component.id}_${idx}`}
-                                name={component.id}
-                                value={option.trim()}
-                                checked={inputValues[component.id] === option}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    component.id,
-                                    e.target.value
-                                  )
-                                }
-                                className="mr-2"
-                              />
-                              <label htmlFor={`${component.id}_${idx}`}>
-                                {option.trim()}
-                              </label>
-                            </div>
-                          )
+                          (option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  checked={inputValues[component.id] === option}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
+                                >
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          }
                         )}
                     </div>
                   </div>
@@ -619,29 +635,48 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                     </div>
                     {/* Options for checkbox */}
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
-                          (option, idx) => (
-                            <div key={idx} className="flex items-center">
-                              <input
-                                type="checkbox"
-                                id={`${component.id}_${idx}`}
-                                name={component.id}
-                                value={option.trim()}
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    component.id,
-                                    e.target.value
-                                  )
-                                }
-                                className="mr-2"
-                              />
-                              <label htmlFor={`${component.id}_${idx}`}>
-                                {option.trim()}
-                              </label>
-                            </div>
-                          )
+                          (option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
+                                >
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          }
                         )}
                     </div>
                   </div>

@@ -145,7 +145,7 @@ const ActionPage = ({ output }) => {
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">
-            Showing preview of the {savedFormData.title} app
+            Showing preview of the {loadedData[0].title} app
           </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
@@ -157,7 +157,7 @@ const ActionPage = ({ output }) => {
             Back
           </button>
         </div>
-        <ul className="">
+        <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
               ID: {component.id}, Label: {component.label}, Type:{" "}
@@ -208,60 +208,94 @@ const ActionPage = ({ output }) => {
                 </select>
               )}
               {component.type === "radio" && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                   {component.optionsConfig &&
                     JSON.parse(component.optionsConfig).values.map(
-                      (option, idx) => (
-                        <div key={idx} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`${component.id}_${idx}`}
-                            name={component.id}
-                            value={option.trim()}
-                            checked={data[component.id] === option}
-                            onChange={(e) =>
-                              handleInputChange(component.id, e.target.value)
-                            }
-                            className="mr-2"
-                          />
-                          <label htmlFor={`${component.id}_${idx}`}>
-                            {option.trim()}
-                          </label>
-                        </div>
-                      )
+                      (option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
+                          >
+                            <input
+                              type="radio"
+                              id={`${component.id}_${idx}`}
+                              name={component.id}
+                              value={option.trim()}
+                              checked={data[component.id] === option}
+                              onChange={(e) =>
+                                handleInputChange(component.id, e.target.value)
+                              }
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      }
                     )}
                 </div>
               )}
               {component.type === "checkbox" && (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                   {component.optionsConfig &&
                     JSON.parse(component.optionsConfig).values.map(
-                      (option, idx) => (
-                        <div key={idx} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`${component.id}_${idx}`}
-                            checked={
-                              data[component.id] &&
-                              data[component.id].includes(option)
-                            }
-                            onChange={(e) => {
-                              const isChecked = e.target.checked;
-                              const currentValue = data[component.id] || [];
-                              const updatedValue = isChecked
-                                ? [...currentValue, option]
-                                : currentValue.filter(
-                                    (item) => item !== option
-                                  );
-                              handleInputChange(component.id, updatedValue);
-                            }}
-                            className="mr-2"
-                          />
-                          <label htmlFor={`${component.id}_${idx}`}>
-                            {option.trim()}
-                          </label>
-                        </div>
-                      )
+                      (option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                          >
+                            <input
+                              type="checkbox"
+                              id={`${component.id}_${idx}`}
+                              checked={
+                                data[component.id] &&
+                                data[component.id].includes(option)
+                              }
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                const currentValue = data[component.id] || [];
+                                const updatedValue = isChecked
+                                  ? [...currentValue, option]
+                                  : currentValue.filter(
+                                      (item) => item !== option
+                                    );
+                                handleInputChange(component.id, updatedValue);
+                              }}
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      }
                     )}
                 </div>
               )}
