@@ -69,7 +69,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
 
   const [sliderConfig, setSliderConfig] = useState<any>({
-    message: "Please specify the range of values.",
+    message: "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
     interval: {
       min: 1,
       max: 100,
