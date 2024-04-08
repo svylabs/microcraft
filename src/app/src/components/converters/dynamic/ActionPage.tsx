@@ -60,6 +60,13 @@ const ActionPage = ({ output }) => {
           component.optionsConfig
         ).values[0].trim();
       }
+      if (component.type === "slider" && component.sliderConfig) {
+        const sliderConfig = JSON.parse(component.sliderConfig);
+        setData((prevData) => ({
+          ...prevData,
+          [component.id]: sliderConfig.value,
+        }));
+      }
     });
     setData((prevData) => ({
       ...prevData,
@@ -165,6 +172,8 @@ const ActionPage = ({ output }) => {
               {component.config && `, Config: ${component.config}`}
               {component.optionsConfig &&
                 `, optionsConfig: ${component.optionsConfig}`}
+              {component.sliderConfig &&
+                `, sliderConfig: ${component.sliderConfig}`}
               {component.code && `, Code: ${component.code}`}
               <br />
               {(component.type === "text" ||
@@ -297,6 +306,30 @@ const ActionPage = ({ output }) => {
                         );
                       }
                     )}
+                </div>
+              )}
+              {component.type === "slider" && (
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    id={component.id}
+                    className="w-full md:w-[60%] h-8"
+                    name={component.label}
+                    min={JSON.parse(component.sliderConfig).interval.min}
+                    max={JSON.parse(component.sliderConfig).interval.max}
+                    step={JSON.parse(component.sliderConfig).step}
+                    value={
+                      data[component.id] ||
+                      JSON.parse(component.sliderConfig).value
+                    }
+                    onChange={(e) =>
+                      handleInputChange(component.id, e.target.value)
+                    }
+                  />
+                  <span className="font-semibold">
+                    {data[component.id] ||
+                      JSON.parse(component.sliderConfig).value}
+                  </span>
                 </div>
               )}
               {component.type === "button" && component.code && (

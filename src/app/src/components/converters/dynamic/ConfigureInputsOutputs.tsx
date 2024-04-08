@@ -757,42 +757,27 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    <div className="flex gap-3">
-                      <div className="flex gap-3">
-                        {/* Check if sliderConfig and interval are present */}
-                        {component.sliderConfig &&
-                          component.sliderConfig.interval && (
-                            <>
-                              <input
-                                type="range"
-                                id={component.id}
-                                name={component.label}
-                                min={component.sliderConfig.interval.min}
-                                max={component.sliderConfig.interval.max}
-                                step={component.sliderConfig.step}
-                                value={
-                                  inputValues[component.id] ||
-                                  component.sliderConfig.value
-                                }
-                                onChange={(e) =>
-                                  handleInputChange(
-                                    component.id,
-                                    e.target.value
-                                  )
-                                }
-                                className="flex-1 bg-gray-200 h-8 rounded-md"
-                              />
-                              <span className="font-semibold">
-                                {inputValues[component.id]}
-                              </span>
-                              {/* Display slider configuration */}
-                              <p>
-                                Slider Configuration:{" "}
-                                {JSON.stringify(component.sliderConfig)}
-                              </p>
-                            </>
-                          )}
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        id={component.id}
+                        className="w-full md:w-[60%] h-8"
+                        name={component.label}
+                        min={JSON.parse(component.sliderConfig).interval.min}
+                        max={JSON.parse(component.sliderConfig).interval.max}
+                        step={JSON.parse(component.sliderConfig).step}
+                        value={
+                          inputValues[component.id] ||
+                          JSON.parse(component.sliderConfig).value
+                        }
+                        onChange={(e) =>
+                          handleInputChange(component.id, e.target.value)
+                        }
+                      />
+                      <span className="font-semibold">
+                        {inputValues[component.id] ||
+                          JSON.parse(component.sliderConfig).value}
+                      </span>
                     </div>
                   </div>
                 )}
