@@ -569,7 +569,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    {/* Options for radio */}
                     <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
@@ -634,7 +633,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    {/* Options for checkbox */}
                     <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
