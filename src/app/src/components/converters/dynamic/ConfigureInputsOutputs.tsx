@@ -24,6 +24,7 @@ interface CustomComponent {
   code?: string;
   config?: any;
   optionsConfig?: any;
+  sliderConfig?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -35,6 +36,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     code: "",
     config: "",
     optionsConfig: "",
+    sliderConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -66,6 +68,16 @@ const ConfigureInputsOutputs: React.FC = () => {
     values: ["text1"],
   });
 
+  const [sliderConfig, setSliderConfig] = useState<any>({
+    message: "Please specify the range of values.",
+    interval: {
+      min: 1,
+      max: 100,
+    },
+    value: 50,
+    step: 1,
+  });
+
   useEffect(() => {
     const savedComponents = getDataFromLocalStorage("components");
     if (savedComponents && Array.isArray(savedComponents)) {
@@ -82,6 +94,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       optionsConfig:
         components[index].optionsConfig ||
         JSON.stringify(optionsConfig, null, 2),
+      sliderConfig:
+        components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
     });
   };
 
@@ -142,6 +156,12 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.optionsConfig ||
               JSON.stringify(optionsConfig, null, 2)
             : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -173,6 +193,12 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.optionsConfig ||
               JSON.stringify(optionsConfig, null, 2)
             : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
       });
     }
 
@@ -193,6 +219,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       code: "",
       config: "",
       optionsConfig: "",
+      sliderConfig: "",
     });
   };
 
@@ -307,6 +334,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 <option value="dropdown">Dropdown</option>
                 <option value="radio">Radio</option>
                 <option value="checkbox">Checkbox</option>
+                <option value="slider">Slider</option>
               </select>
             </label>
 
@@ -336,6 +364,35 @@ const ConfigureInputsOutputs: React.FC = () => {
                     value={
                       currentComponent.optionsConfig ||
                       JSON.stringify(optionsConfig, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {currentComponent.type === "slider" && (
+              <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Slider Config:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder="Enter slider configuration"
+                    cols={30}
+                    rows={10}
+                    name="sliderConfig"
+                    value={
+                      currentComponent.sliderConfig ||
+                      JSON.stringify(sliderConfig, null, 2)
                     }
                     onChange={handleChange}
                   ></textarea>
@@ -478,6 +535,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {component.config && `, Config: ${component.config}`}
                 {component.optionsConfig &&
                   `, optionsConfig: ${component.optionsConfig}`}
+                {component.sliderConfig &&
+                  `, sliderConfig: ${component.sliderConfig}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
                 {(component.type === "text" ||
@@ -569,6 +628,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
+                    {/* Options for radio */}
                     <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
@@ -633,6 +693,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
+                    {/* Options for checkbox */}
                     <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                       {component.optionsConfig &&
                         JSON.parse(component.optionsConfig).values.map(
@@ -676,6 +737,62 @@ const ConfigureInputsOutputs: React.FC = () => {
                             );
                           }
                         )}
+                    </div>
+                  </div>
+                )}
+                {component.type === "slider" && (
+                  <div>
+                    <div className="flex justify-between">
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                      </label>
+                      <div className="flex gap-3 md:gap-5">
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="flex gap-3">
+                        {/* Check if sliderConfig and interval are present */}
+                        {component.sliderConfig &&
+                          component.sliderConfig.interval && (
+                            <>
+                              <input
+                                type="range"
+                                id={component.id}
+                                name={component.label}
+                                min={component.sliderConfig.interval.min}
+                                max={component.sliderConfig.interval.max}
+                                step={component.sliderConfig.step}
+                                value={
+                                  inputValues[component.id] ||
+                                  component.sliderConfig.value
+                                }
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    component.id,
+                                    e.target.value
+                                  )
+                                }
+                                className="flex-1 bg-gray-200 h-8 rounded-md"
+                              />
+                              <span className="font-semibold">
+                                {inputValues[component.id]}
+                              </span>
+                              {/* Display slider configuration */}
+                              <p>
+                                Slider Configuration:{" "}
+                                {JSON.stringify(component.sliderConfig)}
+                              </p>
+                            </>
+                          )}
+                      </div>
                     </div>
                   </div>
                 )}
