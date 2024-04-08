@@ -56,27 +56,62 @@ const UserActionPage = () => {
     });
   };
 
+  // useEffect(() => {
+  //   setLoadedData(savedFormData);
+  //   if (components.length === 0) {
+  //     fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
+  //       .then((response) => response.json())
+  //       .then((data) => {
+  //         console.log("Component detail: ", data);
+  //         setComponents(data.component_definition || []);
+  //         setOutput(data);
+  //         if (data.is_authentication_required) {
+  //           if (isAuthenticated()) {
+  //             setSelectedApp(appId);
+  //           } else {
+  //             toast.error(
+  //               "Some features of this app may work only if you are logged into the platform."
+  //             );
+  //           }
+  //         }
+  //       });
+  //   }
+  // }, []);
+  
   useEffect(() => {
-    setLoadedData(savedFormData);
-    if (components.length === 0) {
-      fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("Component detail: ", data);
-          setComponents(data.component_definition || []);
-          setOutput(data);
-          if (data.is_authentication_required) {
-            if (isAuthenticated()) {
-              setSelectedApp(appId);
-            } else {
-              toast.error(
-                "Some features of this app may work only if you are logged into the platform."
-              );
-            }
+  setLoadedData(savedFormData);
+  if (components.length === 0) {
+    fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Component detail: ", data);
+        setComponents(data.component_definition || []);
+        setOutput(data);
+        if (data.is_authentication_required) {
+          if (isAuthenticated()) {
+            setSelectedApp(appId);
+          } else {
+            toast.error(
+              "Some features of this app may work only if you are logged into the platform."
+            );
+          }
+        }
+
+        // Initialize dropdowns with their first options
+        const initialDropdownState = {};
+        data.component_definition.forEach(component => {
+          if (component.type === "dropdown" && component.optionsConfig) {
+            initialDropdownState[component.id] = JSON.parse(component.optionsConfig).values[0].trim();
           }
         });
-    }
-  }, []);
+        setData(prevData => ({
+          ...prevData,
+          ...initialDropdownState
+        }));
+      });
+  }
+}, []);
+
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
@@ -185,7 +220,7 @@ const UserActionPage = () => {
                   <select
                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                     id={component.id}
-                    value={data[component.id] || ""}
+                    value={data[component.id]}
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
@@ -226,29 +261,39 @@ const UserActionPage = () => {
                   </div>
                 )}
                 {component.type === "checkbox" && (
-                  <div className="flex flex-col gap-2">
-                    {component.optionsConfig &&
-                      JSON.parse(component.optionsConfig).values.map(
-                        (option, idx) => (
-                          <div key={idx} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              id={`${component.id}_${idx}`}
-                              name={component.id}
-                              value={option.trim()}
-                              onChange={(e) =>
-                                handleInputChange(component.id, e.target.value)
-                              }
-                              className="mr-2"
-                            />
-                            <label htmlFor={`${component.id}_${idx}`}>
-                              {option.trim()}
-                            </label>
-                          </div>
-                        )
-                      )}
-                  </div>
-                )}
+                <div className="flex flex-col gap-2">
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => (
+                        <div key={idx} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id={`${component.id}_${idx}`}
+                            checked={
+                              data[component.id] &&
+                              data[component.id].includes(option)
+                            }
+                            // Toggle the value
+                            onChange={(e) => {
+                              const isChecked = e.target.checked;
+                              const currentValue = data[component.id] || [];
+                              const updatedValue = isChecked
+                                ? [...currentValue, option]
+                                : currentValue.filter(
+                                    (item) => item !== option
+                                  );
+                              handleInputChange(component.id, updatedValue);
+                            }}
+                            className="mr-2"
+                          />
+                          <label htmlFor={`${component.id}_${idx}`}>
+                            {option.trim()}
+                          </label>
+                        </div>
+                      )
+                    )}
+                </div>
+              )}
                 {component.type === "button" && component.code && (
                   <button
                     className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"

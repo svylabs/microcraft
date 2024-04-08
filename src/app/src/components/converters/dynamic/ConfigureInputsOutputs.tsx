@@ -514,7 +514,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     />
                   </div>
                 )}
-                
                 {component.type === "dropdown" && (
                   <div>
                     <div className="flex justify-between">
@@ -602,7 +601,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     </div>
                   </div>
                 )}
-
                 {component.type === "checkbox" && (
                   <div>
                     <div className="flex justify-between">
@@ -648,7 +646,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     </div>
                   </div>
                 )}
-                
                 {component.type === "button" && component.code && (
                   <div>
                     <div className="flex justify-between">

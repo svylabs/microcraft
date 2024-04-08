@@ -51,6 +51,20 @@ const ActionPage = ({ output }) => {
   useEffect(() => {
     setLoadedData(savedFormData);
     setSelectedApp("sandbox-" + savedFormData[0].title);
+
+    // Initialize dropdowns with their first options
+    const initialDropdownState = {};
+    components.forEach((component) => {
+      if (component.type === "dropdown" && component.optionsConfig) {
+        initialDropdownState[component.id] = JSON.parse(
+          component.optionsConfig
+        ).values[0].trim();
+      }
+    });
+    setData((prevData) => ({
+      ...prevData,
+      ...initialDropdownState,
+    }));
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
@@ -178,7 +192,7 @@ const ActionPage = ({ output }) => {
                 <select
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                   id={component.id}
-                  value={data[component.id] || ""}
+                  value={data[component.id]}
                   onChange={(e) =>
                     handleInputChange(component.id, e.target.value)
                   }
@@ -227,11 +241,20 @@ const ActionPage = ({ output }) => {
                           <input
                             type="checkbox"
                             id={`${component.id}_${idx}`}
-                            name={component.id}
-                            value={option.trim()}
-                            onChange={(e) =>
-                              handleInputChange(component.id, e.target.value)
+                            checked={
+                              data[component.id] &&
+                              data[component.id].includes(option)
                             }
+                            onChange={(e) => {
+                              const isChecked = e.target.checked;
+                              const currentValue = data[component.id] || [];
+                              const updatedValue = isChecked
+                                ? [...currentValue, option]
+                                : currentValue.filter(
+                                    (item) => item !== option
+                                  );
+                              handleInputChange(component.id, updatedValue);
+                            }}
                             className="mr-2"
                           />
                           <label htmlFor={`${component.id}_${idx}`}>
