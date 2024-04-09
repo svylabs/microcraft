@@ -183,6 +183,12 @@ const Home: React.FC = () => {
       description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
     },
+    {
+      id: "Requst an app",
+      title: "Request an app",
+      description: "Have an app idea? Share it here! Your suggestions shape our future apps.",
+      image: "./photos/requestApp.png",
+    },
   ];
 
   const [searchQuery, setSearchQuery] = useState("");
