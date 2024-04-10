@@ -377,7 +377,7 @@ const ActionPage = ({ output }) => {
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
-                  : "No output available for JSON."}
+                  : "Execution log not available yet"}
               </pre>
             ) : outputFormat === "table" ? (
               <Table data={outputCode} />
