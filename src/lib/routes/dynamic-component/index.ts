@@ -178,7 +178,7 @@ dynamicComponentRouter.post("/suggest", authenticatedUser, async (req, res) => {
   });
 
 
-  dynamicComponentRouter.get("/suggestion-list", authenticatedUser, async (req, res) => {
+  dynamicComponentRouter.get("/suggestion-list", async (req, res) => {
     try {
       const datastore = getDatastore();
       let query = datastore.createQuery("DynamicComponentSuggestion");
