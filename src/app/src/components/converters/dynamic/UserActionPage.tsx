@@ -177,14 +177,9 @@ const UserActionPage = () => {
           <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                ID: {component.id}, Label: {component.label}, Type:{" "}
-                {component.type}, Placement: {component.placement}
-                {component.config && `, Config: ${component.config}`}
-                {component.optionsConfig &&
-                  `, optionsConfig: ${component.optionsConfig}`}
-                {component.sliderConfig &&
-                  `, sliderConfig: ${component.sliderConfig}`}
-                {component.code && `, Code: ${component.code}`}
+                <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                </label>
                 <br />
                 {(component.type === "text" ||
                   component.type === "number" ||
