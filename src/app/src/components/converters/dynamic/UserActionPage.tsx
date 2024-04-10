@@ -177,31 +177,25 @@ const UserActionPage = () => {
           <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                        {component.label}:
-                </label>
-                <br />
-                {(component.type === "text" ||
-                  component.type === "number" ||
-                  component.type === "file" ||
-                  component.type === "table" ||
-                  component.type === "json" ||
-                  component.type === "graph") && (
-                  <div>
-                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                      {component.label}:
-                    </label>
-                    <input
-                      className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                      type={component.type}
-                      id={component.id}
-                      value={data[component.id] || ""}
-                      onChange={(e) =>
-                        handleInputChange(component.id, e.target.value)
-                      }
-                    />
-                  </div>
-                )}
+                {(component.placement === "input" || component.placement === "output")
+                && (
+                <div>
+                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                    {component.label}:
+                  </label>
+                </div>
+              )}
+              {component.type === "text" && (
+                <input
+                  className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                  type={component.type}
+                  id={component.id}
+                  value={data[component.id] || ""}
+                  onChange={(e) =>
+                    handleInputChange(component.id, e.target.value)
+                  }
+                />
+              )}
                 {component.type === "dropdown" && (
                   <select
                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
