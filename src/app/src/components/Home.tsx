@@ -518,7 +518,7 @@ const Home: React.FC = () => {
                                     alt={tool?.title}
                                     className="w-full rounded container h-40 object-cover mb-2"
                                   />
-                                  <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                                  <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                                     <span className="text-white">
                                       {tool?.description}
                                     </span>
@@ -572,7 +572,7 @@ const Home: React.FC = () => {
                             alt={`${converter.title} Icon`}
                             className="w-full rounded container h-40 object-cover mb-2"
                           />
-                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <div className="description  text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                             <span className="text-white">
                               {converter.description}
                             </span>
@@ -595,7 +595,7 @@ const Home: React.FC = () => {
                             alt={`${converter.title} Icon`}
                             className="w-full rounded container h-40 object-cover mb-2"
                           />
-                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                             <span className="text-white">
                               {converter.description}
                             </span>
@@ -639,7 +639,7 @@ const Home: React.FC = () => {
                           alt="image-thumbnail"
                         />
                       )}
-                      <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                         <span>{data.description}</span>
                       </div>
                     </div>
