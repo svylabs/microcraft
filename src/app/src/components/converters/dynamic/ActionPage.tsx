@@ -4,7 +4,9 @@ import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import { redirect } from "react-router-dom";
-import Graph from "./GraphComponent";
+import Graph from "./outputPlacement/GraphComponent";
+import Table from "./outputPlacement/TableComponent";
+import TextOutput from "./outputPlacement/TextOutput";
 
 interface Output {
   [key: string]: any;
@@ -49,6 +51,27 @@ const ActionPage = ({ output }) => {
   useEffect(() => {
     setLoadedData(savedFormData);
     setSelectedApp("sandbox-" + savedFormData[0].title);
+
+    // Initialize dropdowns with their first options
+    const initialDropdownState = {};
+    components.forEach((component) => {
+      if (component.type === "dropdown" && component.optionsConfig) {
+        initialDropdownState[component.id] = JSON.parse(
+          component.optionsConfig
+        ).values[0].trim();
+      }
+      if (component.type === "slider" && component.sliderConfig) {
+        const sliderConfig = JSON.parse(component.sliderConfig);
+        setData((prevData) => ({
+          ...prevData,
+          [component.id]: sliderConfig.value,
+        }));
+      }
+    });
+    setData((prevData) => ({
+      ...prevData,
+      ...initialDropdownState,
+    }));
   }, []);
 
   const handleInputChange = (id: string, value: string) => {
@@ -77,75 +100,6 @@ const ActionPage = ({ output }) => {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
     }
-  };
-
-  const formatOutput = (data: any) => {
-    if (data === null || data === undefined) {
-      console.error("Error: Data is null or undefined");
-      return "No output available for Table.";
-    }
-
-    if (typeof data === "object") {
-      if (Array.isArray(data)) {
-        if (data.length > 0 && typeof data[0] === "object") {
-          const tableHeaders = Object.keys(data[0]);
-          return (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-200">
-                  <tr>
-                    {tableHeaders.map((header) => (
-                      <th
-                        key={header}
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                      >
-                        {header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {data.map((item: any, index: number) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-100 transition-colors"
-                    >
-                      {tableHeaders.map((header) => (
-                        <td
-                          key={header}
-                          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                        >
-                          {formatOutput(item[header])}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          );
-        }
-      } else {
-        return (
-          <table className="min-w-full divide-y divide-gray-200">
-            <tbody className="bg-white divide-y divide-gray-200">
-              {Object.entries(data).map(([key, value]: [string, any]) => (
-                <tr key={key}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {key}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatOutput(value)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        );
-      }
-    }
-    return data;
   };
 
   const saveClick = async () => {
@@ -198,7 +152,7 @@ const ActionPage = ({ output }) => {
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">
-            Showing preview of the {savedFormData.title} app
+            Showing preview of {loadedData[0].title} App
           </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
@@ -210,28 +164,161 @@ const ActionPage = ({ output }) => {
             Back
           </button>
         </div>
-        <ul className="">
+        <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
-              ID: {component.id}, Label: {component.label}, Type:{" "}
-              {component.type}, Placement: {component.placement}
-              {component.config && `, Config: ${component.config}`}
-              {component.code && `, Code: ${component.code}`}
-              <br />
-              {component.type !== "button" && (
+              {(component.placement === "input" || component.placement === "output")
+                && (
                 <div>
                   <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                     {component.label}:
                   </label>
+                </div>
+              )}
+              {component.type === "text" && (
+                <input
+                  className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                  type={component.type}
+                  id={component.id}
+                  value={data[component.id] || ""}
+                  onChange={(e) =>
+                    handleInputChange(component.id, e.target.value)
+                  }
+                />
+              )}
+              {component.type === "dropdown" && (
+                <select
+                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                  id={component.id}
+                  value={data[component.id]}
+                  onChange={(e) =>
+                    handleInputChange(component.id, e.target.value)
+                  }
+                >
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => (
+                        <option key={idx} value={option.trim()}>
+                          {option.trim()}
+                        </option>
+                      )
+                    )}
+                </select>
+              )}
+              {component.type === "radio" && (
+                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
+                          >
+                            <input
+                              type="radio"
+                              id={`${component.id}_${idx}`}
+                              name={component.id}
+                              value={option.trim()}
+                              checked={data[component.id] === option}
+                              onChange={(e) =>
+                                handleInputChange(component.id, e.target.value)
+                              }
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      }
+                    )}
+                </div>
+              )}
+              {component.type === "checkbox" && (
+                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                  {component.optionsConfig &&
+                    JSON.parse(component.optionsConfig).values.map(
+                      (option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
+
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                          >
+                            <input
+                              type="checkbox"
+                              id={`${component.id}_${idx}`}
+                              checked={
+                                data[component.id] &&
+                                data[component.id].includes(option)
+                              }
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                const currentValue = data[component.id] || [];
+                                const updatedValue = isChecked
+                                  ? [...currentValue, option]
+                                  : currentValue.filter(
+                                      (item) => item !== option
+                                    );
+                                handleInputChange(component.id, updatedValue);
+                              }}
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      }
+                    )}
+                </div>
+              )}
+              {component.type === "slider" && (
+                <div className="flex items-center gap-3">
                   <input
-                    className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                    type={component.type}
+                    type="range"
                     id={component.id}
-                    value={data[component.id] || ""}
+                    className="w-full md:w-[60%] h-8"
+                    name={component.label}
+                    min={JSON.parse(component.sliderConfig).interval.min}
+                    max={JSON.parse(component.sliderConfig).interval.max}
+                    step={JSON.parse(component.sliderConfig).step}
+                    value={
+                      data[component.id] ||
+                      JSON.parse(component.sliderConfig).value
+                    }
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
                   />
+                  <span className="font-semibold">
+                    {data[component.id] ||
+                      JSON.parse(component.sliderConfig).value}
+                  </span>
                 </div>
               )}
               {component.type === "button" && component.code && (
@@ -250,11 +337,7 @@ const ActionPage = ({ output }) => {
         {components.map((component, index) => (
           <div key={index} className="mb-5">
             {component.placement === "output" && component.type === "text" && (
-              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {data[component.id]
-                  ? data[component.id]
-                  : "No output available for Text."}
-              </pre>
+              <TextOutput data={data[component.id]} />
             )}
             {component.placement === "output" && component.type === "json" && (
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
@@ -264,15 +347,14 @@ const ActionPage = ({ output }) => {
               </pre>
             )}
             {component.placement === "output" && component.type === "table" && (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {formatOutput(data[component.id])}
-              </div>
+              <Table data={data[component.id]} />
             )}
             {component.placement === "output" && component.type === "graph" && (
               <div>
                 <Graph
                   output={data[component.id]}
                   configurations={component.config}
+                  graphId={`graph-container-${component.id}`}
                 />
               </div>
             )}
@@ -288,18 +370,6 @@ const ActionPage = ({ output }) => {
           </button>
         </div>
 
-        <div className="mb-4 mt-2">
-          <h2 className="text-xl font-bold">Output Format:</h2>
-          <select
-            value={outputFormat}
-            onChange={(e) => setOutputFormat(e.target.value)}
-            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded focus:outline-none"
-          >
-            <option value="json">JSON</option>
-            <option value="table">Table</option>
-          </select>
-        </div>
-
         <div className="mt-4">
           <h2 className="text-xl font-bold">Execution log:</h2>
           {
@@ -307,20 +377,11 @@ const ActionPage = ({ output }) => {
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
-                  : "No output available"}
+                  : "Execution log not available yet"}
               </pre>
             ) : outputFormat === "table" ? (
-              <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {formatOutput(outputCode)}
-              </div>
+              <Table data={outputCode} />
             ) : (
-              // : outputFormat === "graph" ? (
-              //   <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-              //     {components.map((component) => (
-              //         <Graph output={data[component.id]} configurations={component.config}/>
-              //     ))}
-              //   </div>
-              // )
               <div></div>
             )
             // : null

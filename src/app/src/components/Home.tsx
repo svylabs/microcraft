@@ -131,12 +131,6 @@ const Home: React.FC = () => {
       image: "./photos/merge-pdf.jpg",
     },
     {
-      id: "Secure-Pdf",
-      title: "Secure PDFs",
-      description: "Protect your documents with password encryption.",
-      image: "./photos/protected-pdf.png",
-    },
-    {
       id: "ECC-Tools",
       title: "Elliptic Curve Toolbox",
       description:
@@ -182,6 +176,12 @@ const Home: React.FC = () => {
       title: "Publish your own",
       description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
+    },
+    {
+      id: "Requst an app",
+      title: "Request an app",
+      description: "Do you want an app to make your tasks easier? Request an app here",
+      image: "./photos/requestApp.jpg",
     },
   ];
 
@@ -397,7 +397,7 @@ const Home: React.FC = () => {
               <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
                 Microcraft
                 <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                Small is Beautiful: Tiny apps to Rescue Time
+                Minimum distraction, maximum utility
                 </span>
               </h2>
             </div>
@@ -432,7 +432,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search..."
+            placeholder="Search a growing set of ad-free micro apps"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -512,7 +512,7 @@ const Home: React.FC = () => {
                                     alt={tool?.title}
                                     className="w-full rounded container h-40 object-cover mb-2"
                                   />
-                                  <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                                  <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                                     <span className="text-white">
                                       {tool?.description}
                                     </span>
@@ -566,7 +566,7 @@ const Home: React.FC = () => {
                             alt={`${converter.title} Icon`}
                             className="w-full rounded container h-40 object-cover mb-2"
                           />
-                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <div className="description  text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                             <span className="text-white">
                               {converter.description}
                             </span>
@@ -589,7 +589,7 @@ const Home: React.FC = () => {
                             alt={`${converter.title} Icon`}
                             className="w-full rounded container h-40 object-cover mb-2"
                           />
-                          <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                          <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                             <span className="text-white">
                               {converter.description}
                             </span>
@@ -633,7 +633,7 @@ const Home: React.FC = () => {
                           alt="image-thumbnail"
                         />
                       )}
-                      <div className="description h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
+                      <div className="description text-center h-40 flex flex-col rounded justify-center items-center p-2 hyphens-auto absolute inset-0 opacity-0 hover:opacity-100 transition-opacity">
                         <span>{data.description}</span>
                       </div>
                     </div>

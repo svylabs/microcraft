@@ -23,6 +23,8 @@ interface CustomComponent {
   placement: string;
   code?: string;
   config?: any;
+  optionsConfig?: any;
+  sliderConfig?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -33,6 +35,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     placement: "input",
     code: "",
     config: "",
+    optionsConfig: "",
+    sliderConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
@@ -54,7 +58,24 @@ const ConfigureInputsOutputs: React.FC = () => {
         titleY: "Enter Y-axis Title",
       },
     },
-    message: "Please fill in the required information to generate your graph. Choose between bar or line graph.",
+    message:
+      "Please fill in the required information to generate your graph. Choose between bar or line graph.",
+  });
+
+  const [optionsConfig, setOptionsConfig] = useState<any>({
+    message:
+      "Please enter options separated by commas. Do not add a comma after the last option.",
+    values: ["text1"],
+  });
+
+  const [sliderConfig, setSliderConfig] = useState<any>({
+    message: "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
+    interval: {
+      min: 1,
+      max: 100,
+    },
+    value: 50,
+    step: 1,
   });
 
   useEffect(() => {
@@ -70,6 +91,11 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       ...components[index],
       config: components[index].config || JSON.stringify(graphConfig, null, 2),
+      optionsConfig:
+        components[index].optionsConfig ||
+        JSON.stringify(optionsConfig, null, 2),
+      sliderConfig:
+        components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
     });
   };
 
@@ -122,6 +148,20 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
+        optionsConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" ||
+            currentComponent.type === "radio" ||
+            currentComponent.type === "checkbox")
+            ? currentComponent.optionsConfig ||
+              JSON.stringify(optionsConfig, null, 2)
+            : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -145,6 +185,20 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
+        optionsConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" ||
+            currentComponent.type === "radio" ||
+            currentComponent.type === "checkbox")
+            ? currentComponent.optionsConfig ||
+              JSON.stringify(optionsConfig, null, 2)
+            : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
       });
     }
 
@@ -164,6 +218,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       placement: "input",
       code: "",
       config: "",
+      optionsConfig: "",
+      sliderConfig: "",
     });
   };
 
@@ -227,9 +283,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     return <ActionPage output={components} />;
   }
 
-  // const handleGraphConfigChange = (configKey: string, value: string) => {
-  //   setGraphConfig(JSON.parse(value));
-  // };
+  console.log(components);
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
@@ -265,7 +319,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         </label>
 
         {currentComponent.placement === "input" && (
-          <div>
+          <>
             <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
               Type:
               <select
@@ -277,9 +331,75 @@ const ConfigureInputsOutputs: React.FC = () => {
                 <option value="text">Text</option>
                 <option value="number">Number</option>
                 <option value="file">File</option>
+                <option value="dropdown">Dropdown</option>
+                <option value="radio">Radio</option>
+                <option value="checkbox">Checkbox</option>
+                <option value="slider">Slider</option>
               </select>
             </label>
-          </div>
+
+            {(currentComponent.type === "dropdown" ||
+              currentComponent.type === "radio" ||
+              currentComponent.type === "checkbox") && (
+              <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  {currentComponent.type === "dropdown"
+                    ? "Dropdown Options:"
+                    : "Radio Options:"}
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder="Enter options separated by commas"
+                    name="optionsConfig"
+                    cols={30}
+                    rows={10}
+                    value={
+                      currentComponent.optionsConfig ||
+                      JSON.stringify(optionsConfig, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+
+            {currentComponent.type === "slider" && (
+              <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Slider Config:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder="Enter slider configuration"
+                    cols={30}
+                    rows={10}
+                    name="sliderConfig"
+                    value={
+                      currentComponent.sliderConfig ||
+                      JSON.stringify(sliderConfig, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {currentComponent.placement === "action" && (
@@ -407,15 +527,24 @@ const ConfigureInputsOutputs: React.FC = () => {
 
         <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
           <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
-          <ul>
+          <ul className="whitespace-normal break-words">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
                 ID: {component.id}, Label: {component.label}, Type:{" "}
                 {component.type}, Placement: {component.placement}
                 {component.config && `, Config: ${component.config}`}
+                {component.optionsConfig &&
+                  `, optionsConfig: ${component.optionsConfig}`}
+                {component.sliderConfig &&
+                  `, sliderConfig: ${component.sliderConfig}`}
                 {component.code && `, Code: ${component.code}`}
                 <br />
-                {component.type !== "button" && (
+                {(component.type === "text" ||
+                  component.type === "number" ||
+                  component.type === "file" ||
+                  component.type === "table" ||
+                  component.type === "json" ||
+                  component.type === "graph") && (
                   <div>
                     <div className="flex justify-between">
                       <label className="text-slate-500 font-semibold text-lg xl:text-xl">
@@ -442,6 +571,214 @@ const ConfigureInputsOutputs: React.FC = () => {
                         handleInputChange(component.id, e.target.value)
                       }
                     />
+                  </div>
+                )}
+                {component.type === "dropdown" && (
+                  <div>
+                    <div className="flex justify-between">
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                      </label>
+                      <div className="flex gap-3 md:gap-5">
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
+                    </div>
+
+                    <select
+                      className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                      id={component.id}
+                      value={inputValues[component.id]}
+                      onChange={(e) =>
+                        handleInputChange(component.id, e.target.value)
+                      }
+                    >
+                      {/* Options for dropdown */}
+                      {component.optionsConfig &&
+                        JSON.parse(component.optionsConfig).values.map(
+                          (option, idx) => (
+                            <option key={idx} value={option.trim()}>
+                              {option.trim()}
+                            </option>
+                          )
+                        )}
+                    </select>
+                  </div>
+                )}
+                {component.type === "radio" && (
+                  <div>
+                    <div className="flex justify-between">
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                      </label>
+                      <div className="flex gap-3 md:gap-5">
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
+                    </div>
+                    {/* Options for radio */}
+                    <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                      {component.optionsConfig &&
+                        JSON.parse(component.optionsConfig).values.map(
+                          (option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  checked={inputValues[component.id] === option}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
+                                >
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          }
+                        )}
+                    </div>
+                  </div>
+                )}
+                {component.type === "checkbox" && (
+                  <div>
+                    <div className="flex justify-between">
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                      </label>
+                      <div className="flex gap-3 md:gap-5">
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
+                    </div>
+                    {/* Options for checkbox */}
+                    <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                      {component.optionsConfig &&
+                        JSON.parse(component.optionsConfig).values.map(
+                          (option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
+
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
+                                >
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          }
+                        )}
+                    </div>
+                  </div>
+                )}
+                {component.type === "slider" && (
+                  <div>
+                    <div className="flex justify-between">
+                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                        {component.label}:
+                      </label>
+                      <div className="flex gap-3 md:gap-5">
+                        <button onClick={() => handleEditComponent(index)}>
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteComponent(component.id)}
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        id={component.id}
+                        className="w-full md:w-[60%] h-8"
+                        name={component.label}
+                        min={JSON.parse(component.sliderConfig).interval.min}
+                        max={JSON.parse(component.sliderConfig).interval.max}
+                        step={JSON.parse(component.sliderConfig).step}
+                        value={
+                          inputValues[component.id] ||
+                          JSON.parse(component.sliderConfig).value
+                        }
+                        onChange={(e) =>
+                          handleInputChange(component.id, e.target.value)
+                        }
+                      />
+                      <span className="font-semibold">
+                        {inputValues[component.id] ||
+                          JSON.parse(component.sliderConfig).value}
+                      </span>
+                    </div>
                   </div>
                 )}
                 {component.type === "button" && component.code && (

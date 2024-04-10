@@ -16,6 +16,7 @@ import EncryptionDecryption from "./converters/cryptographyTools/EncryptionDecry
 import ECDHKeySharing from "./converters/cryptographyTools/ECDHKeySharing";
 import ImageEditor from "./converters/imageProcessing/ImageEditor";
 import ConfigureBasicDetails from "./converters/dynamic/ConfigureBasicDetails";
+import RequestAnApp from "./converters/suggestionApp/RequestAnApp";
 
 interface ConverterProps {
   id: string;
@@ -54,10 +55,11 @@ const Converter: React.FC = () => {
         );
       case "Merge PDFs":
         return <MergePdfConverter />;
-      case "Secure-Pdf":
+      /*case "Secure-Pdf":
         return htmlContent ? (
           <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
         ) : null;
+      /*/
       case "ECC-Tools":
         return <EllipticCurveCryptography />;
       case "Cryptographic Hash":
@@ -72,6 +74,8 @@ const Converter: React.FC = () => {
         return <ImageEditor />;
         case "New App":
         return <ConfigureBasicDetails />;
+        case "Requst an app":
+        return <RequestAnApp />;
       default:
         return <p>App not found</p>;
     }
