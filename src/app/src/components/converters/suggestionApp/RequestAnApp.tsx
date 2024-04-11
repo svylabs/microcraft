@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BASE_API_URL } from "~/components/constants";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { GITHUB_CLIENT_ID } from "~/components/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +34,6 @@ const RequestAnApp: React.FC = () => {
   }>({});
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [userDetails, setUserDetails] = useState<string | null>(null);
-  console.log(requests);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -61,6 +62,11 @@ const RequestAnApp: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!shortSummary.trim()) {
+      toast.error("Short Summary cannot be empty.");
+      return;
+    }
     try {
       const response = await fetch(
         `${BASE_API_URL}/dynamic-component/suggest`,
@@ -78,7 +84,7 @@ const RequestAnApp: React.FC = () => {
       );
 
       if (response.ok) {
-        console.log("Request submitted");
+        toast.success("Request submitted", { position: "top-center" });
         fetchRequests(); // Refresh the list of requests
         setShortSummary("");
         setDetailedDescription("");
@@ -139,7 +145,7 @@ const RequestAnApp: React.FC = () => {
                   value={shortSummary}
                   onChange={(e) => setShortSummary(e.target.value)}
                   placeholder="Short summary"
-                  required
+                  // required
                 ></textarea>
               </div>
               <div>
@@ -169,7 +175,10 @@ const RequestAnApp: React.FC = () => {
               </div>
             </form>
             {/* <h2>Requests by Other Users</h2> */}
-            <div className="overflow-x-auto mt-6 rounded">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center mt-2 md:text-left">
+              Explore User Requests
+            </h2>
+            <div className="overflow-x-auto rounded">
               <table className="min-w-full">
                 <thead className="border-b-2 border-slate-300 bg-gray-50 text-gray-700">
                   <tr>
@@ -192,12 +201,27 @@ const RequestAnApp: React.FC = () => {
                   {requests.map((request, index) => (
                     <tr key={index} className="odd:bg-white even:bg-slate-200">
                       <td
-                        className="px-3 py-2 lg:p-3 md:text-lg font-serif cursor-pointer max-w-xs md:max-w-xl lg:max-w-2xl overflow-auto"
-                        // border-r border-slate-300
+                        className="px-3 py-2 lg:p-3 md:text-lg font-serif cursor-pointer max-w-xs md:max-w-xl lg:max-w-2xl overflow-auto hover:bg-purple-300"
                         onClick={() => handleSummaryClick(request)}
                       >
-                        {request.title}
+                        <div className="flex justify-between items-center group/item  relative">
+                          <p>{request.title}</p>
+                          <p
+                            className="group/edit invisible hover:scale-110 group-hover/item:visible absolute right-0 top-0 bottom-0 md:px-2 flex items-center group-hover/edit:text-orange-600 text-orange-600 hover:text-orange-500"
+                            title="Expand Description"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              className="h-5 w-5"
+                              fill="currentColor"
+                            >
+                              <path d="M215.4 96H144 107.8 96v8.8V144v40.4 89L.2 202.5c1.6-18.1 10.9-34.9 25.7-45.8L48 140.3V96c0-26.5 21.5-48 48-48h76.6l49.9-36.9C232.2 3.9 243.9 0 256 0s23.8 3.9 33.5 11L339.4 48H416c26.5 0 48 21.5 48 48v44.3l22.1 16.4c14.8 10.9 24.1 27.7 25.7 45.8L416 273.4v-89V144 104.8 96H404.2 368 296.6 215.4zM0 448V242.1L217.6 403.3c11.1 8.2 24.6 12.7 38.4 12.7s27.3-4.4 38.4-12.7L512 242.1V448v0c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64v0zM176 160H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                            </svg>
+                          </p>
+                        </div>
                       </td>
+
                       <td className="px-3 py-2 text-right text-sm font-medium flex gap-3 lg:gap-5 justify-between">
                         <button
                           className="transition-colors duration-300 ease-in-out hover:scale-125"
@@ -278,12 +302,12 @@ const RequestAnApp: React.FC = () => {
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
                 <div
                   ref={descriptionRef}
-                  className="bg-white border border-gray-300 rounded-md max-w-md lg:max-w-xl max-h-[60%] overflow-auto"
+                  className="bg-white border border-gray-300 rounded-md max-w-md lg:max-w-xl max-h-[60%] overflow-auto shadow-lg"
                 >
-                  <h3 className="text-lg p-2 px-4 lg:text-xl font-semibold text-center underline underline-offset-2 ">
+                  <h3 className="text-lg p-2 px-4 lg:text-xl font-semibold text-center text-gray-900 border-b border-gray-300">
                     {selectedRequest.title}
                   </h3>
-                  <p className="text-center px-2">
+                  <p className="text-center p-4">
                     {selectedRequest.description ? (
                       selectedRequest.description
                     ) : (
@@ -292,9 +316,29 @@ const RequestAnApp: React.FC = () => {
                       </span>
                     )}
                   </p>
+                  <button
+                    className="absolute top-0 right-0 m-2 text-gray-800 hover:text-gray-700 focus:outline-none"
+                    onClick={() => setSelectedRequest(null)}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </div>
             )}
+            <ToastContainer />
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5">
