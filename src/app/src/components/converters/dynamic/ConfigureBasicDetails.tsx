@@ -61,7 +61,7 @@ const ConfigureBasicDetails: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md">
-      <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100">
+      <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100 rounded">
         {userDetails != null ? (
           <div className="p-1 md:p-4 flex flex-col gap-5">
             <div className="flex overflow-auto gap-8 md:gap-5 border-b pb-5">

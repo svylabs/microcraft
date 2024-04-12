@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { Link } from "react-router-dom";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Graph from "./outputPlacement/GraphComponent";
 import Table from "./outputPlacement/TableComponent";
 import TextOutput from "./outputPlacement/TextOutput";
-// import ConfigureThumbnail from "./ConfigureThumbnail"
+import Header from "../../Header";
 
 interface Output {
   [key: string]: any;
@@ -102,7 +101,6 @@ const ActionPage = ({ output }) => {
 
   const goThumbnail = () => {
     window.location.href = "/app/new/thumbnail";
-    // return <Link to={{ pathname: "/app/new/thumbnail", state: { components } }} />;
   };
 
   const goBack = () => {
@@ -111,12 +109,16 @@ const ActionPage = ({ output }) => {
 
   console.log(data);
   return (
-    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:mt-8 lg:p-6 lg:mx-20 xl:mt-16 xl:mx-40 lg:p- xl:p-12">
+    <>
+    <div className="sticky top-0 m-2 md:mx-5 lg:mx-20 xl:mx-40">
+        <Header />
+      </div>
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12 pb-6 md:pt-1 lg:pt-0 xl:pt-6">
       <ToastContainer />
-      <div className="p-2 md:p-4 bg-gray-100">
+      <div className="p-2 md:p-4 bg-gray-100 rounded">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">
-          Showing preview of {loadedData[0].title} App
+            Showing preview of {loadedData[0].title} App
           </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
@@ -376,6 +378,7 @@ const ActionPage = ({ output }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
