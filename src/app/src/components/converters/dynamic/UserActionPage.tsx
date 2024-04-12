@@ -6,6 +6,7 @@ import TextOutput from "./outputPlacement/TextOutput";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
+import Header from "../../Header";
 
 interface Output {
   [key: string]: any;
@@ -75,32 +76,32 @@ const UserActionPage = () => {
             }
           }
 
-        const initialDropdownState = {};
-        data.component_definition.forEach((component) => {
-          if (component.type === "dropdown" && component.optionsConfig) {
-            initialDropdownState[component.id] = JSON.parse(
-              component.optionsConfig
-            ).values[0].trim();
-          }
-        });
+          const initialDropdownState = {};
+          data.component_definition.forEach((component) => {
+            if (component.type === "dropdown" && component.optionsConfig) {
+              initialDropdownState[component.id] = JSON.parse(
+                component.optionsConfig
+              ).values[0].trim();
+            }
+          });
 
-        data.component_definition.forEach((component) => {
-          if (component.type === "slider" && component.sliderConfig) {
-            const sliderConfig = JSON.parse(component.sliderConfig);
-            setData((prevData) => ({
-              ...prevData,
-              [component.id]: sliderConfig.value,
-            }));
-          }
-        });
+          data.component_definition.forEach((component) => {
+            if (component.type === "slider" && component.sliderConfig) {
+              const sliderConfig = JSON.parse(component.sliderConfig);
+              setData((prevData) => ({
+                ...prevData,
+                [component.id]: sliderConfig.value,
+              }));
+            }
+          });
 
-        setData((prevData) => ({
-          ...prevData,
-          ...initialDropdownState,
-        }));
-      });
-  }
-}, []);
+          setData((prevData) => ({
+            ...prevData,
+            ...initialDropdownState,
+          }));
+        });
+    }
+  }, []);
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
@@ -142,7 +143,11 @@ const UserActionPage = () => {
   // }
 
   return (
-    <div className="image-pdf p-4 xl:py-10 min-h-[100vh] flex flex-col">
+    <>
+    <div className="bg-white sticky top-0 px-2 md:px-6 lg:px-24 xl:px-44 z-50">
+        <Header />
+      </div>
+    <div className="image-pdf px-4 min-h-[100vh] flex flex-col">
       <ToastContainer />
       <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
         {output.title || appId}
@@ -177,25 +182,36 @@ const UserActionPage = () => {
           <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                {(component.placement === "input" || component.placement === "output")
-                && (
-                <div>
-                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                    {component.label}:
-                  </label>
-                </div>
-              )}
-              {component.type === "text" && (
-                <input
-                  className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                  type={component.type}
-                  id={component.id}
-                  value={data[component.id] || ""}
-                  onChange={(e) =>
-                    handleInputChange(component.id, e.target.value)
-                  }
-                />
-              )}
+                ID: {component.id}, Label: {component.label}, Type:{" "}
+                {component.type}, Placement: {component.placement}
+                {component.config && `, Config: ${component.config}`}
+                {component.optionsConfig &&
+                  `, optionsConfig: ${component.optionsConfig}`}
+                {component.sliderConfig &&
+                  `, sliderConfig: ${component.sliderConfig}`}
+                {component.code && `, Code: ${component.code}`}
+                <br />
+                {(component.type === "text" ||
+                  component.type === "number" ||
+                  component.type === "file" ||
+                  component.type === "table" ||
+                  component.type === "json" ||
+                  component.type === "graph") && (
+                  <div>
+                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                      {component.label}:
+                    </label>
+                    <input
+                      className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                      type={component.type}
+                      id={component.id}
+                      value={data[component.id] || ""}
+                      onChange={(e) =>
+                        handleInputChange(component.id, e.target.value)
+                      }
+                    />
+                  </div>
+                )}
                 {component.type === "dropdown" && (
                   <select
                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
@@ -417,6 +433,7 @@ const UserActionPage = () => {
       )} */}
       </div>
     </div>
+    </>
   );
 };
 
