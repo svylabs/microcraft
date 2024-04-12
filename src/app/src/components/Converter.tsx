@@ -72,7 +72,7 @@ const Converter: React.FC = () => {
         return <ECDHKeySharing />;
       case "Image Editor":
         return <ImageEditor />;
-      case "New App":
+      case "New-App":
         return <ConfigureBasicDetails />;
       case "Requst an app":
         return <RequestAnApp />;

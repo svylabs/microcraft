@@ -5,6 +5,7 @@ import Converter from "./components/Converter";
 import "./App.css";
 import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
 import UserActionPage from "./components/converters/dynamic/UserActionPage";
+import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail"
 
 const App: React.FC = () => {
 
@@ -15,6 +16,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/app/inbuilt/:id" element={<Converter />} />
           <Route path="/app/new" element={<ConfigureInputsOutputs />} />
+          <Route path="/app/new/thumbnail" element={<ConfigureThumbnail />} />
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>

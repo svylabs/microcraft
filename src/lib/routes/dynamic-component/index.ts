@@ -4,6 +4,9 @@ import { CustomSession, HttpError, authenticatedUser, onlyAdmin } from "../auth"
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 import crypto from "crypto";
+const OpenAI = require("openai");
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const dynamicComponentRouter: Router = express.Router();
 
@@ -13,6 +16,17 @@ const corsOptions = {
 };
 dynamicComponentRouter.use(cors(corsOptions));
 dynamicComponentRouter.use(cookieParser());
+
+const OPEN_AI_API_KEY = process.env.OPEN_AI_API_KEY;
+
+if (!OPEN_AI_API_KEY) {
+  throw new Error('OPEN_AI_API_KEY environment variable is not defined');
+}
+
+const client = new OpenAI({
+  apiKey: OPEN_AI_API_KEY,
+});
+
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     const kind: string = "DynamicComponent";
@@ -220,6 +234,43 @@ dynamicComponentRouter.get("/all", async (req, res) => {
     }
   });
 
+  dynamicComponentRouter.post(
+    "/generate-thumbnail",
+    async (req: Request, res: Response) => {
+      try {
+        const { prompt } = req.body;
+        const imagesResponse = await client.images.generate({
+          model: "dall-e-2",
+          prompt: prompt,
+          n: 3,
+          size: "1024x1024",
+        });
+  
+        const datastore = getDatastore();  
+        const timestamp = new Date().toISOString();
+        const generatedImages = imagesResponse.data.map((image, index) => ({
+          key: datastore.key([
+            "DynamicComponentGeneratedImage",
+            `${index}-${crypto.randomBytes(16).toString("hex")}`,
+          ]),
+          data: [{ name: "url", value: image.url }],
+        }));
+  
+        generatedImages.forEach((image) => {
+          image.data.push(
+            { name: "prompt", value: prompt },
+            { name: "timestamp", value: timestamp }
+          );
+        });
+  
+        await datastore.save(generatedImages);
+  
+        res.json(imagesResponse);
+      } catch (error: any) {
+        res.status(500).send({ error: error.message });
+      }
+    }
+  );
 /*
 dynamicComponentRouter.delete(
   "/new",  async (req: Request, res: Response) => {

@@ -178,7 +178,7 @@ const Home: React.FC = () => {
       image: "./photos/image-editor.jpg",
     },
     {
-      id: "New App",
+      id: "New-App",
       title: "Publish your own",
       description: "Pushlish your own app",
       image: "./photos/dynamic.svg",

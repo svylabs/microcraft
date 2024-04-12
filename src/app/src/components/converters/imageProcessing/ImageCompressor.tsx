@@ -58,7 +58,7 @@ const ImageCompressor: React.FC = () => {
         let compressedDataURL = canvas.toDataURL("image/jpeg", quality);
 
         while (compressedDataURL.length > desiredSizeBytes && quality > 0) {
-          quality -= 0.0001;
+          quality -= 0.01;
           compressedDataURL = canvas.toDataURL("image/jpeg", quality);
         }
 
@@ -124,7 +124,7 @@ const ImageCompressor: React.FC = () => {
           <p className="">Desired Compressed Size (MB): {desiredSizeMB}</p>
           <input
             type="range"
-            min="0.01"
+            min="0.1"
             max="10"
             step="0.1"
             value={desiredSizeMB}
