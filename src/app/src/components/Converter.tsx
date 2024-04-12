@@ -56,11 +56,10 @@ const Converter: React.FC = () => {
         );
       case "Merge PDFs":
         return <MergePdfConverter />;
-      /*case "Secure-Pdf":
+      case "Secure-Pdf":
         return htmlContent ? (
           <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
         ) : null;
-      /*/
       case "ECC-Tools":
         return <EllipticCurveCryptography />;
       case "Cryptographic Hash":

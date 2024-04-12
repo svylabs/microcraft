@@ -131,6 +131,12 @@ const Home: React.FC = () => {
       image: "./photos/merge-pdf.jpg",
     },
     {
+      id: "Secure-Pdf",
+      title: "Secure PDFs",
+      description: "Protect your documents with password encryption.",
+      image: "./photos/protected-pdf.png",
+    },
+    {
       id: "ECC-Tools",
       title: "Elliptic Curve Toolbox",
       description:
@@ -180,8 +186,8 @@ const Home: React.FC = () => {
     {
       id: "Requst an app",
       title: "Request an app",
-      description: "Do you want an app to make your tasks easier? Request an app here",
-      image: "./photos/requestApp.jpg",
+      description: "Have an app idea? Share it here! Your suggestions shape our future apps.",
+      image: "./photos/requestApp.png",
     },
   ];
 
