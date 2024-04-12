@@ -152,7 +152,7 @@ const ActionPage = ({ output }) => {
       <div className="p-2 md:p-4 bg-gray-100">
         <div className="flex justify-between mb-4">
           <h1 className="text-xl md:text-2xl font-bold">
-            Showing preview of the {loadedData[0].title} app
+            Showing preview of {loadedData[0].title} App
           </h1>
           <button
             className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
@@ -167,35 +167,24 @@ const ActionPage = ({ output }) => {
         <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
-              ID: {component.id}, Label: {component.label}, Type:{" "}
-              {component.type}, Placement: {component.placement}
-              {component.config && `, Config: ${component.config}`}
-              {component.optionsConfig &&
-                `, optionsConfig: ${component.optionsConfig}`}
-              {component.sliderConfig &&
-                `, sliderConfig: ${component.sliderConfig}`}
-              {component.code && `, Code: ${component.code}`}
-              <br />
-              {(component.type === "text" ||
-                component.type === "number" ||
-                component.type === "file" ||
-                component.type === "table" ||
-                component.type === "json" ||
-                component.type === "graph") && (
+              {(component.placement === "input" || component.placement === "output")
+                && (
                 <div>
                   <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                     {component.label}:
                   </label>
-                  <input
-                    className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                    type={component.type}
-                    id={component.id}
-                    value={data[component.id] || ""}
-                    onChange={(e) =>
-                      handleInputChange(component.id, e.target.value)
-                    }
-                  />
                 </div>
+              )}
+              {component.type === "text" && (
+                <input
+                  className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                  type={component.type}
+                  id={component.id}
+                  value={data[component.id] || ""}
+                  onChange={(e) =>
+                    handleInputChange(component.id, e.target.value)
+                  }
+                />
               )}
               {component.type === "dropdown" && (
                 <select
@@ -381,18 +370,6 @@ const ActionPage = ({ output }) => {
           </button>
         </div>
 
-        <div className="mb-4 mt-2">
-          <h2 className="text-xl font-bold">Output Format:</h2>
-          <select
-            value={outputFormat}
-            onChange={(e) => setOutputFormat(e.target.value)}
-            className="w-full px-4 py-2 mt-2 border border-gray-300 rounded focus:outline-none"
-          >
-            <option value="json">JSON</option>
-            <option value="table">Table</option>
-          </select>
-        </div>
-
         <div className="mt-4">
           <h2 className="text-xl font-bold">Execution log:</h2>
           {
@@ -400,7 +377,7 @@ const ActionPage = ({ output }) => {
               <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                 {outputCode
                   ? JSON.stringify(outputCode, null, 2)
-                  : "No output available for JSON."}
+                  : "Execution log not available yet"}
               </pre>
             ) : outputFormat === "table" ? (
               <Table data={outputCode} />
