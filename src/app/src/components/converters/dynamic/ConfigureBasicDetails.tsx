@@ -16,6 +16,12 @@ const ConfigureBasicDetails: React.FC = () => {
     const userDetails = localStorage.getItem("userDetails");
     console.log(userDetails)
     setUserDetails(userDetails);
+    const existingData = localStorage.getItem("formData");
+    if (existingData) {
+      const formData = JSON.parse(existingData);
+      setTitle(formData.title || '');
+      setDescription(formData.description || '');
+    }
   }, []);
 
   const handleSaveNext = () => {
@@ -28,11 +34,9 @@ const ConfigureBasicDetails: React.FC = () => {
       localStorage.removeItem("formData");
 
       const data = { title, description };
-      const existingData = localStorage.getItem("formData");
-      const parsedExistingData = existingData ? JSON.parse(existingData) : [];
       localStorage.setItem(
         "formData",
-        JSON.stringify([...parsedExistingData, data])
+        JSON.stringify(data)
       );
 
       window.location.href =
@@ -60,7 +64,7 @@ const ConfigureBasicDetails: React.FC = () => {
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure the layout
+                Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
               </p>
               <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">

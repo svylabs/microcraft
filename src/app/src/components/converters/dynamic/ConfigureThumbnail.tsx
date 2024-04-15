@@ -23,7 +23,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
     ? JSON.parse(savedFormDataString)
-    : [];
+    : {};
 
   const savedComponents = localStorage.getItem("components");
   const savedComponentsData = savedComponents
@@ -57,7 +57,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
     try {
       const promptValue =
-        prompt || `${loadedData[0].title} - ${loadedData[0].description}`;
+        prompt || `${loadedData.title} - ${loadedData.description}`;
 
       const response = await fetch(
         `${BASE_API_URL}/dynamic-component/generate-thumbnail`,
@@ -98,8 +98,8 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: loadedData[0].title,
-          description: loadedData[0].description,
+          title: loadedData.title,
+          description: loadedData.description,
           image_url: preferredImageURL, //selected image url
           component_definition: components,
         }),
@@ -146,7 +146,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure the layout
+                Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
@@ -172,7 +172,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
           <div className="flex justify-between my-5">
             <h1 className="md:text-2xl font-bold">
-              Customize Thumbnail for Your {loadedData[0].title} App
+              Customize Thumbnail for Your {loadedData.title} App
             </h1>
 
             <button
@@ -186,6 +186,10 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
             </button>
           </div>
 
+          <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
+              <span className="text-blue font-bold">Upload Thumbnail</span>
+          </p>
+
           <div className="flex justify-between">
             <div className="flex md:gap-5 text-center">
               <p className="file-upload flex justify-center p-2 md:p-3 rounded-md gap-0.5 md:gap-3 xl:text-lg cursor-pointer">
@@ -195,16 +199,13 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                   className="object-scale-down self-center lg:w-6 lg:h-7"
                 ></img>
                 <span className="text-[#2E4055] font-medium self-center ">
-                  App Thumbnail
+                  Select image
                 </span>
                 <input
                   type="file"
                   className="w-40"
                   onChange={handleImageUpload}
                 ></input>
-              </p>
-              <p className="text-[#727679] text-center self-center md:text-lg">
-                Choose Thumbnail
               </p>
             </div>
 
@@ -232,12 +233,20 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
             )}
           </p>
 
+          <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
+              <span className="text-black font-bold">OR</span>
+          </p>
+
+          <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
+              <span className="text-blue font-bold">Generate thumbnail using AI(enter prompt)</span>
+          </p>
+
           <form onSubmit={handleSubmit} className="flex flex-col">
             <textarea
               className="description focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 bg-[#F7F8FB] xl:text-2xl text-[#21262C]"
               name="prompt"
               placeholder="Describe an image..."
-              defaultValue={`${loadedData[0].title} - ${loadedData[0].description}`}
+              defaultValue={`${loadedData.title} - ${loadedData.description}`}
               // defaultValue={lastPrompt}
               style={{ width: "100%", display: "block", marginBottom: "10px" }}
               onChange={(event) => setPrompt(event.target.value)}
@@ -272,7 +281,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           <div className="flex justify-end mt-5">
             <button
               className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
-              // onClick={saveClick}
+              onClick={saveClick}
             >
               Save
             </button>
@@ -280,7 +289,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
           {preferredImageURL && (
             <div className="mt-5">
-              <h1 className="text-lg font-semibold text-gray-800 mb-2">selected image</h1>
+              <h1 className="text-lg font-semibold text-gray-800 mb-2">Selected Image</h1>
               <img className="mx-auto h-48 justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg" src={preferredImageURL} alt="Selected Image" />
             </div>
           )}
