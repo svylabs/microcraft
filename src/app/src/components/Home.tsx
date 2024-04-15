@@ -102,12 +102,6 @@ const Home: React.FC = () => {
       image: "./photos/merge-pdf.jpg",
     },
     {
-      id: "Secure-Pdf",
-      title: "Secure PDFs",
-      description: "Protect your documents with password encryption.",
-      image: "./photos/protected-pdf.png",
-    },
-    {
       id: "ECC-Tools",
       title: "Elliptic Curve Toolbox",
       description:
