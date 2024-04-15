@@ -146,7 +146,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure inputs / outputs
+                Configure the layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
@@ -156,7 +156,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   3
                 </span>
-                Preview Mode
+                Preview the app
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[7.5rem] xl:w-[10rem] 2xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
@@ -165,7 +165,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 4
               </span>
-              Upload Thumbnail
+              Select Thumnail
               <span className="absolute bottom-0 ml-1 h-[2px] w-[7.5rem] lg:w-[8.5rem] xl:w-[10rem] 2xl:w-[13rem] bg-[#31A05D]"></span>
             </p>
           </div>

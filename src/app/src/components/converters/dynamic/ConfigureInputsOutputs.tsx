@@ -300,7 +300,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 2
               </span>
-              Configure inputs / outputs
+              Configure the layout
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D]"></span>
             </p>
@@ -308,14 +308,14 @@ const ConfigureInputsOutputs: React.FC = () => {
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 3
               </span>
-              Preview Mode
+              Preview the app
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
             </p>
             <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 4
               </span>
-              Upload Thumbnail
+              Select Thumbnail
             </p>
           </div>
 

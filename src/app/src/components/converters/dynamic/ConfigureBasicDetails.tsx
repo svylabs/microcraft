@@ -60,21 +60,21 @@ const ConfigureBasicDetails: React.FC = () => {
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure inputs / outputs
+                Configure the layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
               </p>
               <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   3
                 </span>
-                Preview Mode
+                Preview the app
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
               </p>
               <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   4
                 </span>
-                Thumbnail Selection
+                Select Thumbnail
               </p>
             </div>
             <div className="flex flex-col">

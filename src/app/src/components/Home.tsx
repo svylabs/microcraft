@@ -143,7 +143,7 @@ const Home: React.FC = () => {
     },
     {
       id: "Image Editor",
-      title: "Image Editor Pro",
+      title: "Image Editor",
       description:
         "A user-friendly tool for editing and enhancing images with features like cropping, resizing, flipping, and more.",
       image: "./photos/image-editor.jpg",
@@ -155,10 +155,10 @@ const Home: React.FC = () => {
       image: "./photos/dynamic.svg",
     },
     {
-      id: "Requst an app",
+      id: "Request an app",
       title: "Request an app",
       description:
-        "Have an app idea? Share it here! Your suggestions shape our future apps.",
+        "Do not find what you are looking for? Describe your problem here",
       image: "./photos/requestApp.png",
     },
   ];
