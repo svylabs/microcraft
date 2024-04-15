@@ -159,7 +159,7 @@ const Home: React.FC = () => {
       title: "Request an app",
       description:
         "Do not find what you are looking for? Describe your problem here",
-      image: "./photos/requestApp.png",
+      image: "./photos/requestApp.jpg",
     },
   ];
 
