@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
-import LoginSignupModal from "./LoginSignupModal";
 import { BASE_API_URL } from "./constants";
 
 interface Converter {
@@ -28,8 +27,6 @@ const Home: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<
     DynamicComponent[]
   >([]);
-  const [userName, setUserName] = useState("");
-  const [userAvatar, setUserAvatar] = useState("");
 
   useEffect(() => {
     const storedRecentTools = localStorage.getItem("recentTools");
@@ -49,33 +46,7 @@ const Home: React.FC = () => {
       .catch((error) => {
         console.error("Error fetching dynamic components:", error);
       });
-
-    // Fetch user data
-    fetchUserData();
   }, []);
-
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`${BASE_API_URL}/auth/user`, {
-        credentials: "include",
-      });
-      if (response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const userData = await response.json();
-          setUserName(userData.name || userData.login);
-          setUserAvatar(userData.avatar_url);
-          localStorage.setItem("userDetails", JSON.stringify(userData));
-        } else {
-          console.error("Response is not valid JSON");
-        }
-      } else {
-        console.error("Failed to fetch user data:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const handleImageClick = (componentDefinition: any) => {
     navigate(
@@ -166,21 +137,22 @@ const Home: React.FC = () => {
     },
     {
       id: "Image Editor",
-      title: "Image Editor Pro",
+      title: "Image Editor",
       description:
         "A user-friendly tool for editing and enhancing images with features like cropping, resizing, flipping, and more.",
       image: "./photos/image-editor.jpg",
     },
     {
-      id: "New App",
+      id: "New-App",
       title: "Publish your own",
       description: "Pushlish your own app",
       image: "./photos/dynamic.svg",
     },
     {
-      id: "Requst an app",
+      id: "Request an app",
       title: "Request an app",
-      description: "Do you want an app to make your tasks easier? Request an app here",
+      description:
+        "Do not find what you are looking for? Describe your problem here",
       image: "./photos/requestApp.jpg",
     },
   ];
@@ -385,54 +357,12 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto p-3 md:p-4 lg:px-8 ">
-        <header className="sticky top-0 bg-white z-40 pb-3">
-          <div className="flex flex-wrap justify-between mb-3">
-            <div className="flex gap-5 items-center">
-              <img
-                src="/microcraft.png"
-                alt="Microcraft"
-                className="w-10 h-10 lg:w-16 lg:h-16"
-              />
-              <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
-                Microcraft
-                <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                Minimum distraction, maximum utility
-                </span>
-              </h2>
-            </div>
-            <div className="flex gap-3 self-center">
-              {userName !== "" && (
-                <div className="flex gap-3 self-center">
-                  <img
-                    className="w-12 h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
-                    src={userAvatar}
-                    alt={userName}
-                    onClick={handleLogin}
-                  ></img>
-                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="font-bold">Hello!</span> {userName}
-                  </p>
-                </div>
-              )}
-              {userName === "" && (
-                <div className="flex gap-3 self-center">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                    <span className="text-gray-600" onClick={handleLogin}>
-                      Avatar
-                    </span>
-                  </div>
-                  <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="font-bold">Hello!</span> Guest
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8">
+        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
           <input
             type="text"
-            className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search a growing set of ad-free micro apps"
+            className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
+            placeholder="Discover tools for every need..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -657,8 +587,6 @@ const Home: React.FC = () => {
           </p>
         </div>
       </footer>
-
-      {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
     </>
   );
 };

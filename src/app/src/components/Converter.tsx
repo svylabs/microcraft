@@ -28,12 +28,12 @@ const Converter: React.FC = () => {
 
   useEffect(() => {
     if (id === "Secure-Pdf") {
-      fetch("../../public/index.html") 
+      fetch("../../public/index.html")
         .then((response) => response.text())
         .then((html) => setHtmlContent(html))
         .catch((error) => console.error("Error fetching HTML:", error));
     }
-  }, [id]);  
+  }, [id]);
 
   const renderConverterContent = () => {
     switch (id) {
@@ -55,26 +55,25 @@ const Converter: React.FC = () => {
         );
       case "Merge PDFs":
         return <MergePdfConverter />;
-      /*case "Secure-Pdf":
+      case "Secure-Pdf":
         return htmlContent ? (
           <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
         ) : null;
-      /*/
       case "ECC-Tools":
         return <EllipticCurveCryptography />;
       case "Cryptographic Hash":
         return <CryptographicHash />;
-        case "BLS Signatures":
+      case "BLS Signatures":
         return <BLSSignatures />;
-        case "Encryption ⇔ Decryption":
+      case "Encryption ⇔ Decryption":
         return <EncryptionDecryption />;
-        case "ECDH Key Sharing":
+      case "ECDH Key Sharing":
         return <ECDHKeySharing />;
-        case "Image Editor":
+      case "Image Editor":
         return <ImageEditor />;
-        case "New App":
+      case "New-App":
         return <ConfigureBasicDetails />;
-        case "Requst an app":
+      case "Request an app":
         return <RequestAnApp />;
       default:
         return <p>App not found</p>;
@@ -82,11 +81,11 @@ const Converter: React.FC = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto p-4">
-      <div className="flex justify-between md:mb-2">
-        <h2 className="py-2 mb-5 text-xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
+    <div className="max-w-screen-xl mx-auto px-3.5 lg:px-6 py-2">
+      <div className="flex justify-between mb-2 md:mb-3">
+        <h3 className="py-2 text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
           {id}
-        </h2>
+        </h3>
         <Link to="/" className="py-2">
           <button className="common-button rounded bg-slate-300">
             <img src={crossImage} alt="Go Home" className=" h-8 w-8" />

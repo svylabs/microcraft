@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import pin from "../../photos/paperclip-solid.svg";
 import "./ConfigureBasicDetails.scss";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
@@ -8,11 +7,8 @@ import { GITHUB_CLIENT_ID } from "~/components/constants";
 const ConfigureBasicDetails: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
-  const [imageName, setImageName] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
     title: false,
-    image: false,
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
 
@@ -20,38 +16,27 @@ const ConfigureBasicDetails: React.FC = () => {
     const userDetails = localStorage.getItem("userDetails");
     console.log(userDetails)
     setUserDetails(userDetails);
-  }, []);
-  
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (typeof reader.result === "string") {
-        setImage(reader.result);
-        setImageName(file.name);
-      }
-    };
-    if (file) {
-      reader.readAsDataURL(file);
+    const existingData = localStorage.getItem("formData");
+    if (existingData) {
+      const formData = JSON.parse(existingData);
+      setTitle(formData.title || '');
+      setDescription(formData.description || '');
     }
-  };
+  }, []);
 
   const handleSaveNext = () => {
-    if (!title.trim() || !image.trim()) {
+    if (!title.trim()) {
       setFieldErrors({
         title: !title.trim(),
-        image: !image.trim(),
       });
       return;
     } else {
       localStorage.removeItem("formData");
 
-      const data = { title, description, image };
-      const existingData = localStorage.getItem("formData");
-      const parsedExistingData = existingData ? JSON.parse(existingData) : [];
+      const data = { title, description };
       localStorage.setItem(
         "formData",
-        JSON.stringify([...parsedExistingData, data])
+        JSON.stringify(data)
       );
 
       window.location.href =
@@ -61,22 +46,39 @@ const ConfigureBasicDetails: React.FC = () => {
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md">
-      <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100">
+      <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100 rounded">
         {userDetails != null ? (
           <div className="p-1 md:p-4 flex flex-col gap-5">
-            <div className="flex gap-2 md:gap-8 lg:gap-12 border-b pb-5">
-              <p className="flex gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
+            <div className="relative flex overflow-auto gap-8 border-b pb-5 items-center">
+              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
                   1
                 </span>
                 Configure basic details
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[11rem] xl:w-[15rem] bg-[#31A05D]"></span>
               </p>
-              <img src={arrow} alt="arrow"></img>
-              <p className="flex gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
+              
+              {/* <img className="w-6 h-6" src={arrow} alt="arrow"></img> */}
+              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure inputs / outputs
+                Configure layout
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+              </p>
+              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
+                <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
+                  3
+                </span>
+                Preview the app
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+              </p>
+              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
+                <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
+                  4
+                </span>
+                Select Thumbnail
               </p>
             </div>
             <div className="flex flex-col">
@@ -113,41 +115,8 @@ const ConfigureBasicDetails: React.FC = () => {
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
-            <div className="flex flex-col md:flex-row mt-2 justify-between gap-5 mb-3 md:mb-1">
-              <div className="flex md:gap-5 justify-between">
-                <p className="file-upload flex justify-center p-2 md:p-3 rounded-md gap-3 xl:text-lg cursor-pointer">
-                  <img
-                    src={pin}
-                    alt="pin"
-                    className="object-scale-down self-center lg:w-6 lg:h-7"
-                  ></img>
-                  <span className="text-[#2E4055] font-medium self-center ">
-                    App Thumbnail
-                  </span>
-                  <input
-                    type="file"
-                    className="w-40"
-                    onChange={handleImageUpload}
-                  ></input>
-                </p>
-                <p className="text-[#727679] self-center md:text-lg">
-                  Choose Thumbnail
-                </p>
-
-                <p className="hidden md:block text-[#727679] self-center md:text-lg">
-                  {imageName && <span>{imageName}</span>}
-                </p>
-              </div>
-
-              <p className="md:hidden text-[#727679] self-center md:text-lg">
-                {imageName && <span>{imageName}</span>}
-              </p>
-              {fieldErrors.image && (
-                <p className="md:hidden text-red-500 -mt-2">
-                  Image is required.
-                </p>
-              )}
-              <Link to="#" onClick={handleSaveNext} className="mx-auto md:mx-0">
+            <div className="flex justify-end">
+              <Link to="#" onClick={handleSaveNext} className="mx-0">
                 <button
                   className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
                   type="submit"
@@ -156,11 +125,6 @@ const ConfigureBasicDetails: React.FC = () => {
                 </button>
               </Link>
             </div>
-            {fieldErrors.image && (
-              <p className="hidden md:block text-red-500 -mt-2">
-                Image is required.
-              </p>
-            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5">

@@ -34,7 +34,7 @@ const ImageCompressor: React.FC = () => {
 
   const handleCompress = () => {
     if (!image) {
-      alert("Please upload an image to proceed.")
+      alert("Please upload an image to proceed.");
       return;
     }
     setCompressing(true);
@@ -110,12 +110,17 @@ const ImageCompressor: React.FC = () => {
       </div>
       <div className="flex justify-center items-center w-full mt-4 md:mt-0">
         <div className="flex flex-col gap-3 md:text-lg w-full md:w-auto">
-          <input className="block w-full text-sm text-slate-50
+          <input
+            className="block w-full text-sm text-slate-50
       file:mr-4 file:py-2 file:px-4
       file:rounded-full file:border-0
       file:text-sm file:font-semibold
       file:bg-violet-50 file:text-violet-700
-      hover:file:bg-violet-100" type="file" accept="image/*" onChange={handleImageChange} />
+      hover:file:bg-violet-100"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
           <p className="">Desired Compressed Size (MB): {desiredSizeMB}</p>
           <input
             type="range"
