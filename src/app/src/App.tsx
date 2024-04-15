@@ -5,12 +5,17 @@ import Converter from "./components/Converter";
 import "./App.css";
 import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
 import UserActionPage from "./components/converters/dynamic/UserActionPage";
-import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail"
+import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail";
+import Header from "./components/Header";
 
 const App: React.FC = () => {
-
   return (
     <>
+      <div className="bg-white sticky top-0 z-50">
+        <div className="max-w-screen-xl mx-auto pt-3 px-3 md:px-4 lg:px-8 ">
+          <Header />
+        </div>
+      </div>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -20,7 +25,7 @@ const App: React.FC = () => {
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
-      </Router>      
+      </Router>
     </>
   );
 };

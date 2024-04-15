@@ -3,7 +3,6 @@ import { BASE_API_URL } from "~/components/constants";
 import flower from "../../photos/flower.png";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
-import Header from "../../Header";
 import { redirect } from "react-router-dom";
 
 interface FrontendProps {
@@ -103,9 +102,6 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
   return (
     <>
-    <div className="sticky top-0 m-2 md:mx-5 lg:mx-20 xl:mx-40 z-50">
-        <Header />
-      </div>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
       <div className="p-1 md:p-4 bg-gray-100 rounded">
       <div className="flex overflow-auto gap-8 md:gap-5 border-b pb-5">

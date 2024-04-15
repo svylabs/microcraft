@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import crossImage from "./photos/xmark-solid.svg";
-import Header from "./Header";
 import JsonStringConverter from "./converters/json/JsonStringConverter";
 import PrettyJsonConverter from "./converters/json/PrettyJsonConverter";
 import JsonDiffConverter from "./converters/json/JsonDiffConverter";
@@ -82,8 +81,7 @@ const Converter: React.FC = () => {
   };
 
   return (
-    <div className="max-w-screen-xl mx-auto px-4 py-2">
-      <Header />
+    <div className="max-w-screen-xl mx-auto px-3.5 lg:px-6 py-2">
       <div className="flex justify-between mb-2 md:mb-3">
         <h3 className="py-2 text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
           {id}

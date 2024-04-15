@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
-import Header from "./Header";
 import { BASE_API_URL } from "./constants";
 
 interface Converter {
@@ -364,9 +363,8 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto p-3 md:p-4 lg:px-8 ">
-        <header className="sticky top-0 bg-white z-40 pb-3">
-          <Header />
+      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8">
+        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"

@@ -44,8 +44,7 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 bg-white z-40">
-        <div className="flex flex-wrap justify-between mb-3 md:mb-0">
+      <header className="sticky top-0 bg-white z-50 flex flex-wrap justify-between">
           <div className="flex gap-2 md:gap-3 lg:gap-5 items-center">
             <img
               src="/microcraft.png"
@@ -86,7 +85,6 @@ const Header: React.FC = () => {
               </div>
             )}
           </div>
-        </div>
       </header>
       {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
     </>
