@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link } from "react-router-dom";
-import ActionPage from "./ActionPage";
 import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
@@ -41,7 +40,6 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
-  const [showOutput, setShowOutput] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
   const [graphConfig, setGraphConfig] = useState<any>({
@@ -227,7 +225,7 @@ const ConfigureInputsOutputs: React.FC = () => {
 
   const handlePreview = async () => {
     console.log(components);
-    setShowOutput(true);
+    window.location.href = "/app/new/preview";
   };
 
   const handleInputChange = (id: string, value: string) => {
@@ -281,36 +279,41 @@ const ConfigureInputsOutputs: React.FC = () => {
     };
   }, [currentComponent.type]);
 
-  if (showOutput) {
-    return <ActionPage output={components} />;
-  }
-
   console.log(components);
 
   return (
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
         <div className="p-1 md:p-4 bg-gray-100 rounded">
-          <div className="flex overflow-auto gap-8 md:gap-5 border-b pb-5">
-            <Link to="/app/inbuilt/New-App">
-              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
+          <div className="relative flex overflow-auto gap-8 border-b pb-5 items-center">
+            <Link to="/app/inbuilt/New-App" className="group">
+              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
                   1
                 </span>
                 Configure basic details
-                <img src={arrow} alt="arrow"></img>
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[11rem] xl:w-[15rem] bg-[#31A05D]  opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
+            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 2
               </span>
               Configure inputs / outputs
-              <img src={arrow} alt="arrow"></img>
+              <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D]"></span>
             </p>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] md:text-lg xl:text-2xl">
+            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 3
+              </span>
+              Preview Mode
+              <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+            </p>
+            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
+              <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
+                4
               </span>
               Upload Thumbnail
             </p>
