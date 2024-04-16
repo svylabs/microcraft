@@ -102,12 +102,6 @@ const Home: React.FC = () => {
       image: "./photos/merge-pdf.jpg",
     },
     {
-      id: "Secure-Pdf",
-      title: "Secure PDFs",
-      description: "Protect your documents with password encryption.",
-      image: "./photos/protected-pdf.png",
-    },
-    {
       id: "ECC-Tools",
       title: "Elliptic Curve Toolbox",
       description:
@@ -143,7 +137,7 @@ const Home: React.FC = () => {
     },
     {
       id: "Image Editor",
-      title: "Image Editor Pro",
+      title: "Image Editor",
       description:
         "A user-friendly tool for editing and enhancing images with features like cropping, resizing, flipping, and more.",
       image: "./photos/image-editor.jpg",
@@ -155,11 +149,11 @@ const Home: React.FC = () => {
       image: "./photos/dynamic.svg",
     },
     {
-      id: "Requst an app",
+      id: "Request an app",
       title: "Request an app",
       description:
-        "Have an app idea? Share it here! Your suggestions shape our future apps.",
-      image: "./photos/requestApp.png",
+        "Do not find what you are looking for? Describe your problem here",
+      image: "./photos/requestApp.jpg",
     },
   ];
 
@@ -368,7 +362,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Search a growing set of ad-free micro apps"
+            placeholder="Discover tools for every need..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />

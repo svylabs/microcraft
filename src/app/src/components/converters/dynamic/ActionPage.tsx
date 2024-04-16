@@ -22,7 +22,7 @@ const ActionPage: React.FC = () => {
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
     ? JSON.parse(savedFormDataString)
-    : [];
+    : {};
   const savedComponents = localStorage.getItem("components");
   const savedComponentsData = savedComponents
     ? JSON.parse(savedComponents)
@@ -55,7 +55,7 @@ const ActionPage: React.FC = () => {
   useEffect(() => {
     setLoadedData(savedFormData);
     setComponents(savedComponentsData);
-    setSelectedApp("sandbox-" + savedFormData[0].title);
+    setSelectedApp("sandbox-" + savedFormData.title);
 
     // Initialize dropdowns with their first options
     const initialDropdownState = {};
@@ -137,7 +137,7 @@ const ActionPage: React.FC = () => {
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2
                 </span>
-                Configure inputs / outputs
+                Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
@@ -146,7 +146,7 @@ const ActionPage: React.FC = () => {
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 3
               </span>
-              Preview Mode
+              Preview the app
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
               <span className="absolute bottom-0 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[7.5rem] xl:w-[10rem] 2xl:w-[11rem] bg-[#31A05D]"></span>
             </p>
@@ -154,12 +154,12 @@ const ActionPage: React.FC = () => {
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 4
               </span>
-              Upload Thumbnail
+              Select Thumbnail
             </p>
           </div>
           <div className="flex justify-between my-4">
             <h1 className="md:text-2xl font-bold">
-              Showing preview of {loadedData[0].title} App
+              Showing preview of {loadedData.title} App
             </h1>
             <button
               className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300"
@@ -174,36 +174,25 @@ const ActionPage: React.FC = () => {
           <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                ID: {component.id}, Label: {component.label}, Type:{" "}
-                {component.type}, Placement: {component.placement}
-                {component.config && `, Config: ${component.config}`}
-                {component.optionsConfig &&
-                  `, optionsConfig: ${component.optionsConfig}`}
-                {component.sliderConfig &&
-                  `, sliderConfig: ${component.sliderConfig}`}
-                {component.code && `, Code: ${component.code}`}
-                <br />
-                {(component.type === "text" ||
-                  component.type === "number" ||
-                  component.type === "file" ||
-                  component.type === "table" ||
-                  component.type === "json" ||
-                  component.type === "graph") && (
+                {(component.placement === "input" || component.placement === "output")
+                 && (
                   <div>
                     <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                       {component.label}:
                     </label>
-                    <input
-                      className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                      type={component.type}
-                      id={component.id}
-                      value={data[component.id] || ""}
-                      onChange={(e) =>
-                        handleInputChange(component.id, e.target.value)
-                      }
-                    />
                   </div>
                 )}
+                {(component.type === "text" || component.type === "number") && (
+                     <input
+                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                     type={component.type}
+                     id={component.id}
+                     value={data[component.id] || ""}
+                     onChange={(e) =>
+                       handleInputChange(component.id, e.target.value)
+                     }
+                   />
+                  )}
                 {component.type === "dropdown" && (
                   <select
                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
@@ -370,7 +359,7 @@ const ActionPage: React.FC = () => {
                   <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                     {data[component.id]
                       ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
-                      : "No output available for JSON."}
+                      : "Execution log not available yet"}
                   </pre>
                 )}
               {component.placement === "output" &&
@@ -397,18 +386,6 @@ const ActionPage: React.FC = () => {
             >
               Add Thumbnail
             </button>
-          </div>
-
-          <div className="mb-4 mt-2">
-            <h2 className="text-xl font-bold">Output Format:</h2>
-            <select
-              value={outputFormat}
-              onChange={(e) => setOutputFormat(e.target.value)}
-              className="w-full px-4 py-2 mt-2 border border-gray-300 rounded focus:outline-none"
-            >
-              <option value="json">JSON</option>
-              <option value="table">Table</option>
-            </select>
           </div>
 
           <div className="mt-4">

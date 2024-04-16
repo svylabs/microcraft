@@ -73,7 +73,7 @@ const Converter: React.FC = () => {
         return <ImageEditor />;
       case "New-App":
         return <ConfigureBasicDetails />;
-      case "Requst an app":
+      case "Request an app":
         return <RequestAnApp />;
       default:
         return <p>App not found</p>;
