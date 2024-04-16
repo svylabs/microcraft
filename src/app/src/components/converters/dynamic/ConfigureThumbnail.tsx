@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
 import pin from "../../photos/paperclip-solid.svg";
 import { redirect } from "react-router-dom";
+import "./ConfigureThumbnail.css";
 
 interface FrontendProps {
   lastPrompt?: string;
@@ -18,7 +19,8 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
   const [uploadedImage, setUploadedImage] = useState("");
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
   const [imageName, setImageName] = useState("");
-  // console.log(image);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  // console.log(uploadedImage);
   // console.log(imageUrls);
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -54,6 +56,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setGeneratingImage(true);
 
     try {
       const promptValue =
@@ -83,11 +86,14 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
       setImageUrls(urls);
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setGeneratingImage(false);
     }
   };
 
   const preferredImageURL = selectedImageUrl || uploadedImage;
-  console.log(preferredImageURL);
+  console.log("Selected preferredImageURL:", preferredImageURL);
+  console.log("Size of preferredImageURL:", preferredImageURL.length, "bytes");
 
   const saveClick = async () => {
     try {
@@ -186,6 +192,29 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
             </button>
           </div>
 
+          {/* <div className="bg-blue-200 text-blue-800 my-5 rounded-md md:text-sm flex justify-center items-center animate-pulse bg-gradient-to-r from-blue-300 to-blue-200 p-4 text-center shadow-lg">
+            <p>
+              <span className="font-bold text-lg mr-2">ℹ️ Key details:</span>
+              You can either upload an image from your local computer or
+              generate one by describing it in the text area below.
+            </p>
+          </div> */}
+
+          <div
+            id="animatedDiv"
+            className="md:flex p-4 md:text-sm bg-gradient-to-r from-blue-300 to-blue-200 text-blue-800 my-5 rounded-md text-center justify-center items-center shadow-lg"
+          >
+            <span className="font-bold text-lg mr-2 whitespace-nowrap">
+              ℹ️ Key details:
+            </span>
+            <div className="overflow-hidden whitespace-no-wrap">
+              <p id="scrollText" className="inline-block animate-scroll">
+                You can either upload an image from your local computer or
+                generate one by describing it in the text area below.
+              </p>
+            </div>
+          </div>
+
           <div className="flex justify-between">
             <div className="flex md:gap-5 text-center">
               <p className="file-upload flex justify-center p-2 md:p-3 rounded-md gap-0.5 md:gap-3 xl:text-lg cursor-pointer">
@@ -207,12 +236,8 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 Choose Thumbnail
               </p>
             </div>
-
-            {/* <p className="hidden md:block text-[#727679] self-center md:text-lg">
-              {imageName && <span>{imageName}</span>}
-            </p> */}
           </div>
-          
+
           {uploadedImage && (
             <div className="flex justify-center mt-3 md:mt-5">
               <img
@@ -233,7 +258,14 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col">
+            <label
+              htmlFor="image-description"
+              className="text-lg font-semibold text-gray-800 mb-2"
+            >
+              Describe the image:
+            </label>
             <textarea
+              id="image-description"
               className="description focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 bg-[#F7F8FB] xl:text-2xl text-[#21262C]"
               name="prompt"
               placeholder="Describe an image..."
@@ -271,7 +303,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
           <div className="flex justify-end mt-5">
             <button
-              className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
+              className="p-3 px-7 font-semibold md:font-bold md:text-lg text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
               // onClick={saveClick}
             >
               Save
@@ -280,14 +312,43 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
           {preferredImageURL && (
             <div className="mt-5">
-              <h1 className="text-lg font-semibold text-gray-800 mb-2">selected image</h1>
-              <img className="mx-auto h-48 justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg" src={preferredImageURL} alt="Selected Image" />
+              <h1 className="text-lg font-semibold text-gray-800 mb-2">
+                Selected image
+              </h1>
+              <img
+                className="mx-auto w-full md:w-64 md:h-60 justify-center items-center bg-yellow-200 rounded-lg overflow-hidden p-4 shadow-md  border border-gray-300 hover:shadow-lg"
+                src={preferredImageURL}
+                alt="Selected Image"
+              />
             </div>
           )}
         </div>
 
+        {generatingImage && (
+          <div className="flex gap-3 fixed top-0 left-0 w-full h-full items-center justify-center bg-black bg-opacity-50 z-50">
+            <svg
+              aria-hidden="true"
+              className="w-7 h-7 text-gray-200 animate-spin fill-orange-500"
+              viewBox="0 0 100 101"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span className="text-white text-xl font-bold">Loading...</span>
+          </div>
+        )}
+
         {popup && (
-          <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[13rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
+          // <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[13rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh] z-50">
+          <div className="popupThanks flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">
               <img
                 src={flower}

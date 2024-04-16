@@ -1,0 +1,24 @@
+@keyframes scroll {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.animate-scroll {
+    display: inline-block;
+    animation: scroll 15s linear infinite;
+    animation-play-state: running;
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 0.5rem;
+}
+
+#animatedDiv:hover #scrollText {
+    animation-play-state: paused;
+    white-space: normal;
+    overflow: visible;
+}
