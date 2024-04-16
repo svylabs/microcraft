@@ -196,13 +196,10 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
             id="animatedDiv"
             className="md:flex p-2 md:text-sm bg-gradient-to-r from-blue-300 to-blue-200 text-blue-800 my-5 rounded-md text-center justify-center items-center shadow-lg"
           >
-            <span className="font-bold text-lg mr-2 whitespace-nowrap">
-              ℹ️ Key details:
-            </span>
             <div className="overflow-hidden whitespace-no-wrap">
-              <p id="scrollText" className="inline-block animate-scroll">
-                You can either upload an image from your local computer or
-                generate one by describing it in the text area below.
+              <p id="scrollText" className="inline-block">
+                Upload an image from your local computer or
+                generate one using AI by describing the image in the text area below.
               </p>
             </div>
           </div>
@@ -251,7 +248,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </p>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-black font-bold">OR</span>
+              <span className="text-black font-bold text-xl">OR</span>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col">
@@ -259,7 +256,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
               htmlFor="image-description"
               className="py-2 text-[#727679] justify-between md:text-lg font-bold"
             >
-              Generate thumbnail using AI(enter prompt) :
+              Generate thumbnail using AI:
             </label>
             <textarea
               id="image-description"
