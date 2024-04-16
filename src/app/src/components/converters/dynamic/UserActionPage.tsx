@@ -148,9 +148,6 @@ const UserActionPage = () => {
         <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
           {output.title || appId}
         </h1>
-        {/* <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto text-center text-purple-600">
-          {output.title || appId}
-        </h1> */}
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
             <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
