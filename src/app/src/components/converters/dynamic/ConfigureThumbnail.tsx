@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
 import pin from "../../photos/paperclip-solid.svg";
 import { redirect } from "react-router-dom";
+import "./ConfigureThumbnail.css";
+import Loading from "./loadingPage/Loading";
 
 interface FrontendProps {
   lastPrompt?: string;
@@ -18,12 +20,12 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
   const [uploadedImage, setUploadedImage] = useState("");
   const [selectedImageUrl, setSelectedImageUrl] = useState("");
   const [imageName, setImageName] = useState("");
-  // console.log(image);
-  // console.log(imageUrls);
+  const [loading, setLoading] = useState(false);
+
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
     ? JSON.parse(savedFormDataString)
-    : {};
+    : [];
 
   const savedComponents = localStorage.getItem("components");
   const savedComponentsData = savedComponents
@@ -44,7 +46,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
       if (typeof reader.result === "string") {
         setUploadedImage(reader.result);
         setImageName(file.name);
-        setSelectedImageUrl(""); // Clear selected image URL when uploading new image
+        setSelectedImageUrl("");
       }
     };
     if (file) {
@@ -54,6 +56,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setLoading(true);
 
     try {
       const promptValue =
@@ -83,11 +86,14 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
       setImageUrls(urls);
     } catch (error: any) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const preferredImageURL = selectedImageUrl || uploadedImage;
-  console.log(preferredImageURL);
+  console.log("Selected preferredImageURL:", preferredImageURL);
+  console.log("Size of preferredImageURL:", preferredImageURL.length, "bytes");
 
   const saveClick = async () => {
     try {
@@ -148,7 +154,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 </span>
                 Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
             <Link to="/app/new/preview" className="group">
@@ -158,7 +164,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 </span>
                 Preview the app
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[7.5rem] xl:w-[10rem] 2xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[8rem] xl:w-[11rem] 2xl:w-[11.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
             <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
@@ -166,7 +172,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 4
               </span>
               Select Thumnail
-              <span className="absolute bottom-0 ml-1 h-[2px] w-[7.5rem] lg:w-[8.5rem] xl:w-[10rem] 2xl:w-[13rem] bg-[#31A05D]"></span>
+              <span className="absolute bottom-0 ml-1 h-[2px] w-[7.5rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D]"></span>
             </p>
           </div>
 
@@ -186,8 +192,20 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
             </button>
           </div>
 
+          <div
+            id="animatedDiv"
+            className="md:flex p-2 md:text-sm bg-gradient-to-r from-blue-300 to-blue-200 text-blue-800 my-5 rounded-md text-center justify-center items-center shadow-lg"
+          >
+            <div className="overflow-hidden whitespace-no-wrap">
+              <p id="scrollText" className="inline-block">
+                Upload an image from your local computer or
+                generate one using AI by describing the image in the text area below.
+              </p>
+            </div>
+          </div>
+
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-blue font-bold">Upload Thumbnail</span>
+              <span className="text-blue font-bold">Upload Thumbnail :</span>
           </p>
 
           <div className="flex justify-between">
@@ -208,12 +226,8 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
                 ></input>
               </p>
             </div>
-
-            {/* <p className="hidden md:block text-[#727679] self-center md:text-lg">
-              {imageName && <span>{imageName}</span>}
-            </p> */}
           </div>
-          
+
           {uploadedImage && (
             <div className="flex justify-center mt-3 md:mt-5">
               <img
@@ -234,15 +248,18 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </p>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-black font-bold">OR</span>
-          </p>
-
-          <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-blue font-bold">Generate thumbnail using AI(enter prompt)</span>
+              <span className="text-black font-bold text-xl">OR</span>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col">
+            <label
+              htmlFor="image-description"
+              className="py-2 text-[#727679] justify-between md:text-lg font-bold"
+            >
+              Generate thumbnail using AI:
+            </label>
             <textarea
+              id="image-description"
               className="description focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 bg-[#F7F8FB] xl:text-2xl text-[#21262C]"
               name="prompt"
               placeholder="Describe an image..."
@@ -289,14 +306,22 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
           {preferredImageURL && (
             <div className="mt-5">
-              <h1 className="text-lg font-semibold text-gray-800 mb-2">Selected Image</h1>
-              <img className="mx-auto h-48 justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg" src={preferredImageURL} alt="Selected Image" />
+              <h1 className="text-lg font-semibold text-gray-800 mb-2">
+                Selected image
+              </h1>
+              <img
+                className="mx-auto w-full md:w-64 md:h-60 justify-center items-center bg-yellow-200 rounded-lg overflow-hidden p-4 shadow-md  border border-gray-300 hover:shadow-lg"
+                src={preferredImageURL}
+                alt="Selected Image"
+              />
             </div>
           )}
         </div>
 
+        {loading && <Loading />}
+        
         {popup && (
-          <div className="popupThanks flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[13rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
+          <div className="popupThanks flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">
               <img
                 src={flower}

@@ -14,13 +14,13 @@ const ConfigureBasicDetails: React.FC = () => {
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
-    console.log(userDetails)
+    console.log(userDetails);
     setUserDetails(userDetails);
     const existingData = localStorage.getItem("formData");
     if (existingData) {
       const formData = JSON.parse(existingData);
-      setTitle(formData.title || '');
-      setDescription(formData.description || '');
+      setTitle(formData.title || "");
+      setDescription(formData.description || "");
     }
   }, []);
 
@@ -34,13 +34,9 @@ const ConfigureBasicDetails: React.FC = () => {
       localStorage.removeItem("formData");
 
       const data = { title, description };
-      localStorage.setItem(
-        "formData",
-        JSON.stringify(data)
-      );
+      localStorage.setItem("formData", JSON.stringify(data));
 
-      window.location.href =
-        "/app/new";
+      window.location.href = "/app/new";
     }
   };
 
@@ -58,8 +54,6 @@ const ConfigureBasicDetails: React.FC = () => {
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[11rem] xl:w-[15rem] bg-[#31A05D]"></span>
               </p>
-              
-              {/* <img className="w-6 h-6" src={arrow} alt="arrow"></img> */}
               <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   2

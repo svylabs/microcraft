@@ -172,15 +172,6 @@ const Home: React.FC = () => {
     "image",
   ];
   const [customComponentCategory, setCustomComponentCategory] = useState("all");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleLogin = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
 
   const addToRecentTools = (toolId: string) => {
     const updatedRecentTools = [

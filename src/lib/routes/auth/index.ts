@@ -3,11 +3,13 @@ import { getDatastore } from "../../database";
 import axios from "axios";
 import { encode } from "url-safe-base64";
 import { Session } from "express-session";
+import { google } from "googleapis";
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
 export const githubRouter: Router = express.Router();
+export const authRouter: Router = express.Router();
 
 const corsOptions = {
   origin: ["http://localhost:5173","https://microcraft.dev","http://microcraft.dev","www.microcraft.dev", "https://handycraft-415122.oa.r.appspot.com"],
@@ -16,9 +18,14 @@ const corsOptions = {
 
 githubRouter.use(cors(corsOptions));
 githubRouter.use(cookieParser());
+authRouter.use(cors(corsOptions));
+authRouter.use(cookieParser());
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REDIRECT_URL = process.env.REDIRECT_URL || "http://localhost:5173/auth/google/callback";
 
 export class HttpError extends Error {
   status: number;
@@ -188,6 +195,75 @@ githubRouter.get("/logout", (req, res) => {
       res.status(500).send("Internal Server Error");
     } else {
       //res.clearCookie("connect.sid"); // Clear session cookie
+      res.sendStatus(200);
+    }
+  });
+});
+
+// Google OAuth2 client setup
+const oauth2Client = new google.auth.OAuth2(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  REDIRECT_URL
+);
+
+// Generate Google login URL
+const googleLoginUrl = oauth2Client.generateAuthUrl({
+  access_type: "offline",
+  scope: [
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "https://www.googleapis.com/auth/userinfo.email",
+  ],
+});
+
+// Redirect to Google login page
+authRouter.get("/google/login", (req, res) => {
+  res.redirect(googleLoginUrl);
+});
+
+// Google OAuth2 callback
+authRouter.get("/google/callback", async (req, res, next) => {
+  const { code } = req.query;
+  try {
+    // Exchange code for access token
+    const { tokens } = await oauth2Client.getToken(code as string);
+    oauth2Client.setCredentials(tokens);
+    
+    // Get user info
+    const oauth2 = google.oauth2({ version: 'v2', auth: oauth2Client });
+    const { data } = await oauth2.userinfo.get();
+    
+    // Construct user detail object
+    
+    const userDetail = {
+      name: data.name || "", 
+      login: data.email || "", 
+      id: parseInt(data.id || "0"),
+      avatar_url: data.picture || "",
+      created_on: new Date().toISOString(),
+    };
+    
+
+    addUserToSession(req, res, userDetail);
+    await addUserToDatastore(userDetail);
+    
+    // Redirect the user
+    if (process.env.NODE_ENV === "development") {
+      res.redirect("http://localhost:5173/");
+    } else {
+      res.redirect("/");
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+authRouter.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Error destroying session:", err);
+      res.status(500).send("Internal Server Error");
+    } else {
       res.sendStatus(200);
     }
   });
