@@ -64,23 +64,23 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
     }
   };
 
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     const response = await fetch(`${BASE_API_URL}/auth/google/login`, {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-  //     if (response.ok) {
-  //       const userData = await response.json();
-  //       setUserData(userData);
-  //       closeModal();
-  //     } else {
-  //       console.error("Failed to login with Google:", response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during Google login:", error);
-  //   }
-  // };
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/auth/google/login`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (response.ok) {
+        const userData = await response.json();
+        setUserData(userData);
+        closeModal();
+      } else {
+        console.error("Failed to login with Google:", response.status);
+      }
+    } catch (error) {
+      console.error("Error during Google login:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
@@ -134,12 +134,12 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
                 </button>
               </a>
               {/* <a href="/auth/google" className=""> */}
-              {/* <button
+              <button
                 onClick={handleGoogleLogin}
                 className="cursor-pointer bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
               >
                 Login with Google
-              </button> */}
+              </button>
               {/* </a> */}
               {/* <button
                 onClick={handleEmailSignup}
