@@ -64,6 +64,24 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
     }
   };
 
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const response = await fetch(`${BASE_API_URL}/auth/google/login`, {
+  //       method: "GET",
+  //       credentials: "include",
+  //     });
+  //     if (response.ok) {
+  //       const userData = await response.json();
+  //       setUserData(userData);
+  //       closeModal();
+  //     } else {
+  //       console.error("Failed to login with Google:", response.status);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during Google login:", error);
+  //   }
+  // };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div
@@ -103,17 +121,33 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
               Elevate your experience! Sign in to build and publish custom apps.
             </p>
 
-            <a
-              href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
-              className="mx-auto md:mx-0"
-            >
-              <button
-                className="cursor-pointer bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-                type="submit"
+            <div className="flex flex-col space-y-4">
+              <a
+                href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
+                className="mx-auto md:mx-0"
               >
-                Login with GitHub
-              </button>
-            </a>
+                <button
+                  className="cursor-pointer bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  type="submit"
+                >
+                  Login with GitHub
+                </button>
+              </a>
+              {/* <a href="/auth/google" className=""> */}
+              {/* <button
+                onClick={handleGoogleLogin}
+                className="cursor-pointer bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Login with Google
+              </button> */}
+              {/* </a> */}
+              {/* <button
+                onClick={handleEmailSignup}
+                className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Signup with Email
+              </button> */}
+            </div>
           </div>
         )}
       </div>

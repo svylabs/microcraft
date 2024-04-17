@@ -7,6 +7,7 @@ import arrow from "../../photos/angle-right-solid.svg";
 import Graph from "./outputPlacement/GraphComponent";
 import Table from "./outputPlacement/TableComponent";
 import TextOutput from "./outputPlacement/TextOutput";
+import Loading from "./loadingPage/Loading";
 
 interface Output {
   [key: string]: any;
@@ -18,6 +19,7 @@ const ActionPage: React.FC = () => {
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
   const [data, setData] = useState<{ [key: string]: any }>({});
+  const [loading, setLoading] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -87,6 +89,7 @@ const ActionPage: React.FC = () => {
   };
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
+    setLoading(true);
     try {
       const result = await eval(code);
       let vals = data;
@@ -104,14 +107,18 @@ const ActionPage: React.FC = () => {
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const goThumbnail = () => {
+    // setLoading(true);
     window.location.href = "/app/new/thumbnail";
   };
 
   const goBack = () => {
+    // setLoading(true);
     window.location.href = "/app/new";
   };
 
@@ -139,7 +146,7 @@ const ActionPage: React.FC = () => {
                 </span>
                 Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] md:w-[9rem] lg:w-[12rem] xl:w-[16rem] 2xl:w-[17rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
             <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
@@ -148,7 +155,7 @@ const ActionPage: React.FC = () => {
               </span>
               Preview the app
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-              <span className="absolute bottom-0 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[7.5rem] xl:w-[10rem] 2xl:w-[11rem] bg-[#31A05D]"></span>
+              <span className="absolute bottom-0 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[8rem] xl:w-[11rem] 2xl:w-[11.5rem] bg-[#31A05D]"></span>
             </p>
             <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
@@ -407,6 +414,7 @@ const ActionPage: React.FC = () => {
           </div>
         </div>
       </div>
+      {loading && <Loading />}
     </>
   );
 };
