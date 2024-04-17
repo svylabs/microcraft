@@ -366,7 +366,7 @@ const UserActionPage = () => {
                     <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                       {data[component.id]
                         ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
-                        : "No output available for JSON"}
+                        : "No data available to display"}
                     </pre>
                   )}
                 {component.placement === "output" &&
