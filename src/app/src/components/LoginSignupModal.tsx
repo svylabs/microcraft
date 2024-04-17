@@ -133,12 +133,14 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
                   Login with GitHub
                 </button>
               </a>
+              {/* <a href="/auth/google" className=""> */}
               <button
                 onClick={handleGoogleLogin}
                 className="cursor-pointer bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
               >
                 Login with Google
               </button>
+              {/* </a> */}
               {/* <button
                 onClick={handleEmailSignup}
                 className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
