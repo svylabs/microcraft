@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import LoginSignupModal from "./LoginSignupModal";
 import { BASE_API_URL } from "./constants";
+import SharePage from "./share/SharePage";
 
 const Header: React.FC = () => {
   const [userName, setUserName] = useState("");
@@ -57,6 +58,9 @@ const Header: React.FC = () => {
                 Minimum distraction, maximum utility
               </span>
             </h2>
+          </div>
+          <div>
+          {/* <SharePage /> */}
           </div>
           <div className="flex gap-3 self-center">
             {userName !== "" && (

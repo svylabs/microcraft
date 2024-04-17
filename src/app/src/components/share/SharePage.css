@@ -1,0 +1,77 @@
+.share-wrapper {
+    float: right;
+  }
+  
+  .share {
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+    color: #FFF;
+    background-color: #F36B21;
+    text-align: center;
+    line-height: 53px; /* Adjusted line height to center vertically */
+    font-size: 25px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: background-color 0.4s;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.28);
+  }
+  
+  .share.active {
+    background-color: #000;
+  }
+  
+  .social {
+    opacity: 0;
+    visibility: hidden;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.4s, visibility 0.4s;
+  }
+  
+  .social.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .social li {
+    width: 53px;
+    height: 53px;
+    border-radius: 50%;
+    color: #FFF;
+    background-color: #FFF;
+    text-align: center;
+    line-height: 53px; /* Adjusted line height to center vertically */
+    font-size: 25px;
+    cursor: pointer;
+    margin-bottom: 15px;
+    box-shadow: 0.5px 0.87px 4px 0 rgba(0, 0, 0, 0.3);
+    transition: all 0.4s;
+    transform: scale(0.4);
+  }
+  
+  .social.active li {
+    transform: scale(1);
+  }
+  
+  .social li .facebook {
+    color: #3A589E;
+  }
+  
+  .social li .twitter {
+    color: #5FA9DD;
+  }
+  
+  .social li .linkedin {
+    color: #0D77B7;
+  }
+
+  .social li .whatsapp {
+    color: #2ba220;
+  }
+  
+  .social li .google {
+    color: #DF4B38;
+  }
+  

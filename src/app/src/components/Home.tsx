@@ -571,6 +571,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+      
       <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
         <div className="text-center py-4">
           <p className="text-sm font-semibold">

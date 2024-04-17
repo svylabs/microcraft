@@ -8,14 +8,18 @@ import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInp
 import UserActionPage from "./components/converters/dynamic/UserActionPage";
 import Action from "./components/converters/dynamic/ActionPage";
 import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail";
+import SharePage from "./components/share/SharePage";
 
 const App: React.FC = () => {
   return (
     <>
       <div className="bg-white sticky top-0 z-50">
-        <div className="max-w-screen-xl mx-auto pt-3 px-3 md:px-4 lg:px-8 ">
-          <Header />
-        </div>
+        {/* <div className=""> */}
+          <div className="max-w-screen-xl mx-auto pt-3 px-3 md:px-4 lg:px-8 ">
+            <Header />
+          </div>
+        {/* </div> */}
+        <SharePage />
       </div>
       <Router>
         <Routes>
@@ -28,6 +32,7 @@ const App: React.FC = () => {
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
       </Router>
+      
     </>
   );
 };
