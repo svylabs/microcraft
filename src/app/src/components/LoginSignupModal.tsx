@@ -74,7 +74,6 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
         const userData = await response.json();
         setUserData(userData);
         closeModal();
-        // Optionally, perform any additional actions after successful login
       } else {
         console.error("Failed to login with Google:", response.status);
       }
