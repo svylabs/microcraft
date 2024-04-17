@@ -13,7 +13,7 @@ dotenv.config(); //comment
 const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
-app.use(express.json());
+app.use(express.json({ limit: '500kb' }));
 
 app.use(session({
   store: new DatastoreStore({
@@ -52,6 +52,7 @@ import { dynamicComponentRouter } from './lib/routes/dynamic-component';
 import { datasetRouter } from './lib/routes/datasets';
 import { appDataRouter  } from './lib/routes/appdata';
 import { HttpError, githubRouter } from './lib/routes/auth';
+import { backgroundTasksRouter } from './lib/routes/background';
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // Handle the error
@@ -79,6 +80,7 @@ app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 app.use('/datasets', datasetRouter);
 app.use('/appdata', appDataRouter);
+app.use('/background', backgroundTasksRouter);
 
 app.get('/', function(req: Request, res: Response) {
   res.setHeader('Cache-Control', 'no-store');
