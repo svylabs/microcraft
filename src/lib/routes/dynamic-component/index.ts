@@ -28,9 +28,16 @@ const client = new OpenAI({
   apiKey: OPEN_AI_API_KEY,
 });
 
-const cloudTasksClient = new CloudTasksClient();
+let cloudTasksClient;
+if (process.env.NODE_ENV !== 'development') {
+  cloudTasksClient = new CloudTasksClient();
+}
 
 const createImageHandlerTask = async (image_url: string, image_id: string, key: { kind: string, id: string}) => {
+  if (!cloudTasksClient) {
+    console.warn("Not processing the image as CloudTasksClient is not defined.");
+    return;
+  }
   const project = process.env.GCLOUD_PROJECT || 'handycraft-415122';
   const location = process.env.GCLOUD_LOCATION || 'europe-west6';
   const queue =  'image-handler-queue';
