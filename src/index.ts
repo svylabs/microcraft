@@ -75,7 +75,9 @@ process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
 });
 
 app.use(errorHandler);
-app.use(express.static('public'));
+app.use(express.static('public', {
+  maxAge: 365 * 24 * 60 * 60 * 1000
+}));
 app.use('/dynamic-component', dynamicComponentRouter);
 app.use('/auth', githubRouter);
 app.use('/datasets', datasetRouter);
@@ -88,7 +90,7 @@ app.get('/', function(req: Request, res: Response) {
 });
 
 app.get('/app/*', function(req: Request, res: Response) {
-  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Cache-Control', 'max-age=0');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./ActionPage.scss";
 import Graph from "./outputPlacement/GraphComponent";
 import Table from "./outputPlacement/TableComponent";
@@ -6,6 +6,7 @@ import TextOutput from "./outputPlacement/TextOutput";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
+import Loading from "./loadingPage/Loading";
 
 interface Output {
   [key: string]: any;
@@ -15,11 +16,15 @@ const UserActionPage = () => {
   const location = useLocation();
   const { appId } = useParams<{ appId: string; title?: string }>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
+  const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState(
     output?.component_definition || []
   );
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
+  const [buttons, setButtons] = useState({});
+  const [initialTrigger, setInitialTrigger] = useState(false);
+  const [loading, setLoading] = useState(false);
   // const [feedback, setFeedback] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
@@ -63,7 +68,8 @@ const UserActionPage = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Component detail: ", data);
-          setComponents(typeof data.component_definition === 'string' ? JSON.parse(data.component_definition) : data.component_definition || []);
+          const component_def = typeof data.component_definition === 'string' ? JSON.parse(data.component_definition) : data.component_definition;
+          setComponents(component_def || []);
           setOutput(data);
           if (data.is_authentication_required) {
             if (isAuthenticated()) {
@@ -76,7 +82,7 @@ const UserActionPage = () => {
           }
 
           const initialDropdownState = {};
-          data.component_definition.forEach((component) => {
+          component_def.forEach((component) => {
             if (component.type === "dropdown" && component.optionsConfig) {
               initialDropdownState[component.id] = JSON.parse(
                 component.optionsConfig
@@ -84,7 +90,7 @@ const UserActionPage = () => {
             }
           });
 
-          data.component_definition.forEach((component) => {
+          component_def.forEach((component) => {
             if (component.type === "slider" && component.sliderConfig) {
               const sliderConfig = JSON.parse(component.sliderConfig);
               setData((prevData) => ({
@@ -98,9 +104,46 @@ const UserActionPage = () => {
             ...prevData,
             ...initialDropdownState,
           }));
+
         });
     }
   }, []);
+
+  useEffect(() => {
+    const prevButtons =  {...buttons};
+    queryParams.forEach((value, key) => {
+      if (components.find((component) => (component.id === key && component.type === "button"))) {
+        console.log("Setting button state: ", key, true);
+        prevButtons[key] = true;
+        // Do nothing
+       //refMap[key].current.click();
+      } else {
+        setData((prevData) => ({
+          ...prevData,
+          [key]: value,
+        }));
+      }
+    });
+    console.log("Setting buttons: ", prevButtons);
+    setButtons(prevButtons);
+    if (initialTrigger == false) {
+      setInitialTrigger(true);
+    }
+  }, [output, components]);
+
+  useEffect(() => {
+    console.log("Initial Trigger: ", initialTrigger);
+    if (initialTrigger) {
+      console.log(buttons);
+      components.forEach((component) => {
+        if (component.type === "button" && buttons[component.id]) {
+            console.log("Button Clicked: ", component.id);
+            document.getElementById(component.id)?.click();
+        }
+      });
+    }
+  }, [buttons]);
+
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
@@ -113,6 +156,7 @@ const UserActionPage = () => {
     code: string,
     inputValues: { [key: string]: string }
   ) => {
+    setLoading(true);
     try {
       const result = await eval(code);
       let vals = data;
@@ -128,6 +172,8 @@ const UserActionPage = () => {
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -342,7 +388,7 @@ const UserActionPage = () => {
                       </span>
                     </div>
                   )}
-                  {component.type === "button" && component.code && (
+                  {(component.type === "button" && component.code ) && (buttons[component.id] || true) && (
                     <button
                       className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                       id={component.id}
@@ -422,6 +468,7 @@ const UserActionPage = () => {
           )} */}
         </div>
       </div>
+      {loading && <Loading />}
     </>
   );
 };
