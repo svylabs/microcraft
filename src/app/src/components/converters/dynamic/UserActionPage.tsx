@@ -63,7 +63,7 @@ const UserActionPage = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Component detail: ", data);
-          setComponents(data.component_definition || []);
+          setComponents(typeof data.component_definition === 'string' ? JSON.parse(data.component_definition) : data.component_definition || []);
           setOutput(data);
           if (data.is_authentication_required) {
             if (isAuthenticated()) {
