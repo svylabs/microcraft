@@ -82,11 +82,11 @@ const Converter: React.FC = () => {
 
   return (
     <div className="max-w-screen-xl mx-auto px-3.5 lg:px-6 py-2">
-      <div className="flex justify-between mb-2 md:mb-3">
-        <h3 className="py-2 text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
+      <div className="flex justify-between py-2 mb-2 md:mb-3">
+        <h3 className="text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90%">
           {id}
         </h3>
-        <Link to="/" className="py-2">
+        <Link to="/" className="flex items-center mr-0">
           <button className="common-button rounded bg-slate-300">
             <img src={crossImage} alt="Go Home" className=" h-8 w-8" />
             <span className="absolute text-hover text-white font-medium mt-2 -ml-6 mx-2 lg:-ml-20  xl:-mx-10 bg-slate-500 p-1 rounded-md z-50">
