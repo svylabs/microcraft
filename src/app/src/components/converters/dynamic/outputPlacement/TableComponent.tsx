@@ -76,7 +76,7 @@ const TableComponent: React.FC<TableProps> = ({ data }) => {
 
   return (
     <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-      {formatOutput(data) || <pre>No output available for Table.</pre>}
+      {formatOutput(data) || <pre></pre>}
     </div>
   );
 };

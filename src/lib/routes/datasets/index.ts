@@ -15,7 +15,7 @@ const corsOptions = {
 
 datasetRouter.use(cors(corsOptions));
 
-datasetRouter.post('/bigquery', async (req: Request, res: Response) => {
+datasetRouter.post('/bigquery', authenticatedUser, async (req: Request, res: Response) => {
     try {
         const { query } = req.body;
     
@@ -41,7 +41,7 @@ datasetRouter.post('/bigquery', async (req: Request, res: Response) => {
       }
 });
 
-datasetRouter.post('/dune', async (req: Request, res: Response) => {
+datasetRouter.post('/dune', authenticatedUser, async (req: Request, res: Response) => {
     try {
         const { query } = req.body;
     

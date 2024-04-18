@@ -7,7 +7,7 @@ interface TextOutputProps {
 const TextOutput: React.FC<TextOutputProps> = ({ data }) => {
   const convertToText = (data: any): string => {
     if (data === undefined || data === null) {
-      return "No data available to display";
+      return "";
     } else if (
       typeof data === "string" ||
       typeof data === "number" ||
