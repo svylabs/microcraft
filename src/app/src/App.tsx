@@ -15,9 +15,9 @@ const App: React.FC = () => {
     <>
       <div className="bg-white sticky top-0 z-50">
         {/* <div className="bg-white sticky top-0 z-50"> */}
-          <div className="max-w-screen-xl mx-auto pt-3 px-3 md:px-4 lg:px-8 xl:px-8 z-40">
-            <Header />
-          </div>
+        <div className="max-w-screen-xl mx-auto pt-3 px-3 md:px-4 lg:px-8 xl:px-8 z-40">
+          <Header />
+        </div>
         {/* </div> */}
         <SharePage />
       </div>
@@ -32,7 +32,6 @@ const App: React.FC = () => {
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
       </Router>
-      
     </>
   );
 };
