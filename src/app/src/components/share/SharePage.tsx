@@ -22,7 +22,6 @@ const SharePage: React.FC = () => {
       const screenHeight = window.innerHeight;
       let initialX, initialY;
 
-      // Set different initial positions based on screen size
       if (screenWidth <= 426) {
         initialX = screenWidth - 58;
         initialY = screenHeight - 453;
@@ -94,8 +93,16 @@ const SharePage: React.FC = () => {
     setIsActive(!isActive);
   };
 
+  const getMessage = () => {
+    if (window.location.href.includes("/app/inbuilt")) {
+      return encodeURIComponent("Discover something amazing! 🚀 Check it out! @");
+    } else {
+      return encodeURIComponent("#BuildWithMicrocraft - Unleash creativity! 🛠️💡");
+    }
+  };
+
   const shareFacebook = () => {
-    const message = encodeURIComponent("Check out this awesome page! @ ");
+    const message = getMessage();
     const url = encodeURIComponent(window.location.href);
     window.open(
       `https://www.facebook.com/sharer/sharer.php?quote=${message}${url}`,
@@ -104,7 +111,7 @@ const SharePage: React.FC = () => {
   };
 
   const shareTwitter = () => {
-    const message = encodeURIComponent("Check out this awesome page! @ ");
+    const message = getMessage();
     const url = encodeURIComponent(window.location.href);
     window.open(
       `https://twitter.com/intent/tweet?text=${message}${url}`,
@@ -113,7 +120,7 @@ const SharePage: React.FC = () => {
   };
 
   const shareLinkedIn = () => {
-    const message = encodeURIComponent("Check out this awesome page! @ ");
+    const message = getMessage();
     const url = encodeURIComponent(window.location.href);
     window.open(
       `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${message}`,
@@ -122,13 +129,13 @@ const SharePage: React.FC = () => {
   };
 
   const shareWhatsApp = () => {
-    const message = encodeURIComponent("Check out this awesome page! @ ");
+    const message = getMessage();
     const url = encodeURIComponent(window.location.href);
     window.open(`whatsapp://send?text=${message}${url}`, "_blank");
   };
 
   const shareGooglePlus = () => {
-    const message = encodeURIComponent("Check out this awesome page! @ ");
+    const message = getMessage();
     const url = encodeURIComponent(window.location.href);
     window.open(
       `https://plus.google.com/share?url=${url}&text=${message}`,

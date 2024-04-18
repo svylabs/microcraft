@@ -143,7 +143,7 @@ const UserActionPage = () => {
 
   return (
     <>
-      <div className="image-pdf px-4 min-h-[100vh] flex flex-col">
+      <div className="image-pdf px-4 min-h-[84.2vh] flex flex-col pb-10">
         <ToastContainer />
         <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
           {output.title || appId}
