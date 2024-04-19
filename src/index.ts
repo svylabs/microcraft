@@ -7,6 +7,7 @@ import dotenv from 'dotenv'; //comment
 import 'dotenv/config';
 import { setDatastore, getDatastore } from './lib/database';
 import path from 'path';
+import nocache from 'nocache';
 
 dotenv.config(); //comment
 
@@ -14,6 +15,7 @@ const PORT = process.env.PORT || 8080;
 const app: Application = express();
 
 app.use(express.json({ limit: '500kb' }));
+app.use(nocache());
 
 app.use(session({
   store: new DatastoreStore({
@@ -85,7 +87,6 @@ app.use('/appdata', appDataRouter);
 app.use('/background', backgroundTasksRouter);
 
 app.get('/', function(req: Request, res: Response) {
-  res.setHeader('Cache-Control', 'max-age=0');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
