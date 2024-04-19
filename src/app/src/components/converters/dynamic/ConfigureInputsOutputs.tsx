@@ -39,6 +39,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     sliderConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
+  const draggingPos = useRef<number | null>(null);
+  const dragOverPos = useRef<number | null>(null);
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
@@ -84,6 +86,31 @@ const ConfigureInputsOutputs: React.FC = () => {
       setComponents(savedComponents);
     }
   }, []);
+
+  const handleDragStart = (position: number) => {
+    draggingPos.current = position;
+  };
+
+  const handleDragEnter = (position: number) => {
+    dragOverPos.current = position;
+    const newItems = [...components];
+    const draggingItem = newItems[draggingPos.current!];
+    if (!draggingItem) return;
+
+    newItems.splice(draggingPos.current!, 1);
+    newItems.splice(dragOverPos.current!, 0, draggingItem);
+
+    const reorderedItems = newItems.map((item, index) => ({
+      ...item,
+      order: index,
+    }));
+
+    draggingPos.current = position;
+    dragOverPos.current = null;
+
+    setComponents(reorderedItems);
+    saveDataToLocalStorage("components", reorderedItems);
+  };
 
   const handleEditComponent = (index: number) => {
     setIsEditMode(true);
@@ -302,7 +329,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               </span>
               Configure layout
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D]"></span>
+              <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D]"></span>
             </p>
             <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
@@ -544,7 +571,14 @@ const ConfigureInputsOutputs: React.FC = () => {
             <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
             <ul className="whitespace-normal break-words">
               {components.map((component, index) => (
-                <li key={index} className="mb-4">
+                <li
+                  key={index}
+                  className="mb-4"
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragEnter={() => handleDragEnter(index)}
+                  onDragOver={(e) => e.preventDefault()}
+                >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
                   {component.config && `, Config: ${component.config}`}
