@@ -126,30 +126,20 @@ const RequestAnApp: React.FC = () => {
     console.log(`${action} clicked for request ${requestId}`);
   };
 
-  // const url = encodeURIComponent(window.location.href);
-  const handleShareClick = (request: Request) => {
-    const shareableLink = `${window.location.origin}/request/${request.id}`;
-    // Update URL to include the request ID
-    setSelectedRequest(request); // Update selected request
-    window.history.pushState(null, '', shareableLink); // Update URL
-    // Copy URL to clipboard
-    navigator.clipboard.writeText(shareableLink)
-      .then(() => {
-        toast.success("Link copied to clipboard");
-      })
-      .catch((error) => {
-        toast.error("Failed to copy link to clipboard");
-        console.error("Error copying link:", error);
-      });
-  };
-  
-  useEffect(() => {
-    // This ensures that the URL is updated when the selected request changes
-    if (selectedRequest) {
-      const shareableLink = `${window.location.origin}/request/${selectedRequest.id}`;
-      window.history.pushState(null, '', shareableLink);
-    }
-  }, [selectedRequest]);
+  // const handleShareClick = (request: Request) => {
+  //   const url = encodeURIComponent(window.location.href);
+  //   const shareableLink = `${window.location.origin}/request/${request.id}`;
+  //   // Implement sharing logic here (e.g., copy to clipboard or share dialog)
+  //   // For simplicity, let's copy to clipboard
+  //   navigator.clipboard.writeText(shareableLink)
+  //     .then(() => {
+  //       toast.success("Link copied to clipboard");
+  //     })
+  //     .catch((error) => {
+  //       toast.error("Failed to copy link to clipboard");
+  //       console.error("Error copying link:", error);
+  //     });
+  // };
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md whitespace-normal break-words">
@@ -245,29 +235,19 @@ const RequestAnApp: React.FC = () => {
                               <path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4V224H109.3l9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4H224V402.7l-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4V288H402.7l-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4H288V109.3l9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z" />
                             </svg>
                           </p>
-                          {/* <button
-                            className="group/edit invisible hover:scale-110 group-hover/item:visible absolute right-8 top-0 bottom-0 md:px-2 flex items-center group-hover/edit:text-purple-700 text-purple-700 hover:text-purple-600"
-                            title="Share"
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent handleSummaryClick from firing
-                              handleShareClick(request);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faShare} />
-                          </button> */}
                         </div>
                         
                       </td>
 
                       <td className="px-3 py-2 text-right text-sm font-medium flex gap-3 lg:gap-5 justify-between">
-                      <FontAwesomeIcon
+                      {/* <FontAwesomeIcon
                           icon={faShare}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent handleSummaryClick from firing
                             handleShareClick(request);
                           }}
                           className="cursor-pointer"
-                        />
+                        /> */}
                         <button
                           className="transition-colors duration-300 ease-in-out hover:scale-125"
                           onClick={() => handleActionClick("thumbsUp", index)}
