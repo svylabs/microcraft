@@ -49,7 +49,7 @@ const createImageHandlerTask = async (image_url: string, image_id: string, key: 
       httpRequest: {
         httpMethod: 1,
         url: url,
-        body: Buffer.from(JSON.stringify({ image_url, image_id, db_record_to_update: key, retry: 0 })).toString('base64'),
+        body: JSON.stringify({ image_url, image_id, db_record_to_update: key, retry: 0 }),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -118,8 +118,8 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
     };
        // Create a background task
     const image_id = crypto.createHash('sha256').update(req.body.image_url).digest('hex').toString().toLowerCase();
-    await createImageHandlerTask(req.body.image_url, image_id, { kind: 'DynamicComponent', 'id': id});
     await datastore.save(entity);
+    await createImageHandlerTask(req.body.image_url, image_id, { kind: 'DynamicComponent', 'id': id});
     res.send({
       status: "success",
       message: "Dynamic component created successfully",

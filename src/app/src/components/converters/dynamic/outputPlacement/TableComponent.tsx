@@ -42,7 +42,7 @@ const TableComponent: React.FC<TableProps> = ({ data }) => {
                           key={header}
                           className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
                         >
-                          {formatOutput(item[header])}
+                          {item[header] || ""}
                         </td>
                       ))}
                     </tr>
@@ -76,7 +76,7 @@ const TableComponent: React.FC<TableProps> = ({ data }) => {
 
   return (
     <div className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-      {formatOutput(data) || <pre>No output available for Table.</pre>}
+      {formatOutput(data) || <pre></pre>}
     </div>
   );
 };

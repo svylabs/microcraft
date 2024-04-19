@@ -1,0 +1,177 @@
+function get_eth_balance() {
+    const wallet_address = data["wallet_address"];
+    const snapshot_date = data["snapshot_date"];
+    const query = `
+             
+      `;
+}
+
+async function getTokenBalances(data) {
+   const wallet_address = data["wallet_address"];
+   const snapshot_date = data["snapshot_date"];
+   console.log(wallet_address, snapshot_date);
+   const query = `
+          WITH TokenBalances AS (SELECT
+  tt.token_address,
+  SUM(CASE
+      WHEN tt.from_address = \'${wallet_address}\' THEN SAFE_CAST(tt.value AS BIGNUMERIC) * -1
+    ELSE
+    SAFE_CAST(tt.value AS BIGNUMERIC)
+  END
+    ) AS token_balance
+FROM
+  \`bigquery-public-data.crypto_ethereum.token_transfers\` tt
+WHERE
+  ((tt.from_address = \'${wallet_address}\'
+    OR tt.to_address = \'${wallet_address}\')
+    AND tt.block_timestamp < \'${snapshot_date}\'
+    )
+GROUP BY
+  tt.token_address
+ORDER BY
+  token_balance DESC
+)
+SELECT
+  tb.token_address,
+  tb.token_balance,
+  t.name
+FROM
+  TokenBalances tb
+LEFT JOIN
+  \`bigquery-public-data.crypto_ethereum.amended_tokens\` t
+ON
+  tb.token_address = t.address;
+   `;
+   console.log(query);
+   const response = await fetch('/datasets/bigquery',  {
+                  method: "POST", 
+                  headers: { 'Content-Type': 'application/json' }, 
+                  body: JSON.stringify({query: query})
+        });
+    const resData = await response.json();
+    return resData;
+}
+
+function splitArrayIntoBatches(array, batchSize) {
+    const batches = [];
+    for (let i = 0; i < array.length; i += batchSize) {
+        batches.push(array.slice(i, Math.min(array.length, i + batchSize)));
+    }
+    return batches;
+}
+
+function hexToUtf8(hex) {
+    let utf8String = '';
+    for (let i = 0; i < hex.length; i += 2) {
+        const hexByte = parseInt(hex.substr(i, 2), 16);
+        utf8String += String.fromCharCode(hexByte);
+    }
+    return utf8String;
+}
+
+async function getTokenSymbols(token_addresses) {
+    const tokenSymbols = {};
+    const requests = token_addresses.map(address => {
+        return {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{
+                to: address,
+                data: '0x95d89b41' // Function signature for ERC20 symbol() function
+            }, 'latest'],
+            id: Math.floor(Math.random() * 1000) // Random ID for each request
+        };
+    });
+
+    const batches = splitArrayIntoBatches(requests, 8);
+    for (const batch of batches) {
+        const responses = await fetch('/datasets/infura', 
+            { 
+                method: "POST", 
+                headers: {"Content-Type": "application/json"}, 
+                body: JSON.stringify({requests: batch})
+            }
+        );
+        const tokenResponses = await responses.json();
+        const names = tokenResponses.map((result) => {
+            if (result.result) {
+                const nameLength = result.result.substring(128, 130);
+                const hexLen = parseInt(nameLength, 16) * 2;
+                const nameHex = result.result.substring(130, hexLen + 130);
+                return hexToUtf8(nameHex);
+            } else {
+                return "n / a";
+            }
+        });
+        for (let i = 0; i < batch.length; i++) {
+            tokenSymbols[batch[i].params[0].to] = names[i];
+        }
+    }
+    return tokenSymbols;
+}
+
+async function getTokenDecimals(tokenAddresses) {
+    const tokenDecimals = {};
+    const requests = tokenAddresses.map(address => {
+        return {
+            jsonrpc: '2.0',
+            method: 'eth_call',
+            params: [{
+                to: address,
+                data: '0x313ce567' // Function signature for ERC20 symbol() function
+            }, 'latest'],
+            id: Math.floor(Math.random() * 1000) // Random ID for each request
+        };
+    });
+    const batches = splitArrayIntoBatches(requests, 8);
+    for (const batch of batches) {
+        const responses = await fetch('/datasets/infura', 
+            { 
+                method: "POST", 
+                headers: {"Content-Type": "application/json"}, 
+                body: JSON.stringify({requests: batch})
+            }
+        );
+        const tokenResponses = await responses.json();
+        const decimals = tokenResponses.map((result) => {
+            if (result.result) {
+                return parseInt(result.result || '0x12', 16);
+            } else {
+                return 8;
+            }
+        });
+        for (let i = 0; i < batch.length; i++) {
+            tokenDecimals[batch[i].params[0].to] = decimals[i];
+        }
+    }
+    return tokenDecimals;
+
+}
+
+async function getAllBalances(data) {
+    const balances = await getTokenBalances(data);
+    const tokenAddresses = balances.map((balance) => balance.token_address);
+    const tokenSymbols = await getTokenSymbols(tokenAddresses);
+    const tokenDecimals = await getTokenDecimals(tokenAddresses);
+    const result = balances.map((balance) => {
+        balance["name"] = tokenSymbols[balance.token_address] || "";
+        //balance["decimals"] = tokenDecimals[balance.token_address] || 18;
+        balance["token_balance"] = balance["token_balance"] / Math.pow(10.0, tokenDecimals[balance.token_address] || 18);
+        return balance;
+    });
+    result.sort((a, b) => {
+        if (b.name.length < a.name.length) return 1;
+        if (b.name.length > a.name.length) return -1;
+        if (b.token_balance < a.token_balance) return -1;
+        if (b.token_balance > a.token_balance) return 1;
+        return 0;
+    });
+    return result;
+}
+
+getAllBalances(data).then((balances) => {
+    console.log(balances);
+    return {
+        token_details: balances
+    }
+});
