@@ -6,6 +6,7 @@ const EncryptionDecryption: React.FC = () => {
   const [key, setKey] = useState<string>("");
   const [plainText, setPlainText] = useState<string>("");
   const [encryptedText, setEncryptedText] = useState<string>("");
+  const [decryptedText, setDecryptedText] = useState<string>("");
 
   const generateKey = () => {
     const length = encryptionType === "AES-128" ? 16 : 32; // 128 bits or 256 bits
@@ -16,6 +17,16 @@ const EncryptionDecryption: React.FC = () => {
   const handleEncrypt = () => {
     const encryptedData = CryptoJS.AES.encrypt(plainText, key).toString();
     setEncryptedText(encryptedData);
+  };
+
+  const handleDecrypt = () => {
+    try {
+      const decryptedData = CryptoJS.AES.decrypt(encryptedText, key).toString(CryptoJS.enc.Utf8);
+      setDecryptedText(decryptedData);
+    } catch (error) {
+      console.error("Decryption error:", error);
+      setDecryptedText("Error: Unable to decrypt. Please check the key or encrypted text.");
+    }
   };
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,8 +61,9 @@ const EncryptionDecryption: React.FC = () => {
           <input
             type="text"
             value={key}
+            onChange={(e) => setKey(e.target.value)}
             placeholder="key"
-            readOnly
+            // readOnly
             className="border border-gray-300 px-3 md:px-4 py-2 rounded w-full"
           />
           <button
@@ -80,19 +92,54 @@ const EncryptionDecryption: React.FC = () => {
           <textarea
             id="encryptedText"
             value={encryptedText}
-            placeholder='Output Encrypted text'
-            readOnly
+            onChange={(e) => setEncryptedText(e.target.value)}
+            placeholder="Enter encrypted text ..."
             className="bg-white border border-gray-300 px-3 md:px-4 py-2 rounded w-full"
           />
         </div>
-        <div>
-          <button
+        <div className="flex md:mx-auto">
+        <button
             onClick={handleEncrypt}
-            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-500 w-full"
+            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-500 w-full md:px-10 lg:px-20"
           >
             Encrypt
           </button>
+          </div>
+        <div>
+          <label htmlFor="decryptedText" className="mb-2 block">
+            Decrypted text
+          </label>
+          <textarea
+            id="decryptedText"
+            value={decryptedText}
+            placeholder="Output Decrypted text"
+            readOnly
+            className="bg-white border border-gray-300 px-3 md:px-4 py-2 rounded w-full "
+          />
         </div>
+        <div className="flex md:mx-auto">
+        <button
+            onClick={handleDecrypt}
+            className="bg-green-600 text-white py-2 rounded hover:bg-green-500 w-full md:px-10 lg:px-20"
+          >
+            Decrypt
+          </button>
+          </div>
+        
+        {/* <div className="flex gap-3 justify-between">
+          <button
+            onClick={handleEncrypt}
+            className="bg-blue-600 text-white py-2 rounded hover:bg-blue-500 w-full md:w-auto"
+          >
+            Encrypt
+          </button>
+          <button
+            onClick={handleDecrypt}
+            className="bg-green-600 text-white py-2 rounded hover:bg-green-500 w-full md:w-auto"
+          >
+            Decrypt
+          </button>
+        </div> */}
       </div>
     </div>
   );
