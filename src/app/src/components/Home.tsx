@@ -143,7 +143,6 @@ const Home: React.FC = () => {
         "A user-friendly tool for editing and enhancing images with features like cropping, resizing, flipping, and more.",
       image: "./photos/image-editor.jpg",
     },
-    */
     {
       id: "New-App",
       title: "Publish your own",
@@ -157,6 +156,7 @@ const Home: React.FC = () => {
         "Do not find what you are looking for? Describe your problem here",
       image: "./photos/requestApp.jpg",
     },
+    */
   ];
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -357,7 +357,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Discover tools for every need..."
+            placeholder="Discover blockchain / web3 apps"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -383,7 +383,7 @@ const Home: React.FC = () => {
         </header>
 
         <div className="bg-slate-100 p-3 lg:p-5 rounded">
-          {activeCategory === "recent" && (
+          {activeCategory === "xyzabc" && (
             <div className="mb-6">
               {recentTools.length === 0 && (
                 <div>
@@ -470,7 +470,7 @@ const Home: React.FC = () => {
           <div className="mb-6">
             <h2 className="text-lg md:text-xl font-semibold mb-2">
               {activeCategory === "recent"
-                ? "All Apps"
+                ? ""
                 : capitalize(activeCategory) + " Apps"}
             </h2>
             <ul className="flex flex-wrap -mx-2">
@@ -532,9 +532,15 @@ const Home: React.FC = () => {
           </div>
 
           <div>
-            <h2 className="text-lg md:text-xl font-semibold mb-2">
-              Community published apps
-            </h2>
+            <div className="flex full-width">
+              <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+                Community published apps
+              </h2>
+              <div className="justify-center mb-2 text-lg md:text-xl">
+                <a href="/app/inbuilt/New-App" className="px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
+                <a href="/app/inbuilt/Request an app" className="px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+              </div>
+            </div>
             {renderCustomComponentCategories()}
             {filteredCustomComponents.length === 0 ? (
               <div className="text-gray-600">None found.</div>
