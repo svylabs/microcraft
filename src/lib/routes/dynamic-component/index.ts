@@ -49,7 +49,7 @@ const createImageHandlerTask = async (image_url: string, image_id: string, key: 
       httpRequest: {
         httpMethod: 1,
         url: url,
-        body: JSON.stringify({ image_url, image_id, db_record_to_update: key, retry: 0 }),
+        body: Buffer.from(JSON.stringify({ image_url, image_id, db_record_to_update: key, retry: 0 })).toString('base64'),
         headers: {
           'Content-Type': 'application/json',
         },

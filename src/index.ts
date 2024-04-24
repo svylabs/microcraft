@@ -87,11 +87,12 @@ app.use('/appdata', appDataRouter);
 app.use('/background', backgroundTasksRouter);
 
 app.get('/', function(req: Request, res: Response) {
+  //res.setHeader('Cache-Control', 'max-age=0');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 app.get('/app/*', function(req: Request, res: Response) {
-  res.setHeader('Cache-Control', 'max-age=0');
+  //res.setHeader('Cache-Control', 'max-age=0');
   res.sendFile(path.join(__dirname, '/index.html'));
 });
 

@@ -50,7 +50,7 @@ const Home: React.FC = () => {
 
   const handleImageClick = (componentDefinition: any) => {
     navigate(
-      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title
+      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title.replaceAll(" ", "-")
     ),
       {
         state: { output: componentDefinition },
@@ -58,6 +58,7 @@ const Home: React.FC = () => {
   };
 
   const allConverters: Converter[] = [
+    /*
     {
       id: "JSON ⇔ String",
       title: "JSON ⇄ String",
@@ -142,6 +143,7 @@ const Home: React.FC = () => {
         "A user-friendly tool for editing and enhancing images with features like cropping, resizing, flipping, and more.",
       image: "./photos/image-editor.jpg",
     },
+    */
     {
       id: "New-App",
       title: "Publish your own",
@@ -162,7 +164,8 @@ const Home: React.FC = () => {
   const [recentTools, setRecentTools] = useState<string[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("recent");
-  const categories = [
+  const categories: string[] = [
+    /*
     "recent",
     "all",
     "json",
@@ -170,6 +173,7 @@ const Home: React.FC = () => {
     "base64",
     "cryptography",
     "image",
+    */
   ];
   const [customComponentCategory, setCustomComponentCategory] = useState("all");
 
