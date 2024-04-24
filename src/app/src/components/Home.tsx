@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
 import { BASE_API_URL } from "./constants";
+import ro from "./photos/metamask-fox-logo.png";
 
 interface Converter {
   id: string;
@@ -154,6 +155,13 @@ const Home: React.FC = () => {
       description:
         "Do not find what you are looking for? Describe your problem here",
       image: "./photos/requestApp.jpg",
+    },
+    {
+      id: "Metamask",
+      title: "Metamask",
+      description:
+        "MetaMask: Empowering Secure and Seamless Web3 Transactions.",
+      image: "./photos/metamask-fox-logo.png",
     },
   ];
 
@@ -571,7 +579,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
-      
+
       <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
         <div className="text-center py-4">
           <p className="text-sm font-semibold">
