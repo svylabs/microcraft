@@ -352,7 +352,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8">
+      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8 flex-grow">
         <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
           <input
             type="text"
@@ -467,6 +467,8 @@ const Home: React.FC = () => {
             </div>
           )}
 
+          {/*
+
           <div className="mb-6">
             <h2 className="text-lg md:text-xl font-semibold mb-2">
               {activeCategory === "recent"
@@ -530,6 +532,7 @@ const Home: React.FC = () => {
               ))}
             </ul>
           </div>
+                  */}
 
           <div>
             <div className="flex full-width">
@@ -581,6 +584,7 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+      {/*
       <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
         <div className="text-center py-4">
           <p className="text-sm font-semibold">
@@ -588,6 +592,7 @@ const Home: React.FC = () => {
           </p>
         </div>
       </footer>
+                    */}
     </>
   );
 };
