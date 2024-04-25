@@ -65,11 +65,14 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
           value: Web3.utils.toWei(amountToSend, "ether"),
         };
 
+        /*
+
         const txHash = await window.ethereum.request({
           method: "eth_sendTransaction",
           params: [transactionParameters],
         });
         console.log("Transaction sent:", txHash);
+        */
       } else {
         alert("Please install Metamask");
       }
