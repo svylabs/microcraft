@@ -541,8 +541,8 @@ const Home: React.FC = () => {
                 Community published apps
               </h2>
               <div className="justify-center mb-2 text-lg md:text-xl">
-                <a href="/app/inbuilt/New-App" className="px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
-                <a href="/app/inbuilt/Request an app" className="px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+                <a href="/app/inbuilt/New-App" className="md:px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
+                <a href="/app/inbuilt/Request an app" className="md:px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
               </div>
             </div>
             {renderCustomComponentCategories()}

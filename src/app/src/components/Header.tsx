@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import LoginSignupModal from "./LoginSignupModal";
 import { BASE_API_URL } from "./constants";
 import ConnectToWallet from "./ConnectToWallet";
@@ -7,6 +7,7 @@ const Header: React.FC = () => {
   const [userName, setUserName] = useState("");
   const [userAvatar, setUserAvatar] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -43,10 +44,14 @@ const Header: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen((prevState) => !prevState);
+  };
+
   return (
     <>
       <header className="sticky top-0 bg-white z-50 flex justify-between">
-        <div className="flex gap-2 md:gap-3 lg:gap-5 items-center">
+        <div className="flex gap-1 md:gap-3 lg:gap-5 items-center">
           <img
             src="/microcraft.png"
             alt="Microcraft"
@@ -54,12 +59,34 @@ const Header: React.FC = () => {
           />
           <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500 overflow-hidden">
             Microcraft
-            <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
+            <span className="text-xs md:text-sm lg:text-base font-light text-transparent whitespace-nowrap">
               Redefining web3 UI development
             </span>
           </h2>
         </div>
-        <div className="flex justify-center items-center gap-2 md:gap-3">
+        <div className="flex items-center">
+          <button
+            onClick={toggleMenu}
+            className="md:hidden focus:outline-none"
+            aria-label="Toggle Menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-7 w-7"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
+        </div>
+        <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
           <div className="flex gap-3 self-center">
             {userName !== "" && (
               <div className="flex gap-3 self-center">
@@ -90,6 +117,41 @@ const Header: React.FC = () => {
           <ConnectToWallet />
         </div>
       </header>
+      {isMenuOpen && (
+        <div className="bg-white py-4 md:hidden">
+          <div className="flex flex-col  gap-3">
+            {userName !== "" ? (
+              <div className="flex gap-3 items-center">
+                <img
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                  src={userAvatar}
+                  alt={userName}
+                  onClick={handleLogin}
+                ></img>
+                <p className="text-[#092C4C] text-lg xl:text-xl">
+                  <span className="font-bold">Hello!</span> {userName}
+                </p>
+              </div>
+            ) : (
+              <div className="flex gap-3 items-center">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                  <span
+                    className="text-gray-600 cursor-pointer"
+                    onClick={handleLogin}
+                  >
+                    Avatar
+                  </span>
+                </div>
+                <p className="text-[#092C4C] text-lg xl:text-xl">
+                  <span className="font-bold">Hello!</span> Guest
+                </p>
+              </div>
+            )}
+            <ConnectToWallet />
+          </div>
+        </div>
+      )}
+
       {isModalOpen && <LoginSignupModal closeModal={closeModal} />}
     </>
   );
