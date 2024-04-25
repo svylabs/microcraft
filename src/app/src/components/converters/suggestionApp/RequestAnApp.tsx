@@ -8,6 +8,7 @@ import {
   faThumbsUp,
   faThumbsDown,
   faHeart,
+  faShare,
 } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -125,6 +126,21 @@ const RequestAnApp: React.FC = () => {
     console.log(`${action} clicked for request ${requestId}`);
   };
 
+  // const handleShareClick = (request: Request) => {
+  //   const url = encodeURIComponent(window.location.href);
+  //   const shareableLink = `${window.location.origin}/request/${request.id}`;
+  //   // Implement sharing logic here (e.g., copy to clipboard or share dialog)
+  //   // For simplicity, let's copy to clipboard
+  //   navigator.clipboard.writeText(shareableLink)
+  //     .then(() => {
+  //       toast.success("Link copied to clipboard");
+  //     })
+  //     .catch((error) => {
+  //       toast.error("Failed to copy link to clipboard");
+  //       console.error("Error copying link:", error);
+  //     });
+  // };
+
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md whitespace-normal break-words">
       <div className="p-1 md:p-4 flex flex-col gap-5 bg-gray-100 rounded">
@@ -201,13 +217,13 @@ const RequestAnApp: React.FC = () => {
                   {requests.map((request, index) => (
                     <tr key={index} className="odd:bg-white even:bg-slate-200">
                       <td
-                        className="px-3 py-2 lg:p-3 md:text-lg font-serif cursor-pointer max-w-xs md:max-w-xl lg:max-w-2xl overflow-auto hover:bg-purple-300"
+                        className="px-3 py-2 lg:p-3 md:text-lg font-serif cursor-pointer max-w-xs md:max-w-xl lg:max-w-2xl overflow-auto hover:bg-purple-200"
                         onClick={() => handleSummaryClick(request)}
                       >
                         <div className="flex justify-between items-center group/item  relative">
                           <p>{request.title}</p>
                           <p
-                            className="group/edit invisible hover:scale-110 group-hover/item:visible absolute right-0 top-0 bottom-0 md:px-2 flex items-center group-hover/edit:text-orange-600 text-orange-600 hover:text-orange-500"
+                            className="group/edit invisible hover:scale-110 group-hover/item:visible absolute right-0 top-0 bottom-0 md:px-2 flex items-center group-hover/edit:text-purple-700 text-purple-700 hover:text-purple-600"
                             title="Expand Description"
                           >
                             <svg
@@ -216,13 +232,22 @@ const RequestAnApp: React.FC = () => {
                               className="h-5 w-5"
                               fill="currentColor"
                             >
-                              <path d="M215.4 96H144 107.8 96v8.8V144v40.4 89L.2 202.5c1.6-18.1 10.9-34.9 25.7-45.8L48 140.3V96c0-26.5 21.5-48 48-48h76.6l49.9-36.9C232.2 3.9 243.9 0 256 0s23.8 3.9 33.5 11L339.4 48H416c26.5 0 48 21.5 48 48v44.3l22.1 16.4c14.8 10.9 24.1 27.7 25.7 45.8L416 273.4v-89V144 104.8 96H404.2 368 296.6 215.4zM0 448V242.1L217.6 403.3c11.1 8.2 24.6 12.7 38.4 12.7s27.3-4.4 38.4-12.7L512 242.1V448v0c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64v0zM176 160H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H336c8.8 0 16 7.2 16 16s-7.2 16-16 16H176c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
+                              <path d="M278.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l9.4-9.4V224H109.3l9.4-9.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-64 64c-12.5 12.5-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-9.4-9.4H224V402.7l-9.4-9.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l64 64c12.5 12.5 32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-9.4 9.4V288H402.7l-9.4 9.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l9.4 9.4H288V109.3l9.4 9.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-64-64z" />
                             </svg>
                           </p>
                         </div>
+                        
                       </td>
 
                       <td className="px-3 py-2 text-right text-sm font-medium flex gap-3 lg:gap-5 justify-between">
+                      {/* <FontAwesomeIcon
+                          icon={faShare}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent handleSummaryClick from firing
+                            handleShareClick(request);
+                          }}
+                          className="cursor-pointer"
+                        /> */}
                         <button
                           className="transition-colors duration-300 ease-in-out hover:scale-125"
                           onClick={() => handleActionClick("thumbsUp", index)}

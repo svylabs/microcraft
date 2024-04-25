@@ -20,49 +20,71 @@ const EncodingDecoding: React.FC = () => {
       alert("Input and output encodings cannot be the same.");
       return;
     }
-
+  
     if (!inputText) {
       alert("Input text cannot be empty.");
       return;
     }
-
-    let encodedText = "";
-    let decodedText = "";
-
-    if (inputEncoding === "utf-8") {
-      if (outputEncoding === "hex") {
-        encodedText = textToHex(inputText);
-      } else if (outputEncoding === "base64") {
-        let options = "";
-        if (base64UrlSafe) options += "u";
-        if (base64NoPadding) options += "p";
-        encodedText = btoa(inputText);
-      } else {
-        alert("Unsupported encoding.");
-        return;
-      }
-    } else if (inputEncoding === "hex") {
+  
+    if (inputEncoding === "binary") {
       if (outputEncoding === "utf-8") {
-        decodedText = hexToText(inputText);
-      } else if (outputEncoding === "base64") {
-        decodedText = hexToBase64(inputText);
-      } else {
-        alert("Unsupported encoding.");
-        return;
-      }
-    } else if (inputEncoding === "base64") {
-      if (outputEncoding === "utf-8") {
-        decodedText = atob(inputText);
+        setOutputText(binaryToUtf8(inputText));
       } else if (outputEncoding === "hex") {
-        decodedText = base64ToHex(inputText);
+        setOutputText(binaryToHex(inputText));
+      } else if (outputEncoding === "base64") {
+        setOutputText(binaryToBase64(inputText));
+      } else if (outputEncoding === "binary") {
+        setOutputText(inputText);
       } else {
         alert("Unsupported encoding.");
-        return;
       }
+    } else {
+      // Handle other encodings
+      let encodedText = "";
+      let decodedText = "";
+  
+      if (inputEncoding === "utf-8") {
+        if (outputEncoding === "hex") {
+          encodedText = textToHex(inputText);
+        } else if (outputEncoding === "base64") {
+          let options = "";
+          if (base64UrlSafe) options += "u";
+          if (base64NoPadding) options += "p";
+          encodedText = btoa(inputText);
+        } else if (outputEncoding === "binary") {
+          encodedText = textToBinary(inputText);
+        } else {
+          alert("Unsupported encoding.");
+          return;
+        }
+      } else if (inputEncoding === "hex") {
+        if (outputEncoding === "utf-8") {
+          decodedText = hexToText(inputText);
+        } else if (outputEncoding === "base64") {
+          decodedText = hexToBase64(inputText);
+        } else if (outputEncoding === "binary") {
+          decodedText = hexToBinary(inputText);
+        } else {
+          alert("Unsupported encoding.");
+          return;
+        }
+      } else if (inputEncoding === "base64") {
+        if (outputEncoding === "utf-8") {
+          decodedText = atob(inputText);
+        } else if (outputEncoding === "hex") {
+          decodedText = base64ToHex(inputText);
+        } else if (outputEncoding === "binary") {
+          decodedText = base64ToBinary(inputText);
+        } else {
+          alert("Unsupported encoding.");
+          return;
+        }
+      }
+  
+      setOutputText(decodedText || encodedText);
     }
-
-    setOutputText(decodedText || encodedText);
   };
+  
 
   const textToHex = (text: string) => {
     return text
@@ -100,12 +122,65 @@ const EncodingDecoding: React.FC = () => {
     return hex.join(" ").toUpperCase();
   };
 
+  const textToBinary = (text: string) => {
+    return text
+      .split("")
+      .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
+      .join(" ");
+  };
+
+  const binaryToText = (binary: string) => {
+    return binary
+      .split(" ")
+      .map((byte) => String.fromCharCode(parseInt(byte, 2)))
+      .join("");
+  };
+
+  const hexToBinary = (hex: string) => {
+    return hex
+      .split(" ")
+      .map((hexByte) => parseInt(hexByte, 16).toString(2).padStart(8, "0"))
+      .join(" ");
+  };
+
+  const binaryToHex = (binary: string) => {
+    return binary
+      .split(" ")
+      .map((byte) => parseInt(byte, 2).toString(16).padStart(2, "0"))
+      .join(" ");
+  };
+
+  const base64ToBinary = (str: string) => {
+    const bin = atob(str.replace(/[ \r\n]+$/, ""));
+    return Array.from(bin)
+      .map((char) => char.charCodeAt(0).toString(2).padStart(8, "0"))
+      .join(" ");
+  };
+
+  const binaryToBase64 = (binary: string) => {
+    const bytes = binary
+      .split(" ")
+      .map((byte) => parseInt(byte, 2))
+      .map((byte) => String.fromCharCode(byte))
+      .join("");
+    return btoa(bytes);
+  };
+
+  const binaryToUtf8 = (binary: string) => {
+    return decodeURIComponent(
+      binary
+        .split(" ")
+        .map((byte) => `%${parseInt(byte, 2).toString(16).padStart(2, "0")}`)
+        .join("")
+    );
+  };
+
   useEffect(() => {
     const inputTextarea = inputTextareaRef.current;
     const inputNumbers = inputNumbersRef.current;
     const outputTextarea = outputTextareaRef.current;
     const outputNumbers = outputNumbersRef.current;
-  
+
     const updateLineNumbers = (
       textarea: HTMLTextAreaElement,
       numbers: HTMLDivElement
@@ -118,21 +193,21 @@ const EncodingDecoding: React.FC = () => {
         ).join("<br>");
       }
     };
-  
+
     if (inputTextarea && inputNumbers) {
       updateLineNumbers(inputTextarea, inputNumbers);
       inputTextarea.addEventListener("input", () =>
         updateLineNumbers(inputTextarea, inputNumbers)
       );
     }
-  
+
     if (outputTextarea && outputNumbers) {
       updateLineNumbers(outputTextarea, outputNumbers);
       outputTextarea.addEventListener("input", () =>
         updateLineNumbers(outputTextarea, outputNumbers)
       );
     }
-  
+
     return () => {
       if (inputTextarea && inputNumbers) {
         inputTextarea.removeEventListener("input", () =>
@@ -146,7 +221,6 @@ const EncodingDecoding: React.FC = () => {
       }
     };
   }, []);
-  
 
   const copyToClipboard = (text: string, type: "input" | "output") => {
     navigator.clipboard.writeText(text);
@@ -196,7 +270,7 @@ const EncodingDecoding: React.FC = () => {
                   />
                   <label htmlFor="hex">Hex</label>
                 </div>
-                <div>
+                <div className="z-50 sticky top-0">
                   <input
                     type="radio"
                     id="base64"
@@ -226,6 +300,17 @@ const EncodingDecoding: React.FC = () => {
                       <label htmlFor="noPadding">No Padding</label>
                     </div>
                   )}
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="binary"
+                    value="binary"
+                    checked={inputEncoding === "binary"}
+                    onChange={() => setInputEncoding("binary")}
+                    className="accent-green-600"
+                  />
+                  <label htmlFor="binary">Binary</label>
                 </div>
               </div>
               <div className="flex flex-wrap relative">
@@ -319,6 +404,17 @@ const EncodingDecoding: React.FC = () => {
                       <label htmlFor="noPadding-out">No Padding</label>
                     </div>
                   )}
+                </div>
+                <div>
+                  <input
+                    type="radio"
+                    id="binary-out"
+                    value="binary"
+                    checked={outputEncoding === "binary"}
+                    onChange={() => setOutputEncoding("binary")}
+                    className="accent-green-600"
+                  />
+                  <label htmlFor="binary-out">Binary</label>
                 </div>
               </div>
               <div className="flex flex-wrap relative">
