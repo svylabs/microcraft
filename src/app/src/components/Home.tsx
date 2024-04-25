@@ -358,7 +358,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Discover blockchain / web3 apps"
+            placeholder="Discover apps to interact with your favorite protocols..."
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
