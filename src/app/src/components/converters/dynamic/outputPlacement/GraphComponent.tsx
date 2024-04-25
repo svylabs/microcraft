@@ -266,7 +266,7 @@ const GraphComponent: React.FC<Props> = ({
         ></div>
       ) : (
         <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg">
-          Data is not available to render the graph.
+          
         </pre>
       )}
     </>

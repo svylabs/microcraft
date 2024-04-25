@@ -51,7 +51,7 @@ const Home: React.FC = () => {
 
   const handleImageClick = (componentDefinition: any) => {
     navigate(
-      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title
+      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title.replaceAll(" ", "-")
     ),
       {
         state: { output: componentDefinition },
@@ -59,6 +59,7 @@ const Home: React.FC = () => {
   };
 
   const allConverters: Converter[] = [
+    /*
     {
       id: "JSON ⇔ String",
       title: "JSON ⇄ String",
@@ -156,13 +157,7 @@ const Home: React.FC = () => {
         "Do not find what you are looking for? Describe your problem here",
       image: "./photos/requestApp.jpg",
     },
-    {
-      id: "Metamask",
-      title: "Metamask",
-      description:
-        "MetaMask: Empowering Secure and Seamless Web3 Transactions.",
-      image: "./photos/metamask-fox-logo.png",
-    },
+    */
   ];
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -170,7 +165,8 @@ const Home: React.FC = () => {
   const [recentTools, setRecentTools] = useState<string[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("recent");
-  const categories = [
+  const categories: string[] = [
+    /*
     "recent",
     "all",
     "json",
@@ -178,6 +174,7 @@ const Home: React.FC = () => {
     "base64",
     "cryptography",
     "image",
+    */
   ];
   const [customComponentCategory, setCustomComponentCategory] = useState("all");
 
@@ -356,12 +353,12 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8">
+      <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8 flex-grow">
         <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Discover tools for every need..."
+            placeholder="Discover blockchain / web3 apps"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -387,7 +384,7 @@ const Home: React.FC = () => {
         </header>
 
         <div className="bg-slate-100 p-3 lg:p-5 rounded">
-          {activeCategory === "recent" && (
+          {activeCategory === "xyzabc" && (
             <div className="mb-6">
               {recentTools.length === 0 && (
                 <div>
@@ -471,10 +468,12 @@ const Home: React.FC = () => {
             </div>
           )}
 
+          {/*
+
           <div className="mb-6">
             <h2 className="text-lg md:text-xl font-semibold mb-2">
               {activeCategory === "recent"
-                ? "All Apps"
+                ? ""
                 : capitalize(activeCategory) + " Apps"}
             </h2>
             <ul className="flex flex-wrap -mx-2">
@@ -534,11 +533,18 @@ const Home: React.FC = () => {
               ))}
             </ul>
           </div>
+                  */}
 
           <div>
-            <h2 className="text-lg md:text-xl font-semibold mb-2">
-              Community published apps
-            </h2>
+            <div className="flex full-width">
+              <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+                Community published apps
+              </h2>
+              <div className="justify-center mb-2 text-lg md:text-xl">
+                <a href="/app/inbuilt/New-App" className="px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
+                <a href="/app/inbuilt/Request an app" className="px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+              </div>
+            </div>
             {renderCustomComponentCategories()}
             {filteredCustomComponents.length === 0 ? (
               <div className="text-gray-600">None found.</div>
@@ -580,6 +586,7 @@ const Home: React.FC = () => {
         </div>
       </div>
 
+      {/*
       <footer className="bg-gradient-to-r from-blue-600 to-purple-600 text-white mt-7">
         <div className="text-center py-4">
           <p className="text-sm font-semibold">
@@ -587,6 +594,7 @@ const Home: React.FC = () => {
           </p>
         </div>
       </footer>
+                    */}
     </>
   );
 };

@@ -1,0 +1,26 @@
+function calculateCompoundInterest() {
+    const principal = parseInt(data["principal"]);
+    const interestRate = parseFloat(data["interest_rate"]) / 100;
+    const frequency = parseInt(data["frequency"]);
+    const term = parseInt(data["term"]);
+    const totalDays = term * 30;
+    const ratePerMonth = interestRate / 12;
+    const ratePerCompoundingInterval = (interestRate / 365) * frequency;
+    const totalTerms = totalDays / frequency;
+    let finalValue = principal * Math.pow(1 + ratePerCompoundingInterval, totalTerms);
+    let compoundInterestGraph = [];
+    let totalAmount = 0;
+    for (let i = 0; i <= term; i += 12) {
+        let value = principal * Math.pow(1 + ratePerMonth, i);
+        compoundInterestGraph.push([i / 12, value.toFixed(2)]);
+    }
+    if (term % 12 !== 0) {
+        let value = principal * Math.pow(1 + ratePerMonth, term);
+        compoundInterestGraph.push([term / 12, value.toFixed(2)]);
+    }
+    return {
+        final_value: finalValue.toFixed(2),
+        compound_interest_graph: compoundInterestGraph
+    };
+}
+calculateCompoundInterest(data);

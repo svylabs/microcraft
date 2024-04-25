@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 import crypto from "crypto";
 const OpenAI = require("openai");
 import dotenv from 'dotenv';
+import { CloudTasksClient, v2 } from '@google-cloud/tasks';
 dotenv.config();
 
 export const dynamicComponentRouter: Router = express.Router();
@@ -27,8 +28,44 @@ const client = new OpenAI({
   apiKey: OPEN_AI_API_KEY,
 });
 
+let cloudTasksClient;
+if (process.env.NODE_ENV !== 'development') {
+  cloudTasksClient = new CloudTasksClient();
+}
+
+const createImageHandlerTask = async (image_url: string, image_id: string, key: { kind: string, id: string}) => {
+  if (!cloudTasksClient) {
+    console.warn("Not processing the image as CloudTasksClient is not defined.");
+    return;
+  }
+  const project = process.env.GCLOUD_PROJECT || 'handycraft-415122';
+  const location = process.env.GCLOUD_LOCATION || 'europe-west6';
+  const queue =  'image-handler-queue';
+  const url = 'https://handycraft-415122.oa.r.appspot.com/background/image-handler';
+  const parent = cloudTasksClient.queuePath(project, location, queue);
+  try {
+    console.log(`Trying to create a background task to process ${image_id} - ${key}`);
+    const task = {
+      httpRequest: {
+        httpMethod: 1,
+        url: url,
+        body: Buffer.from(JSON.stringify({ image_url, image_id, db_record_to_update: key, retry: 0 })).toString('base64'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+      scheduleTime: { seconds:  60 + Date.now() / 1000 }
+    };
+    const [response] = await cloudTasksClient.createTask({ parent, task });
+    console.log(`Created task ${response.name}`);
+  } catch (err) {
+    console.error('Error creating task:', err);
+    throw err;
+  }
+};
 
 dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
+    console.log("Creating new dynamic component");
     const kind: string = "DynamicComponent";
     const id: string = crypto.createHash('sha256').update(crypto.randomUUID()).digest('hex').toString().toLowerCase().substring(0, 8);
     const datastore = getDatastore();
@@ -62,7 +99,7 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         },
         {
           name: "image_url",
-          value: req.body.image_url,
+          value: `https://storage.googleapis.com/public-images-microcraft/not-available.webp`,
           excludeFromIndexes: true,
         },
         {
@@ -79,7 +116,10 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         }
       ],
     };
+       // Create a background task
+    const image_id = crypto.createHash('sha256').update(req.body.image_url).digest('hex').toString().toLowerCase();
     await datastore.save(entity);
+    await createImageHandlerTask(req.body.image_url, image_id, { kind: 'DynamicComponent', 'id': id});
     res.send({
       status: "success",
       message: "Dynamic component created successfully",
