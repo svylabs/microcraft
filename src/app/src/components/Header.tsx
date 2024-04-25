@@ -54,7 +54,7 @@ const Header: React.FC = () => {
             <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500">
               Microcraft
               <span className="text-xs md:text-3sm lg:text-base font-light text-transparent">
-                Minimum distraction, maximum utility
+                Redefining web3 UI development
               </span>
             </h2>
           </div>
