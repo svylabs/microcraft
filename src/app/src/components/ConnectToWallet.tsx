@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Web3 from "web3";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import MetaMaskLogo from "./photos/metamask-icon.svg";
 import ConnectWallet from "./photos/connect-wallet.svg";
 
@@ -33,7 +35,6 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
   }, []);
 
   const handleConnectToWallet = () => {
-    // setShowWalletOptions(true);
     setShowWalletOptions(prevState => !prevState);
   };
 
@@ -56,28 +57,32 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
         const balance = wei / 10 ** 18;
         console.log("Balance:", balance + " ETH");
 
-        //Send transaction
-        const amountToSend = "0.1"; // Amount in Ether
-        const recipientAddress = "0x..."; // Recipient's Ethereum address
-        const transactionParameters = {
-          from: account,
-          to: recipientAddress,
-          value: Web3.utils.toWei(amountToSend, "ether"),
-        };
+        // //Send transaction
+        // const amountToSend = "0.1"; // Amount in Ether
+        // const recipientAddress = "0x..."; // Recipient's Ethereum address
+        // const transactionParameters = {
+        //   from: account,
+        //   to: recipientAddress,
+        //   value: Web3.utils.toWei(amountToSend, "ether"),
+        // };
 
-        /*
+        // const txHash = await window.ethereum.request({
+        //   method: "eth_sendTransaction",
+        //   params: [transactionParameters],
+        // });
 
-        const txHash = await window.ethereum.request({
-          method: "eth_sendTransaction",
-          params: [transactionParameters],
-        });
-        console.log("Transaction sent:", txHash);
-        */
+      toast.success('Successfully connected to MetaMask', {
+        autoClose: 3000,
+      });
+
+      setShowWalletOptions(false);
+        
       } else {
         alert("Please install Metamask");
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.error('Failed to connect to MetaMask. Please try again.');
     }
   };
 
@@ -126,6 +131,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
           </button>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

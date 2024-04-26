@@ -7,6 +7,7 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
+import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
 
 interface Output {
   [key: string]: any;
@@ -388,6 +389,15 @@ const UserActionPage = () => {
                       </span>
                     </div>
                   )}
+                  {component.type === "walletDropdown" && (
+                  <div>
+                    <DropdownConnectedWallet
+                      onSelectAddress={(address) =>
+                        handleInputChange(component.id, address)
+                      }
+                    />
+                  </div>
+                )}
                   {(component.type === "button" && component.code ) && (buttons[component.id] || true) && (
                     <button
                       className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"

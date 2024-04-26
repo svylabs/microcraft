@@ -6,6 +6,7 @@ import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
+import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -377,6 +378,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="radio">Radio</option>
                   <option value="checkbox">Checkbox</option>
                   <option value="slider">Slider</option>
+                  <option value="walletDropdown">Connected Wallet</option>
                 </select>
               </label>
 
@@ -830,6 +832,31 @@ const ConfigureInputsOutputs: React.FC = () => {
                             JSON.parse(component.sliderConfig).value}
                         </span>
                       </div>
+                    </div>
+                  )}
+                  {component.type === "walletDropdown" && (
+                    <div>
+                      <div className="flex justify-between">
+                        <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                          {component.label}:
+                        </label>
+                        <div className="flex gap-3 md:gap-5">
+                          <button onClick={() => handleEditComponent(index)}>
+                            <img src={edit} alt="edit"></img>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComponent(component.id)}
+                          >
+                            <img src={trash} alt="trash"></img>
+                          </button>
+                        </div>
+                      </div>
+
+                      <DropdownConnectedWallet
+                        onSelectAddress={(address) =>
+                          handleInputChange(component.id, address)
+                        }
+                      />
                     </div>
                   )}
                   {component.type === "button" && component.code && (

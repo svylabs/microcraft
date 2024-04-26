@@ -8,6 +8,7 @@ import Graph from "./outputPlacement/GraphComponent";
 import Table from "./outputPlacement/TableComponent";
 import TextOutput from "./outputPlacement/TextOutput";
 import Loading from "./loadingPage/Loading";
+import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
 
 interface Output {
   [key: string]: any;
@@ -181,8 +182,8 @@ const ActionPage: React.FC = () => {
           <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
-                {(component.placement === "input" || component.placement === "output")
-                 && (
+                {(component.placement === "input" ||
+                  component.placement === "output") && (
                   <div>
                     <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                       {component.label}:
@@ -190,16 +191,16 @@ const ActionPage: React.FC = () => {
                   </div>
                 )}
                 {(component.type === "text" || component.type === "number") && (
-                     <input
-                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                     type={component.type}
-                     id={component.id}
-                     value={data[component.id] || ""}
-                     onChange={(e) =>
-                       handleInputChange(component.id, e.target.value)
-                     }
-                   />
-                  )}
+                  <input
+                    className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                    type={component.type}
+                    id={component.id}
+                    value={data[component.id] || ""}
+                    onChange={(e) =>
+                      handleInputChange(component.id, e.target.value)
+                    }
+                  />
+                )}
                 {component.type === "dropdown" && (
                   <select
                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
@@ -340,6 +341,15 @@ const ActionPage: React.FC = () => {
                       {data[component.id] ||
                         JSON.parse(component.sliderConfig).value}
                     </span>
+                  </div>
+                )}
+                {component.type === "walletDropdown" && (
+                  <div>
+                    <DropdownConnectedWallet
+                      onSelectAddress={(address) =>
+                        handleInputChange(component.id, address)
+                      }
+                    />
                   </div>
                 )}
                 {component.type === "button" && component.code && (
