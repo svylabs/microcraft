@@ -48,8 +48,6 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
       onChange={handleSelectChange}
     >
       <option value={userAddress}>{userAddress}</option>
-      <option value="rohit">rohit</option>
-      <option value="bharti">bharti</option>
     </select>
   );
 };
