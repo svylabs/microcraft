@@ -9,6 +9,7 @@ import Table from "./outputPlacement/TableComponent";
 import TextOutput from "./outputPlacement/TextOutput";
 import Loading from "./loadingPage/Loading";
 import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
+import Web3 from "web3";
 
 interface Output {
   [key: string]: any;
@@ -91,6 +92,7 @@ const ActionPage: React.FC = () => {
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     setLoading(true);
+    const web3 = new Web3(Web3.givenProvider);
     try {
       const result = await eval(code);
       let vals = data;

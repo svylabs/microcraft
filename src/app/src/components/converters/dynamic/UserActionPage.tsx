@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
+import Web3 from "web3";
 
 interface Output {
   [key: string]: any;
@@ -158,6 +159,7 @@ const UserActionPage = () => {
     inputValues: { [key: string]: string }
   ) => {
     setLoading(true);
+    const web3 = new Web3(Web3.givenProvider);
     try {
       const result = await eval(code);
       let vals = data;
