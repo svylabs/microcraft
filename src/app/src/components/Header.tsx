@@ -19,6 +19,7 @@ const Header: React.FC = () => {
         credentials: "include",
       });
       if (response.ok) {
+        
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const userData = await response.json();
@@ -68,22 +69,39 @@ const Header: React.FC = () => {
           <button
             onClick={toggleMenu}
             className="md:hidden focus:outline-none"
-            aria-label="Toggle Menu"
+            aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-7 w-7"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
+            {isMenuOpen ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            )}
           </button>
         </div>
         <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
@@ -118,7 +136,7 @@ const Header: React.FC = () => {
         </div>
       </header>
       {isMenuOpen && (
-        <div className="bg-white py-4 md:hidden">
+        <div className="bg-slate-200 p-2 rounded md:hidden">
           <div className="flex flex-col  gap-3">
             {userName !== "" ? (
               <div className="flex gap-3 items-center">

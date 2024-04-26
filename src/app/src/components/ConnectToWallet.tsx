@@ -98,10 +98,10 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
       </button>
 
       {showWalletOptions && (
-        <div className="flex flex-col gap-3 p-2 absolute z-10 md:top-16 lg:top-20 right-0 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="flex flex-col gap-3 p-2 absolute z-10 md:top-16 lg:top-20 right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
           <button
             onClick={handleConnectToMetaMask}
-            className="flex items-center justify-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-xl p-1 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-3  font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
             <img
               src={MetaMaskLogo}
@@ -112,7 +112,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
           </button>
           <button
             onClick={handleConnectToUniswap}
-            className="flex items-center justify-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-xl p-1 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-3  font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
             <img
               src={MetaMaskLogo}
