@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Web3 from "web3";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import MetaMaskLogo from "./photos/metamask-icon.svg";
 import ConnectWallet from "./photos/connect-wallet.svg";
 
@@ -35,7 +35,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
   }, []);
 
   const handleConnectToWallet = () => {
-    setShowWalletOptions(prevState => !prevState);
+    setShowWalletOptions((prevState) => !prevState);
   };
 
   const handleConnectToMetaMask = async () => {
@@ -57,32 +57,17 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
         const balance = wei / 10 ** 18;
         console.log("Balance:", balance + " ETH");
 
-        // //Send transaction
-        // const amountToSend = "0.1"; // Amount in Ether
-        // const recipientAddress = "0x..."; // Recipient's Ethereum address
-        // const transactionParameters = {
-        //   from: account,
-        //   to: recipientAddress,
-        //   value: Web3.utils.toWei(amountToSend, "ether"),
-        // };
+        toast.success("Successfully connected to MetaMask", {
+          autoClose: 3000,
+        });
 
-        // const txHash = await window.ethereum.request({
-        //   method: "eth_sendTransaction",
-        //   params: [transactionParameters],
-        // });
-
-      toast.success('Successfully connected to MetaMask', {
-        autoClose: 3000,
-      });
-
-      setShowWalletOptions(false);
-        
+        setShowWalletOptions(false);
       } else {
         alert("Please install Metamask");
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error('Failed to connect to MetaMask. Please try again.');
+      toast.error("Failed to connect to MetaMask. Please try again.");
     }
   };
 
@@ -118,7 +103,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
             />{" "}
             MetaMask
           </button>
-          <button
+          {/* <button
             onClick={handleConnectToUniswap}
             className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-3  font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
@@ -128,7 +113,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
               className="w-6 h-6 mr-2"
             />{" "}
             Uniswap Wallet
-          </button>
+          </button> */}
         </div>
       )}
       <ToastContainer />
