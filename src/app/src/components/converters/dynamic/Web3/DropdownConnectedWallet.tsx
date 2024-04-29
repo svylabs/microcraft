@@ -7,27 +7,41 @@ interface DropdownConnectedWalletProps {
 const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   onSelectAddress,
 }) => {
-  const [userAddress, setUserAddress] = useState<string>("");
+  const [metaMaskAddress, setMetaMaskAddress] = useState<string>("");
+  const [auroWalletAddress, setAuroWalletAddress] = useState<string>("");
   const [selectedAddress, setSelectedAddress] = useState<string>("");
 
   useEffect(() => {
     const fetchUserAddress = async () => {
       try {
+        // Fetch MetaMask address
         if (window.ethereum) {
           await window.ethereum.request({ method: "eth_requestAccounts" });
           const accounts = await window.ethereum.request({
             method: "eth_accounts",
           });
-          setUserAddress(accounts[0]);
+          setMetaMaskAddress(accounts[0]);
           setSelectedAddress(accounts[0]);
           onSelectAddress(accounts[0]);
         } else {
-          setUserAddress("MetaMask not detected");
+          setMetaMaskAddress("MetaMask not detected");
           setSelectedAddress("MetaMask not detected");
+        }
+
+        // Fetch Auro Wallet address
+        if (window.mina) {
+          const accounts = await window.mina.requestAccounts();
+          setAuroWalletAddress(accounts[0]);
+          setSelectedAddress(accounts[0]);
+          onSelectAddress(accounts[0]);
+        } else {
+          setAuroWalletAddress("Auro Wallet not detected");
+          setSelectedAddress("Auro Wallet not detected");
         }
       } catch (error) {
         console.error("Error fetching user address:", error);
-        setUserAddress("Error fetching address");
+        setMetaMaskAddress("Error fetching MetaMask address");
+        setAuroWalletAddress("Error fetching Auro Wallet address");
         setSelectedAddress("Error fetching address");
       }
     };
@@ -47,7 +61,8 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
       value={selectedAddress}
       onChange={handleSelectChange}
     >
-      <option value={userAddress}>{userAddress}</option>
+      <option value={metaMaskAddress}>{metaMaskAddress}</option>
+      <option value={auroWalletAddress}>{auroWalletAddress}</option>
     </select>
   );
 };

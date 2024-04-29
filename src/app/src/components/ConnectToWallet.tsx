@@ -77,7 +77,7 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
 
         setShowWalletOptions(false);
       } else {
-        alert("Please install Metamask");
+        alert("Please install Metamask.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -126,7 +126,7 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
   
         setShowWalletOptions(false);
       } else {
-        alert("Auro Wallet is not installed");
+        alert("Please install Auro Wallet.");
       }
     } catch (error) {
       console.error("Error:", error);
