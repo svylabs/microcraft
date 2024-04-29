@@ -4,16 +4,30 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MetaMaskLogo from "./photos/metamask-icon.svg";
 import ConnectWallet from "./photos/connect-wallet.svg";
+import AuroLogo from "./photos/auro-wallet.png";
 
-interface MetamaskProps {}
+interface WalletProps {}
+
+interface ChainInfoArgs {
+  chainId: string;
+  name: string;
+}
+
+interface ProviderError extends Error {
+  message: string;
+  code: number;
+  data?: unknown;
+}
+
 
 declare global {
   interface Window {
     ethereum?: any;
+    mina?: any;
   }
 }
 
-const ConnectToWallet: React.FC<MetamaskProps> = () => {
+const ConnectToWallet: React.FC<WalletProps> = () => {
   const [showWalletOptions, setShowWalletOptions] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +59,7 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        console.log("Account Address:", account);
+        console.log("MetaMask Account Address:", account);
 
         const balanceResult = await window.ethereum.request({
           method: "eth_getBalance",
@@ -71,8 +85,53 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
     }
   };
 
-  const handleConnectToUniswap = async () => {
-    // Uniswap wallet connection logic
+  const handleConnectToAuroWallet = async () => {
+    try {
+      if (window.mina) {
+        const accounts = await window.mina.requestAccounts();
+        const account = accounts[0];
+        console.log("AuroWallet Account Address:", account);
+  
+        // Prompt user to choose zkApps network
+        const chosenNetwork = prompt(
+          "Enter the number for your desired zkApps network:\n1. Mainnet\n2. Devnet\n3. Berkeley\n4. Testworld2"
+        );
+  
+        let chainId = "";
+        switch (chosenNetwork) {
+          case "1":
+            chainId = "mainnet";
+            break;
+          case "2":
+            chainId = "devnet";
+            break;
+          case "3":
+            chainId = "berkeley";
+            break;
+          case "4":
+            chainId = "testworld2";
+            break;
+          default:
+            alert("Invalid selection. Please choose a valid option.");
+            return;
+        }
+  
+        // Switch to chosen zkApps network
+        const switchResult = await window.mina.switchChain({ chainId });
+        console.log("Switch result:", switchResult);
+  
+        toast.success(`Successfully connected to Auro Wallet and switched to ${chosenNetwork}`, {
+          autoClose: 3000,
+        });
+  
+        setShowWalletOptions(false);
+      } else {
+        alert("Auro Wallet is not installed");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to connect to Auro Wallet. Please try again.");
+    }
   };
 
   return (
@@ -91,10 +150,10 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
       </button>
 
       {showWalletOptions && (
-        <div className="flex flex-col gap-3 p-2 absolute z-10 md:top-16 lg:top-20 right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="flex flex-col gap-3 p-2 lg:p-3 lg:px-5 absolute z-10 md:top-16 lg:top-20 right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
           <button
             onClick={handleConnectToMetaMask}
-            className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-3  font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
             <img
               src={MetaMaskLogo}
@@ -103,17 +162,17 @@ const ConnectToWallet: React.FC<MetamaskProps> = () => {
             />{" "}
             MetaMask
           </button>
-          {/* <button
-            onClick={handleConnectToUniswap}
-            className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-3  font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+          <button
+            onClick={handleConnectToAuroWallet}
+            className="flex items-center cursor-pointer bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           >
             <img
-              src={MetaMaskLogo}
+              src={AuroLogo}
               alt="MetaMask Logo"
               className="w-6 h-6 mr-2"
             />{" "}
-            Uniswap Wallet
-          </button> */}
+            Auro Wallet
+          </button>
         </div>
       )}
       <ToastContainer />
