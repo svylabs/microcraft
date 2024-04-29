@@ -159,8 +159,10 @@ const UserActionPage = () => {
     inputValues: { [key: string]: string }
   ) => {
     setLoading(true);
-    const web3 = new Web3(Web3.givenProvider);
+    const web3 = new Web3(window.ethereum);
     try {
+      const config = web3.config;
+      console.log(config);
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
