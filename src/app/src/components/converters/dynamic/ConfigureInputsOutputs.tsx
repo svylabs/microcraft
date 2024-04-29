@@ -378,7 +378,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="radio">Radio</option>
                   <option value="checkbox">Checkbox</option>
                   <option value="slider">Slider</option>
-                  <option value="walletDropdown">Connected Wallet</option>
+                  <option value="walletDropdown">Connected Wallet Selector</option>
                 </select>
               </label>
 
