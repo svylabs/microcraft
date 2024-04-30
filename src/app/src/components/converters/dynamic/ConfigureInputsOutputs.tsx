@@ -26,6 +26,7 @@ interface CustomComponent {
   config?: any;
   optionsConfig?: any;
   sliderConfig?: any;
+  walletConfig?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -38,6 +39,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     config: "",
     optionsConfig: "",
     sliderConfig: "",
+    walletConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
@@ -79,6 +81,19 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
     value: 50,
     step: 1,
+  });
+
+  const [walletConfig, setWalletConfig] = useState<any>({
+    message:
+      "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+    network: {
+      type: "mina | ethereum",
+      config: {
+        rpcUrl: "",
+        chainId: "",
+        exploreUrl: "(optional)",
+      },
+    },
   });
 
   useEffect(() => {
@@ -124,6 +139,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         JSON.stringify(optionsConfig, null, 2),
       sliderConfig:
         components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
+      walletConfig:
+        components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
     });
   };
 
@@ -190,6 +207,12 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.sliderConfig ||
               JSON.stringify(sliderConfig, null, 2)
             : "",
+        walletConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -227,6 +250,13 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.sliderConfig ||
               JSON.stringify(sliderConfig, null, 2)
             : "",
+
+        walletConfig:
+        currentComponent.placement === "input" &&
+        currentComponent.type === "walletDropdown"
+          ? currentComponent.walletConfig ||
+            JSON.stringify(walletConfig, null, 2)
+          : "",
       });
     }
 
@@ -248,6 +278,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       config: "",
       optionsConfig: "",
       sliderConfig: "",
+      walletConfig: "",
+      
     });
   };
 
@@ -378,7 +410,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="radio">Radio</option>
                   <option value="checkbox">Checkbox</option>
                   <option value="slider">Slider</option>
-                  <option value="walletDropdown">Connected Wallet Selector</option>
+                  <option value="walletDropdown">Connected Wallet</option>
                 </select>
               </label>
 

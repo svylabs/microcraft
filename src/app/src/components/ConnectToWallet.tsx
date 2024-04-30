@@ -8,18 +8,6 @@ import AuroLogo from "./photos/auro-wallet.png";
 
 interface WalletProps {}
 
-interface ChainInfoArgs {
-  chainId: string;
-  name: string;
-}
-
-interface ProviderError extends Error {
-  message: string;
-  code: number;
-  data?: unknown;
-}
-
-
 declare global {
   interface Window {
     ethereum?: any;
@@ -91,36 +79,8 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
         const accounts = await window.mina.requestAccounts();
         const account = accounts[0];
         console.log("AuroWallet Account Address:", account);
-  
-        // Prompt user to choose zkApps network
-        const chosenNetwork = prompt(
-          "Enter the number for your desired zkApps network:\n1. Mainnet\n2. Devnet\n3. Berkeley\n4. Testworld2"
-        );
-  
-        let chainId = "";
-        switch (chosenNetwork) {
-          case "1":
-            chainId = "mainnet";
-            break;
-          case "2":
-            chainId = "devnet";
-            break;
-          case "3":
-            chainId = "berkeley";
-            break;
-          case "4":
-            chainId = "testworld2";
-            break;
-          default:
-            alert("Invalid selection. Please choose a valid option.");
-            return;
-        }
-  
-        // Switch to chosen zkApps network
-        const switchResult = await window.mina.switchChain({ chainId });
-        console.log("Switch result:", switchResult);
-  
-        toast.success(`Successfully connected to Auro Wallet and switched to ${chosenNetwork}`, {
+
+        toast.success("Successfully connected to Auro Wallet", {
           autoClose: 3000,
         });
   
