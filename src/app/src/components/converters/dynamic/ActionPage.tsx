@@ -8,7 +8,7 @@ import Graph from "./outputPlacement/GraphComponent";
 import Table from "./outputPlacement/TableComponent";
 import TextOutput from "./outputPlacement/TextOutput";
 import Loading from "./loadingPage/Loading";
-import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
+import Wallet from "./Web3/DropdownConnectedWallet";
 import Web3 from "web3";
 
 interface Output {
@@ -349,7 +349,8 @@ const ActionPage: React.FC = () => {
                 )}
                 {component.type === "walletDropdown" && (
                   <div>
-                    <DropdownConnectedWallet
+                    <Wallet
+                      configurations={component.walletConfig}
                       onSelectAddress={(address) =>
                         handleInputChange(component.id, address)
                       }

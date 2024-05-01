@@ -7,7 +7,7 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
+import Wallet from "./Web3/DropdownConnectedWallet";
 import Web3 from "web3";
 
 interface Output {
@@ -70,7 +70,10 @@ const UserActionPage = () => {
         .then((response) => response.json())
         .then((data) => {
           console.log("Component detail: ", data);
-          const component_def = typeof data.component_definition === 'string' ? JSON.parse(data.component_definition) : data.component_definition;
+          const component_def =
+            typeof data.component_definition === "string"
+              ? JSON.parse(data.component_definition)
+              : data.component_definition;
           setComponents(component_def || []);
           setOutput(data);
           if (data.is_authentication_required) {
@@ -106,19 +109,22 @@ const UserActionPage = () => {
             ...prevData,
             ...initialDropdownState,
           }));
-
         });
     }
   }, []);
 
   useEffect(() => {
-    const prevButtons =  {...buttons};
+    const prevButtons = { ...buttons };
     queryParams.forEach((value, key) => {
-      if (components.find((component) => (component.id === key && component.type === "button"))) {
+      if (
+        components.find(
+          (component) => component.id === key && component.type === "button"
+        )
+      ) {
         console.log("Setting button state: ", key, true);
         prevButtons[key] = true;
         // Do nothing
-       //refMap[key].current.click();
+        //refMap[key].current.click();
       } else {
         setData((prevData) => ({
           ...prevData,
@@ -139,13 +145,12 @@ const UserActionPage = () => {
       console.log(buttons);
       components.forEach((component) => {
         if (component.type === "button" && buttons[component.id]) {
-            console.log("Button Clicked: ", component.id);
-            document.getElementById(component.id)?.click();
+          console.log("Button Clicked: ", component.id);
+          document.getElementById(component.id)?.click();
         }
       });
     }
   }, [buttons]);
-
 
   const handleInputChange = (id: string, value: string) => {
     setData((prevInputValues) => ({
@@ -229,7 +234,8 @@ const UserActionPage = () => {
             <ul className="whitespace-normal break-words lg:text-lg">
               {components.map((component, index) => (
                 <li key={index} className="mb-4">
-                  {(component.placement === "input" || component.placement === "output") && (
+                  {(component.placement === "input" ||
+                    component.placement === "output") && (
                     <div>
                       <label className="text-slate-500 font-semibold text-lg xl:text-xl">
                         {component.label}:
@@ -237,7 +243,7 @@ const UserActionPage = () => {
                     </div>
                   )}
                   {component.type === "text" && (
-                      <input
+                    <input
                       className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                       type={component.type}
                       id={component.id}
@@ -394,23 +400,26 @@ const UserActionPage = () => {
                     </div>
                   )}
                   {component.type === "walletDropdown" && (
-                  <div>
-                    <DropdownConnectedWallet
-                      onSelectAddress={(address) =>
-                        handleInputChange(component.id, address)
-                      }
-                    />
-                  </div>
-                )}
-                  {(component.type === "button" && component.code ) && (buttons[component.id] || true) && (
-                    <button
-                      className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
-                      id={component.id}
-                      onClick={() => handleRun(component.code!, data)}
-                    >
-                      {component.label}
-                    </button>
+                    <div>
+                      <Wallet
+                        configurations={component.walletConfig}
+                        onSelectAddress={(address) =>
+                          handleInputChange(component.id, address)
+                        }
+                      />
+                    </div>
                   )}
+                  {component.type === "button" &&
+                    component.code &&
+                    (buttons[component.id] || true) && (
+                      <button
+                        className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                        id={component.id}
+                        onClick={() => handleRun(component.code!, data)}
+                      >
+                        {component.label}
+                      </button>
+                    )}
                 </li>
               ))}
             </ul>

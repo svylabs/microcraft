@@ -6,7 +6,7 @@ import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
-import DropdownConnectedWallet from "./Web3/DropdownConnectedWallet";
+import Wallet from "./Web3/DropdownConnectedWallet";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -252,11 +252,11 @@ const ConfigureInputsOutputs: React.FC = () => {
             : "",
 
         walletConfig:
-        currentComponent.placement === "input" &&
-        currentComponent.type === "walletDropdown"
-          ? currentComponent.walletConfig ||
-            JSON.stringify(walletConfig, null, 2)
-          : "",
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
       });
     }
 
@@ -279,7 +279,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       optionsConfig: "",
       sliderConfig: "",
       walletConfig: "",
-      
     });
   };
 
@@ -450,7 +449,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               {currentComponent.type === "slider" && (
                 <div>
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Slider Config:
+                    Slider Configuration:
                   </label>
                   <div className="flex bg-gray-900 rounded-md p-2">
                     <div
@@ -469,6 +468,34 @@ const ConfigureInputsOutputs: React.FC = () => {
                       value={
                         currentComponent.sliderConfig ||
                         JSON.stringify(sliderConfig, null, 2)
+                      }
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+              )}
+              {currentComponent.type === "walletDropdown" && (
+                <div>
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Wallet Configuration:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder="Enter wallet configuration"
+                      cols={30}
+                      rows={10}
+                      name="walletConfig"
+                      value={
+                        currentComponent.walletConfig ||
+                        JSON.stringify(walletConfig, null, 2)
                       }
                       onChange={handleChange}
                     ></textarea>
@@ -620,6 +647,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                     `, optionsConfig: ${component.optionsConfig}`}
                   {component.sliderConfig &&
                     `, sliderConfig: ${component.sliderConfig}`}
+                  {component.walletConfig &&
+                    `, walletConfig : ${component.walletConfig}`}
                   {component.code && `, Code: ${component.code}`}
                   <br />
                   {(component.type === "text" ||
@@ -884,7 +913,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </div>
                       </div>
 
-                      <DropdownConnectedWallet
+                      <Wallet
+                        configurations = {component.walletConfig}
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, address)
                         }
