@@ -358,7 +358,7 @@ const Home: React.FC = () => {
           <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Discover blockchain / web3 apps"
+            placeholder="Describe your intent, eg: Swap USDT to ETH on Uniswap"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -538,11 +538,11 @@ const Home: React.FC = () => {
           <div>
             <div className="flex full-width">
               <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
-                Community published apps
+                Published apps
               </h2>
               <div className="justify-center mb-2 text-lg md:text-xl">
-                <a href="/app/inbuilt/New-App" className="px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
-                <a href="/app/inbuilt/Request an app" className="px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+                <a href="/app/inbuilt/New-App" className="md:px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
+                <a href="/app/inbuilt/Request an app" className="md:px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
               </div>
             </div>
             {renderCustomComponentCategories()}

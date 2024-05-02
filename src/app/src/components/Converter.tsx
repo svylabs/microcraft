@@ -17,7 +17,6 @@ import ECDHKeySharing from "./converters/cryptographyTools/ECDHKeySharing";
 import ImageEditor from "./converters/imageProcessing/ImageEditor";
 import ConfigureBasicDetails from "./converters/dynamic/ConfigureBasicDetails";
 import RequestAnApp from "./converters/suggestionApp/RequestAnApp";
-import Metamask from "./converters/web3/Metamask";
 
 interface ConverterProps {
   id: string;
@@ -76,8 +75,6 @@ const Converter: React.FC = () => {
         return <ConfigureBasicDetails />;
       case "Request an app":
         return <RequestAnApp />;
-      case "Metamask":
-        return <Metamask />;
       default:
         return <p>App not found</p>;
     }

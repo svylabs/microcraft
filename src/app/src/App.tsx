@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Home from "./components/Home";
 import Converter from "./components/Converter";
 import "./App.css";
@@ -12,6 +12,18 @@ import SharePage from "./components/share/SharePage";
 
 const App: React.FC = () => {
   return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+};
+
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
+  return (
     <>
       <div className="bg-white sticky top-0 z-50">
         {/* <div className="bg-white sticky top-0 z-50"> */}
@@ -19,9 +31,8 @@ const App: React.FC = () => {
           <Header />
         </div>
         {/* </div> */}
-        <SharePage />
+        {!isHomePage && <SharePage />}
       </div>
-      <Router>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/app/inbuilt/:id" element={<Converter />} />
@@ -31,7 +42,6 @@ const App: React.FC = () => {
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
-      </Router>
     </>
   );
 };

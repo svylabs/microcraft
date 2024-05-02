@@ -6,6 +6,7 @@ import trash from "../../photos/trash-can-regular.svg";
 import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
+import Wallet from "./Web3/DropdownConnectedWallet";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -25,6 +26,7 @@ interface CustomComponent {
   config?: any;
   optionsConfig?: any;
   sliderConfig?: any;
+  walletConfig?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -37,6 +39,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     config: "",
     optionsConfig: "",
     sliderConfig: "",
+    walletConfig: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
@@ -78,6 +81,19 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
     value: 50,
     step: 1,
+  });
+
+  const [walletConfig, setWalletConfig] = useState<any>({
+    message:
+      "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+    network: {
+      type: "mina | ethereum",
+      config: {
+        rpcUrl: "",
+        chainId: "",
+        exploreUrl: "(optional)",
+      },
+    },
   });
 
   useEffect(() => {
@@ -123,6 +139,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         JSON.stringify(optionsConfig, null, 2),
       sliderConfig:
         components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
+      walletConfig:
+        components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
     });
   };
 
@@ -189,6 +207,12 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.sliderConfig ||
               JSON.stringify(sliderConfig, null, 2)
             : "",
+        walletConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -226,6 +250,13 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.sliderConfig ||
               JSON.stringify(sliderConfig, null, 2)
             : "",
+
+        walletConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
       });
     }
 
@@ -247,6 +278,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       config: "",
       optionsConfig: "",
       sliderConfig: "",
+      walletConfig: "",
     });
   };
 
@@ -377,6 +409,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="radio">Radio</option>
                   <option value="checkbox">Checkbox</option>
                   <option value="slider">Slider</option>
+                  <option value="walletDropdown">Connected Wallet</option>
                 </select>
               </label>
 
@@ -416,7 +449,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               {currentComponent.type === "slider" && (
                 <div>
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Slider Config:
+                    Slider Configuration:
                   </label>
                   <div className="flex bg-gray-900 rounded-md p-2">
                     <div
@@ -435,6 +468,34 @@ const ConfigureInputsOutputs: React.FC = () => {
                       value={
                         currentComponent.sliderConfig ||
                         JSON.stringify(sliderConfig, null, 2)
+                      }
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+              )}
+              {currentComponent.type === "walletDropdown" && (
+                <div>
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Wallet Configuration:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder="Enter wallet configuration"
+                      cols={30}
+                      rows={10}
+                      name="walletConfig"
+                      value={
+                        currentComponent.walletConfig ||
+                        JSON.stringify(walletConfig, null, 2)
                       }
                       onChange={handleChange}
                     ></textarea>
@@ -586,6 +647,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                     `, optionsConfig: ${component.optionsConfig}`}
                   {component.sliderConfig &&
                     `, sliderConfig: ${component.sliderConfig}`}
+                  {component.walletConfig &&
+                    `, walletConfig : ${component.walletConfig}`}
                   {component.code && `, Code: ${component.code}`}
                   <br />
                   {(component.type === "text" ||
@@ -830,6 +893,32 @@ const ConfigureInputsOutputs: React.FC = () => {
                             JSON.parse(component.sliderConfig).value}
                         </span>
                       </div>
+                    </div>
+                  )}
+                  {component.type === "walletDropdown" && (
+                    <div>
+                      <div className="flex justify-between">
+                        <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                          {component.label}:
+                        </label>
+                        <div className="flex gap-3 md:gap-5">
+                          <button onClick={() => handleEditComponent(index)}>
+                            <img src={edit} alt="edit"></img>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComponent(component.id)}
+                          >
+                            <img src={trash} alt="trash"></img>
+                          </button>
+                        </div>
+                      </div>
+
+                      <Wallet
+                        configurations = {component.walletConfig}
+                        onSelectAddress={(address) =>
+                          handleInputChange(component.id, address)
+                        }
+                      />
                     </div>
                   )}
                   {component.type === "button" && component.code && (

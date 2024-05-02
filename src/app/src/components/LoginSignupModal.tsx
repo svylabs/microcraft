@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { BASE_API_URL, GITHUB_CLIENT_ID } from "./constants";
+import GoogleLogo from "./photos/google-icon.svg";
+import GithubLogo from "./photos/github-icon.svg";
 
 const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
   const [userData, setUserData] = useState<any>(null);
@@ -96,23 +98,19 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
         </span>
 
         {userData ? (
-          <div className="text-center">
-            <h2 className="text-2xl font-bold mb-4">
-              Welcome, {userData.login}
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Created on: {userData.created_on}
-            </p>
+          <div className="flex flex-col gap-4 text-center">
+            <h2 className="text-2xl font-bold ">Welcome, {userData.login}</h2>
+            <p className="text-gray-600 ">Created on: {userData.created_on}</p>
             <img
-              className="mx-auto w-32 h-32 rounded-full object-cover mb-4"
+              className="mx-auto w-32 h-32 rounded-full object-cover "
               src={userData.avatar_url}
               alt="User Avatar"
             />
             <button
               onClick={handleLogout}
-              className="cursor-pointer bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md xl:text-xl px-4 py-2 font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="mx-auto cursor-pointer bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md xl:text-xl px-4 py-2 font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             >
-              Logout
+              Log out
             </button>
           </div>
         ) : (
@@ -124,26 +122,36 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
             <div className="flex flex-col space-y-4">
               <a
                 href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
-                className="mx-auto md:mx-0"
+                className="mx-auto md:mx-0 w-full"
               >
                 <button
-                  className="cursor-pointer bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  className="flex items-center justify-center cursor-pointer bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-full"
                   type="submit"
                 >
+                  <img
+                    src={GithubLogo}
+                    alt="MetaMask Logo"
+                    className="w-6 h-6 mr-2 "
+                  />{" "}
                   Login with GitHub
                 </button>
               </a>
-              {/* <a href="/auth/google" className=""> */}
+
               <button
                 onClick={handleGoogleLogin}
-                className="cursor-pointer bg-gradient-to-r from-red-500 to-yellow-500 hover:from-red-600 hover:to-yellow-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                className="flex items-center justify-center cursor-pointer bg-gradient-to-r from-red-500 via-yellow-500 to-green-500 hover:from-red-600 hover:via-yellow-600 hover:to-green-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-full"
               >
+                <img
+                  src={GoogleLogo}
+                  alt="MetaMask Logo"
+                  className="w-6 h-6 mr-2 "
+                />{" "}
                 Login with Google
               </button>
-              {/* </a> */}
+
               {/* <button
                 onClick={handleEmailSignup}
-                className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                className="flex items-center justify-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-xl p-3 md:px-6 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105 w-full"
               >
                 Signup with Email
               </button> */}
