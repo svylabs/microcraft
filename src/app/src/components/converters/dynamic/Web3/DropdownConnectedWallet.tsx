@@ -11,6 +11,9 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
 }) => {
   const [config, setConfig] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
+  const [ethBalance, setEthBalance] = useState<number | null>(null);
+  const [minaBalance, setMinaBalance] = useState<number | null>(null);
+
   useEffect(() => {
     if (typeof configurations === "string") {
       try {
@@ -44,9 +47,13 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
             method: "eth_accounts",
           });
           address = accounts[0];
+          const ethBalance = await fetchEthBalance(address);
+          setEthBalance(ethBalance);
         } else if (networkType === "mina" && window.mina) {
           const accounts = await window.mina.requestAccounts();
           address = accounts[0];
+          const minaBalance = await fetchMinaBalance(address);
+          setMinaBalance(minaBalance);
         } else {
           console.warn("No wallet detected for the specified network type.");
           address = "No supported wallet found for this network type.";
@@ -54,6 +61,7 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
 
         setSelectedAddress(address);
         onSelectAddress(address);
+
       } catch (error) {
         console.error("Error fetching user address:", error);
         setSelectedAddress("Error fetching address");
@@ -67,8 +75,27 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
 
   }, [config]);
 
+  const fetchEthBalance = async (address: string) => {
+    const balanceResult = await window.ethereum.request({
+      method: "eth_getBalance",
+      params: [address, "latest"],
+    });
+    console.log("Balance:", balanceResult + " wei");
+    // Convert wei to decimal
+    const wei = parseInt(balanceResult, 16);
+    const balance = wei / 10 ** 18;
+    console.log("Balance:", balance + " ETH");
+    return balance;
+  };
+
+  const fetchMinaBalance = async (address: string) => {
+    return 50;
+  };
+
   return (
-    <select
+    <>
+    <div>
+      <select
       className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
       value={selectedAddress}
       // disabled={!selectedAddress}
@@ -76,6 +103,11 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
     >
       <option value={selectedAddress}>{selectedAddress}</option>
     </select>
+    </div>
+    
+    <div>Ethereum Balance: {ethBalance !== null ? `${ethBalance} ETH` : "Fetching balance..."}</div>
+      <div>Mina Balance: {minaBalance !== null ? `${minaBalance} MINA` : "Fetching balance..."}</div>
+    </>
   );
 };
 
