@@ -44,7 +44,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
   const dragOverPos = useRef<number | null>(null);
-  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
+  const [inputValues, setInputValues] = useState<{ [key: string]: any }>({});
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
   const [graphConfig, setGraphConfig] = useState<any>({
@@ -287,9 +287,16 @@ const ConfigureInputsOutputs: React.FC = () => {
     window.location.href = "/app/new/preview";
   };
 
-  const handleInputChange = (id: string, value: string) => {
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
+  // const handleInputChange = (id: string, value: string) => {
+  //   setInputValues((prevInputValues) => ({
+  //     ...prevInputValues,
+  //     [id]: value,
+  //   }));
+  // };
+
+  const handleInputChange = (id: string, value: any) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
       [id]: value,
     }));
   };
@@ -913,12 +920,27 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </div>
                       </div>
 
-                      <Wallet
+                      {/* <Wallet
                         configurations = {component.walletConfig}
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, address)
                         }
-                      />
+                      /> */}
+                      <Wallet
+                      configurations={component.walletConfig}
+                      onSelectAddress={(address) =>
+                        handleInputChange(component.id, {
+                          address,
+                          balance: null,
+                        })
+                      }
+                      onUpdateBalance={(balance) =>
+                        handleInputChange(component.id, {
+                          address: inputValues[component.id]?.address || "",
+                          balance,
+                        })
+                      }
+                    />
                     </div>
                   )}
                   {component.type === "button" && component.code && (

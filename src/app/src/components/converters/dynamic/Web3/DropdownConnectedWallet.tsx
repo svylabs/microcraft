@@ -4,11 +4,13 @@ import WalletBalance from "./WalletBalance";
 interface DropdownConnectedWalletProps {
   configurations: any;
   onSelectAddress: (address: string) => void;
+  onUpdateBalance: (balance: number) => void;
 }
 
 const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   configurations,
   onSelectAddress,
+  onUpdateBalance,
 }) => {
   const [config, setConfig] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
@@ -79,24 +81,7 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
           <option value={selectedAddress}>{selectedAddress}</option>
         </select>
       </div>
-      <WalletBalance address={selectedAddress} networkType={config?.network?.type?.toLowerCase()} />
-
-{/* 
-      {config?.network?.type?.toLowerCase() === "ethereum" && (
-        <div className="flex justify-end items-center mt-2 text-gray-700 font-medium">
-          {ethBalance !== null
-            ? `Balance: ${ethBalance} ETH`
-            : "Fetching balance..."}
-        </div>
-      )}
-
-      {config?.network?.type?.toLowerCase() === "mina" && (
-        <div className="flex justify-end items-center mt-2 text-gray-700 font-medium">
-          {minaBalance !== null
-            ? `Balance: ${minaBalance} MINA`
-            : "Fetching balance..."}
-        </div>
-      )} */}
+      <WalletBalance address={selectedAddress} networkType={config?.network?.type?.toLowerCase()} onUpdateBalance={onUpdateBalance}/>
     </>
   );
 };

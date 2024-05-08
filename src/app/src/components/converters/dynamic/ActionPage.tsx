@@ -83,7 +83,9 @@ const ActionPage: React.FC = () => {
     }));
   }, []);
 
-  const handleInputChange = (id: string, value: string) => {
+  // const handleInputChange = (id: string, value: string) => {
+  // const handleInputChange = (id: string, value: string | number) => {
+  const handleInputChange = (id: string, value: any) => {
     setData((prevValues) => ({
       ...prevValues,
       [id]: value,
@@ -347,16 +349,40 @@ const ActionPage: React.FC = () => {
                     </span>
                   </div>
                 )}
-                {component.type === "walletDropdown" && (
+                {/* {component.type === "walletDropdown" && (
                   <div>
                     <Wallet
                       configurations={component.walletConfig}
                       onSelectAddress={(address) =>
                         handleInputChange(component.id, address)
                       }
+                      // onUpdateBalance={updateWalletBalance}
+                      onUpdateBalance={(updateWalletBalance) =>
+                        handleInputChange(component.id, updateWalletBalance)
+                      }
+                    />
+                  </div>
+                )} */}
+                {component.type === "walletDropdown" && (
+                  <div>
+                    <Wallet
+                      configurations={component.walletConfig}
+                      onSelectAddress={(address) =>
+                        handleInputChange(component.id, {
+                          address,
+                          balance: null,
+                        })
+                      }
+                      onUpdateBalance={(balance) =>
+                        handleInputChange(component.id, {
+                          address: data[component.id]?.address || "",
+                          balance,
+                        })
+                      }
                     />
                   </div>
                 )}
+
                 {component.type === "button" && component.code && (
                   <button
                     className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"

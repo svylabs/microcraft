@@ -152,12 +152,19 @@ const UserActionPage = () => {
     }
   }, [buttons]);
 
-  const handleInputChange = (id: string, value: string) => {
+  const handleInputChange = (id: string, value: any) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
   };
+
+  // const handleInputChange = (id: string, value: any) => {
+  //   setData((prevValues) => ({
+  //     ...prevValues,
+  //     [id]: value,
+  //   }));
+  // };
 
   const handleRun = async (
     code: string,
@@ -402,11 +409,20 @@ const UserActionPage = () => {
                   {component.type === "walletDropdown" && (
                     <div>
                       <Wallet
-                        configurations={component.walletConfig}
-                        onSelectAddress={(address) =>
-                          handleInputChange(component.id, address)
-                        }
-                      />
+                      configurations={component.walletConfig}
+                      onSelectAddress={(address) =>
+                        handleInputChange(component.id, {
+                          address,
+                          balance: null,
+                        })
+                      }
+                      onUpdateBalance={(balance) =>
+                        handleInputChange(component.id, {
+                          address: data[component.id]?.address || "",
+                          balance,
+                        })
+                      }
+                    />
                     </div>
                   )}
                   {component.type === "button" &&
