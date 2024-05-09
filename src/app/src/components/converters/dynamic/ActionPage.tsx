@@ -21,6 +21,7 @@ const ActionPage: React.FC = () => {
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
   const [data, setData] = useState<{ [key: string]: any }>({});
+  const [walletConfig, setWalletConfig] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");
@@ -83,19 +84,74 @@ const ActionPage: React.FC = () => {
     }));
   }, []);
 
+  useEffect(() => {
+    const walletComponent = components.find(component => component.walletConfig);
+  
+    if (walletComponent) {
+      const config = walletComponent.walletConfig;
+      
+      if (typeof config === "string") {
+        try {
+          setWalletConfig(JSON.parse(config));
+        } catch (error) {
+          console.error("Error parsing configurations:", error);
+        }
+      } else if (typeof config === "object") {
+        setWalletConfig(config);
+      } else {
+        console.warn("Configurations are not a valid string or object.");
+      }
+    }
+  }, [components]);
+
+  useEffect(() => {
+    if (walletConfig && walletConfig.events && walletConfig.events.onLoad && walletConfig.events.onLoad.code) {
+      executeOnLoadCode();
+    }
+  }, [walletConfig]);
+
+  const executeOnLoadCode = async () => {
+    const web3 = new Web3(window.ethereum);
+    try {
+      setLoading(true);
+      const config = web3.config;
+      console.log(config);
+      const code = walletConfig?.events?.onLoad?.code;
+      console.log("walletConfig code:" , code);
+      console.log(typeof(code))
+      const result = await eval(`(${code})()`);
+      let vals = data;
+      if (typeof result === "object") {
+        for (const key in result) {
+          vals[key] = result[key];
+        }
+        setData(vals);
+      }
+      setOutputCode(vals);
+      console.log(vals);
+      console.log("Result:", result);
+    } catch (error) {
+      console.error("Error executing onLoad code:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
   // const handleInputChange = (id: string, value: string) => {
   // const handleInputChange = (id: string, value: string | number) => {
   const handleInputChange = (id: string, value: any) => {
-    setData((prevValues) => ({
-      ...prevValues,
+    setData((prevInputValues) => ({
+      ...prevInputValues,
       [id]: value,
     }));
   };
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
-    setLoading(true);
+    // setLoading(true);
     const web3 = new Web3(window.ethereum);
     try {
+      setLoading(true);
       const config = web3.config;
       console.log(config);
       const result = await eval(code);
@@ -355,10 +411,6 @@ const ActionPage: React.FC = () => {
                       configurations={component.walletConfig}
                       onSelectAddress={(address) =>
                         handleInputChange(component.id, address)
-                      }
-                      // onUpdateBalance={updateWalletBalance}
-                      onUpdateBalance={(updateWalletBalance) =>
-                        handleInputChange(component.id, updateWalletBalance)
                       }
                     />
                   </div>

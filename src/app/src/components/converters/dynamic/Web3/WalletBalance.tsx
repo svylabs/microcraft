@@ -3,13 +3,13 @@ import React, { useState, useEffect } from "react";
 interface WalletBalanceProps {
   address: string;
   networkType: string;
-  onUpdateBalance: any;
+  onUpdateBalance: any; //del
 }
 
 const WalletBalance: React.FC<WalletBalanceProps> = ({
   address,
   networkType,
-  onUpdateBalance,
+  onUpdateBalance, //del
 }) => {
   const [ethBalance, setEthBalance] = useState<number | null>(null);
   const [minaBalance, setMinaBalance] = useState<number | null>(null);
@@ -19,11 +19,11 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
       if (networkType === "ethereum") {
         const ethBalance = await fetchEthBalance(address);
         setEthBalance(ethBalance);
-        onUpdateBalance(ethBalance);
+        onUpdateBalance(ethBalance);  //del
       } else if (networkType === "mina") {
         const minaBalance = await fetchMinaBalance(address);
         setMinaBalance(minaBalance);
-        onUpdateBalance(minaBalance);
+        onUpdateBalance(minaBalance); //del
       }
     };
 

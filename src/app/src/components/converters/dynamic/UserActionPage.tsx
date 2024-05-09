@@ -152,19 +152,13 @@ const UserActionPage = () => {
     }
   }, [buttons]);
 
+  // const handleInputChange = (id: string, value: string) => {
   const handleInputChange = (id: string, value: any) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
   };
-
-  // const handleInputChange = (id: string, value: any) => {
-  //   setData((prevValues) => ({
-  //     ...prevValues,
-  //     [id]: value,
-  //   }));
-  // };
 
   const handleRun = async (
     code: string,

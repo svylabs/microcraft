@@ -83,6 +83,20 @@ const ConfigureInputsOutputs: React.FC = () => {
     step: 1,
   });
 
+  // const [walletConfig, setWalletConfig] = useState<any>({
+  //   message:
+  //     "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+  //   network: {
+  //     type: "mina | ethereum",
+  //     config: {
+  //       rpcUrl: "",
+  //       chainId: "",
+  //       exploreUrl: "(optional)",
+  //     },
+  //   },
+    
+  // });
+
   const [walletConfig, setWalletConfig] = useState<any>({
     message:
       "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
@@ -94,7 +108,25 @@ const ConfigureInputsOutputs: React.FC = () => {
         exploreUrl: "(optional)",
       },
     },
+    events: {
+      onLoad: {
+        code: `async () => {
+          let balance;
+          if (window.ethereum) {
+            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+            if (accounts.length > 0) {
+              const address = accounts[0];
+              balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address] });
+            }
+          }
+          console.log("Successfully fetched Ethereum balance");
+          console.log("Config Eth Balance: " + balance);
+          return { balance };
+        }`
+      }
+    }
   });
+  
 
   useEffect(() => {
     const savedComponents = getDataFromLocalStorage("components");
@@ -288,15 +320,9 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   // const handleInputChange = (id: string, value: string) => {
-  //   setInputValues((prevInputValues) => ({
-  //     ...prevInputValues,
-  //     [id]: value,
-  //   }));
-  // };
-
   const handleInputChange = (id: string, value: any) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
       [id]: value,
     }));
   };

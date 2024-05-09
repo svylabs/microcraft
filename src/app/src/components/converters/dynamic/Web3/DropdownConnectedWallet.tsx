@@ -4,13 +4,13 @@ import WalletBalance from "./WalletBalance";
 interface DropdownConnectedWalletProps {
   configurations: any;
   onSelectAddress: (address: string) => void;
-  onUpdateBalance: (balance: number) => void;
+  onUpdateBalance: (balance: number) => void; //del
 }
 
 const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   configurations,
   onSelectAddress,
-  onUpdateBalance,
+  onUpdateBalance, //del
 }) => {
   const [config, setConfig] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
