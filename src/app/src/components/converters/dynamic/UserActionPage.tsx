@@ -18,6 +18,7 @@ const UserActionPage = () => {
   const location = useLocation();
   const { appId } = useParams<{ appId: string; title?: string }>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
+  const [walletConfig, setWalletConfig] = useState<any | null>(null);
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState(
     output?.component_definition || []
@@ -112,6 +113,60 @@ const UserActionPage = () => {
         });
     }
   }, []);
+
+  useEffect(() => {
+    const walletComponent = components.find(component => component.walletConfig);
+  
+    if (walletComponent) {
+      const config = walletComponent.walletConfig;
+      
+      if (typeof config === "string") {
+        try {
+          setWalletConfig(JSON.parse(config));
+        } catch (error) {
+          console.error("Error parsing configurations:", error);
+        }
+      } else if (typeof config === "object") {
+        setWalletConfig(config);
+      } else {
+        console.warn("Configurations are not a valid string or object.");
+      }
+    }
+  }, [components]);
+
+  useEffect(() => {
+    if (walletConfig && walletConfig.events && walletConfig.events.onLoad && walletConfig.events.onLoad.code) {
+      executeOnLoadCode();
+    }
+  }, [walletConfig]);
+
+  const executeOnLoadCode = async () => {
+    const web3 = new Web3(window.ethereum);
+    try {
+      setLoading(true);
+      const config = web3.config;
+      console.log(config);
+      const code = walletConfig?.events?.onLoad?.code;
+      console.log("walletConfig code:" , code);
+      console.log(typeof(code))
+      const result = await eval(`(${code})()`);
+      // const result = await eval(code());
+      let vals = data;
+      if (typeof result === "object") {
+        for (const key in result) {
+          vals[key] = result[key];
+        }
+        setData(vals);
+      }
+      setOutputCode(vals);
+      console.log(vals);
+      console.log("Result:", result);
+    } catch (error) {
+      console.error("Error executing onLoad code:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const prevButtons = { ...buttons };

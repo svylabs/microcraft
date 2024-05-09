@@ -15,13 +15,33 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   const [config, setConfig] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
 
+  // useEffect(() => {
+  //   if (typeof configurations === "string") {
+  //     try {
+  //       setConfig(JSON.parse(configurations));
+  //     } catch (error) {
+  //       console.error("Error parsing configurations:", error);
+  //     }
+  //   } else if (typeof configurations === "object") {
+  //     setConfig(configurations);
+  //   } else {
+  //     console.warn("Configurations are not a valid string or object.");
+  //   }
+  // }, [configurations]);
+
   useEffect(() => {
-    if (typeof configurations === "string") {
+    const parseConfigurations = (configurationsString: string) => {
+      // Remove any bad control characters from the string
+      const cleanedString = configurationsString.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
       try {
-        setConfig(JSON.parse(configurations));
+        setConfig(JSON.parse(cleanedString));
       } catch (error) {
         console.error("Error parsing configurations:", error);
       }
+    };
+
+    if (typeof configurations === "string") {
+      parseConfigurations(configurations);
     } else if (typeof configurations === "object") {
       setConfig(configurations);
     } else {

@@ -120,6 +120,7 @@ const ActionPage: React.FC = () => {
       console.log("walletConfig code:" , code);
       console.log(typeof(code))
       const result = await eval(`(${code})()`);
+      // const result = await eval(code());
       let vals = data;
       if (typeof result === "object") {
         for (const key in result) {
@@ -137,7 +138,6 @@ const ActionPage: React.FC = () => {
     }
   };
   
-
   // const handleInputChange = (id: string, value: string) => {
   // const handleInputChange = (id: string, value: string | number) => {
   const handleInputChange = (id: string, value: any) => {
