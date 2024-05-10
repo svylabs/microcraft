@@ -30,7 +30,7 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   // }, [configurations]);
 
   useEffect(() => {
-    const parseConfigurations = (configurationsString: string) => {
+    const parseConfigurations = (configurationsString: any) => {
       // Remove any bad control characters from the string
       const cleanedString = configurationsString.replace(/[\u0000-\u001F\u007F-\u009F]/g, "");
       try {
