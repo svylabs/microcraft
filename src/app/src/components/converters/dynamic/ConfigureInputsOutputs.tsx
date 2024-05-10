@@ -65,27 +65,22 @@ const ConfigureInputsOutputs: React.FC = () => {
     message:
       "Please fill in the required information to generate your graph. Choose between bar or line graph.",
   });
-
-  const [optionsConfig, setOptionsConfig] = useState<any>({
-    message:
-      "Please enter options separated by commas. Do not add a comma after the last option.",
+  const [configurations, setConfigurations] = useState<any>({
+  options: {
+    message: "Please enter options separated by commas. Do not add a comma after the last option.",
     values: ["text1"],
-  });
-
-  const [sliderConfig, setSliderConfig] = useState<any>({
-    message:
-      "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
+  },
+  slider: {
+    message: "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
     interval: {
       min: 1,
       max: 100,
     },
     value: 50,
     step: 1,
-  });
-
-  const [walletConfig, setWalletConfig] = useState<any>({
-    message:
-      "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+  },
+  wallet: {
+    message: "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
     network: {
       type: "mina | ethereum",
       config: {
@@ -111,7 +106,9 @@ const ConfigureInputsOutputs: React.FC = () => {
         }`
       }
     }
-  });
+  }
+});
+
 
   useEffect(() => {
     const savedComponents = getDataFromLocalStorage("components");
@@ -153,11 +150,11 @@ const ConfigureInputsOutputs: React.FC = () => {
       config: components[index].config || JSON.stringify(graphConfig, null, 2),
       optionsConfig:
         components[index].optionsConfig ||
-        JSON.stringify(optionsConfig, null, 2),
+        JSON.stringify(configurations.options, null, 2),
       sliderConfig:
-        components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
+        components[index].sliderConfig || JSON.stringify(configurations.slider, null, 2),
       walletConfig:
-        components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
+        components[index].walletConfig || JSON.stringify(configurations.wallet, null, 2),
     });
   };
 
@@ -216,19 +213,19 @@ const ConfigureInputsOutputs: React.FC = () => {
             currentComponent.type === "radio" ||
             currentComponent.type === "checkbox")
             ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
+              JSON.stringify(configurations.options, null, 2)
             : "",
         sliderConfig:
           currentComponent.placement === "input" &&
           currentComponent.type === "slider"
             ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
+              JSON.stringify(configurations.slider, null, 2)
             : "",
         walletConfig:
           currentComponent.placement === "input" &&
           currentComponent.type === "walletDropdown"
             ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
+              JSON.stringify(configurations.wallet, null, 2)
             : "",
       };
       setIsEditMode(false);
@@ -259,20 +256,20 @@ const ConfigureInputsOutputs: React.FC = () => {
             currentComponent.type === "radio" ||
             currentComponent.type === "checkbox")
             ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
+              JSON.stringify(configurations.options, null, 2)
             : "",
         sliderConfig:
           currentComponent.placement === "input" &&
           currentComponent.type === "slider"
             ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
+              JSON.stringify(configurations.slider, null, 2)
             : "",
 
         walletConfig:
           currentComponent.placement === "input" &&
           currentComponent.type === "walletDropdown"
             ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
+              JSON.stringify(configurations.wallet, null, 2)
             : "",
       });
     }
@@ -456,7 +453,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       rows={10}
                       value={
                         currentComponent.optionsConfig ||
-                        JSON.stringify(optionsConfig, null, 2)
+                        JSON.stringify(configurations.options, null, 2)
                       }
                       onChange={handleChange}
                     ></textarea>
@@ -485,7 +482,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       name="sliderConfig"
                       value={
                         currentComponent.sliderConfig ||
-                        JSON.stringify(sliderConfig, null, 2)
+                        JSON.stringify(configurations.slider, null, 2)
                       }
                       onChange={handleChange}
                     ></textarea>
@@ -513,7 +510,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       name="walletConfig"
                       value={
                         currentComponent.walletConfig ||
-                        JSON.stringify(walletConfig, null, 2)
+                        JSON.stringify(configurations.wallet, null, 2)
                       }
                       onChange={handleChange}
                     ></textarea>
