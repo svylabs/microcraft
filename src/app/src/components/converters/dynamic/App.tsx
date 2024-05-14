@@ -7,7 +7,7 @@ interface Props {
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   setOutputCode: React.Dispatch<React.SetStateAction<any>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-//   handleRun: (code: string, data: { [key: string]: any }) => void;
+  //   handleRun: (code: string, data: { [key: string]: any }) => void;
 }
 
 const App: React.FC<Props> = ({
@@ -16,48 +16,82 @@ const App: React.FC<Props> = ({
   setData,
   setOutputCode,
   setLoading,
-//   handleRun,
+  //   handleRun,
 }) => {
-  const [walletConfig, setWalletConfig] = useState<any | null>(null);
-  useEffect(() => {
+  const [allConfig, setAllConfig] = useState<any | null>(null);
+  
+//   useEffect(() => {
+//     console.log("rohit", components);
+//     const walletComponent = components.find(
+//       (component) => component.walletConfig
+//     );
+//     console.log(walletComponent)
+
+//     if (walletComponent) {
+//       const config = walletComponent.walletConfig;
+//       console.log(config)
+
+//       if (typeof config === "string") {
+//         try {
+//           setAllConfig(JSON.parse(config));
+//         } catch (error) {
+//           console.error("Error parsing configurations:", error);
+//         }
+//       } else if (typeof config === "object") {
+//         setAllConfig(config);
+//       } else {
+//         console.warn("Configurations are not a valid string or object.");
+//       }
+//     }
+//   }, [components]);
+
+useEffect(() => {
     const walletComponent = components.find(
-      (component) => component.walletConfig
+      (component) => component.walletConfig || component.sliderConfig || component.optionsConfig
     );
-
+  
     if (walletComponent) {
-      const config = walletComponent.walletConfig;
-
+      let config;
+      if (walletComponent.walletConfig) {
+        config = walletComponent.walletConfig;
+      } else if (walletComponent.sliderConfig) {
+        config = walletComponent.sliderConfig;
+      } else if (walletComponent.optionsConfig) {
+        config = walletComponent.optionsConfig;
+      }
+  
       if (typeof config === "string") {
         try {
-          setWalletConfig(JSON.parse(config));
+          setAllConfig(JSON.parse(config));
         } catch (error) {
           console.error("Error parsing configurations:", error);
         }
       } else if (typeof config === "object") {
-        setWalletConfig(config);
+        setAllConfig(config);
       } else {
         console.warn("Configurations are not a valid string or object.");
       }
     }
   }, [components]);
+  
 
   useEffect(() => {
     if (
-      walletConfig &&
-      walletConfig.events &&
-      walletConfig.events.onLoad &&
-      walletConfig.events.onLoad.code
+      allConfig &&
+      allConfig.events &&
+      allConfig.events.onLoad &&
+      allConfig.events.onLoad.code
     ) {
       executeOnLoadCode();
     }
-  }, [walletConfig]);
+  }, [allConfig]);
 
   const executeOnLoadCode = async () => {
     const web3 = new Web3(window.ethereum);
     try {
       setLoading(true);
       const config = web3.config;
-      const code = walletConfig?.events?.onLoad?.code;
+      const code = allConfig?.events?.onLoad?.code;
       const result = await eval(`(${code})()`);
       let vals = data;
       if (typeof result === "object") {
@@ -74,30 +108,29 @@ const App: React.FC<Props> = ({
     }
   };
 
-
-//   const handleRun = async (code: string, data: { [key: string]: any }) => {
-//     const web3 = new Web3(window.ethereum);
-//     try {
-//       setLoading(true);
-//       const config = web3.config;
-//       const result = await eval(code);
-//       let vals = { ...data }; // Clone data object to avoid mutating the original state
-//       if (typeof result === "object") {
-//         for (const key in result) {
-//           vals[key] = result[key];
-//         }
-//         setData(vals);
-//       }
-//       console.log(vals);
-//       console.log(result);
-//       setOutputCode(vals);
-//     } catch (error) {
-//       console.error("Error: ", error); // Log the error for debugging
-//       setOutputCode(`Error: ${error}`); // Set error message in output code
-//     } finally {
-//       setLoading(false); // Always set loading to false after execution
-//     }
-//   };
+  //   const handleRun = async (code: string, data: { [key: string]: any }) => {
+  //     const web3 = new Web3(window.ethereum);
+  //     try {
+  //       setLoading(true);
+  //       const config = web3.config;
+  //       const result = await eval(code);
+  //       let vals = { ...data }; // Clone data object to avoid mutating the original state
+  //       if (typeof result === "object") {
+  //         for (const key in result) {
+  //           vals[key] = result[key];
+  //         }
+  //         setData(vals);
+  //       }
+  //       console.log(vals);
+  //       console.log(result);
+  //       setOutputCode(vals);
+  //     } catch (error) {
+  //       console.error("Error: ", error); // Log the error for debugging
+  //       setOutputCode(`Error: ${error}`); // Set error message in output code
+  //     } finally {
+  //       setLoading(false); // Always set loading to false after execution
+  //     }
+  //   };
 
   return null; // doesn't render anything
 };

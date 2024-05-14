@@ -70,6 +70,17 @@ const ConfigureInputsOutputs: React.FC = () => {
     message:
       "Please enter options separated by commas. Do not add a comma after the last option.",
     values: ["text1"],
+    events: {
+      onLoad: {
+        code: `async () => {
+          let balance;
+          balance = 100;
+          console.log("Successfully fetched options");
+          console.log("Config options Balance: " + balance);
+          return { balance };
+        }`
+      }
+    }
   });
 
   const [sliderConfig, setSliderConfig] = useState<any>({
@@ -81,6 +92,17 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
     value: 50,
     step: 1,
+    events: {
+      onLoad: {
+        code: `async () => {
+          let balance;
+          balance = 200;
+          console.log("Successfully fetched slider");
+          console.log("Config slider: " + balance);
+          return { balance };
+        }`
+      }
+    }
   });
 
   const [walletConfig, setWalletConfig] = useState<any>({
