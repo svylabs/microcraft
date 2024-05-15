@@ -27,6 +27,7 @@ interface CustomComponent {
   optionsConfig?: any;
   sliderConfig?: any;
   walletConfig?: any;
+  currentEvents?: any;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -40,6 +41,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     optionsConfig: "",
     sliderConfig: "",
     walletConfig: "",
+    currentEvents: "",
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
@@ -70,17 +72,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     message:
       "Please enter options separated by commas. Do not add a comma after the last option.",
     values: ["text1"],
-    events: {
-      onLoad: {
-        code: `async () => {
-          let balance;
-          balance = 100;
-          console.log("Successfully fetched options");
-          console.log("Config options Balance: " + balance);
-          return { balance };
-        }`
-      }
-    }
   });
 
   const [sliderConfig, setSliderConfig] = useState<any>({
@@ -92,17 +83,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
     value: 50,
     step: 1,
-    events: {
-      onLoad: {
-        code: `async () => {
-          let balance;
-          balance = 200;
-          console.log("Successfully fetched slider");
-          console.log("Config slider: " + balance);
-          return { balance };
-        }`
-      }
-    }
   });
 
   const [walletConfig, setWalletConfig] = useState<any>({
@@ -116,23 +96,11 @@ const ConfigureInputsOutputs: React.FC = () => {
         exploreUrl: "(optional)",
       },
     },
-    events: {
-      onLoad: {
-        code: `async () => {
-          let balance;
-          if (window.ethereum) {
-            const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-            if (accounts.length > 0) {
-              const address = accounts[0];
-              balance = await window.ethereum.request({ method: 'eth_getBalance', params: [address] });
-            }
-          }
-          console.log("Successfully fetched Ethereum balance");
-          console.log("Config Eth Balance: " + balance);
-          return { balance };
-        }`
-      }
-    }
+  });
+
+  const [currentEvents, setCurrentEvents] = useState({
+    onLoad: { code: "" },
+    // onChange: { code: "" }
   });
 
   useEffect(() => {
@@ -542,6 +510,42 @@ const ConfigureInputsOutputs: React.FC = () => {
                   </div>
                 </div>
               )}
+              {[
+                "dropdown",
+                "radio",
+                "checkbox",
+                "slider",
+                "walletDropdown",
+              ].includes(currentComponent.type) && (
+                <>
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Events:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder="Enter JavaScript code for events"
+                      cols={30}
+                      rows={10}
+                      name="currentEvents"
+                      // value={JSON.stringify({ onLoad: { code: "" } }, null, 2)}
+                      // value={
+                      //   // currentComponent.events ||
+                      //   JSON.stringify({ onLoad: { code: "" }, onChange: { code: "" } }, null, 2)
+                      // }
+                      value={currentComponent.currentEvents || JSON.stringify(currentEvents, null, 2)}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -690,6 +694,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   {component.walletConfig &&
                     `, walletConfig : ${component.walletConfig}`}
                   {component.code && `, Code: ${component.code}`}
+                  {component.currentEvents && `, currentEvents: ${component.currentEvents}`}
                   <br />
                   {(component.type === "text" ||
                     component.type === "number" ||
@@ -960,20 +965,20 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }
                       /> */}
                       <Wallet
-                      configurations={component.walletConfig}
-                      onSelectAddress={(address) =>
-                        handleInputChange(component.id, {
-                          address,
-                          balance: null,
-                        })
-                      }
-                      onUpdateBalance={(balance) =>
-                        handleInputChange(component.id, {
-                          address: inputValues[component.id]?.address || "",
-                          balance,
-                        })
-                      }
-                    />
+                        configurations={component.walletConfig}
+                        onSelectAddress={(address) =>
+                          handleInputChange(component.id, {
+                            address,
+                            balance: null,
+                          })
+                        }
+                        onUpdateBalance={(balance) =>
+                          handleInputChange(component.id, {
+                            address: inputValues[component.id]?.address || "",
+                            balance,
+                          })
+                        }
+                      />
                     </div>
                   )}
                   {component.type === "button" && component.code && (

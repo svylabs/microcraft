@@ -22,7 +22,6 @@ const ActionPage: React.FC = () => {
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
   const [data, setData] = useState<{ [key: string]: any }>({});
-  // const [walletConfig, setWalletConfig] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
   const savedFormDataString = localStorage.getItem("formData");

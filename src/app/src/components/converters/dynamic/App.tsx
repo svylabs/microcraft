@@ -7,7 +7,6 @@ interface Props {
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   setOutputCode: React.Dispatch<React.SetStateAction<any>>;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  //   handleRun: (code: string, data: { [key: string]: any }) => void;
 }
 
 const App: React.FC<Props> = ({
@@ -16,7 +15,6 @@ const App: React.FC<Props> = ({
   setData,
   setOutputCode,
   setLoading,
-  //   handleRun,
 }) => {
   const [allConfig, setAllConfig] = useState<any | null>(null);
 
@@ -117,37 +115,13 @@ const App: React.FC<Props> = ({
       //   }
       //   setOutputCode(vals);
       // }
-      
+
     } catch (error) {
       console.error("Error executing onLoad code:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  //   const handleRun = async (code: string, data: { [key: string]: any }) => {
-  //     const web3 = new Web3(window.ethereum);
-  //     try {
-  //       setLoading(true);
-  //       const config = web3.config;
-  //       const result = await eval(code);
-  //       let vals = { ...data }; // Clone data object to avoid mutating the original state
-  //       if (typeof result === "object") {
-  //         for (const key in result) {
-  //           vals[key] = result[key];
-  //         }
-  //         setData(vals);
-  //       }
-  //       console.log(vals);
-  //       console.log(result);
-  //       setOutputCode(vals);
-  //     } catch (error) {
-  //       console.error("Error: ", error); // Log the error for debugging
-  //       setOutputCode(`Error: ${error}`); // Set error message in output code
-  //     } finally {
-  //       setLoading(false); // Always set loading to false after execution
-  //     }
-  //   };
 
   return null; // doesn't render anything
 };
