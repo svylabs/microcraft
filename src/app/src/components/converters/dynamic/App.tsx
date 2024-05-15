@@ -19,88 +19,105 @@ const App: React.FC<Props> = ({
   //   handleRun,
 }) => {
   const [allConfig, setAllConfig] = useState<any | null>(null);
-  
-//   useEffect(() => {
-//     console.log("rohit", components);
-//     const walletComponent = components.find(
-//       (component) => component.walletConfig
-//     );
-//     console.log(walletComponent)
 
-//     if (walletComponent) {
-//       const config = walletComponent.walletConfig;
-//       console.log(config)
+  //   useEffect(() => {
+  //     console.log("rohit", components);
+  //     const walletComponent = components.find(
+  //       (component) => component.walletConfig
+  //     );
+  //     console.log(walletComponent)
 
-//       if (typeof config === "string") {
-//         try {
-//           setAllConfig(JSON.parse(config));
-//         } catch (error) {
-//           console.error("Error parsing configurations:", error);
-//         }
-//       } else if (typeof config === "object") {
-//         setAllConfig(config);
-//       } else {
-//         console.warn("Configurations are not a valid string or object.");
-//       }
-//     }
-//   }, [components]);
+  //     if (walletComponent) {
+  //       const config = walletComponent.walletConfig;
+  //       console.log(config)
 
-useEffect(() => {
-    const walletComponent = components.find(
-      (component) => component.walletConfig || component.sliderConfig || component.optionsConfig
-    );
-  
-    if (walletComponent) {
-      let config;
-      if (walletComponent.walletConfig) {
-        config = walletComponent.walletConfig;
-      } else if (walletComponent.sliderConfig) {
-        config = walletComponent.sliderConfig;
-      } else if (walletComponent.optionsConfig) {
-        config = walletComponent.optionsConfig;
-      }
-  
-      if (typeof config === "string") {
-        try {
-          setAllConfig(JSON.parse(config));
-        } catch (error) {
-          console.error("Error parsing configurations:", error);
-        }
-      } else if (typeof config === "object") {
-        setAllConfig(config);
-      } else {
-        console.warn("Configurations are not a valid string or object.");
-      }
-    }
-  }, [components]);
-  
+  //       if (typeof config === "string") {
+  //         try {
+  //           setAllConfig(JSON.parse(config));
+  //         } catch (error) {
+  //           console.error("Error parsing configurations:", error);
+  //         }
+  //       } else if (typeof config === "object") {
+  //         setAllConfig(config);
+  //       } else {
+  //         console.warn("Configurations are not a valid string or object.");
+  //       }
+  //     }
+  //   }, [components]);
+
+  // useEffect(() => {
+  //   if (
+  //     allConfig &&
+  //     allConfig.events &&
+  //     allConfig.events.onLoad &&
+  //     allConfig.events.onLoad.code
+  //   ) {
+  //     executeOnLoadCode();
+  //   }
+  // }, [allConfig]);
+
+  // const executeOnLoadCode = async () => {
+  //   const web3 = new Web3(window.ethereum);
+  //   try {
+  //     setLoading(true);
+  //     const config = web3.config;
+  //     const code = allConfig?.events?.onLoad?.code;
+  //     const result = await eval(`(${code})()`);
+  //     let vals = data;
+  //     if (typeof result === "object") {
+  //       for (const key in result) {
+  //         vals[key] = result[key];
+  //       }
+  //       setData(vals);
+  //     }
+  //     setOutputCode(vals);
+  //   } catch (error) {
+  //     console.error("Error executing onLoad code:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    if (
-      allConfig &&
-      allConfig.events &&
-      allConfig.events.onLoad &&
-      allConfig.events.onLoad.code
-    ) {
-      executeOnLoadCode();
-    }
-  }, [allConfig]);
-
-  const executeOnLoadCode = async () => {
-    const web3 = new Web3(window.ethereum);
-    try {
-      setLoading(true);
-      const config = web3.config;
-      const code = allConfig?.events?.onLoad?.code;
-      const result = await eval(`(${code})()`);
-      let vals = data;
-      if (typeof result === "object") {
-        for (const key in result) {
-          vals[key] = result[key];
-        }
-        setData(vals);
+    components.forEach((component) => {
+      if (component.walletConfig) {
+        executeOnLoadCode(component.walletConfig);
       }
-      setOutputCode(vals);
+      if (component.sliderConfig) {
+        executeOnLoadCode(component.sliderConfig);
+      }
+      if (component.optionsConfig) {
+        executeOnLoadCode(component.optionsConfig);
+      }
+    });
+  }, [components]);
+
+  const executeOnLoadCode = async (config) => {
+    try {
+      if (typeof config === "string") {
+        config = JSON.parse(config);
+      }
+      if (config.events && config.events.onLoad && config.events.onLoad.code) {
+        const web3 = new Web3(window.ethereum);
+        setLoading(true);
+        const result = await eval(`(${config.events.onLoad.code})()`);
+
+        if (typeof result === "object") {
+          setData(prevData => ({ ...prevData, ...result }));
+          setOutputCode(prevOutputCode => ({ ...prevOutputCode, ...result }));
+        }
+      }
+
+      //   let vals = data;
+      //   if (typeof result === "object") {
+      //     for (const key in result) {
+      //       vals[key] = result[key];
+      //     }
+      //     setData(vals);
+      //   }
+      //   setOutputCode(vals);
+      // }
+      
     } catch (error) {
       console.error("Error executing onLoad code:", error);
     } finally {
