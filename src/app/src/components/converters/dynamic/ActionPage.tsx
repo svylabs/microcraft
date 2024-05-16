@@ -98,6 +98,8 @@ const ActionPage: React.FC = () => {
       setLoading(true);
       const config = web3.config;
       console.log(config);
+      // console.log("code: ", code);
+      // console.log(typeof code)
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
