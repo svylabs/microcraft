@@ -27,6 +27,8 @@ interface CustomComponent {
   optionsConfig?: any;
   sliderConfig?: any;
   walletConfig?: any;
+  // events?: Event[];
+  events?: Event[] | undefined;
 }
 
 interface Event {
@@ -45,6 +47,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     optionsConfig: "",
     sliderConfig: "",
     walletConfig: "",
+    events: [],
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
@@ -155,7 +158,9 @@ const ConfigureInputsOutputs: React.FC = () => {
         components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
       walletConfig:
         components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
+      // events: components[index].events || [],
     });
+    setEvents(components[index].events || []);
   };
 
   const handleChange = (
@@ -227,6 +232,7 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.walletConfig ||
               JSON.stringify(walletConfig, null, 2)
             : "",
+        events: [...events],
       };
       setIsEditMode(false);
       setEditIndex(-1);
@@ -271,6 +277,7 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.walletConfig ||
               JSON.stringify(walletConfig, null, 2)
             : "",
+        events: [...events],
       });
     }
 
@@ -280,6 +287,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       ...prevInputValues,
       [currentComponent.id]: "",
     }));
+    setEvents([]);
 
     saveDataToLocalStorage("components", updatedComponents);
 
@@ -295,6 +303,112 @@ const ConfigureInputsOutputs: React.FC = () => {
       walletConfig: "",
     });
   };
+
+  // const handleAddComponent = () => {
+  //   if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+  //     toast.error("Please provide both ID and Label.");
+  //     return;
+  //   }
+  
+  //   if (
+  //     currentComponent.placement === "action" &&
+  //     !currentComponent.code?.trim()
+  //   ) {
+  //     toast.error("Please provide code for action placement.");
+  //     return;
+  //   }
+  
+  //   const updatedComponents = [...components];
+  //   const existingIndex = updatedComponents.findIndex(
+  //     (component) =>
+  //       component.id.trim() === currentComponent.id.trim() &&
+  //       component.label.trim() === currentComponent.label.trim()
+  //   );
+  
+  //   if (existingIndex !== -1) {
+  //     // Update existing field
+  //     updatedComponents[existingIndex] = {
+  //       ...currentComponent,
+  //       config:
+  //         currentComponent.placement === "output" &&
+  //         currentComponent.type === "graph"
+  //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+  //           : "",
+  //       optionsConfig:
+  //         currentComponent.placement === "input" &&
+  //         (currentComponent.type === "dropdown" ||
+  //           currentComponent.type === "radio" ||
+  //           currentComponent.type === "checkbox")
+  //           ? currentComponent.optionsConfig ||
+  //             JSON.stringify(optionsConfig, null, 2)
+  //           : "",
+  //       sliderConfig:
+  //         currentComponent.placement === "input" &&
+  //         currentComponent.type === "slider"
+  //           ? currentComponent.sliderConfig ||
+  //             JSON.stringify(sliderConfig, null, 2)
+  //           : "",
+  //       walletConfig:
+  //         currentComponent.placement === "input" &&
+  //         currentComponent.type === "walletDropdown"
+  //           ? currentComponent.walletConfig ||
+  //             JSON.stringify(walletConfig, null, 2)
+  //           : "",
+  //       events: [...events],
+  //     };
+  //   } else {
+  //     // Add new field
+  //     updatedComponents.push({
+  //       ...currentComponent,
+  //       config:
+  //         currentComponent.placement === "output" &&
+  //         currentComponent.type === "graph"
+  //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+  //           : "",
+  //       optionsConfig:
+  //         currentComponent.placement === "input" &&
+  //         (currentComponent.type === "dropdown" ||
+  //           currentComponent.type === "radio" ||
+  //           currentComponent.type === "checkbox")
+  //           ? currentComponent.optionsConfig ||
+  //             JSON.stringify(optionsConfig, null, 2)
+  //           : "",
+  //       sliderConfig:
+  //         currentComponent.placement === "input" &&
+  //         currentComponent.type === "slider"
+  //           ? currentComponent.sliderConfig ||
+  //             JSON.stringify(sliderConfig, null, 2)
+  //           : "",
+  //       walletConfig:
+  //         currentComponent.placement === "input" &&
+  //         currentComponent.type === "walletDropdown"
+  //           ? currentComponent.walletConfig ||
+  //             JSON.stringify(walletConfig, null, 2)
+  //           : "",
+  //       events: [...events],
+  //     });
+  //   }
+  
+  //   setComponents(updatedComponents);
+  //   setInputValues((prevInputValues) => ({
+  //     ...prevInputValues,
+  //     [currentComponent.id]: "",
+  //   }));
+  //   setEvents([]);
+  //   saveDataToLocalStorage("components", updatedComponents);
+  
+  //   setCurrentComponent({
+  //     id: "",
+  //     label: "",
+  //     type: "text",
+  //     placement: "input",
+  //     code: "",
+  //     config: "",
+  //     optionsConfig: "",
+  //     sliderConfig: "",
+  //     walletConfig: "",
+  //   });
+  // };  
 
   const handlePreview = async () => {
     console.log(components);
@@ -351,7 +465,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         textarea.removeEventListener("input", updateLineNumbers);
       }
     };
-  }, [currentComponent.type]);
+    // }, [currentComponent.type]);
+  }, [currentComponent.type, currentEvent]);
 
   console.log(components);
 
@@ -359,7 +474,10 @@ const ConfigureInputsOutputs: React.FC = () => {
     if (currentEvent && eventCode.trim() !== "") {
       if (editIndex !== -1) {
         const updatedEvents = [...events];
-        updatedEvents[editIndex] = { event: currentEvent, eventsCode: eventCode };
+        updatedEvents[editIndex] = {
+          event: currentEvent,
+          eventsCode: eventCode,
+        };
         setEvents(updatedEvents);
         setEditIndex(-1);
       } else {
@@ -463,7 +581,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                     {/* {currentComponent.type === "dropdown"
                       ? "Dropdown Options:"
                       : "Radio Options:"} */}
-                      Configuration:
+                    Configuration:
                   </label>
                   <div className="flex bg-gray-900 rounded-md p-2">
                     <div
@@ -628,13 +746,31 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                     Event Code:
                   </label>
-                  <textarea
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder="Enter event code here..."
+                      cols={30}
+                      rows={10}
+                      name="eventCode"
+                      value={eventCode}
+                      onChange={(e) => setEventCode(e.target.value)}
+                    ></textarea>
+                  </div>
+                  {/* <textarea
                     className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
                     value={eventCode}
                     onChange={(e) => setEventCode(e.target.value)}
                     placeholder="Enter event code here..."
                     rows={5}
-                  ></textarea>
+                  ></textarea> */}
                 </div>
               )}
 
@@ -642,6 +778,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               {currentEvent && (
                 <button
                   className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+                  title="Add Event"
                   onClick={handleAddEvent}
                 >
                   {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
@@ -654,37 +791,32 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {events.map((event, index) => (
                   <div key={index} className="mt-3">
                     <div className="flex justify-between">
-                    <p className="text-lg font-semibold">{event.event}:</p>
-                    <div className="flex gap-3 md:gap-5">
-                      <button
-                        className="text-blue-600 font-semibold hover:text-blue-700"
-                        onClick={() => handleEditEvent(index)}
-                        title="Edit"
-                      >
-                        <img src={edit} alt="edit"></img>
-                      </button>
-                      <button
-                        className="text-red-600 font-semibold hover:text-red-700"
-                        onClick={() => handleDeleteEvent(index)}
-                        title="Delete"
-                      >
-                        <img src={trash} alt="trash"></img>
-                      </button>
+                      <p className="text-lg font-semibold">{event.event}:</p>
+                      <div className="flex gap-3 md:gap-5">
+                        <button
+                          className="text-blue-600 font-semibold hover:text-blue-700"
+                          onClick={() => handleEditEvent(index)}
+                          title="Edit"
+                        >
+                          <img src={edit} alt="edit"></img>
+                        </button>
+                        <button
+                          className="text-red-600 font-semibold hover:text-red-700"
+                          onClick={() => handleDeleteEvent(index)}
+                          title="Delete"
+                        >
+                          <img src={trash} alt="trash"></img>
+                        </button>
+                      </div>
                     </div>
-                    </div>
-                    <pre className="p-2 bg-gray-200 rounded-md">{event.eventsCode}</pre>
+                    <pre className="p-2 bg-gray-200 rounded-md">
+                      {event.eventsCode}
+                    </pre>
                   </div>
                 ))}
               </div>
             </>
           )}
-
-
-
-          
-
-
-
 
           {currentComponent.placement === "action" && (
             <div>
@@ -771,6 +903,17 @@ const ConfigureInputsOutputs: React.FC = () => {
                   {component.walletConfig &&
                     `, walletConfig : ${component.walletConfig}`}
                   {component.code && `, Code: ${component.code}`}
+                  {component.events &&
+                    component.events.map((eventObj, index) => (
+                      <div key={index} className="mt-3">
+                        <p className="text-lg font-semibold">
+                          {eventObj.event}:
+                        </p>
+                        <pre className="p-2 bg-gray-200 rounded-md">
+                          {eventObj.eventsCode}
+                        </pre>
+                      </div>
+                    ))}
                   <br />
                   {(component.type === "text" ||
                     component.type === "number" ||
@@ -784,11 +927,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -813,11 +960,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -851,11 +1002,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -918,11 +1073,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -982,11 +1141,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -1023,11 +1186,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
@@ -1064,11 +1231,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                           {component.label}:
                         </label>
                         <div className="flex gap-3 md:gap-5">
-                          <button onClick={() => handleEditComponent(index)} title="Edit">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
                             <img src={edit} alt="edit"></img>
                           </button>
                           <button
-                            onClick={() => handleDeleteComponent(component.id)} title="Delete"
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
                           >
                             <img src={trash} alt="trash"></img>
                           </button>
