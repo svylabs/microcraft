@@ -188,128 +188,12 @@ const ConfigureInputsOutputs: React.FC = () => {
     }
   };
 
-  const handleAddComponent = () => {
-    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
-      toast.error("Please provide both ID and Label.");
-      return;
-    }
-
-    if (
-      currentComponent.placement === "action" &&
-      !currentComponent.code?.trim()
-    ) {
-      toast.error("Please provide code for action placement.");
-      return;
-    }
-
-    const updatedComponents = [...components];
-
-    if (isEditMode && editIndex !== -1) {
-      updatedComponents[editIndex] = {
-        ...currentComponent,
-        config:
-          currentComponent.placement === "output" &&
-          currentComponent.type === "graph"
-            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-            : "",
-        optionsConfig:
-          currentComponent.placement === "input" &&
-          (currentComponent.type === "dropdown" ||
-            currentComponent.type === "radio" ||
-            currentComponent.type === "checkbox")
-            ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
-            : "",
-        sliderConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "slider"
-            ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
-            : "",
-        walletConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "walletDropdown"
-            ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
-            : "",
-        events: [...events],
-      };
-      setIsEditMode(false);
-      setEditIndex(-1);
-    } else {
-      if (
-        updatedComponents.some(
-          (component) =>
-            component.id.trim() === currentComponent.id.trim() &&
-            updatedComponents.indexOf(component) !== editIndex
-        )
-      ) {
-        toast.error(
-          "Field with the same ID already exists. Please use a different ID."
-        );
-        return;
-      }
-      updatedComponents.push({
-        ...currentComponent,
-        config:
-          currentComponent.placement === "output" &&
-          currentComponent.type === "graph"
-            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-            : "",
-        optionsConfig:
-          currentComponent.placement === "input" &&
-          (currentComponent.type === "dropdown" ||
-            currentComponent.type === "radio" ||
-            currentComponent.type === "checkbox")
-            ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
-            : "",
-        sliderConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "slider"
-            ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
-            : "",
-
-        walletConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "walletDropdown"
-            ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
-            : "",
-        events: [...events],
-      });
-    }
-
-    setComponents(updatedComponents);
-
-    setInputValues((prevInputValues) => ({
-      ...prevInputValues,
-      [currentComponent.id]: "",
-    }));
-    setEvents([]);
-
-    saveDataToLocalStorage("components", updatedComponents);
-
-    setCurrentComponent({
-      id: "",
-      label: "",
-      type: "text",
-      placement: "input",
-      code: "",
-      config: "",
-      optionsConfig: "",
-      sliderConfig: "",
-      walletConfig: "",
-    });
-  };
-
   // const handleAddComponent = () => {
   //   if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
   //     toast.error("Please provide both ID and Label.");
   //     return;
   //   }
-  
+
   //   if (
   //     currentComponent.placement === "action" &&
   //     !currentComponent.code?.trim()
@@ -317,17 +201,11 @@ const ConfigureInputsOutputs: React.FC = () => {
   //     toast.error("Please provide code for action placement.");
   //     return;
   //   }
-  
+
   //   const updatedComponents = [...components];
-  //   const existingIndex = updatedComponents.findIndex(
-  //     (component) =>
-  //       component.id.trim() === currentComponent.id.trim() &&
-  //       component.label.trim() === currentComponent.label.trim()
-  //   );
-  
-  //   if (existingIndex !== -1) {
-  //     // Update existing field
-  //     updatedComponents[existingIndex] = {
+
+  //   if (isEditMode && editIndex !== -1) {
+  //     updatedComponents[editIndex] = {
   //       ...currentComponent,
   //       config:
   //         currentComponent.placement === "output" &&
@@ -356,8 +234,21 @@ const ConfigureInputsOutputs: React.FC = () => {
   //           : "",
   //       events: [...events],
   //     };
+  //     setIsEditMode(false);
+  //     setEditIndex(-1);
   //   } else {
-  //     // Add new field
+  //     if (
+  //       updatedComponents.some(
+  //         (component) =>
+  //           component.id.trim() === currentComponent.id.trim() &&
+  //           updatedComponents.indexOf(component) !== editIndex
+  //       )
+  //     ) {
+  //       toast.error(
+  //         "Field with the same ID already exists. Please use a different ID."
+  //       );
+  //       return;
+  //     }
   //     updatedComponents.push({
   //       ...currentComponent,
   //       config:
@@ -379,6 +270,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   //           ? currentComponent.sliderConfig ||
   //             JSON.stringify(sliderConfig, null, 2)
   //           : "",
+
   //       walletConfig:
   //         currentComponent.placement === "input" &&
   //         currentComponent.type === "walletDropdown"
@@ -388,15 +280,17 @@ const ConfigureInputsOutputs: React.FC = () => {
   //       events: [...events],
   //     });
   //   }
-  
+
   //   setComponents(updatedComponents);
+
   //   setInputValues((prevInputValues) => ({
   //     ...prevInputValues,
   //     [currentComponent.id]: "",
   //   }));
   //   setEvents([]);
+
   //   saveDataToLocalStorage("components", updatedComponents);
-  
+
   //   setCurrentComponent({
   //     id: "",
   //     label: "",
@@ -408,7 +302,113 @@ const ConfigureInputsOutputs: React.FC = () => {
   //     sliderConfig: "",
   //     walletConfig: "",
   //   });
-  // };  
+  // };
+
+  const handleAddComponent = () => {
+    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+      toast.error("Please provide both ID and Label.");
+      return;
+    }
+  
+    if (
+      currentComponent.placement === "action" &&
+      !currentComponent.code?.trim()
+    ) {
+      toast.error("Please provide code for action placement.");
+      return;
+    }
+  
+    const updatedComponents = [...components];
+    const existingIndex = updatedComponents.findIndex(
+      (component) =>
+        component.id.trim() === currentComponent.id.trim() &&
+        component.label.trim() === currentComponent.label.trim()
+    );
+  
+    if (existingIndex !== -1) {
+      // Update existing field
+      updatedComponents[existingIndex] = {
+        ...currentComponent,
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+        optionsConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" ||
+            currentComponent.type === "radio" ||
+            currentComponent.type === "checkbox")
+            ? currentComponent.optionsConfig ||
+              JSON.stringify(optionsConfig, null, 2)
+            : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
+        walletConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
+        events: [...events],
+      };
+    } else {
+      // Add new field
+      updatedComponents.push({
+        ...currentComponent,
+        config:
+          currentComponent.placement === "output" &&
+          currentComponent.type === "graph"
+            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+        optionsConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "dropdown" ||
+            currentComponent.type === "radio" ||
+            currentComponent.type === "checkbox")
+            ? currentComponent.optionsConfig ||
+              JSON.stringify(optionsConfig, null, 2)
+            : "",
+        sliderConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "slider"
+            ? currentComponent.sliderConfig ||
+              JSON.stringify(sliderConfig, null, 2)
+            : "",
+        walletConfig:
+          currentComponent.placement === "input" &&
+          currentComponent.type === "walletDropdown"
+            ? currentComponent.walletConfig ||
+              JSON.stringify(walletConfig, null, 2)
+            : "",
+        events: [...events],
+      });
+    }
+  
+    setComponents(updatedComponents);
+    setInputValues((prevInputValues) => ({
+      ...prevInputValues,
+      [currentComponent.id]: "",
+    }));
+    setEvents([]);
+    saveDataToLocalStorage("components", updatedComponents);
+  
+    setCurrentComponent({
+      id: "",
+      label: "",
+      type: "text",
+      placement: "input",
+      code: "",
+      config: "",
+      optionsConfig: "",
+      sliderConfig: "",
+      walletConfig: "",
+    });
+  };  
 
   const handlePreview = async () => {
     console.log(components);
