@@ -566,7 +566,7 @@ const UserActionPage = () => {
       </div>
       <App
         components={components}
-        data={data}
+        // data={data}
         setData={setData}
         setOutputCode={setOutputCode}
         setLoading={setLoading}
