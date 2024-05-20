@@ -24,10 +24,10 @@ interface CustomComponent {
   placement: string;
   code?: string;
   config?: any;
+  inputConfig?: any;
   optionsConfig?: any;
   sliderConfig?: any;
   walletConfig?: any;
-  // events?: Event[];
   events?: Event[] | undefined;
 }
 
@@ -44,6 +44,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     placement: "input",
     code: "",
     config: "",
+    inputConfig: "",
     optionsConfig: "",
     sliderConfig: "",
     walletConfig: "",
@@ -77,6 +78,11 @@ const ConfigureInputsOutputs: React.FC = () => {
       "Please fill in the required information to generate your graph. Choose between bar or line graph.",
   });
 
+  const [inputConfig, setInputConfig] = useState<any>({
+    color: "",
+    size: "",
+  });
+
   const [optionsConfig, setOptionsConfig] = useState<any>({
     message:
       "Please enter options separated by commas. Do not add a comma after the last option.",
@@ -106,12 +112,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       },
     },
   });
-
-  // const [currentEvents, setCurrentEvents] = useState<any>({
-  //   onLoad: {
-  //     code: "",
-  //   },
-  // });
 
   useEffect(() => {
     const savedComponents = getDataFromLocalStorage("components");
@@ -151,6 +151,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       ...components[index],
       config: components[index].config || JSON.stringify(graphConfig, null, 2),
+      inputConfig:
+        components[index].inputConfig || JSON.stringify(inputConfig, null, 2),
       optionsConfig:
         components[index].optionsConfig ||
         JSON.stringify(optionsConfig, null, 2),
@@ -212,6 +214,14 @@ const ConfigureInputsOutputs: React.FC = () => {
   //         currentComponent.type === "graph"
   //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
   //           : "",
+  // inputConfig:
+  //         currentComponent.placement === "input" &&
+  //         (currentComponent.type === "text" ||
+  //           currentComponent.type === "number" ||
+  //           currentComponent.type === "file")
+  //           ? currentComponent.inputConfig ||
+  //             JSON.stringify(inputConfig, null, 2)
+  //           : "",
   //       optionsConfig:
   //         currentComponent.placement === "input" &&
   //         (currentComponent.type === "dropdown" ||
@@ -256,6 +266,14 @@ const ConfigureInputsOutputs: React.FC = () => {
   //         currentComponent.type === "graph"
   //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
   //           : "",
+  // inputConfig:
+  //         currentComponent.placement === "input" &&
+  //         (currentComponent.type === "text" ||
+  //           currentComponent.type === "number" ||
+  //           currentComponent.type === "file")
+  //           ? currentComponent.inputConfig ||
+  //             JSON.stringify(inputConfig, null, 2)
+  //           : "",
   //       optionsConfig:
   //         currentComponent.placement === "input" &&
   //         (currentComponent.type === "dropdown" ||
@@ -298,6 +316,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   //     placement: "input",
   //     code: "",
   //     config: "",
+  //     inputConfig: "",
   //     optionsConfig: "",
   //     sliderConfig: "",
   //     walletConfig: "",
@@ -309,7 +328,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       toast.error("Please provide both ID and Label.");
       return;
     }
-  
+
     if (
       currentComponent.placement === "action" &&
       !currentComponent.code?.trim()
@@ -317,14 +336,14 @@ const ConfigureInputsOutputs: React.FC = () => {
       toast.error("Please provide code for action placement.");
       return;
     }
-  
+
     const updatedComponents = [...components];
     const existingIndex = updatedComponents.findIndex(
       (component) =>
         component.id.trim() === currentComponent.id.trim() &&
         component.label.trim() === currentComponent.label.trim()
     );
-  
+
     if (existingIndex !== -1) {
       // Update existing field
       updatedComponents[existingIndex] = {
@@ -333,6 +352,14 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.placement === "output" &&
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+            : "",
+        inputConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "text" ||
+            currentComponent.type === "number" ||
+            currentComponent.type === "file")
+            ? currentComponent.inputConfig ||
+              JSON.stringify(inputConfig, null, 2)
             : "",
         optionsConfig:
           currentComponent.placement === "input" &&
@@ -365,6 +392,14 @@ const ConfigureInputsOutputs: React.FC = () => {
           currentComponent.type === "graph"
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
+        inputConfig:
+          currentComponent.placement === "input" &&
+          (currentComponent.type === "text" ||
+            currentComponent.type === "number" ||
+            currentComponent.type === "file")
+            ? currentComponent.inputConfig ||
+              JSON.stringify(inputConfig, null, 2)
+            : "",
         optionsConfig:
           currentComponent.placement === "input" &&
           (currentComponent.type === "dropdown" ||
@@ -388,7 +423,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         events: [...events],
       });
     }
-  
+
     setComponents(updatedComponents);
     setInputValues((prevInputValues) => ({
       ...prevInputValues,
@@ -396,7 +431,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     }));
     setEvents([]);
     saveDataToLocalStorage("components", updatedComponents);
-  
+
     setCurrentComponent({
       id: "",
       label: "",
@@ -404,11 +439,12 @@ const ConfigureInputsOutputs: React.FC = () => {
       placement: "input",
       code: "",
       config: "",
+      inputConfig: "",
       optionsConfig: "",
       sliderConfig: "",
       walletConfig: "",
     });
-  };  
+  };
 
   const handlePreview = async () => {
     console.log(components);
@@ -485,6 +521,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       }
       setCurrentEvent("");
       setEventCode("");
+    } else {
+      toast.error("Please provide both event and code.");
     }
   };
 
@@ -573,6 +611,36 @@ const ConfigureInputsOutputs: React.FC = () => {
                 </select>
               </label>
 
+              {(currentComponent.type === "text" ||
+                currentComponent.type === "number" ||
+                currentComponent.type === "file") && (
+                <div>
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Configuration:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder=""
+                      name="inputConfig"
+                      cols={30}
+                      rows={10}
+                      value={
+                        currentComponent.inputConfig ||
+                        JSON.stringify(inputConfig, null, 2)
+                      }
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+              )}
               {(currentComponent.type === "dropdown" ||
                 currentComponent.type === "radio" ||
                 currentComponent.type === "checkbox") && (
@@ -764,25 +832,34 @@ const ConfigureInputsOutputs: React.FC = () => {
                       onChange={(e) => setEventCode(e.target.value)}
                     ></textarea>
                   </div>
-                  {/* <textarea
-                    className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                    value={eventCode}
-                    onChange={(e) => setEventCode(e.target.value)}
-                    placeholder="Enter event code here..."
-                    rows={5}
-                  ></textarea> */}
                 </div>
               )}
 
-              {/* Add/Edit button for adding/editing event */}
               {currentEvent && (
+                // <button
+                //   className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+                //   title="Add Event"
+                //   onClick={handleAddEvent}
+                // >
+                //   {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
+                //   Add Event
+                // </button>
+
                 <button
-                  className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+                  className="w-10 h-10 mx-auto mt-2 rounded-full bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
                   title="Add Event"
                   onClick={handleAddEvent}
                 >
-                  {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
-                  Add Event
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"
+                    className="w-6 h-6 text-white font-bold"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                    />
+                  </svg>
                 </button>
               )}
 
@@ -895,13 +972,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
-                  {component.config && `, Config: ${component.config}`}
+                  {component.config && `, Configuration : ${component.config}`}
+                  {component.inputConfig && `, Configuration: ${component.inputConfig}`}
                   {component.optionsConfig &&
-                    `, optionsConfig: ${component.optionsConfig}`}
+                    `, Configuration: ${component.optionsConfig}`}
                   {component.sliderConfig &&
-                    `, sliderConfig: ${component.sliderConfig}`}
+                    `, Configuration: ${component.sliderConfig}`}
                   {component.walletConfig &&
-                    `, walletConfig : ${component.walletConfig}`}
+                    `, Configuration : ${component.walletConfig}`}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
