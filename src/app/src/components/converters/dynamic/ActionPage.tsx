@@ -198,9 +198,18 @@ const ActionPage: React.FC = () => {
                     </label>
                   </div>
                 )}
-                {(component.type === "text" || component.type === "number") && (
+                {(component.type === "text" || component.type === "number" || component.type === "file") && (
                   <input
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                    style={{
+                      color: component.inputConfig ? JSON.parse(component.inputConfig).color : "defaultColor",
+                      backgroundColor: component.inputConfig ? JSON.parse(component.inputConfig).backgroundColor : "defaultBackgroundColor",
+                      fontSize: component.inputConfig ? JSON.parse(component.inputConfig).fontSize : "defaultFontSize",
+                      borderColor: component.inputConfig ? JSON.parse(component.inputConfig).borderColor : "defaultBorderColor",
+                      borderWidth: component.inputConfig ? JSON.parse(component.inputConfig).borderWidth : "defaultBorderWidth",
+                      borderRadius: component.inputConfig ? JSON.parse(component.inputConfig).borderRadius : "defaultBorderRadius",
+                      // Add more styles 
+                  }}
                     type={component.type}
                     id={component.id}
                     value={data[component.id] || ""}

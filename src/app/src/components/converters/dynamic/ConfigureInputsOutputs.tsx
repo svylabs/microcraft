@@ -79,8 +79,12 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
 
   const [inputConfig, setInputConfig] = useState<any>({
-    color: "",
-    size: "",
+    color: "#000000", 
+    backgroundColor: "#FFFFFF",
+    fontSize: "16px", 
+    borderColor: "#CCCCCC", 
+    borderWidth: "1px", 
+    borderRadius: "4px", 
   });
 
   const [optionsConfig, setOptionsConfig] = useState<any>({
@@ -973,7 +977,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
                   {component.config && `, Configuration : ${component.config}`}
-                  {component.inputConfig && `, Configuration: ${component.inputConfig}`}
+                  {component.inputConfig &&
+                    `, Configuration: ${component.inputConfig}`}
                   {component.optionsConfig &&
                     `, Configuration: ${component.optionsConfig}`}
                   {component.sliderConfig &&
@@ -1019,8 +1024,23 @@ const ConfigureInputsOutputs: React.FC = () => {
                           </button>
                         </div>
                       </div>
+                      {/* {console.log(component)}
+                      {console.log(typeof component)}
+                      {console.log(typeof component.inputConfig)}
+                      {console.log(JSON.parse(component.inputConfig).color)} */}
+                      {/* JSON.parse(component.sliderConfig).interval.min */}
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                        // className="block w-full p-2 mt-1 border rounded-md focus:outline-none"
+                        style={{
+                          color: component.inputConfig ? JSON.parse(component.inputConfig).color : "defaultColor",
+                          backgroundColor: component.inputConfig ? JSON.parse(component.inputConfig).backgroundColor : "defaultBackgroundColor",
+                          fontSize: component.inputConfig ? JSON.parse(component.inputConfig).fontSize : "defaultFontSize",
+                          borderColor: component.inputConfig ? JSON.parse(component.inputConfig).borderColor : "defaultBorderColor",
+                          borderWidth: component.inputConfig ? JSON.parse(component.inputConfig).borderWidth : "defaultBorderWidth",
+                          borderRadius: component.inputConfig ? JSON.parse(component.inputConfig).borderRadius : "defaultBorderRadius",
+                          // Add more styles
+                      }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         type={component.type}
                         id={component.id}
