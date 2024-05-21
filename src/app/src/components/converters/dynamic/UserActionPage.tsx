@@ -317,7 +317,12 @@ const UserActionPage = () => {
                         borderColor: component.inputConfig ? JSON.parse(component.inputConfig).borderColor : "defaultBorderColor",
                         borderWidth: component.inputConfig ? JSON.parse(component.inputConfig).borderWidth : "defaultBorderWidth",
                         borderRadius: component.inputConfig ? JSON.parse(component.inputConfig).borderRadius : "defaultBorderRadius",
-                        // Add more styles
+                        padding: component.inputConfig ? JSON.parse(component.inputConfig).padding : "defaultPadding",
+                        fontFamily: component.inputConfig ? JSON.parse(component.inputConfig).fontFamily : "defaultFontFamily",
+                        fontWeight: component.inputConfig ? JSON.parse(component.inputConfig).fontWeight : "defaultFontWeight",
+                        textAlign: component.inputConfig ? JSON.parse(component.inputConfig).textAlign : "defaultTextAlign",
+                        cursor: component.inputConfig ? JSON.parse(component.inputConfig).cursor : "defaultCursor",
+                        overflow: component.inputConfig ? JSON.parse(component.inputConfig).overflow : "defaultOverflow",
                     }}
                       type={component.type}
                       id={component.id}

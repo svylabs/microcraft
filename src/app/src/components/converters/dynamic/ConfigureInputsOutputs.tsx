@@ -53,7 +53,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [components, setComponents] = useState<CustomComponent[]>([]);
   const draggingPos = useRef<number | null>(null);
   const dragOverPos = useRef<number | null>(null);
-  const [inputValues, setInputValues] = useState<{ [key: string]: any }>({});
+  const [data, setData] = useState<{ [key: string]: any }>({});
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
   const [editIndex, setEditIndex] = useState<number>(-1);
   const [events, setEvents] = useState<Event[]>([]);
@@ -85,6 +85,12 @@ const ConfigureInputsOutputs: React.FC = () => {
     borderColor: "#CCCCCC", 
     borderWidth: "1px", 
     borderRadius: "4px", 
+    padding: "8px",
+    fontFamily: "Arial, sans-serif",
+    fontWeight: "normal",
+    textAlign: "left",
+    cursor: "auto",
+    overflow: "visible",
   });
 
   const [optionsConfig, setOptionsConfig] = useState<any>({
@@ -305,7 +311,7 @@ const ConfigureInputsOutputs: React.FC = () => {
 
   //   setComponents(updatedComponents);
 
-  //   setInputValues((prevInputValues) => ({
+  //   setData((prevInputValues) => ({
   //     ...prevInputValues,
   //     [currentComponent.id]: "",
   //   }));
@@ -429,7 +435,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     }
 
     setComponents(updatedComponents);
-    setInputValues((prevInputValues) => ({
+    setData((prevInputValues) => ({
       ...prevInputValues,
       [currentComponent.id]: "",
     }));
@@ -457,7 +463,7 @@ const ConfigureInputsOutputs: React.FC = () => {
 
   // const handleInputChange = (id: string, value: string) => {
   const handleInputChange = (id: string, value: any) => {
-    setInputValues((prevInputValues) => ({
+    setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
@@ -467,7 +473,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setComponents((prevComponents) =>
       prevComponents.filter((component) => component.id !== id)
     );
-    setInputValues((prevInputValues) => {
+    setData((prevInputValues) => {
       const updatedInputValues = { ...prevInputValues };
       delete updatedInputValues[id];
       return updatedInputValues;
@@ -1031,7 +1037,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                       {/* JSON.parse(component.sliderConfig).interval.min */}
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                        // className="block w-full p-2 mt-1 border rounded-md focus:outline-none"
                         style={{
                           color: component.inputConfig ? JSON.parse(component.inputConfig).color : "defaultColor",
                           backgroundColor: component.inputConfig ? JSON.parse(component.inputConfig).backgroundColor : "defaultBackgroundColor",
@@ -1039,12 +1044,17 @@ const ConfigureInputsOutputs: React.FC = () => {
                           borderColor: component.inputConfig ? JSON.parse(component.inputConfig).borderColor : "defaultBorderColor",
                           borderWidth: component.inputConfig ? JSON.parse(component.inputConfig).borderWidth : "defaultBorderWidth",
                           borderRadius: component.inputConfig ? JSON.parse(component.inputConfig).borderRadius : "defaultBorderRadius",
-                          // Add more styles
+                          padding: component.inputConfig ? JSON.parse(component.inputConfig).padding : "defaultPadding",
+                          fontFamily: component.inputConfig ? JSON.parse(component.inputConfig).fontFamily : "defaultFontFamily",
+                          fontWeight: component.inputConfig ? JSON.parse(component.inputConfig).fontWeight : "defaultFontWeight",
+                          textAlign: component.inputConfig ? JSON.parse(component.inputConfig).textAlign : "defaultTextAlign",
+                          cursor: component.inputConfig ? JSON.parse(component.inputConfig).cursor : "defaultCursor",
+                          overflow: component.inputConfig ? JSON.parse(component.inputConfig).overflow : "defaultOverflow",
                       }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         type={component.type}
                         id={component.id}
-                        value={inputValues[component.id]}
+                        value={data[component.id]}
                         onChange={(e) =>
                           handleInputChange(component.id, e.target.value)
                         }
@@ -1076,7 +1086,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <select
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                         id={component.id}
-                        value={inputValues[component.id]}
+                        value={data[component.id]}
                         onChange={(e) =>
                           handleInputChange(component.id, e.target.value)
                         }
@@ -1136,7 +1146,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                     name={component.id}
                                     value={option.trim()}
                                     checked={
-                                      inputValues[component.id] === option
+                                      data[component.id] === option
                                     }
                                     onChange={(e) =>
                                       handleInputChange(
@@ -1263,7 +1273,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                           max={JSON.parse(component.sliderConfig).interval.max}
                           step={JSON.parse(component.sliderConfig).step}
                           value={
-                            inputValues[component.id] ||
+                            data[component.id] ||
                             JSON.parse(component.sliderConfig).value
                           }
                           onChange={(e) =>
@@ -1271,7 +1281,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                           }
                         />
                         <span className="font-semibold">
-                          {inputValues[component.id] ||
+                          {data[component.id] ||
                             JSON.parse(component.sliderConfig).value}
                         </span>
                       </div>
@@ -1315,7 +1325,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }
                         onUpdateBalance={(balance) =>
                           handleInputChange(component.id, {
-                            address: inputValues[component.id]?.address || "",
+                            address: data[component.id]?.address || "",
                             balance,
                           })
                         }
