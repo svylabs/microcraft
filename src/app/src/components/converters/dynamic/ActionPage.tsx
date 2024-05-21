@@ -198,12 +198,16 @@ const ActionPage: React.FC = () => {
                     </label>
                   </div>
                 )}
-                {(component.type === "text" || component.type === "number" || component.type === "file") && (
+                {(component.type === "text" ||
+                  component.type === "number" ||
+                  component.type === "file") && (
                   <input
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     style={{
-                      ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
-                  }}
+                      ...(component.inputConfig
+                        ? JSON.parse(component.inputConfig)
+                        : {}),
+                    }}
                     type={component.type}
                     id={component.id}
                     value={data[component.id] || ""}
@@ -386,7 +390,12 @@ const ActionPage: React.FC = () => {
 
                 {component.type === "button" && component.code && (
                   <button
-                    className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                    className="block px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                    style={{
+                      ...(component.inputConfig
+                        ? JSON.parse(component.inputConfig)
+                        : {}),
+                    }}
                     id={component.id}
                     onClick={() => handleRun(component.code!, data)}
                   >
@@ -456,7 +465,7 @@ const ActionPage: React.FC = () => {
           </div>
         </div>
       </div>
-        <App
+      <App
         components={components}
         // data={data}
         setData={setData}

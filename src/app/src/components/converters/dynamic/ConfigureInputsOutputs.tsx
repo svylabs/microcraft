@@ -79,10 +79,15 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
 
   const [inputConfig, setInputConfig] = useState<any>({
-    color: "#000000", 
-    backgroundColor: "#FFFFFF",
-    fontSize: "16px", 
-    padding: "8px", 
+    color: "", 
+    backgroundColor: "",
+    fontSize: "", 
+    padding: "",
+    margin: "",
+    // color: "#000000", 
+    // backgroundColor: "#FFFFFF",
+    // fontSize: "16px", 
+    // padding: "8px", 
     // borderColor: "#CCCCCC", 
     // borderWidth: "1px", 
     // borderRadius: "4px",
@@ -225,10 +230,11 @@ const ConfigureInputsOutputs: React.FC = () => {
   //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
   //           : "",
   // inputConfig:
-  //         currentComponent.placement === "input" &&
+  //         (currentComponent.placement === "input" || currentComponent.placement === "action") &&
   //         (currentComponent.type === "text" ||
   //           currentComponent.type === "number" ||
-  //           currentComponent.type === "file")
+  //           currentComponent.type === "file" ||
+  //           currentComponent.type === "button")
   //           ? currentComponent.inputConfig ||
   //             JSON.stringify(inputConfig, null, 2)
   //           : "",
@@ -277,10 +283,11 @@ const ConfigureInputsOutputs: React.FC = () => {
   //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
   //           : "",
   // inputConfig:
-  //         currentComponent.placement === "input" &&
+  //         (currentComponent.placement === "input" || currentComponent.placement === "action") &&
   //         (currentComponent.type === "text" ||
   //           currentComponent.type === "number" ||
-  //           currentComponent.type === "file")
+  //           currentComponent.type === "file" ||
+  //           currentComponent.type === "button")
   //           ? currentComponent.inputConfig ||
   //             JSON.stringify(inputConfig, null, 2)
   //           : "",
@@ -364,10 +371,11 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
         inputConfig:
-          currentComponent.placement === "input" &&
+          (currentComponent.placement === "input" || currentComponent.placement === "action") &&
           (currentComponent.type === "text" ||
             currentComponent.type === "number" ||
-            currentComponent.type === "file")
+            currentComponent.type === "file" ||
+            currentComponent.type === "button")
             ? currentComponent.inputConfig ||
               JSON.stringify(inputConfig, null, 2)
             : "",
@@ -403,10 +411,11 @@ const ConfigureInputsOutputs: React.FC = () => {
             ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
             : "",
         inputConfig:
-          currentComponent.placement === "input" &&
+        (currentComponent.placement === "input" || currentComponent.placement === "action") &&
           (currentComponent.type === "text" ||
             currentComponent.type === "number" ||
-            currentComponent.type === "file")
+            currentComponent.type === "file" ||
+            currentComponent.type === "button")
             ? currentComponent.inputConfig ||
               JSON.stringify(inputConfig, null, 2)
             : "",
@@ -757,6 +766,32 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="button">Button</option>
                 </select>
               </label>
+              <div>
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Configuration:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder=""
+                      name="inputConfig"
+                      cols={30}
+                      rows={10}
+                      value={
+                        currentComponent.inputConfig ||
+                        JSON.stringify(inputConfig, null, 2)
+                      }
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
             </div>
           )}
 
@@ -1345,6 +1380,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <button
                         className="block p-2 w-full text-white bg-red-500 border border-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
+                        style={{
+                          ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
+                      }}
                       >
                         {component.label}
                       </button>

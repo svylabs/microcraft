@@ -223,10 +223,7 @@ const UserActionPage = () => {
     }));
   };
 
-  const handleRun = async (
-    code: string,
-    data: { [key: string]: string }
-  ) => {
+  const handleRun = async (code: string, data: { [key: string]: string }) => {
     setLoading(true);
     const web3 = new Web3(window.ethereum);
     try {
@@ -307,12 +304,16 @@ const UserActionPage = () => {
                     </div>
                   )}
                   {/* {component.type === "text" && ( */}
-                  {(component.type === "text" || component.type === "number" || component.type === "file") && (
+                  {(component.type === "text" ||
+                    component.type === "number" ||
+                    component.type === "file") && (
                     <input
                       className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                       style={{
-                        ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
-                    }}
+                        ...(component.inputConfig
+                          ? JSON.parse(component.inputConfig)
+                          : {}),
+                      }}
                       type={component.type}
                       id={component.id}
                       value={data[component.id] || ""}
@@ -490,7 +491,12 @@ const UserActionPage = () => {
                     component.code &&
                     (buttons[component.id] || true) && (
                       <button
-                        className="px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                        className="block px-4 p-2 mt-2 font-semibold w-full md:w-auto text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                        style={{
+                          ...(component.inputConfig
+                            ? JSON.parse(component.inputConfig)
+                            : {}),
+                        }}
                         id={component.id}
                         onClick={() => handleRun(component.code!, data)}
                       >
