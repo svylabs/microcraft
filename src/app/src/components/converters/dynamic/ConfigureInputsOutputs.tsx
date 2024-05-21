@@ -82,15 +82,15 @@ const ConfigureInputsOutputs: React.FC = () => {
     color: "#000000", 
     backgroundColor: "#FFFFFF",
     fontSize: "16px", 
-    borderColor: "#CCCCCC", 
-    borderWidth: "1px", 
-    borderRadius: "4px", 
-    padding: "8px",
-    fontFamily: "Arial, sans-serif",
-    fontWeight: "normal",
-    textAlign: "left",
-    cursor: "auto",
-    overflow: "visible",
+    padding: "8px", 
+    // borderColor: "#CCCCCC", 
+    // borderWidth: "1px", 
+    // borderRadius: "4px",
+    // fontFamily: "Arial, sans-serif",
+    // fontWeight: "normal",
+    // textAlign: "left",
+    // cursor: "auto",
+    // overflow: "visible",
   });
 
   const [optionsConfig, setOptionsConfig] = useState<any>({
@@ -1038,18 +1038,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                         style={{
-                          color: component.inputConfig ? JSON.parse(component.inputConfig).color : "defaultColor",
-                          backgroundColor: component.inputConfig ? JSON.parse(component.inputConfig).backgroundColor : "defaultBackgroundColor",
-                          fontSize: component.inputConfig ? JSON.parse(component.inputConfig).fontSize : "defaultFontSize",
-                          borderColor: component.inputConfig ? JSON.parse(component.inputConfig).borderColor : "defaultBorderColor",
-                          borderWidth: component.inputConfig ? JSON.parse(component.inputConfig).borderWidth : "defaultBorderWidth",
-                          borderRadius: component.inputConfig ? JSON.parse(component.inputConfig).borderRadius : "defaultBorderRadius",
-                          padding: component.inputConfig ? JSON.parse(component.inputConfig).padding : "defaultPadding",
-                          fontFamily: component.inputConfig ? JSON.parse(component.inputConfig).fontFamily : "defaultFontFamily",
-                          fontWeight: component.inputConfig ? JSON.parse(component.inputConfig).fontWeight : "defaultFontWeight",
-                          textAlign: component.inputConfig ? JSON.parse(component.inputConfig).textAlign : "defaultTextAlign",
-                          cursor: component.inputConfig ? JSON.parse(component.inputConfig).cursor : "defaultCursor",
-                          overflow: component.inputConfig ? JSON.parse(component.inputConfig).overflow : "defaultOverflow",
+                          ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
                       }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         type={component.type}
