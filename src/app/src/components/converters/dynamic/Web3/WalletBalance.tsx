@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+// import { StargateClient } from "@cosmjs/stargate";
+import { StargateClient, Account } from "@cosmjs/stargate";
 
 interface WalletBalanceProps {
   address: string;
@@ -13,6 +15,7 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
 }) => {
   const [ethBalance, setEthBalance] = useState<number | null>(null);
   const [minaBalance, setMinaBalance] = useState<number | null>(null);
+  const [keplrBalance, setKeplrBalance] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchBalances = async () => {
@@ -24,6 +27,9 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
         const minaBalance = await fetchMinaBalance(address);
         setMinaBalance(minaBalance);
         onUpdateBalance(minaBalance); //del
+      } else if (networkType === "keplr") {
+        const keplrBalance = await fetchKeplrBalance(address);
+        setKeplrBalance(keplrBalance);
       }
     };
 
@@ -48,6 +54,44 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
     return null;
   };
 
+  const fetchKeplrBalance = async (address: string) => {
+    try {
+      const client = await StargateClient.connect("https://rpc.cosmos.network");
+      const account = await client.getAccount(address);
+      const balance = [{ amount: "0", denom: "uatom" }];
+      // const balance = account?.balance || [{ amount: "0", denom: "uatom" }];
+      const amount = parseFloat(balance[0].amount) / 10 ** 6; // Convert from uatom to ATOM
+      return amount;
+    } catch (error) {
+      console.error("Error fetching Keplr balance:", error);
+      return null;
+    }
+  };
+
+
+// const fetchKeplrBalance = async (address: string) => {
+//   try {
+//     // Connect to the Cosmos Hub RPC endpoint
+//     const rpcEndpoint = "https://rpc.cosmos.network";
+//     const client = await StargateClient.connect(rpcEndpoint);
+
+//     // Fetch all balances for the address
+//     const balances = await client.getAllBalances(address);
+
+//     // Find the balance for the native token (e.g., ATOM)
+//     const atomBalance = balances.find((balance) => balance.denom === "uatom");
+
+//     // Convert the balance to a more readable format (from uatom to ATOM)
+//     const balance = atomBalance ? parseInt(atomBalance.amount) / 1_000_000 : 0;
+
+//     return balance;
+//   } catch (error) {
+//     console.error("Error fetching Keplr balance:", error);
+//     return null;
+//   }
+// };
+
+
   return (
     <div className="flex justify-end items-center mt-2 text-gray-700 font-medium">
       {networkType === "ethereum" && (
@@ -62,6 +106,13 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
           {minaBalance !== null
             ? `MINA Balance: ${minaBalance}`
             : "Fetching MINA balance..."}
+        </>
+      )}
+      {networkType === "keplr" && (
+        <>
+          {keplrBalance !== null
+            ? `KEPLR Balance: ${keplrBalance}`
+            : "Fetching KEPLR balance..."}
         </>
       )}
     </div>

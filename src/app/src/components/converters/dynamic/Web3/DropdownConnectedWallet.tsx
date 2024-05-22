@@ -72,9 +72,9 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
           const accounts = await window.mina.requestAccounts();
           address = accounts[0];
         } else if (networkType === "keplr" && window.keplr) {
-          // Complete code for Keplr wallet integration
-          await window.keplr.enable("cosmoshub-4"); // Use the chain ID for the network you want to connect to
-          const offlineSigner = window.getOfflineSigner("cosmoshub-4");
+          const chainId = "cosmoshub-4";
+          await window.keplr.enable(chainId); // Use the chain ID for the network you want to connect to
+          const offlineSigner = window.getOfflineSigner(chainId);
           const accounts = await offlineSigner.getAccounts();
           address = accounts[0].address;
         } else {
