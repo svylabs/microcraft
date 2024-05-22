@@ -7,6 +7,7 @@ import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
+import FormField from './FormField';
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -40,7 +41,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
     label: "",
-    type: "text",
+    // type: "text",
+    type: "",
     placement: "input",
     code: "",
     config: "",
@@ -619,6 +621,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   value={currentComponent.type}
                   onChange={handleChange}
                 >
+                  <option value="">Select Type</option>
                   <option value="text">Text</option>
                   <option value="number">Number</option>
                   <option value="file">File</option>
@@ -881,20 +884,12 @@ const ConfigureInputsOutputs: React.FC = () => {
               )}
 
               {currentEvent && (
-                // <button
-                //   className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
-                //   title="Add Event"
-                //   onClick={handleAddEvent}
-                // >
-                //   {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
-                //   Add Event
-                // </button>
-
                 <button
                   className="w-10 h-10 mx-auto mt-2 rounded-full bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
                   title="Add Event"
                   onClick={handleAddEvent}
                 >
+                  {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 448 512"
@@ -1002,6 +997,8 @@ const ConfigureInputsOutputs: React.FC = () => {
           >
             Add Field
           </button>
+
+          <hr className="my-6" />
 
           <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
             <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
