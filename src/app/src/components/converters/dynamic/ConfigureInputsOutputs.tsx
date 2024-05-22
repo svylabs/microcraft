@@ -121,7 +121,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     message:
       "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
     network: {
-      type: "mina | ethereum",
+      type: "mina | ethereum | keplr",
       config: {
         rpcUrl: "",
         chainId: "",
