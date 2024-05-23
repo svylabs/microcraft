@@ -54,6 +54,8 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
     const fetchUserAddress = async () => {
       try {
         const networkType = config?.network?.type?.toLowerCase();
+        const chainId = config?.network?.config?.chainId || "cosmoshub-4";
+        const rpcUrl = config?.network?.config?.rpcUrl;
 
         if (!networkType) {
           console.error("Network type not specified in configurations.");
@@ -72,8 +74,7 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
           const accounts = await window.mina.requestAccounts();
           address = accounts[0];
         } else if (networkType === "keplr" && window.keplr) {
-          const chainId = "cosmoshub-4";
-          await window.keplr.enable(chainId); // Use the chain ID for the network you want to connect to
+          await window.keplr.enable(chainId);
           const offlineSigner = window.getOfflineSigner(chainId);
           const accounts = await offlineSigner.getAccounts();
           address = accounts[0].address;

@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MetaMaskLogo from "./photos/metamask-icon.svg";
 import ConnectWallet from "./photos/connect-wallet.svg";
 import AuroLogo from "./photos/auro-wallet.png";
+import KeplrLogo from "./photos/keplrWallet.png";
 
 interface WalletProps {}
 
@@ -12,6 +13,7 @@ declare global {
   interface Window {
     ethereum?: any;
     mina?: any;
+    // keplr?: any;
   }
 }
 
@@ -94,6 +96,30 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
     }
   };
 
+  const handleConnectToKeplrWallet = async () => {
+    try {
+      if (window.keplr) {
+        const chainId = "cosmoshub-4";
+        await window.keplr.enable(chainId);
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+        const account = accounts[0];
+        console.log("Keplr Wallet Account Address:", account.address);
+
+        toast.success("Successfully connected to Keplr Wallet", {
+          autoClose: 3000,
+        });
+
+        setShowWalletOptions(false);
+      } else {
+        alert("Please install Keplr Wallet.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to connect to Keplr Wallet. Please try again.");
+    }
+  };
+
   return (
     <div ref={modalRef} className="z-50">
       <button
@@ -132,6 +158,17 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
               className="w-6 h-6 mr-2"
             />{" "}
             Auro Wallet
+          </button>
+          <button
+            onClick={handleConnectToKeplrWallet}
+            className="flex items-center cursor-pointer bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            <img
+              src={KeplrLogo}
+              alt="Keplr Wallet Logo"
+              className="w-6 h-6 mr-2"
+            />{" "}
+            Keplr Wallet
           </button>
         </div>
       )}

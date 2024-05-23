@@ -456,7 +456,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       id: "",
       label: "",
-      type: "text",
+      // type: "text",
+      type: "",
       placement: "input",
       code: "",
       config: "",
