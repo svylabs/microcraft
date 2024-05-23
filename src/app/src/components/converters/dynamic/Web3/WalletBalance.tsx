@@ -55,18 +55,23 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
   };
 
   const fetchKeplrBalance = async (address: string) => {
-    try {
-      const client = await StargateClient.connect("https://rpc.cosmos.network");
-      const account = await client.getAccount(address);
-      const balance = [{ amount: "0", denom: "uatom" }];
-      // const balance = account?.balance || [{ amount: "0", denom: "uatom" }];
-      const amount = parseFloat(balance[0].amount) / 10 ** 6; // Convert from uatom to ATOM
-      return amount;
-    } catch (error) {
-      console.error("Error fetching Keplr balance:", error);
-      return null;
-    }
+    // Implementation to fetch Mina balance
+    return null;
   };
+
+  // const fetchKeplrBalance = async (address: string) => {
+  //   try {
+  //     const client = await StargateClient.connect("https://rpc.cosmos.network");
+  //     const account = await client.getAccount(address);
+  //     const balance = [{ amount: "0", denom: "uatom" }];
+  //     // const balance = account?.balance || [{ amount: "0", denom: "uatom" }];
+  //     const amount = parseFloat(balance[0].amount) / 10 ** 6; // Convert from uatom to ATOM
+  //     return amount;
+  //   } catch (error) {
+  //     console.error("Error fetching Keplr balance:", error);
+  //     return null;
+  //   }
+  // };
 
 
 // const fetchKeplrBalance = async (address: string) => {
