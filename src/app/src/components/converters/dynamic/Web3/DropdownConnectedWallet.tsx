@@ -61,7 +61,6 @@ const getChainInfo = (config: any): ChainInfo => {
       coinDecimals: 0,
       coinGeckoId: "stake",
     },
-    // coinType: 118,
     features: [],
   };
 };
@@ -99,8 +98,6 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
     const fetchUserAddress = async () => {
       try {
         const networkType = config?.network?.type?.toLowerCase();
-        // const chainId = config?.network?.config?.chainId || "cosmoshub-4";
-        // const rpcUrl = config?.network?.config?.rpcUrl;
 
         if (!networkType) {
           console.error("Network type not specified in configurations.");

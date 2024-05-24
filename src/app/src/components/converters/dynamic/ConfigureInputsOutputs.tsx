@@ -343,8 +343,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   // };
 
   const handleAddComponent = () => {
-    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
-      toast.error("Please provide both ID and Label.");
+    if (!currentComponent.id.trim() || !currentComponent.label.trim() || !currentComponent.type.trim()) {
+      toast.error("Kindly ensure that ID, Label, and Type are all provided.");
       return;
     }
 

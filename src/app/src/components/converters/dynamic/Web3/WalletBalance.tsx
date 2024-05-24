@@ -55,7 +55,7 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
   };
 
   const fetchKeplrBalance = async (address: string) => {
-    // Implementation to fetch Mina balance
+    // Implementation to fetch keplr balance
     return null;
   };
 
@@ -72,29 +72,6 @@ const WalletBalance: React.FC<WalletBalanceProps> = ({
   //     return null;
   //   }
   // };
-
-
-// const fetchKeplrBalance = async (address: string) => {
-//   try {
-//     // Connect to the Cosmos Hub RPC endpoint
-//     const rpcEndpoint = "https://rpc.cosmos.network";
-//     const client = await StargateClient.connect(rpcEndpoint);
-
-//     // Fetch all balances for the address
-//     const balances = await client.getAllBalances(address);
-
-//     // Find the balance for the native token (e.g., ATOM)
-//     const atomBalance = balances.find((balance) => balance.denom === "uatom");
-
-//     // Convert the balance to a more readable format (from uatom to ATOM)
-//     const balance = atomBalance ? parseInt(atomBalance.amount) / 1_000_000 : 0;
-
-//     return balance;
-//   } catch (error) {
-//     console.error("Error fetching Keplr balance:", error);
-//     return null;
-//   }
-// };
 
 
   return (

@@ -10,7 +10,7 @@ import TextOutput from "./outputPlacement/TextOutput";
 import Loading from "./loadingPage/Loading";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Web3 from "web3";
-import App from "./App";
+import App from "./Renderer/App";
 
 interface Output {
   [key: string]: any;
@@ -187,7 +187,7 @@ const ActionPage: React.FC = () => {
               Back
             </button>
           </div>
-          <ul className="whitespace-normal break-words lg:text-lg">
+          {/* <ul className="whitespace-normal break-words lg:text-lg">
             {components.map((component, index) => (
               <li key={index} className="mb-4">
                 {(component.placement === "input" ||
@@ -358,16 +358,6 @@ const ActionPage: React.FC = () => {
                     </span>
                   </div>
                 )}
-                {/* {component.type === "walletDropdown" && (
-                  <div>
-                    <Wallet
-                      configurations={component.walletConfig}
-                      onSelectAddress={(address) =>
-                        handleInputChange(component.id, address)
-                      }
-                    />
-                  </div>
-                )} */}
                 {component.type === "walletDropdown" && (
                   <div>
                     <Wallet
@@ -404,7 +394,7 @@ const ActionPage: React.FC = () => {
                 )}
               </li>
             ))}
-          </ul>
+          </ul> */}
 
           {components.map((component, index) => (
             <div key={index} className="mb-5">
@@ -465,12 +455,21 @@ const ActionPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <App
+      {/* <App
         components={components}
         // data={data}
         setData={setData}
         setOutputCode={setOutputCode}
         setLoading={setLoading}
+      /> */}
+       <App
+        components={components}
+        data={data}
+        setData={setData}
+        setOutputCode={setOutputCode}
+        setLoading={setLoading}
+        handleInputChange={handleInputChange}
+        handleRun={handleRun}
       />
       {loading && <Loading />}
     </>
