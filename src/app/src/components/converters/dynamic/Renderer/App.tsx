@@ -97,24 +97,66 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   </label>
                 </div>
               )}
-              {(component.type === "text" ||
-                component.type === "number" ||
-                component.type === "file") && (
-                <input
-                  className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
-                  style={{
-                    ...(component.inputConfig
-                      ? JSON.parse(component.inputConfig)
-                      : {}),
-                  }}
-                  type={component.type}
-                  id={component.id}
-                  value={data[component.id] || ""}
-                  onChange={(e) =>
-                    handleInputChange(component.id, e.target.value)
-                  }
-                />
+
+              {/* display the output data where developers/users want */}
+              {component.placement === "output" && (
+                <>
+                  {(() => {
+                    switch (component.type) {
+                      case "text":
+                        return <TextOutput data={data[component.id]} />;
+                      case "json":
+                        return (
+                          <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
+                          // style={{
+                          //   ...(component.inputConfig
+                          //     ? JSON.parse(component.inputConfig)
+                          //     : {}),
+                          // }}
+                          >
+                            {data[component.id]
+                              ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
+                              : ""}
+                          </pre>
+                        );
+                      case "table":
+                        return <Table data={data[component.id]} />;
+                      case "graph":
+                        return (
+                          <div>
+                            <Graph
+                              output={data[component.id]}
+                              configurations={component.config}
+                              graphId={`graph-container-${component.id}`}
+                            />
+                          </div>
+                        );
+                      default:
+                        return null;
+                    }
+                  })()}
+                </>
               )}
+
+              {component.placement === "input" &&
+                (component.type === "text" ||
+                  component.type === "number" ||
+                  component.type === "file") && (
+                  <input
+                    className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
+                    style={{
+                      ...(component.inputConfig
+                        ? JSON.parse(component.inputConfig)
+                        : {}),
+                    }}
+                    type={component.type}
+                    id={component.id}
+                    value={data[component.id] || ""}
+                    onChange={(e) =>
+                      handleInputChange(component.id, e.target.value)
+                    }
+                  />
+                )}
               {component.type === "dropdown" && (
                 <select
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
@@ -288,7 +330,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
           ))}
         </ul>
 
-        {components.map((component, index) => (
+        {/* display all output data one after one */}
+        {/* {components.map((component, index) => (
           <div key={index} className="mb-5">
             {component.placement === "output" && component.type === "text" && (
               <TextOutput data={data[component.id]} />
@@ -313,7 +356,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
               </div>
             )}
           </div>
-        ))}
+        ))} */}
       </div>
       {loading && <Loading />}
     </>

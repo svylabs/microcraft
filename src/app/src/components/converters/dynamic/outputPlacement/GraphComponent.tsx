@@ -81,21 +81,6 @@ const GraphComponent: React.FC<Props> = ({
               return null;
             })();
 
-      // let dataValues, dataLabels;
-
-      // if (Array.isArray(output)) {
-      //   dataValues = output.map((value: any) => parseFloat(value[1]));
-      //   dataLabels = output.map((value: any) => value[0]);
-      // } else if (typeof output === "object") {
-      //   dataValues = Object.values(output).map((value: any) =>
-      //     parseFloat(value)
-      //   );
-      //   dataLabels = Object.keys(output);
-      // } else {
-      //   console.error("Output is not an array or object.");
-      //   return;
-      // }
-
       const svgWidth = config?.size?.width || 500;
       const svgHeight = config?.size.height || 400;
       const margin = { top: 20, right: 30, bottom: 50, left: 60 };
