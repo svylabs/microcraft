@@ -41,8 +41,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
     label: "",
-    // type: "text",
-    type: "",
+    type: "text",
     placement: "input",
     code: "",
     config: "",
@@ -343,8 +342,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   // };
 
   const handleAddComponent = () => {
-    if (!currentComponent.id.trim() || !currentComponent.label.trim() || !currentComponent.type.trim()) {
-      toast.error("Kindly ensure that ID, Label, and Type are all provided.");
+    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+      toast.error("Please provide both ID and Label.");
       return;
     }
 
@@ -456,8 +455,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       id: "",
       label: "",
-      // type: "text",
-      type: "",
+      type: "text",
       placement: "input",
       code: "",
       config: "",
@@ -622,7 +620,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                   value={currentComponent.type}
                   onChange={handleChange}
                 >
-                  <option value="">Select Type</option>
                   <option value="text">Text</option>
                   <option value="number">Number</option>
                   <option value="file">File</option>
@@ -927,7 +924,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                    <pre className="p-2 bg-gray-200 rounded-md">
+                    <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
                       {event.eventsCode}
                     </pre>
                   </div>
@@ -1031,7 +1028,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         <p className="text-lg font-semibold">
                           {eventObj.event}:
                         </p>
-                        <pre className="p-2 bg-gray-200 rounded-md">
+                        <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
                           {eventObj.eventsCode}
                         </pre>
                       </div>
@@ -1376,7 +1373,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         </div>
                       </div>
                       <button
-                        className="block p-2 w-full text-white bg-red-500 border border-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                        className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
                         style={{
                           ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
