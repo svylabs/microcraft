@@ -12,6 +12,7 @@ const Swap = () => {
   const [fromAmount, setFromAmount] = useState<string>("");
   const [toAmount, setToAmount] = useState<string>("");
   const [gasEstimate, setGasEstimate] = useState<string>("");
+  const [isFetchingGas, setIsFetchingGas] = useState<boolean>(false);
 
   useEffect(() => {
     listAvailableTokens();
@@ -49,6 +50,7 @@ const Swap = () => {
     };
     const headers = { "0x-api-key": "30f90dc0-b55f-4c5c-b616-762b109e2b60" };
 
+    setIsFetchingGas(true);
     try {
       const response = await fetch(
         `https://api.0x.org/swap/v1/price?${qs.stringify(params)}`,
@@ -61,6 +63,8 @@ const Swap = () => {
       setGasEstimate(swapPriceJSON.estimatedGas);
     } catch (error) {
       console.error("Error fetching price:", error);
+    } finally {
+      setIsFetchingGas(false); 
     }
   };
 
@@ -73,7 +77,7 @@ const Swap = () => {
     <div className="container mx-auto p-4">
       <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-4">
         <h4 className="text-lg font-semibold mb-4">Swap</h4>
-        <div className="flex justify-between">
+        <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
             <label className="block text-gray-700">From Token</label>
             <CustomDropdown
@@ -93,7 +97,7 @@ const Swap = () => {
             />
           </div>
         </div>
-        <div className="flex justify-between">
+        <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
             <label className="block text-gray-700">To Token</label>
             <CustomDropdown
@@ -113,11 +117,19 @@ const Swap = () => {
             />
           </div>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700">Estimated Gas</label>
-          <span className="block w-full mt-1 py-2 px-3 border rounded bg-gray-100">
-            {gasEstimate}
-          </span>
+        <div className="">
+          {isFetchingGas ? (
+            <span className="block w-full mt-1 py-2 px-3 border rounded bg-gray-100">
+              Fetching the best gas price...
+            </span>
+          ) : gasEstimate ? (
+            <div>
+              <label className="block text-gray-700">Estimated Gas</label>
+            <span className="block w-full mt-1 py-2 px-3 border rounded bg-gray-100">
+              {gasEstimate}
+            </span>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
