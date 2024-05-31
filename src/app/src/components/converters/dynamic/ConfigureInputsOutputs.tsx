@@ -7,7 +7,7 @@ import arrow from "../../photos/angle-right-solid.svg";
 import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
-import FormField from './FormField';
+import Swap from "./Web3/Swap/WalletSwap";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -205,141 +205,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       }));
     }
   };
-
-  // const handleAddComponent = () => {
-  //   if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
-  //     toast.error("Please provide both ID and Label.");
-  //     return;
-  //   }
-
-  //   if (
-  //     currentComponent.placement === "action" &&
-  //     !currentComponent.code?.trim()
-  //   ) {
-  //     toast.error("Please provide code for action placement.");
-  //     return;
-  //   }
-
-  //   const updatedComponents = [...components];
-
-  //   if (isEditMode && editIndex !== -1) {
-  //     updatedComponents[editIndex] = {
-  //       ...currentComponent,
-  //       config:
-  //         currentComponent.placement === "output" &&
-  //         currentComponent.type === "graph"
-  //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-  //           : "",
-  // inputConfig:
-  //         (currentComponent.placement === "input" || currentComponent.placement === "action") &&
-  //         (currentComponent.type === "text" ||
-  //           currentComponent.type === "number" ||
-  //           currentComponent.type === "file" ||
-  //           currentComponent.type === "button")
-  //           ? currentComponent.inputConfig ||
-  //             JSON.stringify(inputConfig, null, 2)
-  //           : "",
-  //       optionsConfig:
-  //         currentComponent.placement === "input" &&
-  //         (currentComponent.type === "dropdown" ||
-  //           currentComponent.type === "radio" ||
-  //           currentComponent.type === "checkbox")
-  //           ? currentComponent.optionsConfig ||
-  //             JSON.stringify(optionsConfig, null, 2)
-  //           : "",
-  //       sliderConfig:
-  //         currentComponent.placement === "input" &&
-  //         currentComponent.type === "slider"
-  //           ? currentComponent.sliderConfig ||
-  //             JSON.stringify(sliderConfig, null, 2)
-  //           : "",
-  //       walletConfig:
-  //         currentComponent.placement === "input" &&
-  //         currentComponent.type === "walletDropdown"
-  //           ? currentComponent.walletConfig ||
-  //             JSON.stringify(walletConfig, null, 2)
-  //           : "",
-  //       events: [...events],
-  //     };
-  //     setIsEditMode(false);
-  //     setEditIndex(-1);
-  //   } else {
-  //     if (
-  //       updatedComponents.some(
-  //         (component) =>
-  //           component.id.trim() === currentComponent.id.trim() &&
-  //           updatedComponents.indexOf(component) !== editIndex
-  //       )
-  //     ) {
-  //       toast.error(
-  //         "Field with the same ID already exists. Please use a different ID."
-  //       );
-  //       return;
-  //     }
-  //     updatedComponents.push({
-  //       ...currentComponent,
-  //       config:
-  //         currentComponent.placement === "output" &&
-  //         currentComponent.type === "graph"
-  //           ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-  //           : "",
-  // inputConfig:
-  //         (currentComponent.placement === "input" || currentComponent.placement === "action") &&
-  //         (currentComponent.type === "text" ||
-  //           currentComponent.type === "number" ||
-  //           currentComponent.type === "file" ||
-  //           currentComponent.type === "button")
-  //           ? currentComponent.inputConfig ||
-  //             JSON.stringify(inputConfig, null, 2)
-  //           : "",
-  //       optionsConfig:
-  //         currentComponent.placement === "input" &&
-  //         (currentComponent.type === "dropdown" ||
-  //           currentComponent.type === "radio" ||
-  //           currentComponent.type === "checkbox")
-  //           ? currentComponent.optionsConfig ||
-  //             JSON.stringify(optionsConfig, null, 2)
-  //           : "",
-  //       sliderConfig:
-  //         currentComponent.placement === "input" &&
-  //         currentComponent.type === "slider"
-  //           ? currentComponent.sliderConfig ||
-  //             JSON.stringify(sliderConfig, null, 2)
-  //           : "",
-
-  //       walletConfig:
-  //         currentComponent.placement === "input" &&
-  //         currentComponent.type === "walletDropdown"
-  //           ? currentComponent.walletConfig ||
-  //             JSON.stringify(walletConfig, null, 2)
-  //           : "",
-  //       events: [...events],
-  //     });
-  //   }
-
-  //   setComponents(updatedComponents);
-
-  //   setData((prevInputValues) => ({
-  //     ...prevInputValues,
-  //     [currentComponent.id]: "",
-  //   }));
-  //   setEvents([]);
-
-  //   saveDataToLocalStorage("components", updatedComponents);
-
-  //   setCurrentComponent({
-  //     id: "",
-  //     label: "",
-  //     type: "text",
-  //     placement: "input",
-  //     code: "",
-  //     config: "",
-  //     inputConfig: "",
-  //     optionsConfig: "",
-  //     sliderConfig: "",
-  //     walletConfig: "",
-  //   });
-  // };
 
   const handleAddComponent = () => {
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
@@ -628,12 +493,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="checkbox">Checkbox</option>
                   <option value="slider">Slider</option>
                   <option value="walletDropdown">Connected Wallet</option>
+                  <option value="swap">Swap</option>
                 </select>
               </label>
 
               {(currentComponent.type === "text" ||
                 currentComponent.type === "number" ||
-                currentComponent.type === "file") && (
+                currentComponent.type === "file" ||
+                currentComponent.type === "swap") && (
                 <div>
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                     Configuration:
@@ -749,6 +616,30 @@ const ConfigureInputsOutputs: React.FC = () => {
                       onChange={handleChange}
                     ></textarea>
                   </div>
+                </div>
+              )}
+              {currentComponent.type === "swap" && (
+                <div>
+                  {/* <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Configuration:
+                  </label>
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      placeholder="Enter wallet configuration"
+                      cols={30}
+                      rows={10}
+                      name="walletConfig"
+                      value={
+                        currentComponent.walletConfig ||
+                        JSON.stringify(walletConfig, null, 2)
+                      }
+                      onChange={handleChange}
+                    ></textarea>
+                  </div> */}
+                  <Swap />
                 </div>
               )}
             </>

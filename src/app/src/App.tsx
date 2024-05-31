@@ -9,7 +9,6 @@ import UserActionPage from "./components/converters/dynamic/UserActionPage";
 import Action from "./components/converters/dynamic/ActionPage";
 import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail";
 import SharePage from "./components/share/SharePage";
-import WalletSwap from "./components/WalletSwap";
 
 const App: React.FC = () => {
   return (
@@ -43,7 +42,6 @@ const AppContent: React.FC = () => {
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
-        <WalletSwap />
     </>
   );
 };
