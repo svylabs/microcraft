@@ -8,6 +8,7 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
+import { tokens } from "./Web3/Swap/AvailableTokens";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -29,6 +30,7 @@ interface CustomComponent {
   optionsConfig?: any;
   sliderConfig?: any;
   walletConfig?: any;
+  swapConfig?: any;
   events?: Event[] | undefined;
 }
 
@@ -49,6 +51,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     optionsConfig: "",
     sliderConfig: "",
     walletConfig: "",
+    swapConfig: "",
     events: [],
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
@@ -60,6 +63,13 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<string>("");
   const [eventCode, setEventCode] = useState<string>("");
+  const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
+  const [fromAmount, setFromAmount] = useState<string>("");
+  const [toAmount, setToAmount] = useState<string>("");
+  // console.log(currentTrade);
+  // console.log(currentTrade?.from?.address);
+  // console.log(currentTrade?.to?.address);
+  // console.log(fromAmount);
   const [graphConfig, setGraphConfig] = useState<any>({
     graphTitle: "Enter Graph Title",
     graphType: "bar/line",
@@ -80,17 +90,17 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
 
   const [inputConfig, setInputConfig] = useState<any>({
-    color: "", 
+    color: "",
     backgroundColor: "",
-    fontSize: "", 
+    fontSize: "",
     padding: "",
     margin: "",
-    // color: "#000000", 
+    // color: "#000000",
     // backgroundColor: "#FFFFFF",
-    // fontSize: "16px", 
-    // padding: "8px", 
-    // borderColor: "#CCCCCC", 
-    // borderWidth: "1px", 
+    // fontSize: "16px",
+    // padding: "8px",
+    // borderColor: "#CCCCCC",
+    // borderWidth: "1px",
     // borderRadius: "4px",
     // fontFamily: "Arial, sans-serif",
     // fontWeight: "normal",
@@ -176,9 +186,25 @@ const ConfigureInputsOutputs: React.FC = () => {
         components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
       walletConfig:
         components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
-      // events: components[index].events || [],
     });
     setEvents(components[index].events || []);
+
+    if (components[index].type === "swap") {
+      const swapConfig = JSON.parse(components[index].swapConfig);
+
+      setCurrentTrade({
+        from: {
+          address: swapConfig.fromAddress,
+          ...tokens.find((token) => token.address === swapConfig.fromAddress),
+        },
+        to: {
+          address: swapConfig.toAddress,
+          ...tokens.find((token) => token.address === swapConfig.toAddress),
+        },
+      });
+      setFromAmount(swapConfig.fromAmount);
+      setToAmount(""); // Reset the toAmount
+    }
   };
 
   const handleChange = (
@@ -227,86 +253,151 @@ const ConfigureInputsOutputs: React.FC = () => {
         component.label.trim() === currentComponent.label.trim()
     );
 
+    // if (existingIndex !== -1) {
+    //   // Update existing field
+    //   updatedComponents[existingIndex] = {
+    //     ...currentComponent,
+    //     config:
+    //       currentComponent.placement === "output" &&
+    //       currentComponent.type === "graph"
+    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+    //         : "",
+    //     inputConfig:
+    //       (currentComponent.placement === "input" ||
+    //         currentComponent.placement === "action") &&
+    //       (currentComponent.type === "text" ||
+    //         currentComponent.type === "number" ||
+    //         currentComponent.type === "file" ||
+    //         currentComponent.type === "swap" ||
+    //         currentComponent.type === "button")
+    //         ? currentComponent.inputConfig ||
+    //           JSON.stringify(inputConfig, null, 2)
+    //         : "",
+    //     optionsConfig:
+    //       currentComponent.placement === "input" &&
+    //       (currentComponent.type === "dropdown" ||
+    //         currentComponent.type === "radio" ||
+    //         currentComponent.type === "checkbox")
+    //         ? currentComponent.optionsConfig ||
+    //           JSON.stringify(optionsConfig, null, 2)
+    //         : "",
+    //     sliderConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "slider"
+    //         ? currentComponent.sliderConfig ||
+    //           JSON.stringify(sliderConfig, null, 2)
+    //         : "",
+    //     walletConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "walletDropdown"
+    //         ? currentComponent.walletConfig ||
+    //           JSON.stringify(walletConfig, null, 2)
+    //         : "",
+    //     events: [...events],
+    //   };
+    // } else {
+    //   // Add new field
+    //   updatedComponents.push({
+    //     ...currentComponent,
+    //     config:
+    //       currentComponent.placement === "output" &&
+    //       currentComponent.type === "graph"
+    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+    //         : "",
+    //     inputConfig:
+    //       (currentComponent.placement === "input" ||
+    //         currentComponent.placement === "action") &&
+    //       (currentComponent.type === "text" ||
+    //         currentComponent.type === "number" ||
+    //         currentComponent.type === "file" ||
+    //         currentComponent.type === "swap" ||
+    //         currentComponent.type === "button")
+    //         ? currentComponent.inputConfig ||
+    //           JSON.stringify(inputConfig, null, 2)
+    //         : "",
+    //     optionsConfig:
+    //       currentComponent.placement === "input" &&
+    //       (currentComponent.type === "dropdown" ||
+    //         currentComponent.type === "radio" ||
+    //         currentComponent.type === "checkbox")
+    //         ? currentComponent.optionsConfig ||
+    //           JSON.stringify(optionsConfig, null, 2)
+    //         : "",
+    //     sliderConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "slider"
+    //         ? currentComponent.sliderConfig ||
+    //           JSON.stringify(sliderConfig, null, 2)
+    //         : "",
+    //     walletConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "walletDropdown"
+    //         ? currentComponent.walletConfig ||
+    //           JSON.stringify(walletConfig, null, 2)
+    //         : "",
+    //     events: [...events],
+    //   });
+    // }
+
+    const newComponent = {
+      ...currentComponent,
+      config:
+        currentComponent.placement === "output" &&
+        currentComponent.type === "graph"
+          ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+          : "",
+      inputConfig:
+        (currentComponent.placement === "input" ||
+          currentComponent.placement === "action") &&
+        (currentComponent.type === "text" ||
+          currentComponent.type === "number" ||
+          currentComponent.type === "file" ||
+          currentComponent.type === "swap" ||
+          currentComponent.type === "button")
+          ? currentComponent.inputConfig || JSON.stringify(inputConfig, null, 2)
+          : "",
+      optionsConfig:
+        currentComponent.placement === "input" &&
+        (currentComponent.type === "dropdown" ||
+          currentComponent.type === "radio" ||
+          currentComponent.type === "checkbox")
+          ? currentComponent.optionsConfig ||
+            JSON.stringify(optionsConfig, null, 2)
+          : "",
+      sliderConfig:
+        currentComponent.placement === "input" &&
+        currentComponent.type === "slider"
+          ? currentComponent.sliderConfig ||
+            JSON.stringify(sliderConfig, null, 2)
+          : "",
+      walletConfig:
+        currentComponent.placement === "input" &&
+        currentComponent.type === "walletDropdown"
+          ? currentComponent.walletConfig ||
+            JSON.stringify(walletConfig, null, 2)
+          : "",
+      swapConfig:
+        currentComponent.placement === "input" &&
+        currentComponent.type === "swap"
+          ? JSON.stringify(
+              {
+                fromAddress: currentTrade?.from?.address || "",
+                toAddress: currentTrade?.to?.address || "",
+                fromAmount: fromAmount || "",
+              },
+              null,
+              2
+            )
+          : "",
+      events: [...events],
+    };
+
     if (existingIndex !== -1) {
       // Update existing field
-      updatedComponents[existingIndex] = {
-        ...currentComponent,
-        config:
-          currentComponent.placement === "output" &&
-          currentComponent.type === "graph"
-            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-            : "",
-        inputConfig:
-          (currentComponent.placement === "input" || currentComponent.placement === "action") &&
-          (currentComponent.type === "text" ||
-            currentComponent.type === "number" ||
-            currentComponent.type === "file" ||
-            currentComponent.type === "button")
-            ? currentComponent.inputConfig ||
-              JSON.stringify(inputConfig, null, 2)
-            : "",
-        optionsConfig:
-          currentComponent.placement === "input" &&
-          (currentComponent.type === "dropdown" ||
-            currentComponent.type === "radio" ||
-            currentComponent.type === "checkbox")
-            ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
-            : "",
-        sliderConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "slider"
-            ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
-            : "",
-        walletConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "walletDropdown"
-            ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
-            : "",
-        events: [...events],
-      };
+      updatedComponents[existingIndex] = newComponent;
     } else {
       // Add new field
-      updatedComponents.push({
-        ...currentComponent,
-        config:
-          currentComponent.placement === "output" &&
-          currentComponent.type === "graph"
-            ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-            : "",
-        inputConfig:
-        (currentComponent.placement === "input" || currentComponent.placement === "action") &&
-          (currentComponent.type === "text" ||
-            currentComponent.type === "number" ||
-            currentComponent.type === "file" ||
-            currentComponent.type === "button")
-            ? currentComponent.inputConfig ||
-              JSON.stringify(inputConfig, null, 2)
-            : "",
-        optionsConfig:
-          currentComponent.placement === "input" &&
-          (currentComponent.type === "dropdown" ||
-            currentComponent.type === "radio" ||
-            currentComponent.type === "checkbox")
-            ? currentComponent.optionsConfig ||
-              JSON.stringify(optionsConfig, null, 2)
-            : "",
-        sliderConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "slider"
-            ? currentComponent.sliderConfig ||
-              JSON.stringify(sliderConfig, null, 2)
-            : "",
-        walletConfig:
-          currentComponent.placement === "input" &&
-          currentComponent.type === "walletDropdown"
-            ? currentComponent.walletConfig ||
-              JSON.stringify(walletConfig, null, 2)
-            : "",
-        events: [...events],
-      });
+      updatedComponents.push(newComponent);
     }
 
     setComponents(updatedComponents);
@@ -620,26 +711,17 @@ const ConfigureInputsOutputs: React.FC = () => {
               )}
               {currentComponent.type === "swap" && (
                 <div>
-                  {/* <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Configuration:
+                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                    Token Swap:
                   </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder="Enter wallet configuration"
-                      cols={30}
-                      rows={10}
-                      name="walletConfig"
-                      value={
-                        currentComponent.walletConfig ||
-                        JSON.stringify(walletConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div> */}
-                  <Swap />
+                  <Swap
+                    currentTrade={currentTrade}
+                    setCurrentTrade={setCurrentTrade}
+                    fromAmount={fromAmount}
+                    setFromAmount={setFromAmount}
+                    toAmount={toAmount}
+                    setToAmount={setToAmount}
+                  />
                 </div>
               )}
             </>
@@ -659,31 +741,31 @@ const ConfigureInputsOutputs: React.FC = () => {
                 </select>
               </label>
               <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Configuration:
-                  </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <div
-                      className="px-2 text-gray-500"
-                      ref={numbersRef}
-                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                    ></div>
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder=""
-                      name="inputConfig"
-                      cols={30}
-                      rows={10}
-                      value={
-                        currentComponent.inputConfig ||
-                        JSON.stringify(inputConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Configuration:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder=""
+                    name="inputConfig"
+                    cols={30}
+                    rows={10}
+                    value={
+                      currentComponent.inputConfig ||
+                      JSON.stringify(inputConfig, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
                 </div>
+              </div>
             </div>
           )}
 
@@ -912,6 +994,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                     `, Configuration: ${component.sliderConfig}`}
                   {component.walletConfig &&
                     `, Configuration : ${component.walletConfig}`}
+                  {component.swapConfig &&
+                    `, Configuration : ${component.swapConfig}`}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
@@ -959,8 +1043,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                         style={{
-                          ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
-                      }}
+                          ...(component.inputConfig
+                            ? JSON.parse(component.inputConfig)
+                            : {}),
+                        }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                         type={component.type}
                         id={component.id}
@@ -969,6 +1055,56 @@ const ConfigureInputsOutputs: React.FC = () => {
                           handleInputChange(component.id, e.target.value)
                         }
                       />
+                    </div>
+                  )}
+                  {component.type === "swap" && (
+                    <div>
+                      <div className="flex justify-between">
+                        <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                          {component.label}:
+                        </label>
+                        <div className="flex gap-3 md:gap-5">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
+                            <img src={edit} alt="edit"></img>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
+                          >
+                            <img src={trash} alt="trash"></img>
+                          </button>
+                        </div>
+                      </div>
+                      {component.swapConfig &&
+                        (() => {
+                          const { fromAddress, toAddress, fromAmount } =
+                            JSON.parse(component.swapConfig);
+                          console.log(fromAddress);
+                          console.log(toAddress);
+                          console.log(fromAmount);
+                          return (
+                            <Swap
+                              currentTrade={{
+                                from:
+                                  tokens.find(
+                                    (token) => token.address === fromAddress
+                                  ) || null,
+                                to:
+                                  tokens.find(
+                                    (token) => token.address === toAddress
+                                  ) || null,
+                              }}
+                              setCurrentTrade={setCurrentTrade}
+                              fromAmount={fromAmount}
+                              setFromAmount={setFromAmount}
+                              toAmount={toAmount}
+                              setToAmount={setToAmount}
+                            />
+                          );
+                        })()}
                     </div>
                   )}
                   {component.type === "dropdown" && (
@@ -1055,9 +1191,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                     id={`${component.id}_${idx}`}
                                     name={component.id}
                                     value={option.trim()}
-                                    checked={
-                                      data[component.id] === option
-                                    }
+                                    checked={data[component.id] === option}
                                     onChange={(e) =>
                                       handleInputChange(
                                         component.id,
@@ -1267,8 +1401,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                         className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
                         style={{
-                          ...(component.inputConfig ? JSON.parse(component.inputConfig) : {}),
-                      }}
+                          ...(component.inputConfig
+                            ? JSON.parse(component.inputConfig)
+                            : {}),
+                        }}
                       >
                         {component.label}
                       </button>

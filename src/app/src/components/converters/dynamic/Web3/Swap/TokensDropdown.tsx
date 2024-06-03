@@ -6,14 +6,14 @@ interface Token {
   logoURI: string;
 }
 
-interface CustomDropdownProps {
+interface TokensDropdownProps {
   tokens: Token[];
   selectedToken: Token | null;
   onSelect: (token: Token) => void;
   blurToken?: Token | null;
 }
 
-const CustomDropdown: React.FC<CustomDropdownProps> = ({
+const TokensDropdown: React.FC<TokensDropdownProps> = ({
   tokens,
   selectedToken,
   onSelect,
@@ -72,14 +72,16 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         )}
       </button>
       {isOpen && (
-        <div className="absolute z-10 mt-1 h-60 overflow-scroll bg-white border rounded shadow-lg">
-          <input
-            type="text"
-            className="w-full p-2 border-b"
-            placeholder="Search token"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="absolute z-10 mt-1 h-64 overflow-scroll bg-white border rounded shadow-lg">
+          <div className="sticky top-0 bg-white p-1 border-b">
+            <input
+              type="text"
+              className="w-full p-2"
+              placeholder="Search token"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           {filteredTokens.map((token) => (
             <div
               key={token.address}
@@ -104,4 +106,4 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   );
 };
 
-export default CustomDropdown;
+export default TokensDropdown;

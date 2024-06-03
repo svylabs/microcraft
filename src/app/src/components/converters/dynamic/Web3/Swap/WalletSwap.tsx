@@ -2,76 +2,74 @@ import React, { useState, useEffect } from "react";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import qs from "qs";
-import CustomDropdown from "./CustomDropdown";
+import { tokens } from "./AvailableTokens";
+import TokensDropdown from "./TokensDropdown";
 
 const web3 = new Web3(Web3.givenProvider);
 
-const Swap = () => {
-  const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
-  const [tokens, setTokens] = useState<any[]>([]);
-  const [fromAmount, setFromAmount] = useState<string>("");
-  const [toAmount, setToAmount] = useState<string>("");
-  const [gasEstimate, setGasEstimate] = useState<string>("");
-  const [isFetchingGas, setIsFetchingGas] = useState<boolean>(false);
+interface Props {
+  currentTrade: { [key: string]: any };
+  setCurrentTrade: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+  fromAmount: string;
+  setFromAmount: React.Dispatch<React.SetStateAction<string>>;
+  toAmount: string;
+  setToAmount: React.Dispatch<React.SetStateAction<string>>;
+}
 
-  useEffect(() => {
-    listAvailableTokens();
-  }, []);
+const Swap: React.FC<Props> = ({ currentTrade, setCurrentTrade, fromAmount, setFromAmount, toAmount, setToAmount }) => {
+  // const [gasEstimate, setGasEstimate] = useState<string>("");
+  // const [isFetchingGas, setIsFetchingGas] = useState<boolean>(false);
 
-  const listAvailableTokens = async () => {
-    try {
-      const response = await fetch(
-        "https://tokens.coingecko.com/uniswap/all.json"
-      );
-      const tokenListJSON = await response.json();
-      setTokens(tokenListJSON.tokens);
-    } catch (error) {
-      console.error("Error fetching token list:", error);
-    }
-  };
 
   const selectToken = (side: string, token: any) => {
     const updatedTrade = { ...currentTrade, [side]: token };
     setCurrentTrade(updatedTrade);
     if (side === "from") setFromAmount("");
     if (side === "to") setToAmount("");
-    getPrice();
+    // getPrice();
   };
 
-  const getPrice = async () => {
-    console.log("Getting Price");
-    if (!currentTrade.from || !currentTrade.to || !fromAmount) return;
+  // const getPrice = async () => {
+  //   console.log("Getting Price");
+  //   if (!currentTrade.from || !currentTrade.to || !fromAmount) return;
 
-    const amount = Number(fromAmount) * 10 ** currentTrade.from.decimals;
-    const params = {
-      sellToken: currentTrade.from.address,
-      buyToken: currentTrade.to.address,
-      sellAmount: amount,
-    };
-    const headers = { "0x-api-key": "30f90dc0-b55f-4c5c-b616-762b109e2b60" };
+  //   const amount = Number(fromAmount) * 10 ** currentTrade.from.decimals;
+  //   const params = {
+  //     sellToken: currentTrade.from.address,
+  //     buyToken: currentTrade.to.address,
+  //     sellAmount: amount,
+  //   };
+  //   const headers = { "0x-api-key": "30f90dc0-b55f-4c5c-b616-762b109e2b60" };
 
-    setIsFetchingGas(true);
-    try {
-      const response = await fetch(
-        `https://api.0x.org/swap/v1/price?${qs.stringify(params)}`,
-        { headers }
-      );
-      const swapPriceJSON = await response.json();
-      setToAmount(
-        (swapPriceJSON.buyAmount / 10 ** currentTrade.to.decimals).toString()
-      );
-      setGasEstimate(swapPriceJSON.estimatedGas);
-    } catch (error) {
-      console.error("Error fetching price:", error);
-    } finally {
-      setIsFetchingGas(false); 
-    }
-  };
+  //   setIsFetchingGas(true);
+  //   try {
+  //     const response = await fetch(
+  //       // `https://api.0x.org/swap/v1/price?${qs.stringify(params)}`,
+  //       `https://polygon.api.0x.org/swap/v1/price?${qs.stringify(params)}`,
+  //       { headers }
+  //     );
+  //     const swapPriceJSON = await response.json();
+  //     setToAmount(
+  //       (swapPriceJSON.buyAmount / 10 ** currentTrade.to.decimals).toString()
+  //     );
+  //     setGasEstimate(swapPriceJSON.estimatedGas);
+  //   } catch (error) {
+  //     console.error("Error fetching price:", error);
+  //   } finally {
+  //     setIsFetchingGas(false); 
+  //   }
+  // };
 
   const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFromAmount(e.target.value);
-    getPrice();
+    // getPrice();
   };
+
+  // console.log(tokens)
+  // console.log(currentTrade);
+  // console.log(currentTrade?.from?.address);
+  // console.log(currentTrade?.to?.address);
+  // console.log(fromAmount);
 
   return (
     <div className="container mx-auto p-4">
@@ -80,7 +78,7 @@ const Swap = () => {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
             <label className="block text-gray-700">From Token</label>
-            <CustomDropdown
+            <TokensDropdown
               tokens={tokens}
               selectedToken={currentTrade.from}
               onSelect={(token) => selectToken("from", token)}
@@ -100,7 +98,7 @@ const Swap = () => {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
             <label className="block text-gray-700">To Token</label>
-            <CustomDropdown
+            <TokensDropdown
               tokens={tokens}
               selectedToken={currentTrade.to}
               onSelect={(token) => selectToken("to", token)}
@@ -117,7 +115,7 @@ const Swap = () => {
             />
           </div>
         </div>
-        <div className="">
+        {/* <div className="">
           {isFetchingGas ? (
             <span className="block w-full mt-1 py-2 px-3 border rounded bg-gray-100">
               Fetching the best gas price...
@@ -130,7 +128,7 @@ const Swap = () => {
             </span>
             </div>
           ) : null}
-        </div>
+        </div> */}
       </div>
     </div>
   );
