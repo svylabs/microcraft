@@ -5,6 +5,8 @@ import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
 import Loading from "../loadingPage/Loading";
+import Swap from "../Web3/Swap/WalletSwap";
+import { tokens } from "../Web3/Swap/AvailableTokens";
 
 interface Props {
   components: any[];
@@ -15,6 +17,9 @@ interface Props {
 
 const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   const [loading, setLoading] = useState(false);
+  const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
+  const [fromAmount, setFromAmount] = useState("");
+  const [toAmount, setToAmount] = useState("");
 
   useEffect(() => {
     console.log(components);
@@ -28,6 +33,23 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
       }
     });
   }, [components]);
+
+  useEffect(() => {
+    // Initialize swap data when the component mounts
+    components.forEach((component) => {
+      if (component.type === "swap" && component.swapConfig) {
+        const { fromAddress, toAddress, fromAmount } = JSON.parse(
+          component.swapConfig
+        );
+        const initialSwapData = {
+          from: tokens.find((token) => token.address === fromAddress) || null,
+          to: tokens.find((token) => token.address === toAddress) || null,
+          fromAmount,
+        };
+        handleInputChange(component.id, initialSwapData);
+      }
+    });
+  }, []);
 
   const executeOnLoadCode = async (code) => {
     const web3 = new Web3(window.ethereum);
@@ -50,6 +72,16 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
+    }));
+  };
+
+  const handleSwapChange = (id: string, swapData: any) => {
+    setData((prevData) => ({
+      ...prevData,
+      [id]: {
+        ...prevData[id],
+        ...swapData,
+      },
     }));
   };
 
@@ -107,12 +139,13 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                         return <TextOutput data={data[component.id]} />;
                       case "json":
                         return (
-                          <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
-                          // style={{
-                          //   ...(component.inputConfig
-                          //     ? JSON.parse(component.inputConfig)
-                          //     : {}),
-                          // }}
+                          <pre
+                            className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
+                            // style={{
+                            //   ...(component.inputConfig
+                            //     ? JSON.parse(component.inputConfig)
+                            //     : {}),
+                            // }}
                           >
                             {data[component.id]
                               ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
@@ -157,6 +190,95 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                     }
                   />
                 )}
+              {component.type === "swap" && (
+                <div>
+                  {component.swapConfig &&
+                    (() => {
+                      const { fromAddress, toAddress, fromAmount } = JSON.parse(
+                        component.swapConfig
+                      );
+                      // console.log(fromAddress);
+                      // console.log(toAddress);
+                      // console.log(fromAmount);
+                      return (
+                        // <Swap
+                        //   // currentTrade={{
+                        //   //   from:
+                        //   //     tokens.find(
+                        //   //       (token) => token.address === fromAddress
+                        //   //     ) || null,
+                        //   //   to:
+                        //   //     tokens.find(
+                        //   //       (token) => token.address === toAddress
+                        //   //     ) || null,
+                        //   //     handleInputChange: (swapData) => handleInputChange(component.id, swapData),
+                        //   //     onChange : (e) =>
+                        //   //       handleInputChange(component.id, e.target.value)
+                        //   //     ,
+                        //   // }}
+                        //   // setCurrentTrade={setCurrentTrade}
+                        //   // fromAmount={fromAmount}
+                        //   // setFromAmount={setFromAmount}
+                        //   // toAmount={toAmount}
+                        //   // setToAmount={setToAmount}
+                        //   // currentTrade={(balance) =>
+                        //   //   handleInputChange(component.id, {
+                        //   //     address: data[component.id]?.address || "",
+                        //   //     balance,
+                        //   //   })
+                        //   // }
+                        //   currentTrade={{
+                        //     from: tokens.find((token) => token.address === fromAddress) || null,
+                        //     to: tokens.find((token) => token.address === toAddress) || null,
+                        //     handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
+                        //   }}
+                        //   setCurrentTrade={(trade) =>
+                        //     handleSwapChange(component.id, trade)
+                        //   }
+                        //   fromAmount={fromAmount}
+                        //   setFromAmount={(amount) =>
+                        //     handleSwapChange(component.id, { fromAmount: amount })
+                        //   }
+                        //   toAmount={toAmount}
+                        //   setToAmount={(amount) =>
+                        //     handleSwapChange(component.id, { toAmount: amount })
+                        //   }
+                        // />
+
+                        <Swap
+                          currentTrade={{
+                            from:
+                              tokens.find(
+                                (token) => token.address === fromAddress
+                              ) || null,
+                            to:
+                              tokens.find(
+                                (token) => token.address === toAddress
+                              ) || null,
+                            // handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
+                          }}
+                          // setCurrentTrade={(trade) =>
+                          //   handleInputChange(component.id, trade)
+                          // }
+                          // fromAmount={fromAmount}
+                          // setFromAmount={(amount) =>
+                          //   handleInputChange(component.id, { fromAmount: amount })
+                          // }
+                          // toAmount={toAmount}
+                          // setToAmount={(amount) =>
+                          //   handleInputChange(component.id, { toAmount: amount })
+                          // }
+                          // currentTrade={currentTrade}
+                          setCurrentTrade={setCurrentTrade}
+                          fromAmount={fromAmount}
+                          setFromAmount={setFromAmount}
+                          toAmount={toAmount}
+                          setToAmount={setToAmount}
+                        />
+                      );
+                    })()}
+                </div>
+              )}
               {component.type === "dropdown" && (
                 <select
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"

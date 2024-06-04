@@ -1086,23 +1086,48 @@ const ConfigureInputsOutputs: React.FC = () => {
                           console.log(toAddress);
                           console.log(fromAmount);
                           return (
-                            <Swap
-                              currentTrade={{
-                                from:
-                                  tokens.find(
-                                    (token) => token.address === fromAddress
-                                  ) || null,
-                                to:
-                                  tokens.find(
-                                    (token) => token.address === toAddress
-                                  ) || null,
+                            // <Swap
+                            //   currentTrade={{
+                            //     from:
+                            //       tokens.find(
+                            //         (token) => token.address === fromAddress
+                            //       ) || null,
+                            //     to:
+                            //       tokens.find(
+                            //         (token) => token.address === toAddress
+                            //       ) || null,
+                            //   }}
+                            //   setCurrentTrade={setCurrentTrade}
+                            //   fromAmount={fromAmount}
+                            //   setFromAmount={setFromAmount}
+                            //   toAmount={toAmount}
+                            //   setToAmount={setToAmount}
+                            // />
+                            <div
+                              style={{
+                                ...(component.inputConfig
+                                  ? JSON.parse(component.inputConfig)
+                                  : {}),
                               }}
-                              setCurrentTrade={setCurrentTrade}
-                              fromAmount={fromAmount}
-                              setFromAmount={setFromAmount}
-                              toAmount={toAmount}
-                              setToAmount={setToAmount}
-                            />
+                            >
+                              <Swap
+                                currentTrade={{
+                                  from:
+                                    tokens.find(
+                                      (token) => token.address === fromAddress
+                                    ) || null,
+                                  to:
+                                    tokens.find(
+                                      (token) => token.address === toAddress
+                                    ) || null,
+                                }}
+                                setCurrentTrade={setCurrentTrade}
+                                fromAmount={fromAmount}
+                                setFromAmount={setFromAmount}
+                                toAmount={toAmount}
+                                setToAmount={setToAmount}
+                              />
+                            </div>
                           );
                         })()}
                     </div>
