@@ -55,6 +55,7 @@ import { datasetRouter } from './lib/routes/datasets';
 import { appDataRouter  } from './lib/routes/appdata';
 import { HttpError, githubRouter } from './lib/routes/auth';
 import { backgroundTasksRouter } from './lib/routes/background';
+import { teamsRouter } from './lib/routes/teams';
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // Handle the error
@@ -85,6 +86,7 @@ app.use('/auth', githubRouter);
 app.use('/datasets', datasetRouter);
 app.use('/appdata', appDataRouter);
 app.use('/background', backgroundTasksRouter);
+app.use('/teams', teamsRouter);
 
 app.get('/', function(req: Request, res: Response) {
   //res.setHeader('Cache-Control', 'max-age=0');

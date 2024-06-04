@@ -42,6 +42,7 @@ interface User {
   id: number;
   avatar_url: string;
   created_on: string;
+  teams?: string[];
 }
 
 export interface CustomSession extends Session {
