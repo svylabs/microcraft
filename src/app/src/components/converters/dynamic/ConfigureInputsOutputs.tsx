@@ -25,11 +25,8 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
+  customConfig?: any;
   config?: any;
-  inputConfig?: any;
-  optionsConfig?: any;
-  sliderConfig?: any;
-  walletConfig?: any;
   swapConfig?: any;
   events?: Event[] | undefined;
 }
@@ -46,11 +43,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     type: "text",
     placement: "input",
     code: "",
-    config: "",
-    inputConfig: "",
-    optionsConfig: "",
-    sliderConfig: "",
-    walletConfig: "",
+    customConfig: "",
     swapConfig: "",
     events: [],
   });
@@ -66,75 +59,65 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
   const [fromAmount, setFromAmount] = useState<string>("");
   const [toAmount, setToAmount] = useState<string>("");
-  // console.log(currentTrade);
-  // console.log(currentTrade?.from?.address);
-  // console.log(currentTrade?.to?.address);
-  // console.log(fromAmount);
-  const [graphConfig, setGraphConfig] = useState<any>({
-    graphTitle: "Enter Graph Title",
-    graphType: "bar/line",
-    size: {
-      width: 500,
-      height: 400,
+
+  const [customConfig, setCustomConfig] = useState<any>({
+    styles: {
+      color: "",
+      backgroundColor: "",
+      fontSize: "",
+      padding: "",
+      margin: "",
     },
-    axis: {
-      xAxis: {
-        titleX: "Enter X-axis Title",
+    custom: {
+      graphConfig: {
+        graphTitle: "Enter Graph Title",
+        graphType: "bar/line",
+        size: {
+          width: 500,
+          height: 400,
+        },
+        axis: {
+          xAxis: {
+            titleX: "Enter X-axis Title",
+          },
+          yAxis: {
+            titleY: "Enter Y-axis Title",
+          },
+        },
+        message:
+          "Please fill in the required information to generate your graph. Choose between bar or line graph.",
       },
-      yAxis: {
-        titleY: "Enter Y-axis Title",
+      optionsConfig: {
+        message:
+          "Please enter options separated by commas. Do not add a comma after the last option.",
+        values: ["text1"],
       },
-    },
-    message:
-      "Please fill in the required information to generate your graph. Choose between bar or line graph.",
-  });
-
-  const [inputConfig, setInputConfig] = useState<any>({
-    color: "",
-    backgroundColor: "",
-    fontSize: "",
-    padding: "",
-    margin: "",
-    // color: "#000000",
-    // backgroundColor: "#FFFFFF",
-    // fontSize: "16px",
-    // padding: "8px",
-    // borderColor: "#CCCCCC",
-    // borderWidth: "1px",
-    // borderRadius: "4px",
-    // fontFamily: "Arial, sans-serif",
-    // fontWeight: "normal",
-    // textAlign: "left",
-    // cursor: "auto",
-    // overflow: "visible",
-  });
-
-  const [optionsConfig, setOptionsConfig] = useState<any>({
-    message:
-      "Please enter options separated by commas. Do not add a comma after the last option.",
-    values: ["text1"],
-  });
-
-  const [sliderConfig, setSliderConfig] = useState<any>({
-    message:
-      "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
-    interval: {
-      min: 1,
-      max: 100,
-    },
-    value: 50,
-    step: 1,
-  });
-
-  const [walletConfig, setWalletConfig] = useState<any>({
-    message:
-      "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
-    network: {
-      type: "mina | ethereum | keplr",
-      config: {
-        rpcUrl: "",
-        chainId: "",
-        exploreUrl: "(optional)",
+      sliderConfig: {
+        message:
+          "Please specify the range of values. You can customize the minimum, maximum, value and step values below.",
+        interval: {
+          min: 1,
+          max: 100,
+        },
+        value: 50,
+        step: 1,
+      },
+      walletConfig: {
+        message:
+          "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+        network: {
+          type: "mina | ethereum | keplr",
+          config: {
+            rpcUrl: "",
+            chainId: "",
+            exploreUrl: "(optional)",
+          },
+        },
+      },
+      swapConfig: {
+        fromAddress: "",
+        toAddress: "",
+        fromAmount: "",
       },
     },
   });
@@ -176,16 +159,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEditIndex(index);
     setCurrentComponent({
       ...components[index],
-      config: components[index].config || JSON.stringify(graphConfig, null, 2),
-      inputConfig:
-        components[index].inputConfig || JSON.stringify(inputConfig, null, 2),
-      optionsConfig:
-        components[index].optionsConfig ||
-        JSON.stringify(optionsConfig, null, 2),
-      sliderConfig:
-        components[index].sliderConfig || JSON.stringify(sliderConfig, null, 2),
-      walletConfig:
-        components[index].walletConfig || JSON.stringify(walletConfig, null, 2),
+      customConfig:
+        components[index].customConfig || JSON.stringify(customConfig, null, 2),
     });
     setEvents(components[index].events || []);
 
@@ -253,128 +228,14 @@ const ConfigureInputsOutputs: React.FC = () => {
         component.label.trim() === currentComponent.label.trim()
     );
 
-    // if (existingIndex !== -1) {
-    //   // Update existing field
-    //   updatedComponents[existingIndex] = {
-    //     ...currentComponent,
-    //     config:
-    //       currentComponent.placement === "output" &&
-    //       currentComponent.type === "graph"
-    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-    //         : "",
-    //     inputConfig:
-    //       (currentComponent.placement === "input" ||
-    //         currentComponent.placement === "action") &&
-    //       (currentComponent.type === "text" ||
-    //         currentComponent.type === "number" ||
-    //         currentComponent.type === "file" ||
-    //         currentComponent.type === "swap" ||
-    //         currentComponent.type === "button")
-    //         ? currentComponent.inputConfig ||
-    //           JSON.stringify(inputConfig, null, 2)
-    //         : "",
-    //     optionsConfig:
-    //       currentComponent.placement === "input" &&
-    //       (currentComponent.type === "dropdown" ||
-    //         currentComponent.type === "radio" ||
-    //         currentComponent.type === "checkbox")
-    //         ? currentComponent.optionsConfig ||
-    //           JSON.stringify(optionsConfig, null, 2)
-    //         : "",
-    //     sliderConfig:
-    //       currentComponent.placement === "input" &&
-    //       currentComponent.type === "slider"
-    //         ? currentComponent.sliderConfig ||
-    //           JSON.stringify(sliderConfig, null, 2)
-    //         : "",
-    //     walletConfig:
-    //       currentComponent.placement === "input" &&
-    //       currentComponent.type === "walletDropdown"
-    //         ? currentComponent.walletConfig ||
-    //           JSON.stringify(walletConfig, null, 2)
-    //         : "",
-    //     events: [...events],
-    //   };
-    // } else {
-    //   // Add new field
-    //   updatedComponents.push({
-    //     ...currentComponent,
-    //     config:
-    //       currentComponent.placement === "output" &&
-    //       currentComponent.type === "graph"
-    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-    //         : "",
-    //     inputConfig:
-    //       (currentComponent.placement === "input" ||
-    //         currentComponent.placement === "action") &&
-    //       (currentComponent.type === "text" ||
-    //         currentComponent.type === "number" ||
-    //         currentComponent.type === "file" ||
-    //         currentComponent.type === "swap" ||
-    //         currentComponent.type === "button")
-    //         ? currentComponent.inputConfig ||
-    //           JSON.stringify(inputConfig, null, 2)
-    //         : "",
-    //     optionsConfig:
-    //       currentComponent.placement === "input" &&
-    //       (currentComponent.type === "dropdown" ||
-    //         currentComponent.type === "radio" ||
-    //         currentComponent.type === "checkbox")
-    //         ? currentComponent.optionsConfig ||
-    //           JSON.stringify(optionsConfig, null, 2)
-    //         : "",
-    //     sliderConfig:
-    //       currentComponent.placement === "input" &&
-    //       currentComponent.type === "slider"
-    //         ? currentComponent.sliderConfig ||
-    //           JSON.stringify(sliderConfig, null, 2)
-    //         : "",
-    //     walletConfig:
-    //       currentComponent.placement === "input" &&
-    //       currentComponent.type === "walletDropdown"
-    //         ? currentComponent.walletConfig ||
-    //           JSON.stringify(walletConfig, null, 2)
-    //         : "",
-    //     events: [...events],
-    //   });
-    // }
-
     const newComponent = {
       ...currentComponent,
-      config:
-        currentComponent.placement === "output" &&
-        currentComponent.type === "graph"
-          ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
-          : "",
-      inputConfig:
-        (currentComponent.placement === "input" ||
-          currentComponent.placement === "action") &&
-        (currentComponent.type === "text" ||
-          currentComponent.type === "number" ||
-          currentComponent.type === "file" ||
-          currentComponent.type === "swap" ||
-          currentComponent.type === "button")
-          ? currentComponent.inputConfig || JSON.stringify(inputConfig, null, 2)
-          : "",
-      optionsConfig:
-        currentComponent.placement === "input" &&
-        (currentComponent.type === "dropdown" ||
-          currentComponent.type === "radio" ||
-          currentComponent.type === "checkbox")
-          ? currentComponent.optionsConfig ||
-            JSON.stringify(optionsConfig, null, 2)
-          : "",
-      sliderConfig:
-        currentComponent.placement === "input" &&
-        currentComponent.type === "slider"
-          ? currentComponent.sliderConfig ||
-            JSON.stringify(sliderConfig, null, 2)
-          : "",
-      walletConfig:
-        currentComponent.placement === "input" &&
-        currentComponent.type === "walletDropdown"
-          ? currentComponent.walletConfig ||
-            JSON.stringify(walletConfig, null, 2)
+      customConfig:
+        currentComponent.placement === "input" ||
+        currentComponent.placement === "action" ||
+        currentComponent.placement === "output"
+          ? currentComponent.customConfig ||
+            JSON.stringify(customConfig, null, 2)
           : "",
       swapConfig:
         currentComponent.placement === "input" &&
@@ -414,11 +275,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       type: "text",
       placement: "input",
       code: "",
-      config: "",
-      inputConfig: "",
-      optionsConfig: "",
-      sliderConfig: "",
-      walletConfig: "",
+      customConfig: "",
     });
   };
 
@@ -478,7 +335,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       }
     };
     // }, [currentComponent.type]);
-  }, [currentComponent.type, currentEvent]);
+  }, [currentComponent.type, currentComponent.placement, currentEvent]);
 
   console.log(components);
 
@@ -588,127 +445,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                 </select>
               </label>
 
-              {(currentComponent.type === "text" ||
-                currentComponent.type === "number" ||
-                currentComponent.type === "file" ||
-                currentComponent.type === "swap") && (
-                <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Configuration:
-                  </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <div
-                      className="px-2 text-gray-500"
-                      ref={numbersRef}
-                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                    ></div>
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder=""
-                      name="inputConfig"
-                      cols={30}
-                      rows={10}
-                      value={
-                        currentComponent.inputConfig ||
-                        JSON.stringify(inputConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                </div>
-              )}
-              {(currentComponent.type === "dropdown" ||
-                currentComponent.type === "radio" ||
-                currentComponent.type === "checkbox") && (
-                <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    {/* {currentComponent.type === "dropdown"
-                      ? "Dropdown Options:"
-                      : "Radio Options:"} */}
-                    Configuration:
-                  </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <div
-                      className="px-2 text-gray-500"
-                      ref={numbersRef}
-                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                    ></div>
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder="Enter options separated by commas"
-                      name="optionsConfig"
-                      cols={30}
-                      rows={10}
-                      value={
-                        currentComponent.optionsConfig ||
-                        JSON.stringify(optionsConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                </div>
-              )}
-
-              {currentComponent.type === "slider" && (
-                <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Configuration:
-                  </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <div
-                      className="px-2 text-gray-500"
-                      ref={numbersRef}
-                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                    ></div>
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder="Enter slider configuration"
-                      cols={30}
-                      rows={10}
-                      name="sliderConfig"
-                      value={
-                        currentComponent.sliderConfig ||
-                        JSON.stringify(sliderConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                </div>
-              )}
-              {currentComponent.type === "walletDropdown" && (
-                <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Configuration:
-                  </label>
-                  <div className="flex bg-gray-900 rounded-md p-2">
-                    <div
-                      className="px-2 text-gray-500"
-                      ref={numbersRef}
-                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                    ></div>
-                    <textarea
-                      ref={textareaRef}
-                      className="flex-1 bg-gray-900 text-white outline-none"
-                      style={{ overflowY: "hidden" }}
-                      placeholder="Enter wallet configuration"
-                      cols={30}
-                      rows={10}
-                      name="walletConfig"
-                      value={
-                        currentComponent.walletConfig ||
-                        JSON.stringify(walletConfig, null, 2)
-                      }
-                      onChange={handleChange}
-                    ></textarea>
-                  </div>
-                </div>
-              )}
               {currentComponent.type === "swap" && (
                 <div>
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -739,33 +475,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   <option value="button">Button</option>
                 </select>
-              </label>
-              <div>
-                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder=""
-                    name="inputConfig"
-                    cols={30}
-                    rows={10}
-                    value={
-                      currentComponent.inputConfig ||
-                      JSON.stringify(inputConfig, null, 2)
-                    }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
+              </label>             
             </div>
           )}
 
@@ -786,6 +496,37 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="graph">Graph</option>
                 </select>
               </label>
+            </div>
+          )}
+
+          {(currentComponent.placement === "input" ||
+            currentComponent.placement === "action" ||
+            currentComponent.placement === "output") && (
+            <div>
+              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                Configuration:
+              </label>
+              <div className="flex bg-gray-900 rounded-md p-2">
+                <div
+                  className="px-2 text-gray-500"
+                  ref={numbersRef}
+                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                ></div>
+                <textarea
+                  ref={textareaRef}
+                  className="flex-1 bg-gray-900 text-white outline-none"
+                  style={{ overflowY: "hidden" }}
+                  placeholder=""
+                  name="customConfig"
+                  cols={30}
+                  rows={60}
+                  value={
+                    currentComponent.customConfig ||
+                    JSON.stringify(customConfig, null, 2)
+                  }
+                  onChange={handleChange}
+                ></textarea>
+              </div>
             </div>
           )}
 
@@ -932,36 +673,6 @@ const ConfigureInputsOutputs: React.FC = () => {
             </div>
           )}
 
-          {currentComponent.placement === "output" &&
-            currentComponent.type === "graph" && (
-              <div>
-                <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder="Enter graph configuration"
-                    cols={30}
-                    rows={10}
-                    name="config"
-                    value={
-                      currentComponent.config ||
-                      JSON.stringify(graphConfig, null, 2)
-                    }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
-            )}
-
           <button
             className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
             onClick={handleAddComponent}
@@ -985,17 +696,12 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
-                  {component.config && `, Configuration : ${component.config}`}
-                  {component.inputConfig &&
-                    `, Configuration: ${component.inputConfig}`}
-                  {component.optionsConfig &&
-                    `, Configuration: ${component.optionsConfig}`}
-                  {component.sliderConfig &&
-                    `, Configuration: ${component.sliderConfig}`}
-                  {component.walletConfig &&
-                    `, Configuration : ${component.walletConfig}`}
+                  {component.customConfig &&
+                    `, Configuration : ${component.customConfig}`}
+                  {/* del */}
                   {component.swapConfig &&
                     `, Configuration : ${component.swapConfig}`}
+                  {/* del */}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
@@ -1037,14 +743,16 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* {console.log(component)}
                       {console.log(typeof component)}
-                      {console.log(typeof component.inputConfig)}
-                      {console.log(JSON.parse(component.inputConfig).color)} */}
+                      {console.log(component.customConfig)}
+                      {console.log(typeof component.customConfig)} */}
+                      {/* {console.log(JSON.parse(component.customConfig).styles)} */}
                       {/* JSON.parse(component.sliderConfig).interval.min */}
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                         style={{
-                          ...(component.inputConfig
-                            ? JSON.parse(component.inputConfig)
+                          ...(component.customConfig &&
+                          typeof component.customConfig === "string"
+                            ? JSON.parse(component.customConfig).styles
                             : {}),
                         }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -1086,27 +794,11 @@ const ConfigureInputsOutputs: React.FC = () => {
                           console.log(toAddress);
                           console.log(fromAmount);
                           return (
-                            // <Swap
-                            //   currentTrade={{
-                            //     from:
-                            //       tokens.find(
-                            //         (token) => token.address === fromAddress
-                            //       ) || null,
-                            //     to:
-                            //       tokens.find(
-                            //         (token) => token.address === toAddress
-                            //       ) || null,
-                            //   }}
-                            //   setCurrentTrade={setCurrentTrade}
-                            //   fromAmount={fromAmount}
-                            //   setFromAmount={setFromAmount}
-                            //   toAmount={toAmount}
-                            //   setToAmount={setToAmount}
-                            // />
                             <div
                               style={{
-                                ...(component.inputConfig
-                                  ? JSON.parse(component.inputConfig)
+                                ...(component.customConfig &&
+                                typeof component.customConfig === "string"
+                                  ? JSON.parse(component.customConfig).styles
                                   : {}),
                               }}
                             >
@@ -1161,10 +853,16 @@ const ConfigureInputsOutputs: React.FC = () => {
                         onChange={(e) =>
                           handleInputChange(component.id, e.target.value)
                         }
+                        style={{
+                          ...(component.customConfig && typeof component.customConfig === 'string'
+                            ? JSON.parse(component.customConfig).styles
+                            : {}),
+                        }}
                       >
                         {/* Options for dropdown */}
-                        {component.optionsConfig &&
-                          JSON.parse(component.optionsConfig).values.map(
+                        {component.customConfig &&
+                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
+                            
                             (option, idx) => (
                               <option key={idx} value={option.trim()}>
                                 {option.trim()}
@@ -1197,8 +895,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for radio */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.optionsConfig &&
-                          JSON.parse(component.optionsConfig).values.map(
+                        {component.customConfig &&
+                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
                             (option, idx) => {
                               const optionWidth = option.trim().length * 8 + 48;
 
@@ -1210,6 +908,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                       ? "overflow-x-auto md:h-8"
                                       : ""
                                   } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+
                                 >
                                   <input
                                     type="radio"
@@ -1266,8 +965,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for checkbox */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.optionsConfig &&
-                          JSON.parse(component.optionsConfig).values.map(
+                      {component.customConfig &&
+                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
                             (option, idx) => {
                               const optionWidth = option.trim().length * 8 + 48;
 
@@ -1338,20 +1037,25 @@ const ConfigureInputsOutputs: React.FC = () => {
                           id={component.id}
                           className="w-full md:w-[60%] h-8"
                           name={component.label}
-                          min={JSON.parse(component.sliderConfig).interval.min}
-                          max={JSON.parse(component.sliderConfig).interval.max}
-                          step={JSON.parse(component.sliderConfig).step}
+                          min={JSON.parse(component.customConfig).custom.sliderConfig.interval.min}
+                          max={JSON.parse(component.customConfig).custom.sliderConfig.interval.max}
+                          step={JSON.parse(component.customConfig).custom.sliderConfig.step}
                           value={
                             data[component.id] ||
-                            JSON.parse(component.sliderConfig).value
+                            JSON.parse(component.customConfig).custom.sliderConfig.value
                           }
                           onChange={(e) =>
                             handleInputChange(component.id, e.target.value)
                           }
+                          // style={{
+                          //   ...(component.customConfig && typeof component.customConfig === 'string'
+                          //     ? JSON.parse(component.customConfig).styles
+                          //     : {}),
+                          // }}
                         />
                         <span className="font-semibold">
                           {data[component.id] ||
-                            JSON.parse(component.sliderConfig).value}
+                            JSON.parse(component.customConfig).custom.sliderConfig.value}
                         </span>
                       </div>
                     </div>
@@ -1379,13 +1083,13 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
 
                       {/* <Wallet
-                        configurations = {component.walletConfig}
+                        configurations={JSON.parse(component.customConfig).custom.walletConfig}
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, address)
                         }
                       /> */}
                       <Wallet
-                        configurations={component.walletConfig}
+                        configurations={JSON.parse(component.customConfig).custom.walletConfig}
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, {
                             address,
@@ -1426,8 +1130,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                         className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
                         style={{
-                          ...(component.inputConfig
-                            ? JSON.parse(component.inputConfig)
+                          ...(component.customConfig &&
+                          typeof component.customConfig === "string"
+                            ? JSON.parse(component.customConfig).styles
                             : {}),
                         }}
                       >

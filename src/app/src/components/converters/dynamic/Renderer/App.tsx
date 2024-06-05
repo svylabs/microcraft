@@ -132,7 +132,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
 
               {/* display the output data where developers/users want */}
               {component.placement === "output" && (
-                <>
+                <div key={component.id}>
                   {(() => {
                     switch (component.type) {
                       case "text":
@@ -142,8 +142,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                           <pre
                             className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
                             // style={{
-                            //   ...(component.inputConfig
-                            //     ? JSON.parse(component.inputConfig)
+                            //   ...(component.customConfig && typeof component.customConfig === 'string'
+                            //     ? JSON.parse(component.customConfig).styles
                             //     : {}),
                             // }}
                           >
@@ -158,8 +158,9 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                         return (
                           <div>
                             <Graph
+                              key={`graph-${component.id}`}
                               output={data[component.id]}
-                              configurations={component.config}
+                              configurations={JSON.parse(component.customConfig).custom.graphConfig}
                               graphId={`graph-container-${component.id}`}
                             />
                           </div>
@@ -168,7 +169,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                         return null;
                     }
                   })()}
-                </>
+                </div>
               )}
 
               {component.placement === "input" &&
@@ -178,8 +179,9 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   <input
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     style={{
-                      ...(component.inputConfig
-                        ? JSON.parse(component.inputConfig)
+                      ...(component.customConfig &&
+                      typeof component.customConfig === "string"
+                        ? JSON.parse(component.customConfig).styles
                         : {}),
                     }}
                     type={component.type}
@@ -201,80 +203,45 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                       // console.log(toAddress);
                       // console.log(fromAmount);
                       return (
-                        // <Swap
-                        //   // currentTrade={{
-                        //   //   from:
-                        //   //     tokens.find(
-                        //   //       (token) => token.address === fromAddress
-                        //   //     ) || null,
-                        //   //   to:
-                        //   //     tokens.find(
-                        //   //       (token) => token.address === toAddress
-                        //   //     ) || null,
-                        //   //     handleInputChange: (swapData) => handleInputChange(component.id, swapData),
-                        //   //     onChange : (e) =>
-                        //   //       handleInputChange(component.id, e.target.value)
-                        //   //     ,
-                        //   // }}
-                        //   // setCurrentTrade={setCurrentTrade}
-                        //   // fromAmount={fromAmount}
-                        //   // setFromAmount={setFromAmount}
-                        //   // toAmount={toAmount}
-                        //   // setToAmount={setToAmount}
-                        //   // currentTrade={(balance) =>
-                        //   //   handleInputChange(component.id, {
-                        //   //     address: data[component.id]?.address || "",
-                        //   //     balance,
-                        //   //   })
-                        //   // }
-                        //   currentTrade={{
-                        //     from: tokens.find((token) => token.address === fromAddress) || null,
-                        //     to: tokens.find((token) => token.address === toAddress) || null,
-                        //     handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
-                        //   }}
-                        //   setCurrentTrade={(trade) =>
-                        //     handleSwapChange(component.id, trade)
-                        //   }
-                        //   fromAmount={fromAmount}
-                        //   setFromAmount={(amount) =>
-                        //     handleSwapChange(component.id, { fromAmount: amount })
-                        //   }
-                        //   toAmount={toAmount}
-                        //   setToAmount={(amount) =>
-                        //     handleSwapChange(component.id, { toAmount: amount })
-                        //   }
-                        // />
-
-                        <Swap
-                          currentTrade={{
-                            from:
-                              tokens.find(
-                                (token) => token.address === fromAddress
-                              ) || null,
-                            to:
-                              tokens.find(
-                                (token) => token.address === toAddress
-                              ) || null,
-                            // handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
+                        <div
+                          style={{
+                            ...(component.customConfig &&
+                            typeof component.customConfig === "string"
+                              ? JSON.parse(component.customConfig).styles
+                              : {}),
                           }}
-                          // setCurrentTrade={(trade) =>
-                          //   handleInputChange(component.id, trade)
-                          // }
-                          // fromAmount={fromAmount}
-                          // setFromAmount={(amount) =>
-                          //   handleInputChange(component.id, { fromAmount: amount })
-                          // }
-                          // toAmount={toAmount}
-                          // setToAmount={(amount) =>
-                          //   handleInputChange(component.id, { toAmount: amount })
-                          // }
-                          // currentTrade={currentTrade}
-                          setCurrentTrade={setCurrentTrade}
-                          fromAmount={fromAmount}
-                          setFromAmount={setFromAmount}
-                          toAmount={toAmount}
-                          setToAmount={setToAmount}
-                        />
+                        >
+                          <Swap
+                            currentTrade={{
+                              from:
+                                tokens.find(
+                                  (token) => token.address === fromAddress
+                                ) || null,
+                              to:
+                                tokens.find(
+                                  (token) => token.address === toAddress
+                                ) || null,
+                              // handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
+                            }}
+                            // setCurrentTrade={(trade) =>
+                            //   handleInputChange(component.id, trade)
+                            // }
+                            // fromAmount={fromAmount}
+                            // setFromAmount={(amount) =>
+                            //   handleInputChange(component.id, { fromAmount: amount })
+                            // }
+                            // toAmount={toAmount}
+                            // setToAmount={(amount) =>
+                            //   handleInputChange(component.id, { toAmount: amount })
+                            // }
+                            // currentTrade={currentTrade}
+                            setCurrentTrade={setCurrentTrade}
+                            fromAmount={fromAmount}
+                            setFromAmount={setFromAmount}
+                            toAmount={toAmount}
+                            setToAmount={setToAmount}
+                          />
+                        </div>
                       );
                     })()}
                 </div>
@@ -287,21 +254,27 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   onChange={(e) =>
                     handleInputChange(component.id, e.target.value)
                   }
+                  style={{
+                    ...(component.customConfig &&
+                    typeof component.customConfig === "string"
+                      ? JSON.parse(component.customConfig).styles
+                      : {}),
+                  }}
                 >
-                  {component.optionsConfig &&
-                    JSON.parse(component.optionsConfig).values.map(
-                      (option, idx) => (
-                        <option key={idx} value={option.trim()}>
-                          {option.trim()}
-                        </option>
-                      )
-                    )}
+                  {component.customConfig &&
+                    JSON.parse(
+                      component.customConfig
+                    ).custom.optionsConfig.values.map((option, idx) => (
+                      <option key={idx} value={option.trim()}>
+                        {option.trim()}
+                      </option>
+                    ))}
                 </select>
               )}
               {component.type === "radio" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                  {component.optionsConfig &&
-                    JSON.parse(component.optionsConfig).values.map(
+                  {component.customConfig &&
+                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
                       (option, idx) => {
                         const optionWidth = option.trim().length * 8 + 48;
 
@@ -342,8 +315,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
               )}
               {component.type === "checkbox" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                  {component.optionsConfig &&
-                    JSON.parse(component.optionsConfig).values.map(
+                  {component.customConfig &&
+                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
                       (option, idx) => {
                         const optionWidth = option.trim().length * 8 + 48;
 
@@ -397,27 +370,32 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                     id={component.id}
                     className="w-full md:w-[60%] h-8"
                     name={component.label}
-                    min={JSON.parse(component.sliderConfig).interval.min}
-                    max={JSON.parse(component.sliderConfig).interval.max}
-                    step={JSON.parse(component.sliderConfig).step}
+                    min={JSON.parse(component.customConfig).custom.sliderConfig.interval.min}
+                    max={JSON.parse(component.customConfig).custom.sliderConfig.interval.max}
+                    step={JSON.parse(component.customConfig).custom.sliderConfig.step}
                     value={
                       data[component.id] ||
-                      JSON.parse(component.sliderConfig).value
+                      JSON.parse(component.customConfig).custom.sliderConfig.value
                     }
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
+                    // style={{
+                    //   ...(component.customConfig && typeof component.customConfig === 'string'
+                    //     ? JSON.parse(component.customConfig).styles
+                    //     : {}),
+                    // }}
                   />
                   <span className="font-semibold">
                     {data[component.id] ||
-                      JSON.parse(component.sliderConfig).value}
+                      JSON.parse(component.customConfig).custom.sliderConfig.value}
                   </span>
                 </div>
               )}
               {component.type === "walletDropdown" && (
                 <div>
                   <Wallet
-                    configurations={component.walletConfig}
+                    configurations={JSON.parse(component.customConfig).custom.walletConfig}
                     onSelectAddress={(address) =>
                       handleInputChange(component.id, {
                         address,
@@ -438,8 +416,9 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                 <button
                   className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   style={{
-                    ...(component.inputConfig
-                      ? JSON.parse(component.inputConfig)
+                    ...(component.customConfig &&
+                    typeof component.customConfig === "string"
+                      ? JSON.parse(component.customConfig).styles
                       : {}),
                   }}
                   id={component.id}

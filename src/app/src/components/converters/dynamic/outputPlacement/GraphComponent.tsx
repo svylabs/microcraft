@@ -66,9 +66,13 @@ const GraphComponent: React.FC<Props> = ({
     const containerId = `graph-container-${graphId}`;
     const container = d3.select(`#${containerId}`);
 
-    if (container.selectAll("svg").empty()) {
-      container.selectAll("*").remove();
-    }
+    // if (container.selectAll("svg").empty()) {
+    //   container.selectAll("*").remove();
+    // }
+
+    // Remove existing SVG element within the container
+    // container.selectAll("svg").remove();
+    container.selectAll("*").remove();
 
     if (config) {
       const selectedGraphType =
@@ -101,7 +105,7 @@ const GraphComponent: React.FC<Props> = ({
       svg
         .append("text")
         .attr("x", svgWidth / 2)
-        .attr("y", margin.top / 1.8)
+        .attr("y", margin.top / 1.5)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
