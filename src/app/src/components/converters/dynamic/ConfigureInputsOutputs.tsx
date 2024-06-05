@@ -67,6 +67,18 @@ const ConfigureInputsOutputs: React.FC = () => {
       fontSize: "",
       padding: "",
       margin: "",
+      // color: "#000000",
+      // backgroundColor: "#FFFFFF",
+      // fontSize: "16px",
+      // padding: "8px",
+      // borderColor: "#CCCCCC",
+      // borderWidth: "1px",
+      // borderRadius: "4px",
+      // fontFamily: "Arial, sans-serif",
+      // fontWeight: "normal",
+      // textAlign: "left",
+      // cursor: "auto",
+      // overflow: "visible",
     },
     custom: {
       graphConfig: {
@@ -227,6 +239,93 @@ const ConfigureInputsOutputs: React.FC = () => {
         component.id.trim() === currentComponent.id.trim() &&
         component.label.trim() === currentComponent.label.trim()
     );
+
+    // if (existingIndex !== -1) {
+    //   // Update existing field
+    //   updatedComponents[existingIndex] = {
+    //     ...currentComponent,
+    //     config:
+    //       currentComponent.placement === "output" &&
+    //       currentComponent.type === "graph"
+    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+    //         : "",
+    //     inputConfig:
+    //       (currentComponent.placement === "input" ||
+    //         currentComponent.placement === "action") &&
+    //       (currentComponent.type === "text" ||
+    //         currentComponent.type === "number" ||
+    //         currentComponent.type === "file" ||
+    //         currentComponent.type === "swap" ||
+    //         currentComponent.type === "button")
+    //         ? currentComponent.inputConfig ||
+    //           JSON.stringify(inputConfig, null, 2)
+    //         : "",
+    //     optionsConfig:
+    //       currentComponent.placement === "input" &&
+    //       (currentComponent.type === "dropdown" ||
+    //         currentComponent.type === "radio" ||
+    //         currentComponent.type === "checkbox")
+    //         ? currentComponent.optionsConfig ||
+    //           JSON.stringify(optionsConfig, null, 2)
+    //         : "",
+    //     sliderConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "slider"
+    //         ? currentComponent.sliderConfig ||
+    //           JSON.stringify(sliderConfig, null, 2)
+    //         : "",
+    //     walletConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "walletDropdown"
+    //         ? currentComponent.walletConfig ||
+    //           JSON.stringify(walletConfig, null, 2)
+    //         : "",
+    //     events: [...events],
+    //   };
+    // } else {
+    //   // Add new field
+    //   updatedComponents.push({
+    //     ...currentComponent,
+    //     config:
+    //       currentComponent.placement === "output" &&
+    //       currentComponent.type === "graph"
+    //         ? currentComponent.config || JSON.stringify(graphConfig, null, 2)
+    //         : "",
+    //     inputConfig:
+    //       (currentComponent.placement === "input" ||
+    //         currentComponent.placement === "action") &&
+    //       (currentComponent.type === "text" ||
+    //         currentComponent.type === "number" ||
+    //         currentComponent.type === "file" ||
+    //         currentComponent.type === "swap" ||
+    //         currentComponent.type === "button")
+    //         ? currentComponent.inputConfig ||
+    //           JSON.stringify(inputConfig, null, 2)
+    //         : "",
+    //     optionsConfig:
+    //       currentComponent.placement === "input" &&
+    //       (currentComponent.type === "dropdown" ||
+    //         currentComponent.type === "radio" ||
+    //         currentComponent.type === "checkbox")
+    //         ? currentComponent.optionsConfig ||
+    //           JSON.stringify(optionsConfig, null, 2)
+    //         : "",
+    //     sliderConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "slider"
+    //         ? currentComponent.sliderConfig ||
+    //           JSON.stringify(sliderConfig, null, 2)
+    //         : "",
+    //     walletConfig:
+    //       currentComponent.placement === "input" &&
+    //       currentComponent.type === "walletDropdown"
+    //         ? currentComponent.walletConfig ||
+    //           JSON.stringify(walletConfig, null, 2)
+    //         : "",
+    //     events: [...events],
+    //   });
+    // }
+
 
     const newComponent = {
       ...currentComponent,
