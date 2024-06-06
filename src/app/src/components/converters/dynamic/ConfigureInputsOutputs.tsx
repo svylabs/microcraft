@@ -8,7 +8,6 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
-// import { tokens } from "./Web3/Swap/AvailableTokens";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -25,8 +24,7 @@ interface CustomComponent {
   type: string;
   placement: string;
   code?: string;
-  customConfig?: any;
-  // config?: any;
+  config?: any;
   events?: Event[] | undefined;
 }
 
@@ -42,7 +40,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     type: "text",
     placement: "input",
     code: "",
-    customConfig: "",
+    config: "",
     events: [],
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
@@ -58,7 +56,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [fromAmount, setFromAmount] = useState<string>("");
   const [toAmount, setToAmount] = useState<string>("");
 
-  const [customConfig, setCustomConfig] = useState<any>({
+  const [config, setConfig] = useState<any>({
     styles: {
       color: "",
       backgroundColor: "",
@@ -213,8 +211,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEditIndex(index);
     setCurrentComponent({
       ...components[index],
-      customConfig:
-        components[index].customConfig || JSON.stringify(customConfig, null, 2),
+      config:
+        components[index].config || JSON.stringify(config, null, 2),
     });
     setEvents(components[index].events || []);
   };
@@ -353,12 +351,12 @@ const ConfigureInputsOutputs: React.FC = () => {
 
     const newComponent = {
       ...currentComponent,
-      customConfig:
+      config:
         currentComponent.placement === "input" ||
         currentComponent.placement === "action" ||
         currentComponent.placement === "output"
-          ? currentComponent.customConfig ||
-            JSON.stringify(customConfig, null, 2)
+          ? currentComponent.config ||
+            JSON.stringify(config, null, 2)
           : "",
       events: [...events],
     };
@@ -385,7 +383,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       type: "text",
       placement: "input",
       code: "",
-      customConfig: "",
+      config: "",
     });
   };
 
@@ -565,7 +563,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 </select>
               </label>
 
-              {currentComponent.type === "swap" && (
+              {/* {currentComponent.type === "swap" && (
                 <div>
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                     Token Swap:
@@ -573,14 +571,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                   {components.map((component, index) => (
                   <Swap 
                   key={index}
-                  configurations={customConfig.custom.swapConfig} 
+                  configurations={config.custom.swapConfig} 
                   onSwapChange={(swapData) =>
                     handleSwapChange(component.id, swapData)
                   }
                   />
                   ))}
                 </div>
-              )}
+              )} */}
             </>
           )}
 
@@ -638,12 +636,12 @@ const ConfigureInputsOutputs: React.FC = () => {
                   className="flex-1 bg-gray-900 text-white outline-none"
                   style={{ overflowY: "hidden" }}
                   placeholder=""
-                  name="customConfig"
+                  name="config"
                   cols={30}
                   rows={60}
                   value={
-                    currentComponent.customConfig ||
-                    JSON.stringify(customConfig, null, 2)
+                    currentComponent.config ||
+                    JSON.stringify(config, null, 2)
                   }
                   onChange={handleChange}
                 ></textarea>
@@ -817,12 +815,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
-                  {component.customConfig &&
-                    `, Configuration : ${component.customConfig}`}
-                  {/* del */}
-                  {/* {component.swapConfig &&
-                    `, Configuration : ${component.swapConfig}`} */}
-                  {/* del */}
+                  {component.config &&
+                    `, Configuration : ${component.config}`}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
@@ -864,16 +858,16 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* {console.log(component)}
                       {console.log(typeof component)}
-                      {console.log(component.customConfig)}
-                      {console.log(typeof component.customConfig)} */}
-                      {/* {console.log(JSON.parse(component.customConfig).styles)} */}
+                      {console.log(component.config)}
+                      {console.log(typeof component.config)} */}
+                      {/* {console.log(JSON.parse(component.config).styles)} */}
                       {/* JSON.parse(component.sliderConfig).interval.min */}
                       <input
                         className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                         style={{
-                          ...(component.customConfig &&
-                          typeof component.customConfig === "string"
-                            ? JSON.parse(component.customConfig).styles
+                          ...(component.config &&
+                          typeof component.config === "string"
+                            ? JSON.parse(component.config).styles
                             : {}),
                         }}
                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -909,21 +903,20 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       <div
                         style={{
-                          ...(component.customConfig &&
-                          typeof component.customConfig === "string"
-                            ? JSON.parse(component.customConfig).styles
+                          ...(component.config &&
+                          typeof component.config === "string"
+                            ? JSON.parse(component.config).styles
                             : {}),
                         }}
                       >
                         <Swap
                           configurations={
-                            JSON.parse(component.customConfig).custom.swapConfig
+                            JSON.parse(component.config).custom.swapConfig
                           }
                           onSwapChange={(swapData) =>
                             handleInputChange(component.id, swapData)
                           }
                         />
-                        {/* <Swap configurations = {customConfig.custom.swapConfig}/> */}
                       </div>
                     </div>
                   )}
@@ -957,16 +950,16 @@ const ConfigureInputsOutputs: React.FC = () => {
                           handleInputChange(component.id, e.target.value)
                         }
                         style={{
-                          ...(component.customConfig &&
-                          typeof component.customConfig === "string"
-                            ? JSON.parse(component.customConfig).styles
+                          ...(component.config &&
+                          typeof component.config === "string"
+                            ? JSON.parse(component.config).styles
                             : {}),
                         }}
                       >
                         {/* Options for dropdown */}
-                        {component.customConfig &&
+                        {component.config &&
                           JSON.parse(
-                            component.customConfig
+                            component.config
                           ).custom.optionsConfig.values.map((option, idx) => (
                             <option key={idx} value={option.trim()}>
                               {option.trim()}
@@ -998,9 +991,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for radio */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.customConfig &&
+                        {component.config &&
                           JSON.parse(
-                            component.customConfig
+                            component.config
                           ).custom.optionsConfig.values.map((option, idx) => {
                             const optionWidth = option.trim().length * 8 + 48;
 
@@ -1067,9 +1060,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for checkbox */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.customConfig &&
+                        {component.config &&
                           JSON.parse(
-                            component.customConfig
+                            component.config
                           ).custom.optionsConfig.values.map((option, idx) => {
                             const optionWidth = option.trim().length * 8 + 48;
 
@@ -1140,34 +1133,29 @@ const ConfigureInputsOutputs: React.FC = () => {
                           className="w-full md:w-[60%] h-8"
                           name={component.label}
                           min={
-                            JSON.parse(component.customConfig).custom
+                            JSON.parse(component.config).custom
                               .sliderConfig.interval.min
                           }
                           max={
-                            JSON.parse(component.customConfig).custom
+                            JSON.parse(component.config).custom
                               .sliderConfig.interval.max
                           }
                           step={
-                            JSON.parse(component.customConfig).custom
+                            JSON.parse(component.config).custom
                               .sliderConfig.step
                           }
                           value={
                             data[component.id] ||
-                            JSON.parse(component.customConfig).custom
+                            JSON.parse(component.config).custom
                               .sliderConfig.value
                           }
                           onChange={(e) =>
                             handleInputChange(component.id, e.target.value)
                           }
-                          // style={{
-                          //   ...(component.customConfig && typeof component.customConfig === 'string'
-                          //     ? JSON.parse(component.customConfig).styles
-                          //     : {}),
-                          // }}
                         />
                         <span className="font-semibold">
                           {data[component.id] ||
-                            JSON.parse(component.customConfig).custom
+                            JSON.parse(component.config).custom
                               .sliderConfig.value}
                         </span>
                       </div>
@@ -1196,14 +1184,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
 
                       {/* <Wallet
-                        configurations={JSON.parse(component.customConfig).custom.walletConfig}
+                        configurations={JSON.parse(component.config).custom.walletConfig}
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, address)
                         }
                       /> */}
                       <Wallet
                         configurations={
-                          JSON.parse(component.customConfig).custom.walletConfig
+                          JSON.parse(component.config).custom.walletConfig
                         }
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, {
@@ -1245,9 +1233,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                         className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
                         style={{
-                          ...(component.customConfig &&
-                          typeof component.customConfig === "string"
-                            ? JSON.parse(component.customConfig).styles
+                          ...(component.config &&
+                          typeof component.config === "string"
+                            ? JSON.parse(component.config).styles
                             : {}),
                         }}
                       >
