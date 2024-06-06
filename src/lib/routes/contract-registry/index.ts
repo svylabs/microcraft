@@ -61,17 +61,22 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
     if (!contract) {
         return res.status(404).json({ error: "Contract not found" });
     }
+    const version = req.query.version || contract.latest_version;
+    const network = req.query.network;
     const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
         .filter("contract_id", "=", req.params.id)
-        .filter("version", "=", contract.latest_version);
+        .filter("version", "=", version);
     const [contractVersion] = await datastore.runQuery(contractVersionQuery);
     contract.data = contractVersion;
-    const contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
+    let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
         .filter("contract_id", "=", req.params.id)
-        .filter("version", "=", contract.latest_version);
-    const [contractInstance] = await datastore.runQuery(contractInstanceQuery);
-    if (contractInstance.length > 0) {
-        contract.instance = contractInstance;
+        .filter("version", "=", version);
+    if (network) {
+        contractInstanceQuery = contractInstanceQuery.filter("network", "=", network);
+    }
+    const [contractInstances] = await datastore.runQuery(contractInstanceQuery);
+    if (contractInstances.length > 0) {
+        contract.instances = contractInstances;
     }
     res.json(contract);
 });
