@@ -54,15 +54,16 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
     }));
   };
 
-  const handleSwapChange = (id: string, swapData: any) => {
-    setData((prevData) => ({
-      ...prevData,
-      [id]: {
-        ...prevData[id],
-        ...swapData,
-      },
-    }));
-  };
+  // const handleSwapChange = (id: string, swapData: any) => {
+  //   // Check if the new swap data is different from the existing data
+  //   if (data[id] !== swapData) {
+  //     setData((prevData) => ({
+  //       ...prevData,
+  //       [id]: swapData,
+  //     }));
+  //   }
+  // };
+  
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     // setLoading(true);
@@ -176,19 +177,22 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                 )}
               {component.type === "swap" && (
                 <div
-                style={{
-                  ...(component.customConfig &&
-                  typeof component.customConfig === "string"
-                    ? JSON.parse(component.customConfig).styles
-                    : {}),
-                }}
-              >
-                <Swap
-                  configurations={
-                    JSON.parse(component.customConfig).custom.swapConfig
-                  }
-                />
-              </div>
+                  style={{
+                    ...(component.customConfig &&
+                    typeof component.customConfig === "string"
+                      ? JSON.parse(component.customConfig).styles
+                      : {}),
+                  }}
+                >
+                  <Swap
+                    configurations={
+                      JSON.parse(component.customConfig).custom.swapConfig
+                    }
+                    onSwapChange={(swapData) =>
+                      handleInputChange(component.id, swapData)
+                    }
+                  />
+                </div>
               )}
               {component.type === "dropdown" && (
                 <select

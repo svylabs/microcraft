@@ -26,7 +26,7 @@ interface CustomComponent {
   placement: string;
   code?: string;
   customConfig?: any;
-  config?: any;
+  // config?: any;
   events?: Event[] | undefined;
 }
 
@@ -402,6 +402,16 @@ const ConfigureInputsOutputs: React.FC = () => {
     }));
   };
 
+  const handleSwapChange = (id: string, swapData: any) => {
+    // Check if the new swap data is different from the existing data
+    if (data[id] !== swapData) {
+      setData((prevData) => ({
+        ...prevData,
+        [id]: swapData,
+      }));
+    }
+  };
+
   const handleDeleteComponent = (id: string) => {
     setComponents((prevComponents) =>
       prevComponents.filter((component) => component.id !== id)
@@ -560,12 +570,15 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                     Token Swap:
                   </label>
-                  {/* {components.map((component, index) => (
+                  {components.map((component, index) => (
                   <Swap 
                   key={index}
-                  configurations={JSON.parse(component.customConfig).custom.swapConfig} />
-                  ))} */}
-                  <Swap configurations={customConfig.custom.swapConfig} />
+                  configurations={customConfig.custom.swapConfig} 
+                  onSwapChange={(swapData) =>
+                    handleSwapChange(component.id, swapData)
+                  }
+                  />
+                  ))}
                 </div>
               )}
             </>
@@ -905,6 +918,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                         <Swap
                           configurations={
                             JSON.parse(component.customConfig).custom.swapConfig
+                          }
+                          onSwapChange={(swapData) =>
+                            handleInputChange(component.id, swapData)
                           }
                         />
                         {/* <Swap configurations = {customConfig.custom.swapConfig}/> */}

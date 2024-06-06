@@ -8,9 +8,10 @@ const web3 = new Web3(Web3.givenProvider);
 
 interface Props {
   configurations: any;
+  onSwapChange: any;
 }
 
-const Swap: React.FC<Props> = ({ configurations }) => {
+const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
   const [currentTrade, setCurrentTrade] = useState({ from: null, to: null });
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
@@ -23,8 +24,23 @@ const Swap: React.FC<Props> = ({ configurations }) => {
     setCurrentTrade(updatedTrade);
     if (side === "from") setFromAmount("");
     if (side === "to") setToAmount("");
+
+    // const swapData = { currentTrade: updatedTrade, fromAmount, toAmount };
+    // onSwapChange(swapData);
     // getPrice();
   };
+
+  // useEffect(() => {
+  //   const swapData = { from: currentTrade.from, to: currentTrade.to, fromAmount, toAmount };
+  //   onSwapChange(swapData);
+  // }, [currentTrade, fromAmount, toAmount, onSwapChange]);
+
+  useEffect(() => {
+    const swapData = { from: currentTrade.from, to: currentTrade.to, fromAmount, toAmount };
+    onSwapChange(swapData);
+  }, [currentTrade.from, currentTrade.to, fromAmount, toAmount]);
+  
+  
 
   // const getPrice = async () => {
   //   console.log("Getting Price");
