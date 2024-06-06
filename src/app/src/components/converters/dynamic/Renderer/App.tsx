@@ -160,7 +160,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                             <Graph
                               key={`graph-${component.id}`}
                               output={data[component.id]}
-                              configurations={JSON.parse(component.customConfig).custom.graphConfig}
+                              configurations={
+                                JSON.parse(component.customConfig).custom
+                                  .graphConfig
+                              }
                               graphId={`graph-container-${component.id}`}
                             />
                           </div>
@@ -193,58 +196,20 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   />
                 )}
               {component.type === "swap" && (
-                <div>
-                  {component.swapConfig &&
-                    (() => {
-                      const { fromAddress, toAddress, fromAmount } = JSON.parse(
-                        component.swapConfig
-                      );
-                      // console.log(fromAddress);
-                      // console.log(toAddress);
-                      // console.log(fromAmount);
-                      return (
-                        <div
-                          style={{
-                            ...(component.customConfig &&
-                            typeof component.customConfig === "string"
-                              ? JSON.parse(component.customConfig).styles
-                              : {}),
-                          }}
-                        >
-                          <Swap
-                            currentTrade={{
-                              from:
-                                tokens.find(
-                                  (token) => token.address === fromAddress
-                                ) || null,
-                              to:
-                                tokens.find(
-                                  (token) => token.address === toAddress
-                                ) || null,
-                              // handleSwapChange: (swapData) => handleSwapChange(component.id, swapData),
-                            }}
-                            // setCurrentTrade={(trade) =>
-                            //   handleInputChange(component.id, trade)
-                            // }
-                            // fromAmount={fromAmount}
-                            // setFromAmount={(amount) =>
-                            //   handleInputChange(component.id, { fromAmount: amount })
-                            // }
-                            // toAmount={toAmount}
-                            // setToAmount={(amount) =>
-                            //   handleInputChange(component.id, { toAmount: amount })
-                            // }
-                            // currentTrade={currentTrade}
-                            setCurrentTrade={setCurrentTrade}
-                            fromAmount={fromAmount}
-                            setFromAmount={setFromAmount}
-                            toAmount={toAmount}
-                            setToAmount={setToAmount}
-                          />
-                        </div>
-                      );
-                    })()}
-                </div>
+                <div
+                style={{
+                  ...(component.customConfig &&
+                  typeof component.customConfig === "string"
+                    ? JSON.parse(component.customConfig).styles
+                    : {}),
+                }}
+              >
+                <Swap
+                  configurations={
+                    JSON.parse(component.customConfig).custom.swapConfig
+                  }
+                />
+              </div>
               )}
               {component.type === "dropdown" && (
                 <select
@@ -274,93 +239,93 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
               {component.type === "radio" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                   {component.customConfig &&
-                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
-                      (option, idx) => {
-                        const optionWidth = option.trim().length * 8 + 48;
+                    JSON.parse(
+                      component.customConfig
+                    ).custom.optionsConfig.values.map((option, idx) => {
+                      const optionWidth = option.trim().length * 8 + 48;
 
-                        return (
-                          <div
-                            key={idx}
-                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                            } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                            optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                          } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
+                        >
+                          <input
+                            type="radio"
+                            id={`${component.id}_${idx}`}
+                            name={component.id}
+                            value={option.trim()}
+                            checked={data[component.id] === option}
+                            onChange={(e) =>
+                              handleInputChange(component.id, e.target.value)
+                            }
+                            className="mr-2 absolute"
+                            style={{
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                            }}
+                          />
+                          <label
+                            htmlFor={`${component.id}_${idx}`}
+                            className="whitespace-nowrap"
+                            style={{ marginLeft: "1.5rem" }}
                           >
-                            <input
-                              type="radio"
-                              id={`${component.id}_${idx}`}
-                              name={component.id}
-                              value={option.trim()}
-                              checked={data[component.id] === option}
-                              onChange={(e) =>
-                                handleInputChange(component.id, e.target.value)
-                              }
-                              className="mr-2 absolute"
-                              style={{
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                              }}
-                            />
-                            <label
-                              htmlFor={`${component.id}_${idx}`}
-                              className="whitespace-nowrap"
-                              style={{ marginLeft: "1.5rem" }}
-                            >
-                              {option.trim()}
-                            </label>
-                          </div>
-                        );
-                      }
-                    )}
+                            {option.trim()}
+                          </label>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
               {component.type === "checkbox" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                   {component.customConfig &&
-                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
-                      (option, idx) => {
-                        const optionWidth = option.trim().length * 8 + 48;
+                    JSON.parse(
+                      component.customConfig
+                    ).custom.optionsConfig.values.map((option, idx) => {
+                      const optionWidth = option.trim().length * 8 + 48;
 
-                        return (
-                          <div
-                            key={idx}
-                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                              optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                            } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                      return (
+                        <div
+                          key={idx}
+                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                            optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                          } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                        >
+                          <input
+                            type="checkbox"
+                            id={`${component.id}_${idx}`}
+                            checked={
+                              data[component.id] &&
+                              data[component.id].includes(option)
+                            }
+                            onChange={(e) => {
+                              const isChecked = e.target.checked;
+                              const currentValue = data[component.id] || [];
+                              const updatedValue = isChecked
+                                ? [...currentValue, option]
+                                : currentValue.filter(
+                                    (item) => item !== option
+                                  );
+                              handleInputChange(component.id, updatedValue);
+                            }}
+                            className="mr-2 absolute"
+                            style={{
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                            }}
+                          />
+                          <label
+                            htmlFor={`${component.id}_${idx}`}
+                            className="whitespace-nowrap"
+                            style={{ marginLeft: "1.5rem" }}
                           >
-                            <input
-                              type="checkbox"
-                              id={`${component.id}_${idx}`}
-                              checked={
-                                data[component.id] &&
-                                data[component.id].includes(option)
-                              }
-                              onChange={(e) => {
-                                const isChecked = e.target.checked;
-                                const currentValue = data[component.id] || [];
-                                const updatedValue = isChecked
-                                  ? [...currentValue, option]
-                                  : currentValue.filter(
-                                      (item) => item !== option
-                                    );
-                                handleInputChange(component.id, updatedValue);
-                              }}
-                              className="mr-2 absolute"
-                              style={{
-                                top: "50%",
-                                transform: "translateY(-50%)",
-                              }}
-                            />
-                            <label
-                              htmlFor={`${component.id}_${idx}`}
-                              className="whitespace-nowrap"
-                              style={{ marginLeft: "1.5rem" }}
-                            >
-                              {option.trim()}
-                            </label>
-                          </div>
-                        );
-                      }
-                    )}
+                            {option.trim()}
+                          </label>
+                        </div>
+                      );
+                    })}
                 </div>
               )}
               {component.type === "slider" && (
@@ -370,12 +335,22 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                     id={component.id}
                     className="w-full md:w-[60%] h-8"
                     name={component.label}
-                    min={JSON.parse(component.customConfig).custom.sliderConfig.interval.min}
-                    max={JSON.parse(component.customConfig).custom.sliderConfig.interval.max}
-                    step={JSON.parse(component.customConfig).custom.sliderConfig.step}
+                    min={
+                      JSON.parse(component.customConfig).custom.sliderConfig
+                        .interval.min
+                    }
+                    max={
+                      JSON.parse(component.customConfig).custom.sliderConfig
+                        .interval.max
+                    }
+                    step={
+                      JSON.parse(component.customConfig).custom.sliderConfig
+                        .step
+                    }
                     value={
                       data[component.id] ||
-                      JSON.parse(component.customConfig).custom.sliderConfig.value
+                      JSON.parse(component.customConfig).custom.sliderConfig
+                        .value
                     }
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
@@ -388,14 +363,17 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   />
                   <span className="font-semibold">
                     {data[component.id] ||
-                      JSON.parse(component.customConfig).custom.sliderConfig.value}
+                      JSON.parse(component.customConfig).custom.sliderConfig
+                        .value}
                   </span>
                 </div>
               )}
               {component.type === "walletDropdown" && (
                 <div>
                   <Wallet
-                    configurations={JSON.parse(component.customConfig).custom.walletConfig}
+                    configurations={
+                      JSON.parse(component.customConfig).custom.walletConfig
+                    }
                     onSelectAddress={(address) =>
                       handleInputChange(component.id, {
                         address,

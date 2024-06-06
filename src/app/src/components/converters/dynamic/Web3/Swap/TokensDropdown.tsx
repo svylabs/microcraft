@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface Token {
   address: string;
@@ -47,7 +47,7 @@ const TokensDropdown: React.FC<TokensDropdownProps> = ({
     setSearchQuery("");
   };
 
-  const filteredTokens = tokens.filter((token) =>
+  const filteredTokens = tokens?.filter((token) =>
     token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -82,7 +82,7 @@ const TokensDropdown: React.FC<TokensDropdownProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {filteredTokens.map((token) => (
+          {filteredTokens?.map((token) => (
             <div
               key={token.address}
               className={`flex items-center p-2 cursor-pointer hover:bg-gray-100 ${blurToken && token.address === blurToken.address ? "opacity-50 cursor-not-allowed" : ""}`}

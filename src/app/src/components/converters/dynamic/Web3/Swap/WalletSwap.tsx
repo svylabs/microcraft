@@ -2,24 +2,32 @@ import React, { useState, useEffect } from "react";
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import qs from "qs";
-import { tokens } from "./AvailableTokens";
+// import { tokens } from "./AvailableTokens";
 import TokensDropdown from "./TokensDropdown";
 
 const web3 = new Web3(Web3.givenProvider);
 
+// interface Props {
+//   currentTrade: { [key: string]: any };
+//   setCurrentTrade: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
+//   fromAmount: string;
+//   setFromAmount: React.Dispatch<React.SetStateAction<string>>;
+//   toAmount: string;
+//   setToAmount: React.Dispatch<React.SetStateAction<string>>;
+// }
+
 interface Props {
-  currentTrade: { [key: string]: any };
-  setCurrentTrade: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
-  fromAmount: string;
-  setFromAmount: React.Dispatch<React.SetStateAction<string>>;
-  toAmount: string;
-  setToAmount: React.Dispatch<React.SetStateAction<string>>;
+  configurations: any;
 }
 
-const Swap: React.FC<Props> = ({ currentTrade, setCurrentTrade, fromAmount, setFromAmount, toAmount, setToAmount }) => {
+const Swap: React.FC<Props> = ({ configurations }) => {
+  // const Swap = ({ configurations }) => {
+  const [currentTrade, setCurrentTrade] = useState({ from: null, to: null });
+  const [fromAmount, setFromAmount] = useState("");
+  const [toAmount, setToAmount] = useState("");
   // const [gasEstimate, setGasEstimate] = useState<string>("");
   // const [isFetchingGas, setIsFetchingGas] = useState<boolean>(false);
-
+console.log(configurations);
 
   const selectToken = (side: string, token: any) => {
     const updatedTrade = { ...currentTrade, [side]: token };
@@ -79,7 +87,7 @@ const Swap: React.FC<Props> = ({ currentTrade, setCurrentTrade, fromAmount, setF
           <div className="mb-4">
             <label className="block text-gray-700">From Token</label>
             <TokensDropdown
-              tokens={tokens}
+              tokens={configurations.tokens}
               selectedToken={currentTrade.from}
               onSelect={(token) => selectToken("from", token)}
             />
@@ -99,7 +107,7 @@ const Swap: React.FC<Props> = ({ currentTrade, setCurrentTrade, fromAmount, setF
           <div className="mb-4">
             <label className="block text-gray-700">To Token</label>
             <TokensDropdown
-              tokens={tokens}
+              tokens={configurations.tokens}
               selectedToken={currentTrade.to}
               onSelect={(token) => selectToken("to", token)}
               blurToken={currentTrade.from}

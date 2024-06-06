@@ -8,7 +8,7 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
-import { tokens } from "./Web3/Swap/AvailableTokens";
+// import { tokens } from "./Web3/Swap/AvailableTokens";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -27,7 +27,6 @@ interface CustomComponent {
   code?: string;
   customConfig?: any;
   config?: any;
-  swapConfig?: any;
   events?: Event[] | undefined;
 }
 
@@ -44,7 +43,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     placement: "input",
     code: "",
     customConfig: "",
-    swapConfig: "",
     events: [],
   });
   const [components, setComponents] = useState<CustomComponent[]>([]);
@@ -127,9 +125,53 @@ const ConfigureInputsOutputs: React.FC = () => {
         },
       },
       swapConfig: {
-        fromAddress: "",
-        toAddress: "",
-        fromAmount: "",
+        tokens: [
+          {
+            chainId: 137,
+            name: "Wrapped Matic",
+            symbol: "WMATIC",
+            decimals: 18,
+            address: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+            logoURI:
+              "https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/polygon/assets/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/logo.png",
+          },
+          {
+            chainId: 137,
+            name: "Dai - PoS",
+            symbol: "DAI",
+            decimals: 18,
+            address: "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            logoURI:
+              "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/dai.svg",
+          },
+          {
+            chainId: 137,
+            name: "USD Coin",
+            symbol: "USDC",
+            decimals: 6,
+            address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+            logoURI:
+              "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdc.svg",
+          },
+          {
+            chainId: 137,
+            name: "Uniswap",
+            symbol: "UNI",
+            decimals: 18,
+            address: "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
+            logoURI:
+              "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/uni.svg",
+          },
+          {
+            chainId: 137,
+            name: "Tether USD - PoS",
+            symbol: "USDT",
+            decimals: 6,
+            address: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+            logoURI:
+              "https://raw.githubusercontent.com/maticnetwork/polygon-token-assets/main/assets/tokenAssets/usdt.svg",
+          },
+        ],
       },
     },
   });
@@ -175,23 +217,6 @@ const ConfigureInputsOutputs: React.FC = () => {
         components[index].customConfig || JSON.stringify(customConfig, null, 2),
     });
     setEvents(components[index].events || []);
-
-    if (components[index].type === "swap") {
-      const swapConfig = JSON.parse(components[index].swapConfig);
-
-      setCurrentTrade({
-        from: {
-          address: swapConfig.fromAddress,
-          ...tokens.find((token) => token.address === swapConfig.fromAddress),
-        },
-        to: {
-          address: swapConfig.toAddress,
-          ...tokens.find((token) => token.address === swapConfig.toAddress),
-        },
-      });
-      setFromAmount(swapConfig.fromAmount);
-      setToAmount(""); // Reset the toAmount
-    }
   };
 
   const handleChange = (
@@ -326,7 +351,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     //   });
     // }
 
-
     const newComponent = {
       ...currentComponent,
       customConfig:
@@ -335,19 +359,6 @@ const ConfigureInputsOutputs: React.FC = () => {
         currentComponent.placement === "output"
           ? currentComponent.customConfig ||
             JSON.stringify(customConfig, null, 2)
-          : "",
-      swapConfig:
-        currentComponent.placement === "input" &&
-        currentComponent.type === "swap"
-          ? JSON.stringify(
-              {
-                fromAddress: currentTrade?.from?.address || "",
-                toAddress: currentTrade?.to?.address || "",
-                fromAmount: fromAmount || "",
-              },
-              null,
-              2
-            )
           : "",
       events: [...events],
     };
@@ -436,8 +447,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     // }, [currentComponent.type]);
   }, [currentComponent.type, currentComponent.placement, currentEvent]);
 
-  console.log(components);
-
   const handleAddEvent = () => {
     if (currentEvent && eventCode.trim() !== "") {
       if (editIndex !== -1) {
@@ -469,6 +478,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     updatedEvents.splice(index, 1);
     setEvents(updatedEvents);
   };
+
+  // console.log(components);
 
   return (
     <>
@@ -549,14 +560,12 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                     Token Swap:
                   </label>
-                  <Swap
-                    currentTrade={currentTrade}
-                    setCurrentTrade={setCurrentTrade}
-                    fromAmount={fromAmount}
-                    setFromAmount={setFromAmount}
-                    toAmount={toAmount}
-                    setToAmount={setToAmount}
-                  />
+                  {/* {components.map((component, index) => (
+                  <Swap 
+                  key={index}
+                  configurations={JSON.parse(component.customConfig).custom.swapConfig} />
+                  ))} */}
+                  <Swap configurations={customConfig.custom.swapConfig} />
                 </div>
               )}
             </>
@@ -574,7 +583,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   <option value="button">Button</option>
                 </select>
-              </label>             
+              </label>
             </div>
           )}
 
@@ -798,8 +807,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                   {component.customConfig &&
                     `, Configuration : ${component.customConfig}`}
                   {/* del */}
-                  {component.swapConfig &&
-                    `, Configuration : ${component.swapConfig}`}
+                  {/* {component.swapConfig &&
+                    `, Configuration : ${component.swapConfig}`} */}
                   {/* del */}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
@@ -885,42 +894,21 @@ const ConfigureInputsOutputs: React.FC = () => {
                           </button>
                         </div>
                       </div>
-                      {component.swapConfig &&
-                        (() => {
-                          const { fromAddress, toAddress, fromAmount } =
-                            JSON.parse(component.swapConfig);
-                          console.log(fromAddress);
-                          console.log(toAddress);
-                          console.log(fromAmount);
-                          return (
-                            <div
-                              style={{
-                                ...(component.customConfig &&
-                                typeof component.customConfig === "string"
-                                  ? JSON.parse(component.customConfig).styles
-                                  : {}),
-                              }}
-                            >
-                              <Swap
-                                currentTrade={{
-                                  from:
-                                    tokens.find(
-                                      (token) => token.address === fromAddress
-                                    ) || null,
-                                  to:
-                                    tokens.find(
-                                      (token) => token.address === toAddress
-                                    ) || null,
-                                }}
-                                setCurrentTrade={setCurrentTrade}
-                                fromAmount={fromAmount}
-                                setFromAmount={setFromAmount}
-                                toAmount={toAmount}
-                                setToAmount={setToAmount}
-                              />
-                            </div>
-                          );
-                        })()}
+                      <div
+                        style={{
+                          ...(component.customConfig &&
+                          typeof component.customConfig === "string"
+                            ? JSON.parse(component.customConfig).styles
+                            : {}),
+                        }}
+                      >
+                        <Swap
+                          configurations={
+                            JSON.parse(component.customConfig).custom.swapConfig
+                          }
+                        />
+                        {/* <Swap configurations = {customConfig.custom.swapConfig}/> */}
+                      </div>
                     </div>
                   )}
                   {component.type === "dropdown" && (
@@ -953,21 +941,21 @@ const ConfigureInputsOutputs: React.FC = () => {
                           handleInputChange(component.id, e.target.value)
                         }
                         style={{
-                          ...(component.customConfig && typeof component.customConfig === 'string'
+                          ...(component.customConfig &&
+                          typeof component.customConfig === "string"
                             ? JSON.parse(component.customConfig).styles
                             : {}),
                         }}
                       >
                         {/* Options for dropdown */}
                         {component.customConfig &&
-                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
-                            
-                            (option, idx) => (
-                              <option key={idx} value={option.trim()}>
-                                {option.trim()}
-                              </option>
-                            )
-                          )}
+                          JSON.parse(
+                            component.customConfig
+                          ).custom.optionsConfig.values.map((option, idx) => (
+                            <option key={idx} value={option.trim()}>
+                              {option.trim()}
+                            </option>
+                          ))}
                       </select>
                     </div>
                   )}
@@ -995,49 +983,48 @@ const ConfigureInputsOutputs: React.FC = () => {
                       {/* Options for radio */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
                         {component.customConfig &&
-                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
-                            (option, idx) => {
-                              const optionWidth = option.trim().length * 8 + 48;
+                          JSON.parse(
+                            component.customConfig
+                          ).custom.optionsConfig.values.map((option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
 
-                              return (
-                                <div
-                                  key={idx}
-                                  className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                                    optionWidth > 200
-                                      ? "overflow-x-auto md:h-8"
-                                      : ""
-                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="radio"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  checked={data[component.id] === option}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
                                 >
-                                  <input
-                                    type="radio"
-                                    id={`${component.id}_${idx}`}
-                                    name={component.id}
-                                    value={option.trim()}
-                                    checked={data[component.id] === option}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        component.id,
-                                        e.target.value
-                                      )
-                                    }
-                                    className="mr-2 absolute"
-                                    style={{
-                                      top: "50%",
-                                      transform: "translateY(-50%)",
-                                    }}
-                                  />
-                                  <label
-                                    htmlFor={`${component.id}_${idx}`}
-                                    className="whitespace-nowrap"
-                                    style={{ marginLeft: "1.5rem" }}
-                                  >
-                                    {option.trim()}
-                                  </label>
-                                </div>
-                              );
-                            }
-                          )}
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   )}
@@ -1064,48 +1051,48 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for checkbox */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                      {component.customConfig &&
-                          JSON.parse(component.customConfig).custom.optionsConfig.values.map(
-                            (option, idx) => {
-                              const optionWidth = option.trim().length * 8 + 48;
+                        {component.customConfig &&
+                          JSON.parse(
+                            component.customConfig
+                          ).custom.optionsConfig.values.map((option, idx) => {
+                            const optionWidth = option.trim().length * 8 + 48;
 
-                              return (
-                                <div
-                                  key={idx}
-                                  className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                                    optionWidth > 200
-                                      ? "overflow-x-auto md:h-8"
-                                      : ""
-                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                            return (
+                              <div
+                                key={idx}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
+                                  optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`${component.id}_${idx}`}
+                                  name={component.id}
+                                  value={option.trim()}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      component.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="mr-2 absolute"
+                                  style={{
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                />
+                                <label
+                                  htmlFor={`${component.id}_${idx}`}
+                                  className="whitespace-nowrap"
+                                  style={{ marginLeft: "1.5rem" }}
                                 >
-                                  <input
-                                    type="checkbox"
-                                    id={`${component.id}_${idx}`}
-                                    name={component.id}
-                                    value={option.trim()}
-                                    onChange={(e) =>
-                                      handleInputChange(
-                                        component.id,
-                                        e.target.value
-                                      )
-                                    }
-                                    className="mr-2 absolute"
-                                    style={{
-                                      top: "50%",
-                                      transform: "translateY(-50%)",
-                                    }}
-                                  />
-                                  <label
-                                    htmlFor={`${component.id}_${idx}`}
-                                    className="whitespace-nowrap"
-                                    style={{ marginLeft: "1.5rem" }}
-                                  >
-                                    {option.trim()}
-                                  </label>
-                                </div>
-                              );
-                            }
-                          )}
+                                  {option.trim()}
+                                </label>
+                              </div>
+                            );
+                          })}
                       </div>
                     </div>
                   )}
@@ -1136,12 +1123,22 @@ const ConfigureInputsOutputs: React.FC = () => {
                           id={component.id}
                           className="w-full md:w-[60%] h-8"
                           name={component.label}
-                          min={JSON.parse(component.customConfig).custom.sliderConfig.interval.min}
-                          max={JSON.parse(component.customConfig).custom.sliderConfig.interval.max}
-                          step={JSON.parse(component.customConfig).custom.sliderConfig.step}
+                          min={
+                            JSON.parse(component.customConfig).custom
+                              .sliderConfig.interval.min
+                          }
+                          max={
+                            JSON.parse(component.customConfig).custom
+                              .sliderConfig.interval.max
+                          }
+                          step={
+                            JSON.parse(component.customConfig).custom
+                              .sliderConfig.step
+                          }
                           value={
                             data[component.id] ||
-                            JSON.parse(component.customConfig).custom.sliderConfig.value
+                            JSON.parse(component.customConfig).custom
+                              .sliderConfig.value
                           }
                           onChange={(e) =>
                             handleInputChange(component.id, e.target.value)
@@ -1154,7 +1151,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                         />
                         <span className="font-semibold">
                           {data[component.id] ||
-                            JSON.parse(component.customConfig).custom.sliderConfig.value}
+                            JSON.parse(component.customConfig).custom
+                              .sliderConfig.value}
                         </span>
                       </div>
                     </div>
@@ -1188,7 +1186,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }
                       /> */}
                       <Wallet
-                        configurations={JSON.parse(component.customConfig).custom.walletConfig}
+                        configurations={
+                          JSON.parse(component.customConfig).custom.walletConfig
+                        }
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, {
                             address,
