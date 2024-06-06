@@ -6,7 +6,6 @@ import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
-import { tokens } from "../Web3/Swap/AvailableTokens";
 
 interface Props {
   components: any[];
@@ -17,9 +16,6 @@ interface Props {
 
 const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   const [loading, setLoading] = useState(false);
-  const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
-  const [fromAmount, setFromAmount] = useState("");
-  const [toAmount, setToAmount] = useState("");
 
   useEffect(() => {
     console.log(components);
@@ -33,23 +29,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
       }
     });
   }, [components]);
-
-  useEffect(() => {
-    // Initialize swap data when the component mounts
-    components.forEach((component) => {
-      if (component.type === "swap" && component.swapConfig) {
-        const { fromAddress, toAddress, fromAmount } = JSON.parse(
-          component.swapConfig
-        );
-        const initialSwapData = {
-          from: tokens.find((token) => token.address === fromAddress) || null,
-          to: tokens.find((token) => token.address === toAddress) || null,
-          fromAmount,
-        };
-        handleInputChange(component.id, initialSwapData);
-      }
-    });
-  }, []);
 
   const executeOnLoadCode = async (code) => {
     const web3 = new Web3(window.ethereum);
