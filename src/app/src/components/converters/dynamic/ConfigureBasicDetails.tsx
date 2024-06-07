@@ -2,15 +2,26 @@ import React, { useState, useEffect, useRef } from "react";
 import "./ConfigureBasicDetails.scss";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
-import { GITHUB_CLIENT_ID } from "~/components/constants";
+import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
+import LoginSignupModal from "../../LoginSignupModal";
+
+interface Team {
+  id: string;
+  name: string;
+}
 
 const ConfigureBasicDetails: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [privacy, setPrivacy] = useState("public");
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
     title: false,
+    privacy: false,
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -24,18 +35,45 @@ const ConfigureBasicDetails: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (privacy === "private") {
+      fetchTeams();
+    }
+  }, [privacy]);
+
+  const fetchTeams = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/teams/list`, {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const teams: Team[] = await response.json();
+        console.log(teams);
+        if (teams.length === 0) {
+          setShowModal(true);
+        } else {
+          setTeams(teams);
+        }
+      } else {
+        console.error("Failed to fetch teams list:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching teams list:", error);
+    }
+  };
+
   const handleSaveNext = () => {
     if (!title.trim()) {
-      setFieldErrors({
-        title: !title.trim(),
-      });
+      setFieldErrors({ ...fieldErrors, title: !title.trim() });
+      return;
+    }
+    if (privacy === "private" && !selectedTeam) {
+      setFieldErrors({ ...fieldErrors, privacy: true });
       return;
     } else {
       localStorage.removeItem("formData");
-
-      const data = { title, description };
+      const data = { title, description, privacy, selectedTeam };
       localStorage.setItem("formData", JSON.stringify(data));
-
       window.location.href = "/app/new";
     }
   };
@@ -109,6 +147,69 @@ const ConfigureBasicDetails: React.FC = () => {
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
+
+            <div className="">
+              <p className="text-[#727679] font-semibold text-lg xl:text-xl">
+                Privacy
+              </p>
+              <div className="flex items-center mt-2">
+                <input
+                  type="radio"
+                  id="public"
+                  name="privacy"
+                  value="public"
+                  checked={privacy === "public"}
+                  onChange={(e) => setPrivacy(e.target.value)}
+                />
+                <label htmlFor="public" className="ml-2 text-[#727679]">
+                  Public
+                </label>
+              </div>
+              <div className="flex items-center mt-2">
+                <input
+                  type="radio"
+                  id="private"
+                  name="privacy"
+                  value="private"
+                  checked={privacy === "private"}
+                  onChange={(e) => setPrivacy(e.target.value)}
+                />
+                <label htmlFor="private" className="ml-2 text-[#727679]">
+                  Private
+                </label>
+              </div>
+              {privacy === "private" && (
+                <div className="mt-2">
+                  <label
+                    htmlFor="team"
+                    className="text-[#727679] font-semibold text-lg xl:text-xl"
+                  >
+                    Select Team
+                  </label>
+                  <select
+                    id="team"
+                    className="focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 p-3 px-4 bg-[#F7F8FB] xl:text-2xl text-[#21262C] placeholder:italic w-full"
+                    value={selectedTeam}
+                    onChange={(e) => setSelectedTeam(e.target.value)}
+                  >
+                    <option value="" disabled>
+                      Select a team
+                    </option>
+                    {teams.map((team) => (
+                      <option key={team.id} value={team.id}>
+                        {team.name}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors.privacy && (
+                    <p className="text-red-500 mt-2">
+                      Please select a team or create one.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end">
               <Link to="#" onClick={handleSaveNext} className="mx-0">
                 <button
@@ -139,6 +240,8 @@ const ConfigureBasicDetails: React.FC = () => {
           </div>
         )}
       </div>
+      {/* <LoginSignupModal /> */}
+      {showModal && <LoginSignupModal closeModal={() => setShowModal(false)} />}
     </div>
   );
 };

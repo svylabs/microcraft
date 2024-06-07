@@ -86,7 +86,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="w-full max-w-md mx-auto bg-white rounded-lg shadow-md p-4">
+      <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-4 lg:px-6">
         <h4 className="text-lg font-semibold mb-4">Swap</h4>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">

@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
 import { BASE_API_URL } from "./constants";
-import ro from "./photos/metamask-fox-logo.png";
 
 interface Converter {
   id: string;
