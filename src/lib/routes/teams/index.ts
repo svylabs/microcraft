@@ -90,7 +90,7 @@ teamsRouter.post("/new", authenticatedUser, async (req: Request, res: Response) 
     const name = req.body.name;
     const description = req.body.description;
     const user = (req.session as CustomSession).user;
-    const userId = user?.id;
+    const userId = user?.id || 0;
     const teamId = mcutils.getId(user?.id + name);
     const entity = {
         key: datastore.key(["Team", teamId]),
@@ -102,11 +102,10 @@ teamsRouter.post("/new", authenticatedUser, async (req: Request, res: Response) 
             admins: [user?.id],
         },
     };
-
     try {
         await datastore.save(entity);
 
-        const userKey = datastore.key(["User", userId + ""]);
+        const userKey = datastore.key(["User", userId]);
         const [userData] = await datastore.get(userKey);
         userData.teams = userData.teams || [];
         userData.teams.push(teamId);
