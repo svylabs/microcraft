@@ -37,30 +37,40 @@ const ConfigureBasicDetails: React.FC = () => {
 
   useEffect(() => {
     if (privacy === "private") {
+      // console.log("rohit");
       fetchTeams();
     }
   }, [privacy]);
 
   const fetchTeams = async () => {
+    // console.log("rohit_1");
+    // console.log("BASE_API_URL:", BASE_API_URL);
     try {
-      const response = await fetch(`${BASE_API_URL}/teams/list`, {
-        credentials: "include",
-      });
-      if (response.ok) {
-        const teams: Team[] = await response.json();
-        console.log(teams);
-        if (teams.length === 0) {
-          setShowModal(true);
+        const response = await fetch(`${BASE_API_URL}/teams/list`, {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log("Response status:", response.status);
+        if (response.ok) {
+            console.log("rohit_2");
+            const teams: Team[] = await response.json();
+            console.log(teams);
+            if (teams.length === 0) {
+                setShowModal(true);
+            } else {
+                setTeams(teams);
+            }
         } else {
-          setTeams(teams);
+            console.error("Failed to fetch teams list:", response.statusText);
         }
-      } else {
-        console.error("Failed to fetch teams list:", response.status);
-      }
     } catch (error) {
-      console.error("Error fetching teams list:", error);
+        console.error("Error fetching teams list:", error);
     }
-  };
+};
+
 
   const handleSaveNext = () => {
     if (!title.trim()) {
