@@ -90,3 +90,23 @@ contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: 
     };
     await datastore.save(contract);
 });
+
+contractRegistryRouter.put("/version/new", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const key = datastore.key("ContractRegistry");
+    const contract = {
+        key,
+        data: req.body,
+    };
+    await datastore.save(contract);
+});
+
+contractRegistryRouter.put("/instance/new", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const key = datastore.key("ContractRegistry");
+    const contract = {
+        key,
+        data: req.body,
+    };
+    await datastore.save(contract);
+});

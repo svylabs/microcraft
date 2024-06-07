@@ -40,6 +40,7 @@ interface User {
   name: string;
   login: string;
   id: number;
+  email?: string;
   avatar_url: string;
   created_on: string;
   teams?: string[];
@@ -75,6 +76,10 @@ const addUserToDatastore = async (user: User) => {
       {
         name: "id",
         value: user.id,
+      },
+      {
+        name: "email",
+        value: user.email,
       },
       {
         name: "avatar_url",
@@ -170,6 +175,7 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     name: userData.data.name,
     login: userData.data.login,
     id: userData.data.id,
+    email: userData.data.email,
     avatar_url: userData.data.avatar_url,
     created_on: new Date().toISOString(),
   };

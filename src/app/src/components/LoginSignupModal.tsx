@@ -121,7 +121,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
 
             <div className="flex flex-col space-y-4">
               <a
-                href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
+                href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`}
                 className="mx-auto md:mx-0 w-full"
               >
                 <button
