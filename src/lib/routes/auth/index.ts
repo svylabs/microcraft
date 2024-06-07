@@ -62,6 +62,7 @@ const addUserToDatastore = async (user: User) => {
   const datastore = getDatastore();
   // const key = datastore.key([kind, user.id]);
   const key = datastore.key([kind, user.id]);
+  const [existing_user] = await datastore.get(key);
   const entity = {
     key: key,
     data: [
@@ -84,16 +85,25 @@ const addUserToDatastore = async (user: User) => {
       {
         name: "avatar_url",
         value: user.avatar_url,
-      },
-      {
-        name: "created_on",
-        value: new Date().toISOString(),
-      },
+      }
     ],
   };
-  const [existing_user] = await datastore.get(key);
   if (!existing_user) {
+    entity.data.push({
+      name: "created_on",
+      value: new Date().toISOString(),
+    });
     await datastore.save(entity);
+  } else {
+    entity.data.push({
+      name: "created_on",
+      value: existing_user.created_on,
+    });
+    entity.data.push({
+      name: "updated_at",
+      value: new Date().toISOString(),
+    });
+    await datastore.update(entity);
   }
 };
 
@@ -170,12 +180,20 @@ githubRouter.get("/github/callback", async (req, res, next) => {
       Authorization: "bearer " + accessToken,
     },
   });
+  let emailData = await axios({
+    method: "get",
+    url: `https://api.github.com/user/emails`,
+    headers: {
+      Authorization: "bearer " + accessToken,
+    },
+  });
+  const email = emailData.data.find((e: any) => e.primary === true);
   console.log("user data:-", userData.data);
   const userDetail = {
     name: userData.data.name,
     login: userData.data.login,
     id: userData.data.id,
-    email: userData.data.email,
+    email: email.email,
     avatar_url: userData.data.avatar_url,
     created_on: new Date().toISOString(),
   };
