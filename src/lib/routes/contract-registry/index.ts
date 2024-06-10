@@ -9,7 +9,7 @@ const corsOptions = {
     credentials: true,
 };
 
-const contractRegistryRouter = Router();
+export const contractRegistryRouter = Router();
 
 contractRegistryRouter.use(cors(corsOptions));
 
