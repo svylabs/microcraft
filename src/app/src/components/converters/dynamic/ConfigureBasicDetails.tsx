@@ -37,14 +37,11 @@ const ConfigureBasicDetails: React.FC = () => {
 
   useEffect(() => {
     if (privacy === "private") {
-      // console.log("rohit");
       fetchTeams();
     }
   }, [privacy]);
 
   const fetchTeams = async () => {
-    // console.log("rohit_1");
-    // console.log("BASE_API_URL:", BASE_API_URL);
     try {
         const response = await fetch(`${BASE_API_URL}/teams/list`, {
             method: 'GET',
@@ -55,7 +52,6 @@ const ConfigureBasicDetails: React.FC = () => {
         });
         console.log("Response status:", response.status);
         if (response.ok) {
-            console.log("rohit_2");
             const teams: Team[] = await response.json();
             console.log(teams);
             if (teams.length === 0) {
@@ -87,6 +83,7 @@ const ConfigureBasicDetails: React.FC = () => {
       window.location.href = "/app/new";
     }
   };
+  console.log(teams)
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md">
@@ -160,7 +157,7 @@ const ConfigureBasicDetails: React.FC = () => {
 
             <div className="">
               <p className="text-[#727679] font-semibold text-lg xl:text-xl">
-                Privacy
+              Visibility / Accessibility
               </p>
               <div className="flex items-center mt-2">
                 <input
@@ -197,16 +194,25 @@ const ConfigureBasicDetails: React.FC = () => {
                     Select Team
                   </label>
                   <select
+                  key={Math.random()}
                     id="team"
                     className="focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 p-3 px-4 bg-[#F7F8FB] xl:text-2xl text-[#21262C] placeholder:italic w-full"
                     value={selectedTeam}
                     onChange={(e) => setSelectedTeam(e.target.value)}
                   >
-                    <option value="" disabled>
+                    <option key="" value="" disabled>
                       Select a team
                     </option>
-                    {teams.map((team) => (
+                    {/* {teams.map((team) => (
                       <option key={team.id} value={team.id}>
+                        {team.name}
+                      </option>
+                    ))} */}
+                    {teams.filter(team => team != null).map((team) => (
+                      <option key={Math.random()} value={team.name}>
+                        {/* {console.log(team)}
+                        {console.log(team.name)}
+                        {console.log(team.id)} */}
                         {team.name}
                       </option>
                     ))}
