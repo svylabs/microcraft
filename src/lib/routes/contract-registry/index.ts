@@ -94,39 +94,38 @@ contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: 
     const datastore = getDatastore();
     const contract_id = mcutils.getId(req.body.name);
     const key = datastore.key([CONTRACT_TABLE, contract_id]);
-    const contract = new Contract(contract_id, req.body.name, req.body.description, req.body.type, req.body.team);
     const entity = {
         key,
         data: [
             {
                 name: "name",
-                value: contract.name,
+                value: req.body.name,
             },
             {
                 name: "description",
-                value: contract.description,
+                value: req.body.description,
                 excludeFromIndexes: true,
             },
             {
                 name: "type",
-                value: contract.type,
+                value: req.body.type,
             },
             {
                 name: "team",
-                value: contract.team,
+                value: req.body.team,
             },
             {
                 name: "created_at",
-                value: contract.created_at,
+                value: new Date()
             },
             {
                 name: "updated_at",
-                value: contract.updated_at,
+                value: new Date(),
             }
         ],
     };
     await datastore.save(entity);
-    res.json(contract);
+    res.json(entity);
 });
 
 contractRegistryRouter.put("/version/new", authenticatedUser, async (req: Request, res: Response) => {
