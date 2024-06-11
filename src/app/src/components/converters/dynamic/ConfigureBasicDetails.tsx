@@ -15,7 +15,7 @@ const ConfigureBasicDetails: React.FC = () => {
   const [description, setDescription] = useState("");
   const [privacy, setPrivacy] = useState("public");
   const [teams, setTeams] = useState<Team[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState("");
+  const [teamId, setTeamId] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
     title: false,
     privacy: false,
@@ -73,12 +73,12 @@ const ConfigureBasicDetails: React.FC = () => {
       setFieldErrors({ ...fieldErrors, title: !title.trim() });
       return;
     }
-    if (privacy === "private" && !selectedTeam) {
+    if (privacy === "private" && !teamId) {
       setFieldErrors({ ...fieldErrors, privacy: true });
       return;
     } else {
       localStorage.removeItem("formData");
-      const data = { title, description, privacy, selectedTeam };
+      const data = { title, description, privacy, teamId };
       localStorage.setItem("formData", JSON.stringify(data));
       window.location.href = "/app/new";
     }
@@ -194,11 +194,11 @@ const ConfigureBasicDetails: React.FC = () => {
                     Select Team
                   </label>
                   <select
-                  key={Math.random()}
+                  // key={Math.random()}
                     id="team"
                     className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
-                    value={selectedTeam}
-                    onChange={(e) => setSelectedTeam(e.target.value)}
+                    value={teamId}
+                    onChange={(e) => setTeamId(e.target.value)}
                   >
                     <option key="" value="" disabled>
                       Select a team
