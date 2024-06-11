@@ -204,7 +204,7 @@ const ConfigureBasicDetails: React.FC = () => {
                       Select a team
                     </option>
                     {teams.filter(team => team != null).map((team) => (
-                      <option key={Math.random()} value={team.name}>
+                      <option key={team.id} value={team.id}>
                         {/* {console.log(team)}
                         {console.log(team.name)}
                         {console.log(team.id)} */}

@@ -168,38 +168,30 @@ teamsRouter.post(
 );
 
 // Delete all teams
-teamsRouter.delete("/all", authenticatedUser, async (req: Request, res: Response) => {
-  const session = req.session as CustomSession;
-  const userId = session.user?.id;
-
-  if (!userId) {
-      return res.status(400).json({ error: "User ID not found in session" });
-  }
-
-  try {
-      // Retrieve all teams associated with the user
-      const query = datastore.createQuery("Team").filter('createdBy', '=', userId);
-      const [teams] = await datastore.runQuery(query);
-
-      if (teams.length === 0) {
-          return res.json({ message: "No teams found to delete" });
-      }
-
-      console.log(`Found ${teams.length} teams to delete`);
-
-      // Delete each team and its associated data
-      const deletionPromises = teams.map(async (team: any) => {
-          const teamKey = datastore.key(["Team", team[datastore.KEY].name]);
-          console.log(`Deleting team with key: ${teamKey.path}`);
-          await datastore.delete(teamKey);
-      });
-
-      // Wait for all deletion operations to complete
-      await Promise.all(deletionPromises);
-
-      res.json({ message: "All teams deleted successfully" });
-  } catch (error) {
-      console.error("Error deleting all teams:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-  }
-});
+// teamsRouter.delete("/all", authenticatedUser, async (req: Request, res: Response) => {
+//   try {
+//     // Retrieve all teams
+//     const query = datastore.createQuery("Team");
+//     const [teams] = await datastore.runQuery(query);
+    
+//     if (teams.length === 0) {
+//         return res.json({ message: "No teams found to delete" });
+//     }
+    
+//     console.log(`Found ${teams.length} teams to delete`);
+    
+//     // Delete each team and its associated data
+//     const deletionPromises = teams.map(async (team) => {
+//         const teamKey = team[datastore.KEY]; // Directly use the team key
+//         console.log(`Deleting team with key: ${teamKey.path}`);
+//         await datastore.delete(teamKey);
+//     });
+    
+//     // Wait for all deletion operations to complete
+//     await Promise.all(deletionPromises);
+//     res.json({ message: "All teams deleted successfully" });
+// } catch (error) {
+//     console.error("Error deleting all teams:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+// }
+// });

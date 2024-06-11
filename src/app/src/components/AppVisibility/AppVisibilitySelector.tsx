@@ -11,10 +11,6 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
-  console.log(userEmail)
-  console.log(selectedTeamId)
-  console.log(teams);
-
   useEffect(() => {
     fetchTeams();
 
@@ -33,6 +29,14 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
+
+  useEffect(() => {
+    // Set default selected team if there are teams available
+    if (teams.length > 0) {
+      setSelectedTeamId(teams[0].id);
+    }
+  }, [teams]);
+
 
   const fetchTeams = async () => {
     try {
@@ -60,7 +64,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       return;
     }
 
-    if (teams.some((team) => team.name === teamName)) {
+    if (teams.some((team) => team.name.trim().toLowerCase() === teamName.trim().toLowerCase())) {
       toast.error("Team name must be unique");
       return;
     }
@@ -208,6 +212,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               Add User to Team
             </button>
           </div>
+          
         </div>
       </div>
       <ToastContainer />
