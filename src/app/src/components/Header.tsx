@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import LoginSignupModal from "./LoginSignupModal";
 import { BASE_API_URL } from "./constants";
 import ConnectToWallet from "./ConnectToWallet";
+import AppVisibleModal from "./AppVisibility/AppVisibleModal";
 
 const Header: React.FC = () => {
   const [userName, setUserName] = useState("");
@@ -19,7 +20,6 @@ const Header: React.FC = () => {
         credentials: "include",
       });
       if (response.ok) {
-        
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const userData = await response.json();
@@ -61,7 +61,7 @@ const Header: React.FC = () => {
           <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500 overflow-hidden">
             Microcraft
             <span className="text-xs md:text-sm lg:text-base font-light text-transparent whitespace-nowrap">
-               Web3 interaction made easy
+              Web3 interaction made easy
             </span>
           </h2>
         </div>
@@ -133,6 +133,7 @@ const Header: React.FC = () => {
             )}
           </div>
           <ConnectToWallet />
+          <AppVisibleModal />
         </div>
       </header>
       {isMenuOpen && (
@@ -166,6 +167,7 @@ const Header: React.FC = () => {
               </div>
             )}
             <ConnectToWallet />
+            <AppVisibleModal />
           </div>
         </div>
       )}

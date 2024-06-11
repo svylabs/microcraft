@@ -46,7 +46,9 @@ teamsRouter.get(
   authenticatedUser,
   async (req: Request, res: Response) => {
     const session = req.session as CustomSession;
+    console.log("Session_list:-> ", session);
     const teamList = session.user?.teams;
+    console.log("teamlist_list: ", teamList);
 
     // Check if teamList is undefined or empty
     if (!teamList || teamList.length === 0) {
@@ -86,6 +88,7 @@ teamsRouter.post(
     const user = (req.session as CustomSession).user;
     const userId = user?.id || 0;
     const teamId = mcutils.getId(user?.id + name);
+    console.log("teamId_post: ", teamId);
     const entity = {
       key: datastore.key(["Team", teamId]),
       data: {
@@ -98,13 +101,15 @@ teamsRouter.post(
     };
     try {
       await datastore.save(entity);
-
       const userKey = datastore.key(["User", userId]);
       const [userData] = await datastore.get(userKey);
+      console.log("User data before update:", userData);
+
       userData.teams = userData.teams || [];
       userData.teams.push(teamId);
       userData.updatedAt = new Date();
       await datastore.update(userData);
+      console.log("User data after update:", userData);
 
       res.json(entity);
     } catch (error) {
@@ -148,6 +153,8 @@ teamsRouter.post(
       });
 
       await datastore.update(updatedUsers);
+      console.log("successfully added a user to the team")
+      console.log("Updated users:", updatedUsers);
       res.json(updatedUsers);
     } catch (error) {
       console.error("Error adding user to team:", error);
@@ -301,52 +308,29 @@ teamsRouter.post(
 //   }
 // );
 
-// // Delete all teams
-
-// // teamsRouter.delete("/all", async (req: Request, res: Response) => {
-// //   try {
-// //     const datastore = getDatastore();
-// //     const query = datastore.createQuery("teams");
-// //     const [dynamicTeams] = await datastore.runQuery(query);
-// //     const deletePromises = dynamicTeams.map(async (entity: any) => {
-// //       await datastore.delete(entity[datastore.KEY]);
-// //     });
-
-// //     await Promise.all(deletePromises);
-
-// //     res.send({
-// //       status: "success",
-// //       message: "All data from /new endpoint deleted successfully",
-// //     });
-// //   } catch (error) {
-// //     console.error("Error deleting teams:", error);
-// //     res.status(500).send({ error: "Internal Server Error" });
-// //   }
-// // });
-
-
-// // teamsRouter.delete("/all", authenticatedUser, async (req: Request, res: Response) => {
-// //     const session = req.session as CustomSession;
-// //     const userId = session.user?.id;
+// Delete all teams
+teamsRouter.delete("/all", authenticatedUser, async (req: Request, res: Response) => {
+    const session = req.session as CustomSession;
+    const userId = session.user?.id;
   
-// //     try {
-// //       // First, retrieve all teams associated with the user
-// //       const query = datastore.createQuery("Team").filter('createdBy', '=', userId);
-// //       const [teams] = await datastore.runQuery(query);
+    try {
+      // First, retrieve all teams associated with the user
+      const query = datastore.createQuery("Team").filter('createdBy', '=', userId);
+      const [teams] = await datastore.runQuery(query);
   
-// //       // Delete each team and its associated data
-// //       const deletionPromises = teams.map(async (team: any) => {
-// //         const teamKey = datastore.key(["Team", team[datastore.KEY].name]);
-// //         await datastore.delete(teamKey);
-// //       });
+      // Delete each team and its associated data
+      const deletionPromises = teams.map(async (team: any) => {
+        const teamKey = datastore.key(["Team", team[datastore.KEY].name]);
+        await datastore.delete(teamKey);
+      });
   
-// //       // Wait for all deletion operations to complete
-// //       await Promise.all(deletionPromises);
+      // Wait for all deletion operations to complete
+      await Promise.all(deletionPromises);
   
-// //       res.json({ message: "All teams deleted successfully" });
-// //     } catch (error) {
-// //       console.error("Error deleting all teams:", error);
-// //       res.status(500).json({ error: "Internal Server Error" });
-// //     }
-// //   });
+      res.json({ message: "All teams deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting all teams:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
   

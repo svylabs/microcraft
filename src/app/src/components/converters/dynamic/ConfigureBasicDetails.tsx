@@ -3,7 +3,7 @@ import "./ConfigureBasicDetails.scss";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
 import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
-import LoginSignupModal from "../../LoginSignupModal";
+import AppVisibilitySelector from "../../AppVisibility/AppVisibilitySelector";
 
 interface Team {
   id: string;
@@ -21,7 +21,7 @@ const ConfigureBasicDetails: React.FC = () => {
     privacy: false,
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showTeams, setShowTeams] = useState(false);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -55,7 +55,7 @@ const ConfigureBasicDetails: React.FC = () => {
             const teams: Team[] = await response.json();
             console.log(teams);
             if (teams.length === 0) {
-                setShowModal(true);
+                setShowTeams(true);
             } else {
                 setTeams(teams);
             }
@@ -168,7 +168,7 @@ const ConfigureBasicDetails: React.FC = () => {
                   checked={privacy === "public"}
                   onChange={(e) => setPrivacy(e.target.value)}
                 />
-                <label htmlFor="public" className="ml-2 text-[#727679]">
+                <label htmlFor="public" className="ml-2 text-[#727679] text-lg xl:text-xl">
                   Public
                 </label>
               </div>
@@ -181,7 +181,7 @@ const ConfigureBasicDetails: React.FC = () => {
                   checked={privacy === "private"}
                   onChange={(e) => setPrivacy(e.target.value)}
                 />
-                <label htmlFor="private" className="ml-2 text-[#727679]">
+                <label htmlFor="private" className="ml-2 text-[#727679] text-lg xl:text-xl">
                   Private
                 </label>
               </div>
@@ -196,18 +196,13 @@ const ConfigureBasicDetails: React.FC = () => {
                   <select
                   key={Math.random()}
                     id="team"
-                    className="focus:outline-none border border-[#E2E3E8] rounded-lg mt-1 p-3 px-4 bg-[#F7F8FB] xl:text-2xl text-[#21262C] placeholder:italic w-full"
+                    className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
                     value={selectedTeam}
                     onChange={(e) => setSelectedTeam(e.target.value)}
                   >
                     <option key="" value="" disabled>
                       Select a team
                     </option>
-                    {/* {teams.map((team) => (
-                      <option key={team.id} value={team.id}>
-                        {team.name}
-                      </option>
-                    ))} */}
                     {teams.filter(team => team != null).map((team) => (
                       <option key={Math.random()} value={team.name}>
                         {/* {console.log(team)}
@@ -256,8 +251,7 @@ const ConfigureBasicDetails: React.FC = () => {
           </div>
         )}
       </div>
-      {/* <LoginSignupModal /> */}
-      {showModal && <LoginSignupModal closeModal={() => setShowModal(false)} />}
+      {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}
     </div>
   );
 };
