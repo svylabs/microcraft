@@ -31,7 +31,7 @@ const ActionPage: React.FC = () => {
   const [loadedData, setLoadedData] = useState(savedFormData);
   const [components, setComponents] = useState(savedComponentsData);
   // console.log(components);
-  console.log("loadedData-> ", loadedData);
+  // console.log("loadedData-> ", loadedData);
 
   const setSelectedApp = (appId: string) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {

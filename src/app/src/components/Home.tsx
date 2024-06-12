@@ -19,6 +19,8 @@ interface DynamicComponent {
   description: string;
   image_url: string;
   component_definition: any[];
+  privacy: string;
+  teamId: string;
 }
 
 const Home: React.FC = () => {
@@ -27,8 +29,13 @@ const Home: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<
     DynamicComponent[]
   >([]);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [selectedPrivacy, setSelectedPrivacy] = useState("public");
+  console.log(dynamicComponents);
 
   useEffect(() => {
+    fetchTeams();
+
     const storedRecentTools = localStorage.getItem("recentTools");
     if (storedRecentTools) {
       setRecentTools(JSON.parse(storedRecentTools));
@@ -48,9 +55,44 @@ const Home: React.FC = () => {
       });
   }, []);
 
+  const fetchTeams = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/teams/list`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const teamsData = await response.json();
+        setTeams(teamsData);
+      } else {
+        console.error("Failed to fetch teams:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+    }
+  };
+
+  const handlePrivacyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPrivacy(event.target.value);
+  };
+
+  const filteredDynamicComponents = dynamicComponents.filter((component) => {
+    if (selectedPrivacy === "public") {
+      return component.privacy === "public";
+    } else {
+      return component.teamId === selectedPrivacy;
+    }
+  });
+
   const handleImageClick = (componentDefinition: any) => {
     navigate(
-      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title.replaceAll(" ", "-")
+      `/app/view/` +
+        componentDefinition.id +
+        "/" +
+        componentDefinition.title.replaceAll(" ", "-")
     ),
       {
         state: { output: componentDefinition },
@@ -535,21 +577,46 @@ const Home: React.FC = () => {
                   */}
 
           <div>
-            <div className="flex full-width">
-              <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
-                Community published apps
-              </h2>
-              <div className="justify-center mb-2 text-lg md:text-xl">
-                <a href="/app/inbuilt/New-App" className="md:px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
-                <a href="/app/inbuilt/Request an app" className="md:px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+            <h2 className="text-lg md:text-2xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+              Community published apps
+            </h2>
+            <div className="flex mb-3 justify-between ">
+              <div className="">
+                <label htmlFor="privacyFilter" className="mr-2 text-lg md:text-xl">
+                  Visibility:
+                </label>
+                <select
+                  id="privacyFilter"
+                  value={selectedPrivacy}
+                  onChange={handlePrivacyChange}
+                  className="border border-gray-300 rounded px-2 py-1"
+                >
+                  <option value="public">Public</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                  
+                </select>
+              </div>
+              <div className="flex gap-4 text-lg md:text-xl">
+                <a href="/app/inbuilt/New-App" className="">
+                  Publish
+                </a>
+                <a href="/app/inbuilt/Request an app" className="">
+                  Request
+                </a>
               </div>
             </div>
             {renderCustomComponentCategories()}
-            {filteredCustomComponents.length === 0 ? (
+            {/* {filteredCustomComponents.length === 0 ? ( */}
+            {filteredDynamicComponents.length === 0 ? (
               <div className="text-gray-600">None found.</div>
             ) : (
               <div className="flex flex-wrap -mx-2">
-                {filteredCustomComponents.map((data, index) => (
+                {/* {filteredCustomComponents.map((data, index) => ( */}
+                {filteredDynamicComponents.map((data, index) => (
                   <div
                     key={index}
                     className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${

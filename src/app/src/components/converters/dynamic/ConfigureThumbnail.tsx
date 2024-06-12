@@ -107,7 +107,9 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           title: loadedData.title,
           description: loadedData.description,
           image_url: preferredImageURL, //selected image url
-          component_definition: JSON.stringify(components)
+          component_definition: JSON.stringify(components),
+          privacy: loadedData.privacy,
+          teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
          }),
       });
 

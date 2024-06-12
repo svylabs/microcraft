@@ -23,20 +23,20 @@ const SharePage: React.FC = () => {
       let initialX, initialY;
 
       if (screenWidth <= 426) {
-        initialX = screenWidth - 100;
-        initialY = screenHeight - 585;
+        initialX = screenWidth - 95;
+        initialY = screenHeight - 715;
       } else if (screenWidth <= 768) {
-        initialX = screenWidth / 1.8;
-        initialY = screenHeight / 25;
+        initialX = screenWidth / 2.05;
+        initialY = screenHeight / 30;
       } else if (screenWidth <= 1024) {
-        initialX = screenWidth / 1.55;
-        initialY = screenHeight / 25;
+        initialX = screenWidth / 1.68;
+        initialY = screenHeight / 30;
       } else if (screenWidth <= 1440) {
         initialX = screenWidth / 1.06;
         initialY = screenHeight / 25;
       } else {
         initialX = screenWidth / 1.09;
-        initialY = screenHeight / 21;
+        initialY = screenHeight / 25;
       }
 
       setInitialPosition({ x: initialX, y: initialY });

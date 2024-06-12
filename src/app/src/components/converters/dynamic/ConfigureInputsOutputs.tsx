@@ -302,9 +302,13 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handlePreview = async () => {
-    console.log(components);
-    window.location.href = "/app/new/preview";
-  };
+    if (components.length > 0) {
+      console.log(components);
+      window.location.href = "/app/new/preview";
+    } else {
+      toast.error("Oops! Your component list is empty. Add fields to preview.");
+    }
+  };  
 
   // const handleInputChange = (id: string, value: string) => {
   const handleInputChange = (id: string, value: any) => {

@@ -99,7 +99,8 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         },
         {
           name: "image_url",
-          value: `https://storage.googleapis.com/public-images-microcraft/not-available.webp`,
+          // value: `https://storage.googleapis.com/public-images-microcraft/not-available.webp`,
+          value: req.body.image_url,
           excludeFromIndexes: true,
         },
         {
@@ -113,6 +114,15 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         {
           name: "approval_status",
           value: "pending",
+        },
+        {
+          name: "privacy",
+          value: req.body.privacy,
+        },
+        {
+          name: "teamId",
+          value: req.body.privacy === "private" ? req.body.teamId : null,
+          excludeFromIndexes: true,
         }
       ],
     };
@@ -311,7 +321,7 @@ dynamicComponentRouter.get("/all", async (req, res) => {
       }
     }
   );
-/*
+
 dynamicComponentRouter.delete(
   "/new",  async (req: Request, res: Response) => {
     try {
@@ -335,6 +345,5 @@ dynamicComponentRouter.delete(
     }
   }
 );
-*/
 
 
