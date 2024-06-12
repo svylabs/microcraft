@@ -348,7 +348,7 @@ const Home: React.FC = () => {
     setCustomComponentCategory(category);
   };
 
-  // Filter custom components based on category
+  // Filter custom components based on category, privacy, and selected team
   let filteredCustomComponents: DynamicComponent[] = [];
   switch (customComponentCategory) {
     case "all":
@@ -597,7 +597,6 @@ const Home: React.FC = () => {
                       {team.name}
                     </option>
                   ))}
-                  
                 </select>
               </div>
               <div className="flex gap-4 text-lg md:text-xl">

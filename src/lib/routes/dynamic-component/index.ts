@@ -112,12 +112,12 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
             value: creator,
         },
         {
-          name: "approval_status",
-          value: "pending",
-        },
-        {
           name: "privacy",
           value: req.body.privacy,
+        },
+        {
+          name: "approval_status",
+          value: req.body.privacy === "public" ? "pending" : "approved"
         },
         {
           name: "teamId",

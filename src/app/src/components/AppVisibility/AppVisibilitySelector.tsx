@@ -88,9 +88,9 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
         setTeamDescription("");
         fetchTeams(); // Fetch updated teams
         toast.success("Team created successfully!");
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 2000);
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else {
         console.error("Failed to create team:", response.status);
         toast.error("Failed to create team");
