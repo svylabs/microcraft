@@ -352,20 +352,20 @@ const Home: React.FC = () => {
   let filteredCustomComponents: DynamicComponent[] = [];
   switch (customComponentCategory) {
     case "all":
-      filteredCustomComponents = dynamicComponents;
+      filteredCustomComponents = filteredDynamicComponents;
       break;
     case "pending":
-      filteredCustomComponents = dynamicComponents.filter(
+      filteredCustomComponents = filteredDynamicComponents.filter(
         (component) => component.approval_status === "pending"
       );
       break;
     case "approved":
-      filteredCustomComponents = dynamicComponents.filter(
+      filteredCustomComponents = filteredDynamicComponents.filter(
         (component) => component.approval_status === "approved"
       );
       break;
     default:
-      filteredCustomComponents = dynamicComponents;
+      filteredCustomComponents = filteredDynamicComponents;
       break;
   }
 
@@ -580,11 +580,11 @@ const Home: React.FC = () => {
             <h2 className="text-lg md:text-2xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
               Community published apps
             </h2>
-            <div className="flex mb-3 justify-between ">
+            <div className="flex gap-3 mb-3 justify-betwee ">
               <div className="">
-                <label htmlFor="privacyFilter" className="mr-2 text-lg md:text-xl">
+                {/* <label htmlFor="privacyFilter" className="mr-2 text-lg md:text-xl">
                   Visibility:
-                </label>
+                </label> */}
                 <select
                   id="privacyFilter"
                   value={selectedPrivacy}
@@ -602,21 +602,19 @@ const Home: React.FC = () => {
               </div>
               <div className="flex gap-4 text-lg md:text-xl">
                 <a href="/app/inbuilt/New-App" className="">
-                  Publish
+                  Create
                 </a>
-                <a href="/app/inbuilt/Request an app" className="">
+                {/* <a href="/app/inbuilt/Request an app" className="">
                   Request
-                </a>
+                </a> */}
               </div>
             </div>
             {renderCustomComponentCategories()}
-            {/* {filteredCustomComponents.length === 0 ? ( */}
-            {filteredDynamicComponents.length === 0 ? (
+            {filteredCustomComponents.length === 0 ? (
               <div className="text-gray-600">None found.</div>
             ) : (
               <div className="flex flex-wrap -mx-2">
-                {/* {filteredCustomComponents.map((data, index) => ( */}
-                {filteredDynamicComponents.map((data, index) => (
+                {filteredCustomComponents.map((data, index) => (
                   <div
                     key={index}
                     className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
