@@ -577,14 +577,11 @@ const Home: React.FC = () => {
                   */}
 
           <div>
-            <h2 className="text-lg md:text-2xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
-              Community published apps
-            </h2>
-            <div className="flex gap-3 mb-3 justify-betwee ">
-              <div className="">
-                {/* <label htmlFor="privacyFilter" className="mr-2 text-lg md:text-xl">
-                  Visibility:
-                </label> */}
+            <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-5 mb-4">
+              <h2 className="text-lg md:text-2xl font-semibold md:mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+                Community published apps
+              </h2>
+              <div className="flex flex-wrap justify-between gap-3 md:gap-5 font-medium">
                 <select
                   id="privacyFilter"
                   value={selectedPrivacy}
@@ -598,14 +595,20 @@ const Home: React.FC = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="flex gap-4 text-lg md:text-xl">
-                <a href="/app/inbuilt/New-App" className="">
-                  Create
-                </a>
-                {/* <a href="/app/inbuilt/Request an app" className="">
-                  Request
-                </a> */}
+                <div className="flex text-lg">
+                  <a
+                    href="/app/inbuilt/New-App"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Create
+                  </a>
+                  {/* <a
+                    href="/app/inbuilt/Request an app"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Request
+                  </a> */}
+                </div>
               </div>
             </div>
             {renderCustomComponentCategories()}

@@ -107,7 +107,7 @@ const Header: React.FC = () => {
         <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
           <div className="flex gap-3 self-center">
             {userName !== "" && (
-              <div className="flex gap-3 self-center">
+              <div className="flex gap-3 self-center" title={`Welcome to the Microcraft universe, ${userName}! Your adventure awaits!`}>
                 <img
                   className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
                   src={userAvatar}
@@ -115,12 +115,12 @@ const Header: React.FC = () => {
                   onClick={handleLogin}
                 ></img>
                 <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                  <span className="font-bold">Hello!</span> {userName}
+                  <span className="font-bold">Hello!   </span>{userName}
                 </p>
               </div>
             )}
             {userName === "" && (
-              <div className="flex gap-3 self-center">
+              <div className="flex gap-3 self-center" title="Click to log in and start your adventure!">
                 <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
                   <span className="text-gray-600" onClick={handleLogin}>
                     Avatar
