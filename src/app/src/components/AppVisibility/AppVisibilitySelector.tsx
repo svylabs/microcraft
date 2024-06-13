@@ -8,6 +8,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [teamName, setTeamName] = useState("");
   const [teamDescription, setTeamDescription] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [isValid, setIsValid] = useState(true);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +38,6 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
     }
   }, [teams]);
 
-
   const fetchTeams = async () => {
     try {
       const response = await fetch(`${BASE_API_URL}/teams/list`, {
@@ -64,7 +64,12 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       return;
     }
 
-    if (teams.some((team) => team.name.trim().toLowerCase() === teamName.trim().toLowerCase())) {
+    if (
+      teams.some(
+        (team) =>
+          team.name.trim().toLowerCase() === teamName.trim().toLowerCase()
+      )
+    ) {
       toast.error("Team name must be unique");
       return;
     }
@@ -134,6 +139,15 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
     }
   };
 
+  const handleChange = (e) => {
+    const email = e.target.value;
+    setUserEmail(email);
+
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    setIsValid(emailRegex.test(email));
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 overflow-auto">
       <div
@@ -155,7 +169,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               placeholder="Team Name"
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
-              className="p-2 border rounded"
+              className="p-2 border rounded focus:outline-none"
             />
             <textarea
               placeholder="Team Description"
@@ -199,11 +213,11 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
           <div className="flex flex-col gap-2 text-left mt-4">
             <h3 className="text-xl font-bold">Add User to Team</h3>
             <input
-              type="text"
-              placeholder="User Email"
+              type="email"
+              placeholder="Enter your email"
               value={userEmail}
-              onChange={(e) => setUserEmail(e.target.value)}
-              className="p-2 border rounded"
+              onChange={handleChange}
+              className={`p-2 border rounded focus:outline-none ${isValid ? "border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent" : "border-red-500 focus:ring-2 focus:ring-red-500 focus:border-transparent"}`}
             />
             <button
               onClick={handleAddUserToTeam}
@@ -212,7 +226,6 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               Add User to Team
             </button>
           </div>
-          
         </div>
       </div>
       <ToastContainer />
