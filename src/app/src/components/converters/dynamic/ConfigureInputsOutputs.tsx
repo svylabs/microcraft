@@ -318,15 +318,15 @@ const ConfigureInputsOutputs: React.FC = () => {
     }));
   };
 
-  const handleSwapChange = (id: string, swapData: any) => {
-    // Check if the new swap data is different from the existing data
-    if (data[id] !== swapData) {
-      setData((prevData) => ({
-        ...prevData,
-        [id]: swapData,
-      }));
-    }
-  };
+  // const handleSwapChange = (id: string, swapData: any) => {
+  //   // Check if the new swap data is different from the existing data
+  //   if (data[id] !== swapData) {
+  //     setData((prevData) => ({
+  //       ...prevData,
+  //       [id]: swapData,
+  //     }));
+  //   }
+  // };
 
   const handleDeleteComponent = (id: string) => {
     setComponents((prevComponents) =>

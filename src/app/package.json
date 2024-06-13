@@ -34,7 +34,7 @@
     "@types/diff": "^5.0.9",
     "@types/react-speech-recognition": "^3.9.5",
     "@types/react-toastify": "^4.1.0",
-    "axios": "^1.6.7",
+    "axios": "^1.7.2",
     "body-parser": "^1.20.2",
     "buffer": "^6.0.3",
     "buffer-esm": "^1.2.0",
@@ -45,7 +45,7 @@
     "d3": "^7.9.0",
     "diff": "^5.1.0",
     "elliptic": "^6.5.4",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "file-saver": "^2.0.5",
     "html2canvas": "^1.4.1",
     "image-compressor": "^2.0.3",
@@ -83,8 +83,9 @@
     "react-toastify": "^10.0.4",
     "react18-json-view": "^0.2.7",
     "sass": "^1.57.1",
+    "solc": "^0.8.26",
     "styled-components": "^6.1.8",
-    "web3": "^4.8.0"
+    "web3": "^4.9.0"
   },
   "devDependencies": {
     "@iconify/react": "^4.0.1",
