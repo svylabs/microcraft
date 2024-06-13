@@ -6,3 +6,4 @@ node_modules/
 datastore/
 public/
 samplecontracts
+.vscode

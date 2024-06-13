@@ -13,24 +13,41 @@ export const contractRegistryRouter = Router();
 
 contractRegistryRouter.use(cors(corsOptions));
 
+const CONTRACT_GROUP = "ContractGroup";
 const CONTRACT_TABLE = "Contract";
 const CONTRACT_VERSION_TABLE = "ContractVersion";
 const CONTRACT_INSTANCE_TABLE = "ContractInstance";
 
-class Contract {
+class ContractGroup {
     id: string | undefined;
     name: string | undefined;
     description: string | undefined;
-    type: string | undefined; // cosmos, cosmwasm, eth, solana, near etc...
+    type: string | undefined; // cosmos, cosmwasm, solidity, solana, near etc...
+    team: string | undefined;
+    created_at?: Date;
+    updated_at?: Date;
+    constructor(id: string, name: string, description: string, team: string) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.team = team;
+        this.created_at = new Date();
+        this.updated_at = new Date();
+    }
+}
+
+class Contract {
+    id: string | undefined;
+    contract_group_id: string | undefined;
+    name: string | undefined;
     latest_version?: string;
     team?: string;
     created_at?: Date;
     updated_at?: Date;
-    constructor(id: string, name: string, description: string, type: string, team: string, version: string="v1") {
+    constructor(id: string, contract_group_id: string, name: string, team: string, version: string="v1") {
         this.id = id;
+        this.contract_group_id = contract_group_id;
         this.name = name;
-        this.description = description;
-        this.type = type;
         this.team = team;
         this.created_at = new Date();
         this.updated_at = new Date();
@@ -40,7 +57,7 @@ class Contract {
 class ContractVersion {
     contract_id: string | undefined;
     version: string | undefined;
-    properties: any; // ABI, protobuf, etc.
+    properties: any; // ABI, protobuf, etc. { abi: [], dependencies: [{name: ,version: }, {}, {}] }
     created_at?: Date;
     updated_at?: Date;
 }
@@ -50,6 +67,7 @@ class ContractInstance {
     version: string | undefined;
     deployed_address: string | undefined;
     network: any | undefined; // eth_mainnet, eth_sepollia, etc..
+    properites: any;
     created_at?: Date;
     updated_at?: Date;
 }
@@ -90,10 +108,10 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
     res.json(contract);
 });
 
-contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: Response) => {
+contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
-    const contract_id = mcutils.getId(req.body.name);
-    const key = datastore.key([CONTRACT_TABLE, contract_id]);
+    const group_id = mcutils.getId(req.body.team + "-" + req.body.name);
+    const key = datastore.key([CONTRACT_GROUP, group_id]);
     const entity = {
         key,
         data: [
@@ -109,6 +127,45 @@ contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: 
             {
                 name: "type",
                 value: req.body.type,
+            },
+            {
+                name: "team",
+                value: req.body.team,
+            },
+            {
+                name: "created_at",
+                value: new Date()
+            },
+            {
+                name: "updated_at",
+                value: new Date(),
+            }
+        ],
+    };
+    await datastore.save(entity);
+    res.json(entity);
+});
+
+
+contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const contract_id = mcutils.getId(req.body.team + "-" + req.body.name);
+    const key = datastore.key([CONTRACT_TABLE, contract_id]);
+    const entity = {
+        key,
+        data: [
+            {
+                name: "name",
+                value: req.body.name,
+            },
+            {
+                name: "description",
+                value: req.body.description,
+                excludeFromIndexes: true,
+            },
+            {
+                name: "contract_group_id",
+                value: req.body.contract_group_id,
             },
             {
                 name: "team",
