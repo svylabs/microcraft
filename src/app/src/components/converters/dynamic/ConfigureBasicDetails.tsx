@@ -10,6 +10,11 @@ interface Team {
   name: string;
 }
 
+interface ContractGroup {
+  id: string;
+  name: string;
+}
+
 const ConfigureBasicDetails: React.FC = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -22,6 +27,9 @@ const ConfigureBasicDetails: React.FC = () => {
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
   const [showTeams, setShowTeams] = useState(false);
+  const [contractGroups, setContractGroups] = useState<ContractGroup[]>([]);
+  const [selectedContracts, setSelectedContracts] = useState<string[]>([]);
+  const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -40,6 +48,12 @@ const ConfigureBasicDetails: React.FC = () => {
       fetchTeams();
     }
   }, [privacy]);
+
+  useEffect(() => {
+    if (teamId) {
+      fetchContractGroups();
+    }
+  }, [teamId]);
 
   const fetchTeams = async () => {
     try {
@@ -67,6 +81,27 @@ const ConfigureBasicDetails: React.FC = () => {
     }
 };
 
+const fetchContractGroups = async () => {
+  setContractGroupsFetched(false);
+  try {
+    const response = await fetch(`${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.ok) {
+      const contractGroups: ContractGroup[] = await response.json();
+      setContractGroups(contractGroups);
+    } else {
+      console.error("Failed to fetch contract groups:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error fetching contract groups:", error);
+  }
+  setContractGroupsFetched(true);
+};
 
   const handleSaveNext = () => {
     if (!title.trim()) {
@@ -78,12 +113,21 @@ const ConfigureBasicDetails: React.FC = () => {
       return;
     } else {
       localStorage.removeItem("formData");
-      const data = { title, description, privacy, teamId };
+      const data = { title, description, privacy, teamId, selectedContracts };
       localStorage.setItem("formData", JSON.stringify(data));
       window.location.href = "/app/new";
     }
   };
-  console.log(teams)
+
+  const handleContractSelection = (id: string) => {
+    setSelectedContracts(prevState =>
+      prevState.includes(id)
+        ? prevState.filter(contractId => contractId !== id)
+        : [...prevState, id]
+    );
+  };
+
+  // console.log(teams)
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-1 md:p-10 xl:p-12 shadow-lg rounded-md">
@@ -191,7 +235,7 @@ const ConfigureBasicDetails: React.FC = () => {
                     htmlFor="team"
                     className="text-[#727679] font-semibold text-lg xl:text-xl"
                   >
-                    Select Team
+                    Select a team:
                   </label>
                   <select
                   // key={Math.random()}
@@ -219,6 +263,41 @@ const ConfigureBasicDetails: React.FC = () => {
                   )}
                 </div>
               )}
+              {privacy === "private" && teamId && contractGroupsFetched && contractGroups.length === 0 && (
+                <p className="text-[#727679] mt-2">
+                  No contract groups available for the selected team.
+                </p>
+              )}
+              {privacy === "private" && contractGroups.length > 0 && (
+                <div className="mt-2">
+                  <label
+                    htmlFor="contract-groups"
+                    className="text-[#727679] font-semibold text-lg xl:text-xl"
+                  >
+                    Select Contract Groups:
+                  </label>
+                  <div id="contract-groups">
+                    {contractGroups.map((group) => (
+                      <div key={group.id} className="flex items-center mt-2">
+                        <input
+                          type="checkbox"
+                          id={`contract-${group.id}`}
+                          name="contractGroups"
+                          value={group.id}
+                          checked={selectedContracts.includes(group.id)}
+                          onChange={() => handleContractSelection(group.id)}
+                        />
+                        <label
+                          htmlFor={`contract-${group.id}`}
+                          className="ml-2 text-[#727679] text-lg xl:text-xl"
+                        >
+                          {group.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end">
@@ -227,7 +306,7 @@ const ConfigureBasicDetails: React.FC = () => {
                   className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
                   type="submit"
                 >
-                  Next
+                  Save & Next
                 </button>
               </Link>
             </div>

@@ -10,6 +10,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [userEmail, setUserEmail] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [selectedTeamId, setSelectedTeamId] = useState("");
+  const [contractGroups, setContractGroups] = useState<any[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -144,8 +145,43 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
     setUserEmail(email);
 
     // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const emailRegex =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     setIsValid(emailRegex.test(email));
+  };
+
+  const fetchContractGroups = async (teamId: string) => {
+    try {
+      const response = await fetch(
+        `${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const contractGroupsData = await response.json();
+        setContractGroups(contractGroupsData);
+      } else {
+        console.error("Failed to fetch contract groups:", response.status);
+        setContractGroups([]);
+      }
+    } catch (error) {
+      console.error("Error fetching contract groups:", error);
+    }
+  };
+
+  const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const teamId = e.target.value;
+    setSelectedTeamId(teamId);
+    if (teamId) {
+      fetchContractGroups(teamId);
+    } else {
+      setContractGroups([]);
+    }
   };
 
   return (
@@ -191,7 +227,8 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               key={Math.random()}
               id="team"
               value={selectedTeamId}
-              onChange={(e) => setSelectedTeamId(e.target.value)}
+              // onChange={(e) => setSelectedTeamId(e.target.value)}
+              onChange={handleTeamChange}
               className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
             >
               {teams.length === 0 ? (
@@ -225,6 +262,30 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
             >
               Add User to Team
             </button>
+          </div>
+
+          <div className="flex flex-col gap-2 text-left mt-4">
+            <h3 className="text-xl font-bold">Contract Groups List</h3>
+            <span className="text-gray-500 text-sm">
+              Please select a team to view contract groups.
+            </span>
+            <select
+              // key={Math.random()}
+              id="contract-groups"
+              className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
+            >
+              {contractGroups.length === 0 ? (
+                <option key="" value="">
+                  No contract groups found for the selected team.
+                </option>
+              ) : (
+                contractGroups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))
+              )}
+            </select>
           </div>
         </div>
       </div>

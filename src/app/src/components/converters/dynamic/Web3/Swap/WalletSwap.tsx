@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import BigNumber from "bignumber.js";
-import Web3 from "web3";
+// import Web3 from "web3";
 import qs from "qs";
 import TokensDropdown from "./TokensDropdown";
 
-const web3 = new Web3(Web3.givenProvider);
+// const web3 = new Web3(Web3.givenProvider);
 
 interface Props {
   configurations: any;
