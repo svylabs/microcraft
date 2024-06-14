@@ -41,21 +41,72 @@ teamsRouter.get(
 /**
  * Get all teams for the user
  */
+// teamsRouter.get(
+//   "/list",
+//   authenticatedUser,
+//   async (req: Request, res: Response) => {
+//     const session = req.session as CustomSession;
+//     console.log("Session_list:-> ", session);
+//     const teamList = session.user?.teams;
+//     console.log("teamlist_list: ", teamList);
+
+//     // Check if teamList is undefined or empty
+//     if (!teamList || teamList.length === 0) {
+//       return res.json([]);
+//     }
+
+//     try {
+//       const queries = teamList.map((teamId: string) => {
+//         const query = datastore
+//           .createQuery("Team")
+//           .filter("__key__", "=", datastore.key(["Team", teamId]));
+//         return datastore.runQuery(query);
+//       });
+
+//       const results = await Promise.all(queries);
+//       //   const teams = results.flat().map(result => result[0]);
+//       const teams = results
+//         .map((result) => result[0][0]) // Extract only the team entities
+//         .filter((team) => team != null)
+//         .map((team) => ({
+//           ...team,
+//           id: team[datastore.KEY].name, // Add the id property
+//         }));
+//       res.json(teams);
+//     } catch (error) {
+//       console.error("Error fetching teams list:", error);
+//       res.status(500).json({ error: "Internal Server Error" });
+//     }
+//   }
+// );
+
+// Instead of getting the user’s team list from the current session, retrieve it from the database using the user’s ID.
 teamsRouter.get(
   "/list",
   authenticatedUser,
   async (req: Request, res: Response) => {
     const session = req.session as CustomSession;
-    console.log("Session_list:-> ", session);
-    const teamList = session.user?.teams;
-    console.log("teamlist_list: ", teamList);
-
-    // Check if teamList is undefined or empty
-    if (!teamList || teamList.length === 0) {
-      return res.json([]);
+    const userId = session.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
 
     try {
+      const userKey = datastore.key(["User", userId]);
+      const [userData] = await datastore.get(userKey);
+
+      if (!userData) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const teamList = userData.teams || [];
+      console.log("teamlist_list: ", teamList);
+
+      if (teamList.length === 0) {
+        return res.json([]);
+      }
+
       const queries = teamList.map((teamId: string) => {
         const query = datastore
           .createQuery("Team")
@@ -64,7 +115,6 @@ teamsRouter.get(
       });
 
       const results = await Promise.all(queries);
-      //   const teams = results.flat().map(result => result[0]);
       const teams = results
         .map((result) => result[0][0]) // Extract only the team entities
         .filter((team) => team != null)
@@ -72,6 +122,7 @@ teamsRouter.get(
           ...team,
           id: team[datastore.KEY].name, // Add the id property
         }));
+
       res.json(teams);
     } catch (error) {
       console.error("Error fetching teams list:", error);
