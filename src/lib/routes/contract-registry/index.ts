@@ -81,6 +81,16 @@ contractRegistryRouter.get("/list", authenticatedUser, async (req: Request, res:
     res.json(contracts);
 });
 
+contractRegistryRouter.get("/group/list", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const session = req.session as CustomSession;
+    const query = datastore.createQuery(CONTRACT_GROUP)
+        .filter("team", "IN", session?.user?.teams)
+    const [contracts] = await datastore.runQuery(query);
+    res.json(contracts);
+});
+
+
 contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const key = datastore.key([CONTRACT_TABLE, req.params.id]);
@@ -106,6 +116,40 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
         contract.instances = contractInstances;
     }
     res.json(contract);
+});
+
+contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const group_key = datastore.key([CONTRACT_GROUP, req.params.id]);
+    const [group] = await datastore.get(group_key);
+    if (!group) {
+        return res.status(404).json({ error: "Contract Group not found" });
+    }
+    const query = datastore.createQuery(CONTRACT_TABLE)
+        .filter("contract_group_id", "=", req.params.id);
+    const [contracts] = await datastore.runQuery(query);
+    const promises = contracts.map((contract: any) => (async () => {
+        const version = req.query.version || contract.latest_version;
+        const network = req.query.network;
+        const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
+            .filter("contract_id", "=", contract.id)
+            .filter("version", "=", version);
+        const [contractVersion] = await datastore.runQuery(contractVersionQuery);
+        contract.data = contractVersion;
+        let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
+            .filter("contract_id", "=", contract.id)
+            .filter("version", "=", version);
+        if (network) {
+            contractInstanceQuery = contractInstanceQuery.filter("network", "=", network);
+        }
+        const [contractInstances] = await datastore.runQuery(contractInstanceQuery);
+        if (contractInstances.length > 0) {
+            contract.instances = contractInstances;
+        }
+    })());
+    await Promise.all(promises);
+    group.contracts = contracts;
+    res.json(group);
 });
 
 contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request, res: Response) => {
