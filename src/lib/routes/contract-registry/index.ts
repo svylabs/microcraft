@@ -23,14 +23,14 @@ class ContractGroup {
     name: string | undefined;
     description: string | undefined;
     type: string | undefined; // cosmos, cosmwasm, solidity, solana, near etc...
-    team: string | undefined;
+    owner: string | undefined;
     created_at?: Date;
     updated_at?: Date;
-    constructor(id: string, name: string, description: string, team: string) {
+    constructor(id: string, name: string, description: string, owner: string) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.team = team;
+        this.owner = owner;
         this.created_at = new Date();
         this.updated_at = new Date();
     }
@@ -84,8 +84,9 @@ contractRegistryRouter.get("/list", authenticatedUser, async (req: Request, res:
 contractRegistryRouter.get("/group/list", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const session = req.session as CustomSession;
+    const owner = req.query.owner;
     const query = datastore.createQuery(CONTRACT_GROUP)
-        .filter("team", "IN", session?.user?.teams)
+        .filter("owner", "=", owner)
     const [contracts] = await datastore.runQuery(query);
     res.json(contracts);
 });
@@ -173,8 +174,8 @@ contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request,
                 value: req.body.type,
             },
             {
-                name: "team",
-                value: req.body.team,
+                name: "owner",
+                value: req.body.owner,
             },
             {
                 name: "created_at",
