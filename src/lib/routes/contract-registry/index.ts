@@ -153,7 +153,8 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
     res.json(group);
 });
 
-contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request, res: Response) => {
+// contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request, res: Response) => {
+    contractRegistryRouter.post("/group/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const group_id = mcutils.getId(req.body.team + "-" + req.body.name);
     const key = datastore.key([CONTRACT_GROUP, group_id]);
