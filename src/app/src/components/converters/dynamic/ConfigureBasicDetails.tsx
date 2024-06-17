@@ -11,7 +11,7 @@ interface Team {
 }
 
 interface ContractGroup {
-  id: string;
+  owner: string;
   name: string;
 }
 
@@ -28,7 +28,7 @@ const ConfigureBasicDetails: React.FC = () => {
   const [userDetails, setUserDetails] = useState<string | null>(null);
   const [showTeams, setShowTeams] = useState(false);
   const [contractGroups, setContractGroups] = useState<ContractGroup[]>([]);
-  const [selectedContracts, setSelectedContracts] = useState<string[]>([]);
+  const [selectedContracts, setSelectedContracts] = useState<{ [key: string]: boolean }>({});
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
 
   useEffect(() => {
@@ -57,51 +57,54 @@ const ConfigureBasicDetails: React.FC = () => {
 
   const fetchTeams = async () => {
     try {
-        const response = await fetch(`${BASE_API_URL}/teams/list`, {
-            method: 'GET',
-            credentials: "include",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        console.log("Response status:", response.status);
-        if (response.ok) {
-            const teams: Team[] = await response.json();
-            console.log(teams);
-            if (teams.length === 0) {
-                setShowTeams(true);
-            } else {
-                setTeams(teams);
-            }
+      const response = await fetch(`${BASE_API_URL}/teams/list`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("Response status:", response.status);
+      if (response.ok) {
+        const teams: Team[] = await response.json();
+        console.log(teams);
+        if (teams.length === 0) {
+          setShowTeams(true);
         } else {
-            console.error("Failed to fetch teams list:", response.statusText);
+          setTeams(teams);
         }
+      } else {
+        console.error("Failed to fetch teams list:", response.statusText);
+      }
     } catch (error) {
-        console.error("Error fetching teams list:", error);
+      console.error("Error fetching teams list:", error);
     }
-};
+  };
 
-const fetchContractGroups = async () => {
-  setContractGroupsFetched(false);
-  try {
-    const response = await fetch(`${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.ok) {
-      const contractGroups: ContractGroup[] = await response.json();
-      setContractGroups(contractGroups);
-    } else {
-      console.error("Failed to fetch contract groups:", response.statusText);
+  const fetchContractGroups = async () => {
+    setContractGroupsFetched(false);
+    try {
+      const response = await fetch(
+        `${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const contractGroups: ContractGroup[] = await response.json();
+        setContractGroups(contractGroups);
+      } else {
+        console.error("Failed to fetch contract groups:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching contract groups:", error);
     }
-  } catch (error) {
-    console.error("Error fetching contract groups:", error);
-  }
-  setContractGroupsFetched(true);
-};
+    setContractGroupsFetched(true);
+  };
 
   const handleSaveNext = () => {
     if (!title.trim()) {
@@ -113,18 +116,18 @@ const fetchContractGroups = async () => {
       return;
     } else {
       localStorage.removeItem("formData");
-      const data = { title, description, privacy, teamId, selectedContracts };
+      // const data = { title, description, privacy, teamId, selectedContracts };
+      const data = { title, description, privacy, teamId, selectedContracts: Object.keys(selectedContracts) };
       localStorage.setItem("formData", JSON.stringify(data));
       window.location.href = "/app/new";
     }
   };
 
-  const handleContractSelection = (id: string) => {
-    setSelectedContracts(prevState =>
-      prevState.includes(id)
-        ? prevState.filter(contractId => contractId !== id)
-        : [...prevState, id]
-    );
+  const handleContractSelection = (idName: string) => {
+    setSelectedContracts((prevSelected) => ({
+      ...prevSelected,
+      [idName]: !prevSelected[idName]
+    }));
   };
 
   // console.log(teams)
@@ -201,7 +204,7 @@ const fetchContractGroups = async () => {
 
             <div className="">
               <p className="text-[#727679] font-semibold text-lg xl:text-xl">
-              Visibility / Accessibility
+                Visibility / Accessibility
               </p>
               <div className="flex items-center mt-2">
                 <input
@@ -212,7 +215,10 @@ const fetchContractGroups = async () => {
                   checked={privacy === "public"}
                   onChange={(e) => setPrivacy(e.target.value)}
                 />
-                <label htmlFor="public" className="ml-2 text-[#727679] text-lg xl:text-xl">
+                <label
+                  htmlFor="public"
+                  className="ml-2 text-[#727679] text-lg xl:text-xl"
+                >
                   Public
                 </label>
               </div>
@@ -225,7 +231,10 @@ const fetchContractGroups = async () => {
                   checked={privacy === "private"}
                   onChange={(e) => setPrivacy(e.target.value)}
                 />
-                <label htmlFor="private" className="ml-2 text-[#727679] text-lg xl:text-xl">
+                <label
+                  htmlFor="private"
+                  className="ml-2 text-[#727679] text-lg xl:text-xl"
+                >
                   Private
                 </label>
               </div>
@@ -238,7 +247,7 @@ const fetchContractGroups = async () => {
                     Select a team:
                   </label>
                   <select
-                  // key={Math.random()}
+                    // key={Math.random()}
                     id="team"
                     className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
                     value={teamId}
@@ -247,14 +256,16 @@ const fetchContractGroups = async () => {
                     <option key="" value="" disabled>
                       Select a team
                     </option>
-                    {teams.filter(team => team != null).map((team) => (
-                      <option key={team.id} value={team.id}>
-                        {/* {console.log(team)}
+                    {teams
+                      .filter((team) => team != null)
+                      .map((team) => (
+                        <option key={team.id} value={team.id}>
+                          {/* {console.log(team)}
                         {console.log(team.name)}
                         {console.log(team.id)} */}
-                        {team.name}
-                      </option>
-                    ))}
+                          {team.name}
+                        </option>
+                      ))}
                   </select>
                   {fieldErrors.privacy && (
                     <p className="text-red-500 mt-2">
@@ -263,11 +274,14 @@ const fetchContractGroups = async () => {
                   )}
                 </div>
               )}
-              {privacy === "private" && teamId && contractGroupsFetched && contractGroups.length === 0 && (
-                <p className="text-[#727679] mt-2">
-                  No contract groups available for the selected team.
-                </p>
-              )}
+              {privacy === "private" &&
+                teamId &&
+                contractGroupsFetched &&
+                contractGroups.length === 0 && (
+                  <p className="text-[#727679] mt-2">
+                    No contract groups available for the selected team.
+                  </p>
+                )}
               {privacy === "private" && contractGroups.length > 0 && (
                 <div className="mt-2">
                   <label
@@ -277,18 +291,27 @@ const fetchContractGroups = async () => {
                     Select Contract Groups:
                   </label>
                   <div id="contract-groups">
-                    {contractGroups.map((group) => (
-                      <div key={group.id} className="flex items-center mt-2">
+                    {contractGroups.map((group, index) => (
+                      <div
+                        key={`${group.owner}-${group.name}-${index}`}
+                        className="flex items-center mt-2"
+                      >
+                        {/* {console.group(group)}
+                        {console.group(group.owner)} */}
                         <input
                           type="checkbox"
-                          id={`contract-${group.id}`}
+                          id={`contract-${group.owner}-${group.name}-${index}`}
                           name="contractGroups"
-                          value={group.id}
-                          checked={selectedContracts.includes(group.id)}
-                          onChange={() => handleContractSelection(group.id)}
+                          value={`${group.owner}-${group.name}`}
+                          checked={
+                            selectedContracts[`${group.owner}-${group.name}`]
+                          }
+                          onChange={() =>
+                            handleContractSelection(`${group.owner}-${group.name}`)
+                          }
                         />
                         <label
-                          htmlFor={`contract-${group.id}`}
+                          htmlFor={`contract-${group.owner}-${group.name}-${index}`}
                           className="ml-2 text-[#727679] text-lg xl:text-xl"
                         >
                           {group.name}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { BASE_API_URL, GITHUB_CLIENT_ID } from "../constants";
+import { BASE_API_URL } from "../constants";
 
 const AppVisibilitySelector = ({ setShowTeams }) => {
   const [teams, setTeams] = useState<any[]>([]);
@@ -38,6 +38,12 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       setSelectedTeamId(teams[0].id);
     }
   }, [teams]);
+
+  useEffect(() => {
+    if (selectedTeamId) {
+      fetchContractGroups(selectedTeamId);
+    }
+  }, [selectedTeamId]);
 
   const fetchTeams = async () => {
     try {
@@ -164,6 +170,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       );
       if (response.ok) {
         const contractGroupsData = await response.json();
+        console.log(contractGroupsData);
         setContractGroups(contractGroupsData);
       } else {
         console.error("Failed to fetch contract groups:", response.status);
@@ -173,16 +180,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       console.error("Error fetching contract groups:", error);
     }
   };
-
-  const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const teamId = e.target.value;
-    setSelectedTeamId(teamId);
-    if (teamId) {
-      fetchContractGroups(teamId);
-    } else {
-      setContractGroups([]);
-    }
-  };
+  // console.log(contractGroups);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 overflow-auto">
@@ -224,15 +222,14 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
           <div className="flex flex-col gap-2 text-left mt-4">
             <h3 className="text-xl font-bold">Your Teams</h3>
             <select
-              key={Math.random()}
+              // key={Math.random()}
               id="team"
               value={selectedTeamId}
-              // onChange={(e) => setSelectedTeamId(e.target.value)}
-              onChange={handleTeamChange}
+              onChange={(e) => setSelectedTeamId(e.target.value)}
               className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
             >
               {teams.length === 0 ? (
-                <option key="" value="">
+                <option key="no-team" value="">
                   No teams found. Add a team!
                 </option>
               ) : (
@@ -275,12 +272,12 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
             >
               {contractGroups.length === 0 ? (
-                <option key="" value="">
+                <option key="no-group" value="">
                   No contract groups found for the selected team.
                 </option>
               ) : (
-                contractGroups.map((group) => (
-                  <option key={group.id} value={group.id}>
+                contractGroups.map((group, index) => (
+                  <option key={`${group.id}-${index}`} value={group.id}>
                     {group.name}
                   </option>
                 ))
