@@ -57,6 +57,13 @@ const addUserToSession = (req: Request, res: Response, user: User) => {
   session.userid = user.id;
 };
 
+const getUser = async (userid: number) => {
+  const datastore = getDatastore();
+  const key = datastore.key(["User", userid]);
+  const result = await datastore.get(key);
+  return result[0];
+};
+
 const addUserToDatastore = async (user: User) => {
   const kind = "User";
   const datastore = getDatastore();
@@ -98,6 +105,10 @@ const addUserToDatastore = async (user: User) => {
     entity.data.push({
       name: "created_on",
       value: existing_user.created_on,
+    });
+    entity.data.push({
+      name: "teams",
+      value: existing_user.teams || []
     });
     entity.data.push({
       name: "updated_at",
@@ -199,8 +210,9 @@ githubRouter.get("/github/callback", async (req, res, next) => {
   };
   console.log("user details:-", userDetail);
   try {
-    addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
+    const user = await getUser(userDetail.id);
+    addUserToSession(req, res, user);
     if (process.env.NODE_ENV === "development") {
         res.redirect("http://localhost:5173/");
     }
