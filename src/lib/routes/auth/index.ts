@@ -60,8 +60,8 @@ const addUserToSession = (req: Request, res: Response, user: User) => {
 const getUser = async (userid: number) => {
   const datastore = getDatastore();
   const key = datastore.key(["User", userid]);
-  const result = await datastore.get(key);
-  return result[0];
+  const [user] = await datastore.get(key);
+  return user;
 };
 
 const addUserToDatastore = async (user: User) => {
@@ -69,53 +69,11 @@ const addUserToDatastore = async (user: User) => {
   const datastore = getDatastore();
   // const key = datastore.key([kind, user.id]);
   const key = datastore.key([kind, user.id]);
-  const [existing_user] = await datastore.get(key);
   const entity = {
     key: key,
-    data: [
-      {
-        name: "name",
-        value: user.name,
-      },
-      {
-        name: "login",
-        value: user.login,
-      },
-      {
-        name: "id",
-        value: user.id,
-      },
-      {
-        name: "email",
-        value: user.email,
-      },
-      {
-        name: "avatar_url",
-        value: user.avatar_url,
-      }
-    ],
+    data: user,
   };
-  if (!existing_user) {
-    entity.data.push({
-      name: "created_on",
-      value: new Date().toISOString(),
-    });
-    await datastore.save(entity);
-  } else {
-    entity.data.push({
-      name: "created_on",
-      value: existing_user.created_on,
-    });
-    entity.data.push({
-      name: "teams",
-      value: existing_user.teams || []
-    });
-    entity.data.push({
-      name: "updated_at",
-      value: new Date().toISOString(),
-    });
-    await datastore.update(entity);
-  }
+  await datastore.save(entity);
 };
 
 export const authenticatedUser = async (
@@ -199,6 +157,7 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     },
   });
   const email = emailData.data.find((e: any) => e.primary === true);
+  const existingUser = await getUser(userData.data.id);
   console.log("user data:-", userData.data);
   const userDetail = {
     name: userData.data.name,
@@ -206,13 +165,14 @@ githubRouter.get("/github/callback", async (req, res, next) => {
     id: userData.data.id,
     email: email.email,
     avatar_url: userData.data.avatar_url,
-    created_on: new Date().toISOString(),
+    created_on: existingUser?.created_at || new Date().toISOString(),
+    teams: existingUser?.teams || [],
+    updated_at: new Date().toISOString()
   };
   console.log("user details:-", userDetail);
   try {
     await addUserToDatastore(userDetail);
-    const user = await getUser(userDetail.id);
-    addUserToSession(req, res, user);
+    addUserToSession(req, res, userDetail as User);
     if (process.env.NODE_ENV === "development") {
         res.redirect("http://localhost:5173/");
     }
