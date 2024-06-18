@@ -153,7 +153,6 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
     res.json(group);
 });
 
-// contractRegistryRouter.put("/group/new", authenticatedUser, async (req: Request, res: Response) => {
     contractRegistryRouter.post("/group/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const group_id = mcutils.getId(req.body.team + "-" + req.body.name);
@@ -193,7 +192,7 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
 });
 
 
-contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: Response) => {
+contractRegistryRouter.post("/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const contract_id = mcutils.getId(req.body.team + "-" + req.body.name);
     const key = datastore.key([CONTRACT_TABLE, contract_id]);
@@ -231,7 +230,7 @@ contractRegistryRouter.put("/new", authenticatedUser, async (req: Request, res: 
     res.json(entity);
 });
 
-contractRegistryRouter.put("/version/new", authenticatedUser, async (req: Request, res: Response) => {
+contractRegistryRouter.post("/version/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const contract_id = req.body.contract_id;
     const version = req.body.version;
@@ -283,7 +282,7 @@ contractRegistryRouter.put("/version/new", authenticatedUser, async (req: Reques
     res.json(contractVersion);
 });
 
-contractRegistryRouter.put("/instance/new", authenticatedUser, async (req: Request, res: Response) => {
+contractRegistryRouter.post("/instance/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const key = datastore.key([CONTRACT_INSTANCE_TABLE, req.body.contract_id, req.body.version, req.body.network]);
     const contract = {

@@ -27,9 +27,11 @@ const ConfigureBasicDetails: React.FC = () => {
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
   const [showTeams, setShowTeams] = useState(false);
-  const [contractGroups, setContractGroups] = useState<ContractGroup[]>([]);
+  const [privateContractGroups, setPrivateContractGroups] = useState<ContractGroup[]>([]);
+  const [publicContractGroups, setPublicContractGroups] = useState<ContractGroup[]>([]);
   const [selectedContracts, setSelectedContracts] = useState<{ [key: string]: boolean }>({});
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
+  const [selectedGroupType, setSelectedGroupType] = useState<"private" | "public" | null>(null);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -47,11 +49,13 @@ const ConfigureBasicDetails: React.FC = () => {
     if (privacy === "private") {
       fetchTeams();
     }
+    // fetchPublicContractGroups();
   }, [privacy]);
 
   useEffect(() => {
     if (teamId) {
-      fetchContractGroups();
+      fetchPrivateContractGroups();
+      fetchPublicContractGroups();
     }
   }, [teamId]);
 
@@ -81,29 +85,46 @@ const ConfigureBasicDetails: React.FC = () => {
     }
   };
 
-  const fetchContractGroups = async () => {
+  const fetchPrivateContractGroups = async () => {
     setContractGroupsFetched(false);
     try {
-      const response = await fetch(
-        `${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (response.ok) {
         const contractGroups: ContractGroup[] = await response.json();
-        setContractGroups(contractGroups);
+        setPrivateContractGroups(contractGroups);
       } else {
-        console.error("Failed to fetch contract groups:", response.statusText);
+        console.error("Failed to fetch private contract groups:", response.statusText);
       }
     } catch (error) {
-      console.error("Error fetching contract groups:", error);
+      console.error("Error fetching private contract groups:", error);
     }
     setContractGroupsFetched(true);
+  };
+
+  const fetchPublicContractGroups = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/contract-registry/group/list?owner=public`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const contractGroups: ContractGroup[] = await response.json();
+        setPublicContractGroups(contractGroups);
+      } else {
+        console.error("Failed to fetch public contract groups:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching public contract groups:", error);
+    }
   };
 
   const handleSaveNext = () => {
@@ -116,18 +137,33 @@ const ConfigureBasicDetails: React.FC = () => {
       return;
     } else {
       localStorage.removeItem("formData");
-      // const data = { title, description, privacy, teamId, selectedContracts };
-      const data = { title, description, privacy, teamId, selectedContracts: Object.keys(selectedContracts) };
+      const selectedContractNames = Object.keys(selectedContracts).filter(contract => selectedContracts[contract]);
+      const data = { title, description, privacy, teamId, selectedContracts: selectedContractNames };
       localStorage.setItem("formData", JSON.stringify(data));
       window.location.href = "/app/new";
     }
   };
 
-  const handleContractSelection = (idName: string) => {
-    setSelectedContracts((prevSelected) => ({
-      ...prevSelected,
-      [idName]: !prevSelected[idName]
-    }));
+  const handleContractSelection = (idName: string, groupType: "private" | "public") => {
+    if (selectedGroupType === null || selectedGroupType === groupType) {
+      setSelectedGroupType(groupType);
+      setSelectedContracts((prevSelected) => ({
+        ...prevSelected,
+        [idName]: !prevSelected[idName],
+      }));
+    } else {
+      setSelectedContracts({ [idName]: true });
+      setSelectedGroupType(groupType);
+    }
+
+    // Reset the selected group type if no checkboxes are selected
+    setTimeout(() => {
+      const updatedSelectedContracts = { ...selectedContracts, [idName]: !selectedContracts[idName] };
+      const hasSelected = Object.values(updatedSelectedContracts).some((selected) => selected);
+      if (!hasSelected) {
+        setSelectedGroupType(null);
+      }
+    }, 0);
   };
 
   // console.log(teams)
@@ -164,7 +200,7 @@ const ConfigureBasicDetails: React.FC = () => {
                 <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                   4
                 </span>
-                Select Thumbnail
+                Publish the app
               </p>
             </div>
             <div className="flex flex-col">
@@ -277,23 +313,24 @@ const ConfigureBasicDetails: React.FC = () => {
               {privacy === "private" &&
                 teamId &&
                 contractGroupsFetched &&
-                contractGroups.length === 0 && (
-                  <p className="text-[#727679] mt-2">
+                privateContractGroups.length === 0 && (
+                  <p className="text-[#c055ce] mt-2">
                     No contract groups available for the selected team.
                   </p>
                 )}
-              {privacy === "private" && contractGroups.length > 0 && (
+              {privacy === "private" && privateContractGroups.length > 0 && (
                 <div className="mt-2">
                   <label
                     htmlFor="contract-groups"
                     className="text-[#727679] font-semibold text-lg xl:text-xl"
                   >
-                    Select Contract Groups:
+                    {/* Select Contract Groups: */}
+                    Private Contract Groups:
                   </label>
                   <div id="contract-groups">
-                    {contractGroups.map((group, index) => (
+                    {privateContractGroups.map((group, index) => (
                       <div
-                        key={`${group.owner}-${group.name}-${index}`}
+                        key={`${group.name}-${index}`}
                         className="flex items-center mt-2"
                       >
                         {/* {console.group(group)}
@@ -301,14 +338,59 @@ const ConfigureBasicDetails: React.FC = () => {
                         <input
                           type="checkbox"
                           id={`contract-${group.owner}-${group.name}-${index}`}
-                          name="contractGroups"
+                          name="privateContractGroups"
                           value={`${group.owner}-${group.name}`}
-                          checked={
-                            selectedContracts[`${group.owner}-${group.name}`]
-                          }
-                          onChange={() =>
-                            handleContractSelection(`${group.owner}-${group.name}`)
-                          }
+                          // checked={
+                          //   selectedContracts[`${group.owner}-${group.name}`]
+                          // }
+                          // onChange={() =>
+                          //   handleContractSelection(`${group.owner}-${group.name}`)
+                          // }
+                        disabled={selectedGroupType === "public"}
+                        // checked={selectedContracts[group.name] || false}
+                        checked={!!selectedContracts[group.name]}
+                        onChange={() => handleContractSelection(group.name, "private")}
+                        />
+                        <label
+                          htmlFor={`contract-${group.owner}-${group.name}-${index}`}
+                          className="ml-2 text-[#727679] text-lg xl:text-xl"
+                        >
+                          {group.name}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {privacy === "private" && publicContractGroups.length > 0 && (
+                <div className="mt-2">
+                  <label
+                    htmlFor="contract-groups"
+                    className="text-[#727679] font-semibold text-lg xl:text-xl"
+                  >
+                    Public Contract Groups:
+                  </label>
+                  <div id="contract-groups">
+                    {publicContractGroups.map((group, index) => (
+                      <div
+                        key={`${group.name}-${index}`}
+                        className="flex items-center mt-2"
+                      >
+                        <input
+                          type="checkbox"
+                          id={`contract-${group.owner}-${group.name}-${index}`}
+                          name="publicContractGroups"
+                          value={`${group.owner}-${group.name}`}
+                          // checked={
+                          //   selectedContracts[`${group.owner}-${group.name}`]
+                          // }
+                          // onChange={() =>
+                          //   handleContractSelection(`${group.owner}-${group.name}`)
+                          // }
+                      disabled={selectedGroupType === "private"}
+                      // checked={selectedContracts[group.name] || false}
+                      checked={!!selectedContracts[group.name]}
+                      onChange={() => handleContractSelection(group.name, "public")}
                         />
                         <label
                           htmlFor={`contract-${group.owner}-${group.name}-${index}`}

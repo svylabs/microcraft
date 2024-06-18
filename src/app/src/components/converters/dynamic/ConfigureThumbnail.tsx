@@ -173,7 +173,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 4
               </span>
-              Select Thumnail
+              Publish the app
               <span className="absolute bottom-0 ml-1 h-[2px] w-[7.5rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D]"></span>
             </p>
           </div>

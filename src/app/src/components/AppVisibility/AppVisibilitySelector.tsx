@@ -10,7 +10,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [userEmail, setUserEmail] = useState("");
   const [isValid, setIsValid] = useState(true);
   const [selectedTeamId, setSelectedTeamId] = useState("");
-  const [contractGroups, setContractGroups] = useState<any[]>([]);
+  const [privateContractGroups, setPrivateContractGroups] = useState<any[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
 
   useEffect(() => {
     if (selectedTeamId) {
-      fetchContractGroups(selectedTeamId);
+      fetchPrivateContractGroups(selectedTeamId);
     }
   }, [selectedTeamId]);
 
@@ -156,7 +156,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
     setIsValid(emailRegex.test(email));
   };
 
-  const fetchContractGroups = async (teamId: string) => {
+  const fetchPrivateContractGroups = async (teamId: string) => {
     try {
       const response = await fetch(
         `${BASE_API_URL}/contract-registry/group/list?owner=${teamId}`,
@@ -171,16 +171,16 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       if (response.ok) {
         const contractGroupsData = await response.json();
         console.log(contractGroupsData);
-        setContractGroups(contractGroupsData);
+        setPrivateContractGroups(contractGroupsData);
       } else {
         console.error("Failed to fetch contract groups:", response.status);
-        setContractGroups([]);
+        setPrivateContractGroups([]);
       }
     } catch (error) {
       console.error("Error fetching contract groups:", error);
     }
   };
-  // console.log(contractGroups);
+  // console.log(privateContractGroups);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 overflow-auto">
@@ -271,13 +271,13 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               id="contract-groups"
               className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
             >
-              {contractGroups.length === 0 ? (
+              {privateContractGroups.length === 0 ? (
                 <option key="no-group" value="">
                   No contract groups found for the selected team.
                 </option>
               ) : (
-                contractGroups.map((group, index) => (
-                  <option key={`${group.id}-${index}`} value={group.id}>
+                privateContractGroups.map((group, index) => (
+                  <option key={`${group.owner}-${index}`} value={`${group.owner}-${group.name}`}>
                     {group.name}
                   </option>
                 ))

@@ -441,7 +441,7 @@ const ConfigureInputsOutputs: React.FC = () => {
               <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
                 4
               </span>
-              Select Thumbnail
+              Publish the app
             </p>
           </div>
 
