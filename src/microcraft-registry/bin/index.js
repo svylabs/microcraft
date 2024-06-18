@@ -132,6 +132,7 @@ program
 
 program
   .command('register')
+  .option('--artifact-path <path>', 'Path where the contract artifacts are stored', './artifacts/contracts')
   .description('Register a new contract, version, and the deployed instance')
   .action(async (options) => {
     try {
@@ -139,7 +140,7 @@ program
         console.error('No contract group found in the registry, run `microcraft init` first');
         return;
       }
-      const artifactPath = "/Users/sg/Documents/workspace/svylabs/handycraft/samplecontracts/solidity/artifacts/contracts";
+      const artifactPath = options.artifactPath;
       const contracts = processContractArtifacts(artifactPath);
       console.log('Contracts:', contracts);
 
