@@ -108,7 +108,7 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
     contract.data = contractVersion;
     let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
         .filter("contract_id", "=", req.params.id)
-        .filter("version", "=", version);
+        .filter("=version", "=", version);
     if (network) {
         contractInstanceQuery = contractInstanceQuery.filter("network", "=", network);
     }
@@ -153,9 +153,9 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
     res.json(group);
 });
 
-    contractRegistryRouter.post("/group/new", authenticatedUser, async (req: Request, res: Response) => {
+contractRegistryRouter.post("/group/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
-    const group_id = mcutils.getId(req.body.team + "-" + req.body.name);
+    const group_id = mcutils.getId(req.body.owner + "-" + req.body.name);
     const key = datastore.key([CONTRACT_GROUP, group_id]);
     const entity = {
         key,

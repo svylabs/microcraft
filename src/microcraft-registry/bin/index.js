@@ -132,7 +132,6 @@ program
 
 program
   .command('register')
-  .option('--deployment', 'Register deployment instance')
   .description('Register a new contract, version, and the deployed instance')
   .action(async (options) => {
     try {
