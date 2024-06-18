@@ -11,6 +11,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [isValid, setIsValid] = useState(true);
   const [selectedTeamId, setSelectedTeamId] = useState("");
   const [privateContractGroups, setPrivateContractGroups] = useState<any[]>([]);
+  const [publicContractGroups, setPublicContractGroups] = useState<any[]>([]);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   useEffect(() => {
     if (selectedTeamId) {
       fetchPrivateContractGroups(selectedTeamId);
+      fetchPublicContractGroups();
     }
   }, [selectedTeamId]);
 
@@ -180,10 +182,38 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       console.error("Error fetching contract groups:", error);
     }
   };
+
+  const fetchPublicContractGroups = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_API_URL}/contract-registry/group/list?owner=public`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const contractGroupsData = await response.json();
+        console.log(contractGroupsData);
+        setPublicContractGroups(contractGroupsData);
+      } else {
+        console.error(
+          "Failed to fetch public contract groups:",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching public contract groups:", error);
+    }
+  };
+
   // console.log(privateContractGroups);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 overflow-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div
         ref={modalRef}
         className="bg-white rounded-md p-4 md:p-8 w-full max-w-md relative py-10"
@@ -195,9 +225,9 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
           &times;
         </span>
 
-        <div className="mt-2">
-          <div className="flex flex-col gap-3 text-left">
-            <h3 className="text-xl font-bold">Create a New Team</h3>
+        <div className="h-[74vh] overflow-auto">
+          <div className="flex flex-col gap-2 text-left">
+            <h3 className="text-lg font-bold">Create a New Team</h3>
             <input
               type="text"
               placeholder="Team Name"
@@ -213,14 +243,14 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
             />
             <button
               onClick={handleCreateTeam}
-              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md xl:text-xl px-4 py-2 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              className="cursor-pointer bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md xl:text-lg py-1.5 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             >
               Create Team
             </button>
           </div>
 
-          <div className="flex flex-col gap-2 text-left mt-4">
-            <h3 className="text-xl font-bold">Your Teams</h3>
+          <div className="flex flex-col gap-1 text-left mt-2">
+            <h3 className="text-lg font-bold">Your Teams</h3>
             <select
               // key={Math.random()}
               id="team"
@@ -244,8 +274,8 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
             </select>
           </div>
 
-          <div className="flex flex-col gap-2 text-left mt-4">
-            <h3 className="text-xl font-bold">Add User to Team</h3>
+          <div className="flex flex-col gap-1 text-left mt-2">
+            <h3 className="text-lg font-bold">Add User to Team</h3>
             <input
               type="email"
               placeholder="Enter your email"
@@ -255,34 +285,64 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
             />
             <button
               onClick={handleAddUserToTeam}
-              className="cursor-pointer bg-gradient-to-r from-green-500 to-green-600 text-white rounded-md xl:text-xl px-4 py-2 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105 mt-2"
+              className="cursor-pointer bg-gradient-to-r from-green-500 to-green-600 text-white rounded-md xl:text-lg py-1.5 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105 mt-1"
             >
               Add User to Team
             </button>
           </div>
 
-          <div className="flex flex-col gap-2 text-left mt-4">
-            <h3 className="text-xl font-bold">Contract Groups List</h3>
-            <span className="text-gray-500 text-sm">
+          <div className="flex flex-col text-left mt-2">
+            <h3 className="text-lg font-bold">Contract Groups List</h3>
+            <span className="text-[#c055ce] text-sm text-center">
               Please select a team to view contract groups.
             </span>
-            <select
-              // key={Math.random()}
-              id="contract-groups"
-              className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
-            >
-              {privateContractGroups.length === 0 ? (
-                <option key="no-group" value="">
-                  No contract groups found for the selected team.
-                </option>
-              ) : (
-                privateContractGroups.map((group, index) => (
-                  <option key={`${group.owner}-${index}`} value={`${group.owner}-${group.name}`}>
-                    {group.name}
+            <div className="mt-1">
+              <label className="text-[#727679] font-semibold">
+                Private Contract Groups:
+              </label>
+              <select
+                id="contract-groups"
+                className="focus:outline-none border border-[#E2E3E8] rounded p-2 mb-2 bg-[#F7F8FB] placeholder:italic w-full"
+              >
+                {privateContractGroups.length === 0 ? (
+                  <option key="no-group" value="">
+                    No contract groups found for the selected team.
                   </option>
-                ))
-              )}
-            </select>
+                ) : (
+                  privateContractGroups.map((group, index) => (
+                    <option
+                      key={`${group.owner}-${index}`}
+                      value={`${group.owner}-${group.name}`}
+                    >
+                      {group.name}
+                    </option>
+                  ))
+                )}
+              </select>
+
+              <label className="text-[#727679] font-semibold">
+                Public Contract Groups:
+              </label>
+              <select
+                id="contract-groups"
+                className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] placeholder:italic w-full"
+              >
+                {publicContractGroups.length === 0 ? (
+                  <option key="no-group" value="">
+                    No contract groups found for the selected team.
+                  </option>
+                ) : (
+                  publicContractGroups.map((group, index) => (
+                    <option
+                      key={`${group.owner}-${index}`}
+                      value={`${group.owner}-${group.name}`}
+                    >
+                      {group.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
           </div>
         </div>
       </div>
