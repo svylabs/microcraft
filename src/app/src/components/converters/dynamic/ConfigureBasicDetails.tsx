@@ -27,19 +27,10 @@ const ConfigureBasicDetails: React.FC = () => {
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
   const [showTeams, setShowTeams] = useState(false);
-  const [privateContractGroups, setPrivateContractGroups] = useState<
-    ContractGroup[]
-  >([]);
-  const [publicContractGroups, setPublicContractGroups] = useState<
-    ContractGroup[]
-  >([]);
-  const [selectedContracts, setSelectedContracts] = useState<{
-    [key: string]: boolean;
-  }>({});
+  const [privateContractGroups, setPrivateContractGroups] = useState<ContractGroup[]>([]);
+  const [publicContractGroups, setPublicContractGroups] = useState<ContractGroup[]>([]);
+  const [selectedContracts, setSelectedContracts] = useState<{ [key: string]: boolean }>({});
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
-  const [selectedGroupType, setSelectedGroupType] = useState<
-    "private" | "public" | null
-  >(null);
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -172,34 +163,11 @@ const ConfigureBasicDetails: React.FC = () => {
     }
   };
 
-  const handleContractSelection = (
-    idName: string,
-    groupType: "private" | "public"
-  ) => {
-    if (selectedGroupType === null || selectedGroupType === groupType) {
-      setSelectedGroupType(groupType);
-      setSelectedContracts((prevSelected) => ({
-        ...prevSelected,
-        [idName]: !prevSelected[idName],
-      }));
-    } else {
-      setSelectedContracts({ [idName]: true });
-      setSelectedGroupType(groupType);
-    }
-
-    // Reset the selected group type if no checkboxes are selected
-    setTimeout(() => {
-      const updatedSelectedContracts = {
-        ...selectedContracts,
-        [idName]: !selectedContracts[idName],
-      };
-      const hasSelected = Object.values(updatedSelectedContracts).some(
-        (selected) => selected
-      );
-      if (!hasSelected) {
-        setSelectedGroupType(null);
-      }
-    }, 0);
+  const handleContractSelection = (idName: string) => {
+    setSelectedContracts((prevSelected) => ({
+      ...prevSelected,
+      [idName]: !prevSelected[idName],
+    }));
   };
 
   // console.log(teams)
@@ -360,7 +328,6 @@ const ConfigureBasicDetails: React.FC = () => {
                     htmlFor="contract-groups"
                     className="text-[#727679] font-semibold text-lg xl:text-xl"
                   >
-                    {/* Select Contract Groups: */}
                     Private Contract Groups:
                   </label>
                   <div id="contract-groups">
@@ -373,24 +340,16 @@ const ConfigureBasicDetails: React.FC = () => {
                         {console.group(group.owner)} */}
                         <input
                           type="checkbox"
-                          id={`contract-${group.owner}-${group.name}-${index}`}
+                          id={`private-${group.name}`}
                           name="privateContractGroups"
                           value={`${group.owner}-${group.name}`}
-                          // checked={!!selectedContracts[group.name]}
-                          // onChange={() => handleContractSelection(group.name, "public")}
-                          disabled={selectedGroupType === "public"}
-                          checked={
-                            !!selectedContracts[`${group.owner}-${group.name}`]
-                          }
-                          onChange={() =>
-                            handleContractSelection(
-                              `${group.owner}-${group.name}`,
-                              "private"
-                            )
-                          }
+                          checked={!!selectedContracts[group.name]}
+                          onChange={() => handleContractSelection(group.name)}
+                          // checked={!!selectedContracts[`${group.owner}-${group.name}`]}
+                          // onChange={() => handleContractSelection(`${group.owner}-${group.name}`)}
                         />
                         <label
-                          htmlFor={`contract-${group.owner}-${group.name}-${index}`}
+                          htmlFor={`private-${group.name}`}
                           className="ml-2 text-[#727679] text-lg xl:text-xl"
                         >
                           {group.name}
@@ -416,24 +375,16 @@ const ConfigureBasicDetails: React.FC = () => {
                       >
                         <input
                           type="checkbox"
-                          id={`contract-${group.owner}-${group.name}-${index}`}
+                          id={`public-${group.name}`}
                           name="publicContractGroups"
                           value={`${group.owner}-${group.name}`}
-                          // checked={!!selectedContracts[group.name]}
-                          // onChange={() => handleContractSelection(group.name, "public")}
-                          disabled={selectedGroupType === "private"}
-                          checked={
-                            !!selectedContracts[`${group.owner}-${group.name}`]
-                          }
-                          onChange={() =>
-                            handleContractSelection(
-                              `${group.owner}-${group.name}`,
-                              "public"
-                            )
-                          }
+                          checked={!!selectedContracts[group.name]}
+                          onChange={() => handleContractSelection(group.name)}
+                          // checked={!!selectedContracts[`${group.owner}-${group.name}`]}
+                          // onChange={() => handleContractSelection(`${group.owner}-${group.name}`)}
                         />
                         <label
-                          htmlFor={`contract-${group.owner}-${group.name}-${index}`}
+                          htmlFor={`public-${group.name}`}
                           className="ml-2 text-[#727679] text-lg xl:text-xl"
                         >
                           {group.name}
