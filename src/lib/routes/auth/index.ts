@@ -83,29 +83,26 @@ export const authenticatedUser = async (
   res: Response,
   next: NextFunction
 ) => {
+  const datastore = getDatastore();
   if (req.headers.authorization) {
     // TODO: Implement proper token / api key validation here
     const token = req.headers.authorization;
     //const decoded = Buffer.from(token, "base64").toString("utf-8");
-    const [login, password] = token.split(":");
-    if ((login === "svylabs" || login === "rohitbharti279" )&& password === "admin") {
-      const datastore = getDatastore();
-      const query = datastore.createQuery("User").filter("login", "=", login);
-      const [users] = await datastore.runQuery(query);
-      if (users.length > 0) {
-        const user = users[0];
-        const session = req.session as CustomSession;
-        session.userid = user.id;
-        session.user = user;
-        return next();
-      }
+    const query = datastore.createQuery("APIKey").filter("api_key", "=", token);
+    const [keys] = await datastore.runQuery(query);
+    if (keys.length > 0 && keys[0].active) {
+      const key = keys[0];
+      const session = req.session as CustomSession;
+      session.userid = key.user_id;
+      const user = await getUser(key.user_id);
+      session.user = user;
+      return next();
     }
   }
   console.log(req.session);
   const session = req.session as CustomSession;
   if (session.userid !== undefined) {
     const userid = session.userid;
-    const datastore = getDatastore();
     const result = await datastore.get(datastore.key(["User", userid]));
     if (result[0]) {
       //(req as any).user = result[0];
