@@ -4,6 +4,8 @@ import axios from "axios";
 import { encode } from "url-safe-base64";
 import { Session } from "express-session";
 import { google } from "googleapis";
+import { generateApiKey } from 'generate-api-key';
+import { randomUUID } from "crypto";
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -147,6 +149,61 @@ githubRouter.get(
     }
   }
 );
+
+
+githubRouter.post("/api-key/new", authenticatedUser, async (req: Request, res: Response) => {
+    const result = generateApiKey({
+      method: 'string',
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      length: 20
+    });
+    const datastore = getDatastore();
+    const session = req.session as CustomSession;
+    const id = randomUUID();
+    const key = datastore.key(["APIKey", id]);
+    const entity = {
+        key: key,
+        data: {
+            id: id,
+            api_key: result,
+            user_id: session.userid,
+            created_on: new Date().toISOString(),
+            active: true
+        }
+    };
+    await datastore.save(entity);
+    res.send({ api_key: result});
+});
+
+githubRouter.get("/api-key/list", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const session = req.session as CustomSession;
+    const query = datastore.createQuery("APIKey")
+                      .filter("user_id", "=", session.userid)
+                      .filter("active", "=", true);
+    const [results] = await datastore.runQuery(query);
+    res.send(results);
+});
+
+githubRouter.post("/api-key/deactivate", authenticatedUser, async (req: Request, res: Response) => {
+  const datastore = getDatastore();
+  const session = req.session as CustomSession;
+  const query = datastore.createQuery("APIKey").filter("id", "=", req.body.id);
+  const [result] = await datastore.runQuery(query);
+  if (result.length > 0) {
+    const key = result[0][datastore.KEY];
+    const entity = {
+      key: key,
+      data: {
+        ...result[0].data,
+        active: false
+      }
+    };
+    await datastore.update(entity);
+    res.send({ message: "API Key deactivated successfully"});
+  }
+  res.status(404).send({ message: "API Key not found"});
+});
 
 githubRouter.get("/github/callback", async (req, res, next) => {
   // The req.query object has the query params that were sent to this route.

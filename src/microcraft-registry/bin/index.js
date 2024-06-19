@@ -15,8 +15,8 @@ const crypto = require('crypto');
  *  
  */
 
-// const API_URL = "https://handycraft-415122.oa.r.appspot.com";
-const API_URL = "http://localhost:8080";
+const API_URL = "https://handycraft-415122.oa.r.appspot.com";
+//const API_URL = "http://localhost:8080";
 const CONTRACT_REGISTRY = "microcraft-registry.json";
 const REGISTRY_DIRECTORY = ".mcregistry";
 const API_KEY = process.env.MC_API_KEY;
