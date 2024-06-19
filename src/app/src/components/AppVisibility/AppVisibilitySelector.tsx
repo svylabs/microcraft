@@ -225,7 +225,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
           &times;
         </span>
 
-        <div className="h-[74vh] overflow-auto">
+        <div className="">  {/* h-[74vh] overflow-auto */}
           <div className="flex flex-col gap-2 text-left">
             <h3 className="text-lg font-bold">Create a New Team</h3>
             <input

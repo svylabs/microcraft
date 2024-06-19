@@ -100,11 +100,13 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
         return res.status(404).json({ error: "Contract not found" });
     }
     const version = req.query.version || contract.latest_version;
+    console.log('Version:', version);
     const network = req.query.network;
     const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
         .filter("contract_id", "=", req.params.id)
         .filter("version", "=", version);
     const [contractVersion] = await datastore.runQuery(contractVersionQuery);
+    console.log('Contract Version:', contractVersion);
     contract.data = contractVersion;
     let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
         .filter("contract_id", "=", req.params.id)
@@ -168,6 +170,10 @@ contractRegistryRouter.post("/group/new", authenticatedUser, async (req: Request
                 name: "description",
                 value: req.body.description,
                 excludeFromIndexes: true,
+            },
+            {
+                name: "id",
+                value: group_id,
             },
             {
                 name: "type",
@@ -242,7 +248,7 @@ contractRegistryRouter.post("/version/new", authenticatedUser, async (req: Reque
     if (!contract_id || !version) {
         return res.status(400).json({ error: "Contract ID and version are required" });
     }
-    const key = datastore.key([CONTRACT_VERSION_TABLE, req.body.contract_id, req.body.version]);
+    const key = datastore.key([CONTRACT_VERSION_TABLE, (req.body.contract_id, req.body.version)]);
     const contractVersion = {
         key,
         data: [
@@ -284,7 +290,7 @@ contractRegistryRouter.post("/version/new", authenticatedUser, async (req: Reque
 
 contractRegistryRouter.post("/instance/new", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
-    const key = datastore.key([CONTRACT_INSTANCE_TABLE, req.body.contract_id, req.body.version, req.body.network]);
+    const key = datastore.key([CONTRACT_INSTANCE_TABLE, (req.body.contract_id, req.body.version, req.body.network)]);
     const contract = {
         key,
         data: [

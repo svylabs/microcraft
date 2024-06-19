@@ -13,6 +13,24 @@ interface Team {
 interface ContractGroup {
   owner: string;
   name: string;
+  id: string; //delete
+}
+
+// interface ContractInstance {
+//   network: string;
+//   address: string;
+//   chain_id: number;
+//   rpc_url: string;
+// }
+
+interface ContractInstance {
+  network: {
+    rpc_url: any;
+    chain_id: any;
+  };
+  contracts: {
+    address: any;
+  }[];
 }
 
 const ConfigureBasicDetails: React.FC = () => {
@@ -27,10 +45,21 @@ const ConfigureBasicDetails: React.FC = () => {
   });
   const [userDetails, setUserDetails] = useState<string | null>(null);
   const [showTeams, setShowTeams] = useState(false);
-  const [privateContractGroups, setPrivateContractGroups] = useState<ContractGroup[]>([]);
-  const [publicContractGroups, setPublicContractGroups] = useState<ContractGroup[]>([]);
-  const [selectedContracts, setSelectedContracts] = useState<{ [key: string]: boolean }>({});
+  const [privateContractGroups, setPrivateContractGroups] = useState<
+    ContractGroup[]
+  >([]);
+  const [publicContractGroups, setPublicContractGroups] = useState<
+    ContractGroup[]
+  >([]);
+  const [selectedContracts, setSelectedContracts] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
+  const [instances, setInstances] = useState<ContractInstance[]>([]);
+  const [network, setNetwork] = useState("");
+  const [contractAddresses, setContractAddresses] = useState<{
+    [key: string]: string;
+  }>({});
 
   useEffect(() => {
     const userDetails = localStorage.getItem("userDetails");
@@ -100,6 +129,7 @@ const ConfigureBasicDetails: React.FC = () => {
       if (response.ok) {
         const contractGroups: ContractGroup[] = await response.json();
         setPrivateContractGroups(contractGroups);
+        await fetchContractInstances(contractGroups);
       } else {
         console.error(
           "Failed to fetch private contract groups:",
@@ -127,6 +157,7 @@ const ConfigureBasicDetails: React.FC = () => {
       if (response.ok) {
         const contractGroups: ContractGroup[] = await response.json();
         setPublicContractGroups(contractGroups);
+        await fetchContractInstances(contractGroups);
       } else {
         console.error(
           "Failed to fetch public contract groups:",
@@ -136,6 +167,29 @@ const ConfigureBasicDetails: React.FC = () => {
     } catch (error) {
       console.error("Error fetching public contract groups:", error);
     }
+  };
+
+  const fetchContractInstances = async (contractGroups: ContractGroup[]) => {
+    const instancesPromises = contractGroups.map(async (group) => {
+      console.log(group.id);
+      const response = await fetch(
+        `${BASE_API_URL}/contract-registry/group/get/${group.id}`
+        // `${BASE_API_URL}/contract-registry/get/55e295f960`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        return data.instances || [];
+      } else {
+        console.error(
+          `Failed to fetch contract instances for group ${group.id}:`,
+          response.status
+        );
+        return [];
+      }
+    });
+    const allInstances = (await Promise.all(instancesPromises)).flat();
+    setInstances(allInstances);
   };
 
   const handleSaveNext = () => {
@@ -168,6 +222,20 @@ const ConfigureBasicDetails: React.FC = () => {
       ...prevSelected,
       [idName]: !prevSelected[idName],
     }));
+  };
+
+  const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setNetwork(event.target.value);
+  };
+
+  const handleContractAddressChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    contractName: string
+  ) => {
+    setContractAddresses({
+      ...contractAddresses,
+      [contractName]: event.target.value,
+    });
   };
 
   // console.log(teams)
@@ -391,6 +459,127 @@ const ConfigureBasicDetails: React.FC = () => {
                         </label>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {instances.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-[#727679] font-semibold text-lg xl:text-xl">
+                    Contract Instances:
+                  </p>
+                  <label
+                    htmlFor="network"
+                    className="block text-[#727679] mt-2"
+                  >
+                    Select Network:
+                  </label>
+                  <select
+                    id="network"
+                    className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
+                    value={network}
+                    onChange={handleNetworkChange}
+                  >
+                    <option value="" disabled>
+                      Select Network
+                    </option>
+                    {instances.map((instance, index) => (
+                      <option key={index} value={instance.network.rpc_url}>
+                        {instance.network.chain_id} - {instance.network.rpc_url}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="mt-2">
+                    {instances.map((instance, index) => (
+                      <div key={index} className="flex flex-col">
+                        <label
+                          htmlFor={`contractAddress-${index}`}
+                          className="block text-sm font-medium leading-6 text-gray-900"
+                        >
+                          {instance.network.chain_id} -{" "}
+                          {instance.contracts[0].address}
+                        </label>
+                        <input
+                          id={`contractAddress-${index}`}
+                          name={`contractAddress-${index}`}
+                          type="text"
+                          placeholder="Enter contract address"
+                          value={
+                            contractAddresses[instance.network.chain_id] || ""
+                          }
+                          onChange={(e) =>
+                            handleContractAddressChange(
+                              e,
+                              instance.network.chain_id
+                            )
+                          }
+                          className="mt-1 px-2 block w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {instances.length === 0 && (
+                <div className="mt-4">
+                  <p className="text-red-500">
+                    No instances found for the selected contract groups. Please
+                    enter details manually.
+                  </p>
+                  <div className="mt-2">
+                    <label
+                      htmlFor="manualChainId"
+                      className="block text-[#727679] mt-2"
+                    >
+                      Enter Chain ID:
+                    </label>
+                    <input
+                      type="number"
+                      id="manualChainId"
+                      className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
+                      placeholder="Enter chain ID.."
+                      value={
+                        network ? instances[0].network.chain_id.toString() : ""
+                      }
+                      onChange={(e) => {
+                        const chainId = parseInt(e.target.value);
+                        if (!isNaN(chainId)) {
+                          setNetwork(chainId.toString());
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label
+                      htmlFor="manualRpcUrl"
+                      className="block text-[#727679] mt-2"
+                    >
+                      Enter RPC URL:
+                    </label>
+                    <input
+                      type="text"
+                      id="manualRpcUrl"
+                      className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
+                      placeholder="Enter RPC URL.."
+                      value={contractAddresses[network] || ""}
+                      onChange={(e) => handleContractAddressChange(e, network)}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <label
+                      htmlFor="manualAddress"
+                      className="block text-[#727679] mt-2"
+                    >
+                      Enter Contract Address:
+                    </label>
+                    <input
+                      type="text"
+                      id="manualAddress"
+                      className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
+                      placeholder="Enter contract address.."
+                      value={contractAddresses[network] || ""}
+                      onChange={(e) => handleContractAddressChange(e, network)}
+                    />
                   </div>
                 </div>
               )}
