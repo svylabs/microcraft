@@ -105,12 +105,12 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
     const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
         .filter("contract_id", "=", req.params.id)
         .filter("version", "=", version);
-    const [contractVersion] = await datastore.runQuery(contractVersionQuery);
-    console.log('Contract Version:', contractVersion);
-    contract.data = contractVersion;
+    const [contractVersions] = await datastore.runQuery(contractVersionQuery);
+    console.log('Contract Version:', contractVersions);
+    contract.versions = contractVersions;
     let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
         .filter("contract_id", "=", req.params.id)
-        .filter("=version", "=", version);
+        .filter("version", "=", version);
     if (network) {
         contractInstanceQuery = contractInstanceQuery.filter("network", "=", network);
     }
@@ -132,19 +132,16 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
         .filter("contract_group_id", "=", req.params.id);
     const [contracts] = await datastore.runQuery(query);
     const promises = contracts.map((contract: any) => (async () => {
-        const version = req.query.version || contract.latest_version;
-        const network = req.query.network;
+        //const version = contract.latest_version;
+        //const network = req.query.network;
         const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
             .filter("contract_id", "=", contract.id)
-            .filter("version", "=", version);
-        const [contractVersion] = await datastore.runQuery(contractVersionQuery);
-        contract.data = contractVersion;
+            //.filter("version", "=", version);
+        const [contractVersions] = await datastore.runQuery(contractVersionQuery);
+        contract.versions = contractVersions;
         let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
             .filter("contract_id", "=", contract.id)
-            .filter("version", "=", version);
-        if (network) {
-            contractInstanceQuery = contractInstanceQuery.filter("network", "=", network);
-        }
+            //.filter("version", "=", version);
         const [contractInstances] = await datastore.runQuery(contractInstanceQuery);
         if (contractInstances.length > 0) {
             contract.instances = contractInstances;
@@ -205,6 +202,10 @@ contractRegistryRouter.post("/new", authenticatedUser, async (req: Request, res:
     const entity = {
         key,
         data: [
+            {
+                name: "id",
+                value: contract_id,
+            },
             {
                 name: "name",
                 value: req.body.name,
