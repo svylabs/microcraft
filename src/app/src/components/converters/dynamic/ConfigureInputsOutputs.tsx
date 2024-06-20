@@ -211,8 +211,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEditIndex(index);
     setCurrentComponent({
       ...components[index],
-      config:
-        components[index].config || JSON.stringify(config, null, 2),
+      config: components[index].config || JSON.stringify(config, null, 2),
     });
     setEvents(components[index].events || []);
   };
@@ -269,8 +268,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         currentComponent.placement === "input" ||
         currentComponent.placement === "action" ||
         currentComponent.placement === "output"
-          ? currentComponent.config ||
-            JSON.stringify(config, null, 2)
+          ? currentComponent.config || JSON.stringify(config, null, 2)
           : "",
       events: [...events],
     };
@@ -308,7 +306,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     } else {
       toast.error("Oops! Your component list is empty. Add fields to preview.");
     }
-  };  
+  };
 
   // const handleInputChange = (id: string, value: string) => {
   const handleInputChange = (id: string, value: any) => {
@@ -411,35 +409,45 @@ const ConfigureInputsOutputs: React.FC = () => {
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
         <div className="p-1 md:p-4 bg-gray-100 rounded">
-          <div className="relative flex overflow-auto gap-8 border-b pb-5 items-center">
+          <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center">
             <Link to="/app/inbuilt/New-App" className="group">
-              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-                <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3 rounded-full font-bold">
                   1
                 </span>
                 Configure basic details
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[11rem] xl:w-[15rem] bg-[#31A05D]  opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] lg:w-[9rem] xl:w-[12.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-              <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
-                2
+            <Link to="/app/new/contract" className="group">
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                  2
+                </span>
+                Configure Visibility
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+              </p>
+            </Link>
+            <p className="flex gap-2 items-center text-[#414A53]">
+              <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                3
               </span>
               Configure layout
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-              <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D]"></span>
+              <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[10.5rem] bg-[#31A05D]"></span>
             </p>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-              <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
-                3
+            <p className="flex gap-2 items-center text-[#414A53]">
+              <span className="bg-[#DADBE2]  p-1 px-3 md:px-3 rounded-full font-bold">
+                4
               </span>
               Preview the app
               <img className="w-5 h-5" src={arrow} alt="arrow"></img>
             </p>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-              <span className="bg-[#DADBE2]  p-1 px-3 md:px-3.5 rounded-full font-bold">
-                4
+            <p className="flex gap-2 items-center text-[#414A53]">
+              <span className="bg-[#DADBE2]  p-1 px-3 md:px-3 rounded-full font-bold">
+                5
               </span>
               Publish the app
             </p>
@@ -558,8 +566,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   cols={30}
                   rows={60}
                   value={
-                    currentComponent.config ||
-                    JSON.stringify(config, null, 2)
+                    currentComponent.config || JSON.stringify(config, null, 2)
                   }
                   onChange={handleChange}
                 ></textarea>
@@ -733,8 +740,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
-                  {component.config &&
-                    `, Configuration : ${component.config}`}
+                  {component.config && `, Configuration : ${component.config}`}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
@@ -1051,21 +1057,21 @@ const ConfigureInputsOutputs: React.FC = () => {
                           className="w-full md:w-[60%] h-8"
                           name={component.label}
                           min={
-                            JSON.parse(component.config).custom
-                              .sliderConfig.interval.min
+                            JSON.parse(component.config).custom.sliderConfig
+                              .interval.min
                           }
                           max={
-                            JSON.parse(component.config).custom
-                              .sliderConfig.interval.max
+                            JSON.parse(component.config).custom.sliderConfig
+                              .interval.max
                           }
                           step={
-                            JSON.parse(component.config).custom
-                              .sliderConfig.step
+                            JSON.parse(component.config).custom.sliderConfig
+                              .step
                           }
                           value={
                             data[component.id] ||
-                            JSON.parse(component.config).custom
-                              .sliderConfig.value
+                            JSON.parse(component.config).custom.sliderConfig
+                              .value
                           }
                           onChange={(e) =>
                             handleInputChange(component.id, e.target.value)
@@ -1073,8 +1079,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                         />
                         <span className="font-semibold">
                           {data[component.id] ||
-                            JSON.parse(component.config).custom
-                              .sliderConfig.value}
+                            JSON.parse(component.config).custom.sliderConfig
+                              .value}
                         </span>
                       </div>
                     </div>
