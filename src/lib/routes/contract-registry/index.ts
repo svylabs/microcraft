@@ -134,8 +134,6 @@ contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Requ
         console.log("Fetching contracts with query:", query);
     const [contracts] = await datastore.runQuery(query);
     const promises = contracts.map((contract: any) => (async () => {
-        // Set the contract ID from the key
-        contract.id = contract[datastore.KEY].name;
         console.log("Processing contract:", contract);
         //const version = contract.latest_version;
         //const network = req.query.network;

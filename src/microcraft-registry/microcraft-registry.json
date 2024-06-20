@@ -1,9 +1,9 @@
 {
-  "id": "a078abbde3",
-  "name": "sales_agreements",
+  "id": "afdf75c3ce",
+  "name": "sales_agreements_2",
   "description": "Contracts related to the sale of goods and services",
   "status": "group-created",
-  "registered": "2024-06-20T04:42:03.988Z",
+  "registered": "2024-06-20T08:00:48.131Z",
   "contracts": {
     "55e295f960": {
       "name": "Lock",
@@ -78,11 +78,11 @@
               }
             ]
           },
-          "createdDate": "2024-06-20T04:42:27.184Z",
+          "createdDate": "2024-06-20T08:01:07.092Z",
           "previousVersion": "7f6f9a10f6be"
         }
       },
-      "updatedDate": "2024-06-20T04:42:27.185Z"
+      "updatedDate": "2024-06-20T08:01:07.094Z"
     }
   }
 }

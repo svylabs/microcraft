@@ -312,7 +312,7 @@ const ConfigureBasicDetails: React.FC = () => {
 
             <div className="">
               <p className="text-[#727679] font-semibold text-lg xl:text-xl">
-                Visibility / Accessibility
+                Visibility
               </p>
               <div className="flex items-center mt-2">
                 <input
