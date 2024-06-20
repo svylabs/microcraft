@@ -124,25 +124,34 @@ contractRegistryRouter.get("/get/:id", authenticatedUser, async (req: Request, r
 contractRegistryRouter.get("/group/get/:id", authenticatedUser, async (req: Request, res: Response) => {
     const datastore = getDatastore();
     const group_key = datastore.key([CONTRACT_GROUP, req.params.id]);
+    console.log("Fetching contract group with key:", group_key);
     const [group] = await datastore.get(group_key);
     if (!group) {
         return res.status(404).json({ error: "Contract Group not found" });
     }
     const query = datastore.createQuery(CONTRACT_TABLE)
         .filter("contract_group_id", "=", req.params.id);
+        console.log("Fetching contracts with query:", query);
     const [contracts] = await datastore.runQuery(query);
     const promises = contracts.map((contract: any) => (async () => {
+        // Set the contract ID from the key
+        contract.id = contract[datastore.KEY].name;
+        console.log("Processing contract:", contract);
         //const version = contract.latest_version;
         //const network = req.query.network;
         const contractVersionQuery = datastore.createQuery(CONTRACT_VERSION_TABLE)
             .filter("contract_id", "=", contract.id)
             //.filter("version", "=", version);
+            console.log("Fetching contract versions with query:", contractVersionQuery);
         const [contractVersions] = await datastore.runQuery(contractVersionQuery);
+        console.log("Fetched contract versions:", contractVersions);
         contract.versions = contractVersions;
         let contractInstanceQuery = datastore.createQuery(CONTRACT_INSTANCE_TABLE)
             .filter("contract_id", "=", contract.id)
             //.filter("version", "=", version);
+            console.log("Fetching contract instances with query:", contractInstanceQuery);
         const [contractInstances] = await datastore.runQuery(contractInstanceQuery);
+        console.log("Fetched contract instances:", contractInstances);
         if (contractInstances.length > 0) {
             contract.instances = contractInstances;
         }

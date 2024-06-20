@@ -47,6 +47,7 @@
     "elliptic": "^6.5.4",
     "express": "^4.19.2",
     "file-saver": "^2.0.5",
+    "generate-api-key": "^1.0.2",
     "html2canvas": "^1.4.1",
     "image-compressor": "^2.0.3",
     "js-sha256": "^0.11.0",

@@ -174,7 +174,6 @@ const ConfigureBasicDetails: React.FC = () => {
       console.log(group.id);
       const response = await fetch(
         `${BASE_API_URL}/contract-registry/group/get/${group.id}`
-        // `${BASE_API_URL}/contract-registry/get/55e295f960`
       );
       if (response.ok) {
         const data = await response.json();
@@ -189,6 +188,7 @@ const ConfigureBasicDetails: React.FC = () => {
       }
     });
     const allInstances = (await Promise.all(instancesPromises)).flat();
+    console.log(allInstances);
     setInstances(allInstances);
   };
 

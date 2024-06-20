@@ -1,82 +1,16 @@
 {
-  "id": "4e5d097dc9",
-  "name": "cgroup-name1",
-  "description": "cgroup-description",
+  "id": "a078abbde3",
+  "name": "sales_agreements",
+  "description": "Contracts related to the sale of goods and services",
   "status": "group-created",
-  "registered": "2024-06-19T12:34:38.356Z",
+  "registered": "2024-06-20T04:42:03.988Z",
   "contracts": {
-    "923ed58ce8": {
-      "name": "Dependency",
-      "currentVersion": "6b16d660d4cc",
-      "versions": {
-        "6b16d660d4cc": {
-          "version": "6b16d660d4cc",
-          "properties": {
-            "abi": [
-              {
-                "inputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "_v",
-                    "type": "uint256"
-                  }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-              },
-              {
-                "inputs": [],
-                "name": "getValue",
-                "outputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              },
-              {
-                "inputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "_v",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "setValue",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-              },
-              {
-                "inputs": [],
-                "name": "value",
-                "outputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              }
-            ]
-          },
-          "createdDate": "2024-06-19T13:07:38.948Z",
-          "previousVersion": "6b16d660d4cc"
-        }
-      },
-      "updatedDate": "2024-06-19T13:07:38.950Z"
-    },
     "55e295f960": {
       "name": "Lock",
-      "currentVersion": "31484fca4e24",
+      "currentVersion": "7f6f9a10f6be",
       "versions": {
-        "31484fca4e24": {
-          "version": "31484fca4e24",
+        "7f6f9a10f6be": {
+          "version": "7f6f9a10f6be",
           "properties": {
             "abi": [
               {
@@ -108,19 +42,6 @@
                 ],
                 "name": "Withdrawal",
                 "type": "event"
-              },
-              {
-                "inputs": [],
-                "name": "dependency",
-                "outputs": [
-                  {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
               },
               {
                 "inputs": [],
@@ -157,11 +78,11 @@
               }
             ]
           },
-          "createdDate": "2024-06-19T13:07:39.146Z",
-          "previousVersion": "31484fca4e24"
+          "createdDate": "2024-06-20T04:42:27.184Z",
+          "previousVersion": "7f6f9a10f6be"
         }
       },
-      "updatedDate": "2024-06-19T13:07:39.147Z"
+      "updatedDate": "2024-06-20T04:42:27.185Z"
     }
   }
 }
