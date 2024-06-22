@@ -6,20 +6,18 @@ const program = new Command();
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const readline = require('readline');
 
-/**
- *  Create a json file,
- *    - populate it with contract group data- name, description.
- *    - post the contract group detail to the api
- *    - get the response and store the contract group id in the json file
- *  
- */
-
-// const API_URL = "https://handycraft-415122.oa.r.appspot.com";
-const API_URL = "http://localhost:8080";
+const API_URL =  process.env.DEVELOPMENT ? "http://localhost:8080" : "https://microcraft.dev";
 const CONTRACT_REGISTRY = "microcraft-registry.json";
-const REGISTRY_DIRECTORY = ".mcregistry";
 const API_KEY = process.env.MC_API_KEY;
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+const question = (query) => new Promise((resolve) => rl.question(query, resolve));
 
 const writeToRegistry = (data) => {
   fs.writeFile(CONTRACT_REGISTRY, JSON.stringify(data, null, 2), (err) => {
@@ -29,7 +27,7 @@ const writeToRegistry = (data) => {
   });
 }
 
-const processContractArtifacts = (artifactPath) => {
+const buildContractFromArtifacts = (artifactPath) => {
   const contracts = [];
   const dirs = fs.readdirSync(artifactPath);
   dirs.forEach(contractDir => {
@@ -53,8 +51,8 @@ const processContractArtifacts = (artifactPath) => {
   return contracts;
 }
 
-const processContract = async (contract, microcraftRegistry) => {
-  const newContractResponse = await axios.post(`${API_URL}/contract-registry/new`, { name: contract.name, description: contract.sourceName, contract_group_id: microcraftRegistry.id, team: "public"}, {
+const registerContract = async (contract, microcraftRegistry) => {
+  const newContractResponse = await axios.post(`${API_URL}/contract-registry/new`, { name: contract.name, description: contract.sourceName, contract_group_id: microcraftRegistry.id, team: microcraftRegistry.visibility}, {
     headers: {
       'Authorization': `${API_KEY}`,
       'Content-Type': 'application/json'
@@ -89,42 +87,81 @@ const processContract = async (contract, microcraftRegistry) => {
   return contractInRegistry;
 }
 
-if (!API_KEY) {
-  console.error("Set MC_API_KEY environment variable before running the command");
-  return 1;
+const getVisibility = async () => {
+    try {
+       const userResponse = await axios.get(`${API_URL}/auth/user`, {
+          headers: {
+             'Authorization': `${API_KEY}`,
+             'Content-Type': 'application/json'
+          }
+       });
+       const userTeams = userResponse.data.teams;
+       if (userTeams.length === 0) {
+          const response = await question('No teams found for the user, do you want to register the contract publicly? (y/n)');
+          if (response === 'y' || response === 'Y' || response === 'yes' || response === 'YES') {
+             return 'public';
+          } else {
+              console.error('No teams found for the user');
+              process.exit(1);
+          }
+       } else {
+          console.log(`Found ${userTeams.length} teams for the user, fetching team details..`);
+          const teamDetails = await axios.get(`${API_URL}/team/list`, {
+              headers: {
+                  'Authorization': `${API_KEY}`,
+                  'Content-Type': 'application/json'
+              }
+            });
+          const teams = teamDetails.data;
+          for (let i=0;i<teams.length;i++) {
+              console.log(`${i+1}. ${teams[i].name}`);
+          }
+          const response = await question('Enter the team number under which you want to register the contract: ');
+          const team = teams[parseInt(response)-1];
+          return team.id;
+       }
+    } catch (error) {
+       console.error('Error', error.message);
+    }
 }
 
-if (!fs.existsSync(REGISTRY_DIRECTORY)) {
-  fs.mkdirSync(REGISTRY_DIRECTORY);
-}
 
-let microcraftRegistry = null;
-try {
-  const data = fs.readFileSync(CONTRACT_REGISTRY, 'utf8');
-  if (data) {
-    microcraftRegistry = JSON.parse(data);
+const initializeApp = () => {
+  if (!API_KEY) {
+    console.error("Set MC_API_KEY environment variable before running the command");
+    process.exit(1);
   }
-} catch (error) {
-  
+  let microcraftRegistry = null;
+  try {
+    const data = fs.readFileSync(CONTRACT_REGISTRY, 'utf8');
+    if (data) {
+      microcraftRegistry = JSON.parse(data);
+    }
+  } catch (error) {
+    // Do nothing
+  }
+  return microcraftRegistry;
 }
 
 program
   .command('init <name> <description>')
   .description('Initialize a new contract group')
   .action(async (name, description) => {
+    let microcraftRegistry = initializeApp();
     try {
       if (microcraftRegistry) {
         console.error('There is an existing registry file in this repo');
         return;
       }
-      const response = await axios.post(`${API_URL}/contract-registry/group/new`, { name, description, owner: 'public', type: 'solidity' }, {
+      const visibility = await getVisibility();
+      const response = await axios.post(`${API_URL}/contract-registry/group/new`, { name, description, owner: visibility, type: 'solidity' }, {
          headers: {
             'Authorization': `${API_KEY}`,
             'Content-Type': 'application/json'
          }
       });
-      console.log('Contract group registered:', response.data);
-      microcraftRegistry = { id: response.data.key.name, name: name, description: description, status: 'group-created', registered: new Date().toISOString()};
+      console.log('Contract group registered');
+      microcraftRegistry = { id: response.data.key.name, name: name, description: description, visibility: visibility, registered: new Date().toISOString()};
       writeToRegistry(microcraftRegistry);
     } catch (error) {
       console.error('Error registering contract group:', error.message);
@@ -136,19 +173,18 @@ program
   .option('--artifact-path <path>', 'Path where the contract artifacts are stored', './artifacts/contracts')
   .description('Register a new contract, version, and the deployed instance')
   .action(async (options) => {
+    let microcraftRegistry = initializeApp();
     try {
       if (!microcraftRegistry) {
         console.error('No contract group found in the registry, run `microcraft init` first');
         return;
       }
       const artifactPath = options.artifactPath;
-      const contracts = processContractArtifacts(artifactPath);
-      console.log('Contracts:', contracts);
+      const contracts = buildContractFromArtifacts(artifactPath);
+      //console.log('Contracts:', contracts);
 
       for (let i=0;i<contracts.length;i++) {
-        const contract = contracts[i];
-        console.log("Processing contract: ", contract.name);
-        await processContract(contract, microcraftRegistry);
+        await registerContract(contracts[i], microcraftRegistry);
       }
       writeToRegistry(microcraftRegistry);
 
