@@ -54,7 +54,7 @@ const buildContractFromArtifacts = (artifactPath) => {
 const registerContract = async (contract, microcraftRegistry) => {
   const newContractResponse = await axios.post(`${API_URL}/contract-registry/new`, { name: contract.name, description: contract.sourceName, contract_group_id: microcraftRegistry.id, team: microcraftRegistry.visibility}, {
     headers: {
-      'Authorization': `${API_KEY}`,
+      'Authorization': `APIKey-v1 ${API_KEY}`,
       'Content-Type': 'application/json'
     }
   });
@@ -68,7 +68,7 @@ const registerContract = async (contract, microcraftRegistry) => {
 
   const versionResponse = await axios.post(`${API_URL}/contract-registry/version/new`, { contract_id: contract.id, version, properties }, {
     headers: {
-      'Authorization': `${API_KEY}`,
+      'Authorization': `APIKey-v1 ${API_KEY}`,
       'Content-Type': 'application/json'
     }
   });
@@ -91,7 +91,7 @@ const getVisibility = async () => {
     try {
        const userResponse = await axios.get(`${API_URL}/auth/user`, {
           headers: {
-             'Authorization': `${API_KEY}`,
+             'Authorization': `APIKey-v1 ${API_KEY}`,
              'Content-Type': 'application/json'
           }
        });
@@ -108,7 +108,7 @@ const getVisibility = async () => {
           console.log(`Found ${userTeams.length} teams for the user, fetching team details..`);
           const teamDetails = await axios.get(`${API_URL}/team/list`, {
               headers: {
-                  'Authorization': `${API_KEY}`,
+                  'Authorization': `APIKey-v1 ${API_KEY}`,
                   'Content-Type': 'application/json'
               }
             });
@@ -156,7 +156,7 @@ program
       const visibility = await getVisibility();
       const response = await axios.post(`${API_URL}/contract-registry/group/new`, { name, description, owner: visibility, type: 'solidity' }, {
          headers: {
-            'Authorization': `${API_KEY}`,
+            'Authorization': `APIKey-v1 ${API_KEY}`,
             'Content-Type': 'application/json'
          }
       });

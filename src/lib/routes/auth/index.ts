@@ -87,8 +87,12 @@ export const authenticatedUser = async (
   if (req.headers.authorization) {
     // TODO: Implement proper token / api key validation here
     const token = req.headers.authorization;
+    const tokenParts = token.split(" ");
+    const apiKey = tokenParts[1];
     //const decoded = Buffer.from(token, "base64").toString("utf-8");
-    const query = datastore.createQuery("APIKey").filter("api_key", "=", token);
+    const query = datastore.createQuery("APIKey")
+                    .filter("api_key", "=", apiKey)
+                    .filter("active", "=", true);
     const [keys] = await datastore.runQuery(query);
     if (keys.length > 0 && keys[0].active) {
       const key = keys[0];
