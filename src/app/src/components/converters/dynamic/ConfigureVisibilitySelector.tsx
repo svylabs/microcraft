@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
 import AppVisibilitySelector from "../../AppVisibility/AppVisibilitySelector";
 
@@ -55,13 +57,6 @@ const ConfigureBasicDetails: React.FC = () => {
       exploreUrl: "",
     },
   });
-
-  // useEffect(() => {
-  //   if (privacy === "private") {
-  //     fetchTeams();
-  //   }
-  //   // fetchPublicContractGroups();
-  // }, [privacy]);
 
   useEffect(() => {
     if (privacy === "private") {
@@ -175,12 +170,12 @@ const ConfigureBasicDetails: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
           newContractGroupsData.push(data);
-          console.log(`Data for group ${group.id}:`, data);
+          console.log('Group Data:', data);
           const contracts = data.contracts;
           console.log(`Contracts for group ${group.id}:`, contracts);
           if (Array.isArray(contracts)) {
             const instances = contracts.flatMap(contract => contract.instances || []);
-            console.log(`Instances for group ${group.id}:`, instances);
+            console.log('Instances:', instances); 
             return instances;
           } else {
             console.error(`Expected contracts to be an array for group ${group.id}`);
@@ -200,36 +195,29 @@ const ConfigureBasicDetails: React.FC = () => {
   };
 
   const handleSaveNext = () => {
-    // Validate if privacy and teamId are set correctly
     if (privacy === "private" && !teamId) {
       setFieldErrors({ ...fieldErrors, privacy: true });
       return;
     }
-  
-    // Validate if at least one contract group is selected
+
     const selectedContractNames = Object.keys(selectedContracts).filter(
       (contract) => selectedContracts[contract]
     );
-  
+
     if (selectedContractNames.length === 0) {
-      alert("Please select at least one contract group.");
+      toast.error("Please select at least one contract group.");
       return;
     }
-  
+
     const allAddressesProvided = selectedContractNames.every(contractName =>
-      contractDetails.some(detail =>  detail.address !== "")
+      contractDetails.some(detail => detail.address !== "")
     );
-  
-    // console.log("selectedContractNames:", selectedContractNames);
-    // console.log("contractDetails:", contractDetails);
-    // console.log("allAddressesProvided:", allAddressesProvided);
-  
+    
     if (!allAddressesProvided) {
-      alert("Please provide addresses for all selected contract groups.");
+      toast.error("Please provide addresses for all selected contract groups.");
       return;
-    }
-  
-    // If all validations pass, proceed to save the data
+    }    
+
     const existingFormData = localStorage.getItem("formData");
     const existingData = existingFormData ? JSON.parse(existingFormData) : {};
     const newData = {
@@ -243,32 +231,6 @@ const ConfigureBasicDetails: React.FC = () => {
     localStorage.setItem("formData", JSON.stringify(newData));
     window.location.href = "/app/new/field";
   };
-  
-
-  
-
-  // const handleSaveNext = () => {
-  //   if (privacy === "private" && !teamId) {
-  //     setFieldErrors({ ...fieldErrors, privacy: true });
-  //     return;
-  //   } else {
-  //     const selectedContractNames = Object.keys(selectedContracts).filter(
-  //       (contract) => selectedContracts[contract]
-  //     );
-  //     const existingFormData = localStorage.getItem("formData");
-  //     const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-  //     const newData = {
-  //       ...existingData,
-  //       privacy,
-  //       teamId,
-  //       selectedContracts: selectedContractNames,
-  //       networkDetails,
-  //       contractDetails
-  //     };
-  //     localStorage.setItem("formData", JSON.stringify(newData));
-  //     window.location.href = "/app/new/field";
-  //   }
-  // };
 
   const handleContractSelection = (idName: string) => {
     setSelectedContracts(prevSelected => ({
@@ -397,7 +359,6 @@ const ConfigureBasicDetails: React.FC = () => {
                   Select a team:
                 </label>
                 <select
-                  // key={Math.random()}
                   id="team"
                   className="focus:outline-none border border-[#E2E3E8] rounded p-2 bg-[#F7F8FB] text-[#21262C] text-lg xl:text-xl placeholder:italic w-full"
                   value={teamId}
@@ -557,7 +518,7 @@ const ConfigureBasicDetails: React.FC = () => {
             )} */}
 
             {/* {privacy === "private" && teamId && contractGroupsFetched && instances.length === 0 && ( */}
-            { (privacy === "private" && teamId || privacy === "public") && contractGroupsFetched && instances.length === 0 && (
+            {(privacy === "private" && teamId || privacy === "public") && contractGroupsFetched && instances.length === 0 && (
               <div className="mt-4 ">
                 <div className="text-center">
                   <label className="text-[#727679] font-semibold text-lg xl:text-xl underline underline-offset-2">Configure Contract Details</label>
@@ -677,6 +638,8 @@ const ConfigureBasicDetails: React.FC = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
+      {/* <ToastContainer limit={1} /> */}
       {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}
     </div>
   );
