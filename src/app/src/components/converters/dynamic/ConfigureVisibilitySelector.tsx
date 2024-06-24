@@ -12,6 +12,7 @@ interface Team {
 interface ContractGroup {
   owner: string;
   name: string;
+  description: string;
   id: string;
 }
 
@@ -45,7 +46,6 @@ const ConfigureBasicDetails: React.FC = () => {
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
-  // const [contractDetails, setContractDetails] = useState<{ [key: string]: string[] }>({});
   const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
   const [networkDetails, setNetworkDetails] = useState({
     type: "ethereum",
@@ -56,11 +56,19 @@ const ConfigureBasicDetails: React.FC = () => {
     },
   });
 
+  // useEffect(() => {
+  //   if (privacy === "private") {
+  //     fetchTeams();
+  //   }
+  //   // fetchPublicContractGroups();
+  // }, [privacy]);
+
   useEffect(() => {
     if (privacy === "private") {
       fetchTeams();
+    } else {
+      fetchPublicContractGroups();
     }
-    // fetchPublicContractGroups();
   }, [privacy]);
 
   useEffect(() => {
@@ -126,6 +134,7 @@ const ConfigureBasicDetails: React.FC = () => {
   };
 
   const fetchPublicContractGroups = async () => {
+    setContractGroupsFetched(false);
     try {
       const response = await fetch(
         `${BASE_API_URL}/contract-registry/group/list?owner=public`,
@@ -150,6 +159,7 @@ const ConfigureBasicDetails: React.FC = () => {
     } catch (error) {
       console.error("Error fetching public contract groups:", error);
     }
+    setContractGroupsFetched(true);
   };
 
   const fetchContractGroupData = async (contractGroups: ContractGroup[]) => {
@@ -189,29 +199,76 @@ const ConfigureBasicDetails: React.FC = () => {
     }
   };
 
-
   const handleSaveNext = () => {
+    // Validate if privacy and teamId are set correctly
     if (privacy === "private" && !teamId) {
       setFieldErrors({ ...fieldErrors, privacy: true });
       return;
-    } else {
-      const selectedContractNames = Object.keys(selectedContracts).filter(
-        (contract) => selectedContracts[contract]
-      );
-      const existingFormData = localStorage.getItem("formData");
-      const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-      const newData = {
-        ...existingData,
-        privacy,
-        teamId,
-        selectedContracts: selectedContractNames,
-        networkDetails,
-        contractDetails
-      };
-      localStorage.setItem("formData", JSON.stringify(newData));
-      window.location.href = "/app/new/field";
     }
+  
+    // Validate if at least one contract group is selected
+    const selectedContractNames = Object.keys(selectedContracts).filter(
+      (contract) => selectedContracts[contract]
+    );
+  
+    if (selectedContractNames.length === 0) {
+      alert("Please select at least one contract group.");
+      return;
+    }
+  
+    const allAddressesProvided = selectedContractNames.every(contractName =>
+      contractDetails.some(detail =>  detail.address !== "")
+    );
+  
+    // console.log("selectedContractNames:", selectedContractNames);
+    // console.log("contractDetails:", contractDetails);
+    // console.log("allAddressesProvided:", allAddressesProvided);
+  
+    if (!allAddressesProvided) {
+      alert("Please provide addresses for all selected contract groups.");
+      return;
+    }
+  
+    // If all validations pass, proceed to save the data
+    const existingFormData = localStorage.getItem("formData");
+    const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+    const newData = {
+      ...existingData,
+      privacy,
+      teamId,
+      selectedContracts: selectedContractNames,
+      networkDetails,
+      contractDetails
+    };
+    localStorage.setItem("formData", JSON.stringify(newData));
+    window.location.href = "/app/new/field";
   };
+  
+
+  
+
+  // const handleSaveNext = () => {
+  //   if (privacy === "private" && !teamId) {
+  //     setFieldErrors({ ...fieldErrors, privacy: true });
+  //     return;
+  //   } else {
+  //     const selectedContractNames = Object.keys(selectedContracts).filter(
+  //       (contract) => selectedContracts[contract]
+  //     );
+  //     const existingFormData = localStorage.getItem("formData");
+  //     const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+  //     const newData = {
+  //       ...existingData,
+  //       privacy,
+  //       teamId,
+  //       selectedContracts: selectedContractNames,
+  //       networkDetails,
+  //       contractDetails
+  //     };
+  //     localStorage.setItem("formData", JSON.stringify(newData));
+  //     window.location.href = "/app/new/field";
+  //   }
+  // };
 
   const handleContractSelection = (idName: string) => {
     setSelectedContracts(prevSelected => ({
@@ -375,6 +432,13 @@ const ConfigureBasicDetails: React.FC = () => {
                   No private contract groups available for the selected team.
                 </p>
               )}
+            {privacy === "public" &&
+              contractGroupsFetched &&
+              publicContractGroups.length === 0 && (
+                <p className="text-[#c055ce] mt-2">
+                  No Public contract groups available.
+                </p>
+              )}
             {privacy === "private" && privateContractGroups.length > 0 && (
               <div className="mt-2">
                 <label
@@ -388,6 +452,7 @@ const ConfigureBasicDetails: React.FC = () => {
                     <div
                       key={`${group.name}-${index}`}
                       className="flex items-center mt-2"
+                      title={group.description}
                     >
                       {/* {console.group(group)}
                         {console.group(group.owner)} */}
@@ -412,7 +477,8 @@ const ConfigureBasicDetails: React.FC = () => {
                 </div>
               </div>
             )}
-            {privacy === "private" && publicContractGroups.length > 0 && (
+            {/* {privacy === "private" && publicContractGroups.length > 0 && ( */}
+            {(publicContractGroups.length > 0 && (privacy === "private" && teamId || privacy === "public")) && (
               <div className="mt-2">
                 <label
                   htmlFor="contract-groups"
@@ -447,7 +513,51 @@ const ConfigureBasicDetails: React.FC = () => {
                 </div>
               </div>
             )}
-            {privacy === "private" && teamId && contractGroupsFetched && instances.length === 0 && (
+
+            {/* {(privacy === "private" && teamId && publicContractGroups.length > 0) || (privacy === "public" && publicContractGroups.length > 0) ? (
+              <div className="mt-2">
+                <label
+                  htmlFor="contract-groups"
+                  className="text-[#727679] font-semibold text-lg xl:text-xl"
+                >
+                  Public Contract Groups:
+                </label>
+                <div id="contract-groups">
+                  {publicContractGroups.map((group, index) => (
+                    <div
+                      key={`${group.name}-${index}`}
+                      className="flex items-center mt-2"
+                    >
+                      <input
+                        type="checkbox"
+                        id={`public-${group.name}-${index}`}
+                        name={group.name}
+                        value={`${group.owner}-${group.name}`}
+                        // checked={!!selectedContracts[group.name]}
+                        // onChange={() => handleContractSelection(group.name)}
+                        checked={selectedContracts[`${group.name}`] || false}
+                        onChange={() => handleContractSelection(`${group.name}`)}
+                      />
+                      <label
+                        htmlFor={`public-${group.name}-${index}`}
+                        className="ml-2 text-[#727679] text-lg xl:text-xl"
+                      >
+                        {group.name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              privacy === "private" && (
+                <p className="text-sm text-red-500 mt-2">
+                  Please select a team to view contract groups.
+                </p>
+              )
+            )} */}
+
+            {/* {privacy === "private" && teamId && contractGroupsFetched && instances.length === 0 && ( */}
+            { (privacy === "private" && teamId || privacy === "public") && contractGroupsFetched && instances.length === 0 && (
               <div className="mt-4 ">
                 <div className="text-center">
                   <label className="text-[#727679] font-semibold text-lg xl:text-xl underline underline-offset-2">Configure Contract Details</label>
