@@ -17,8 +17,12 @@ interface ContractGroup {
 
 interface ContractInstance {
   network: {
-    rpc_url: any;
-    chain_id: any;
+    type: "",
+    config: {
+      rpcUrl: "",
+      chainId: "",
+      exploreUrl: "(optional)",
+    },
   };
   contracts: {
     name: any;
@@ -41,11 +45,15 @@ const ConfigureBasicDetails: React.FC = () => {
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
-  // const [contractDetails, setContractDetails] = useState<{ [key: string]: { addresses: string[] }[] }>({});
-  const [contractDetails, setContractDetails] = useState<{ [key: string]: string[] }>({});
+  // const [contractDetails, setContractDetails] = useState<{ [key: string]: string[] }>({});
+  const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
   const [networkDetails, setNetworkDetails] = useState({
-    rpc_url: "",
-    chain_id: "",
+    type: "ethereum",
+    config: {
+      rpcUrl: "",
+      chainId: "",
+      exploreUrl: "",
+    },
   });
 
   useEffect(() => {
@@ -144,82 +152,42 @@ const ConfigureBasicDetails: React.FC = () => {
     }
   };
 
-  // const fetchContractGroupData = async (contractGroups: ContractGroup[]) => {
-  //   try {
-  //     const instancesPromises = contractGroups.map(async (group) => {
-  //       if (!group.id) {
-  //         console.warn('Skipping group without ID:', group);
-  //         return [];
-  //       }
-
-  //       console.log(`Fetching instances for group: ${group.id}`);
-  //       const response = await fetch(`${BASE_API_URL}/contract-registry/group/get/${group.id}`);
-  //       if (response.ok) {
-  //         const data = await response.json();
-  //         // setContractGroupsData(data);
-  //         setContractGroupsData((prevData) => [...prevData, data]);
-  //         console.log(`Data for group ${group.id}:`, data);
-
-  //         const contracts = data.contracts;
-  //         console.log(`Contracts for group ${group.id}:`, contracts);
-
-  //         if (Array.isArray(contracts)) {
-  //           const instances = contracts.flatMap(contract => contract.instances || []);
-  //           console.log(`Instances for group ${group.id}:`, instances);
-  //           return instances;
-  //         } else {
-  //           console.error(`Expected contracts to be an array for group ${group.id}`);
-  //           return [];
-  //         }
-  //       } else {
-  //         console.error(`Failed to fetch contract instances for group ${group.id}:`, response.status);
-  //         return [];
-  //       }
-  //     });
-
-  //     const allInstances = (await Promise.all(instancesPromises)).flat();
-  //     setInstances(allInstances);
-  //   } catch (error) {
-  //     console.error("Error fetching contract instances:", error);
-  //   }
-  // };
-
   const fetchContractGroupData = async (contractGroups: ContractGroup[]) => {
-  try {
-    const newContractGroupsData: any[] = [];
-    const instancesPromises = contractGroups.map(async (group) => {
-      if (!group.id) {
-        console.warn('Skipping group without ID:', group);
-        return [];
-      }
-      console.log(`Fetching instances for group: ${group.id}`);
-      const response = await fetch(`${BASE_API_URL}/contract-registry/group/get/${group.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        newContractGroupsData.push(data);
-        console.log(`Data for group ${group.id}:`, data);
-        const contracts = data.contracts;
-        console.log(`Contracts for group ${group.id}:`, contracts);
-        if (Array.isArray(contracts)) {
-          const instances = contracts.flatMap(contract => contract.instances || []);
-          console.log(`Instances for group ${group.id}:`, instances);
-          return instances;
-        } else {
-          console.error(`Expected contracts to be an array for group ${group.id}`);
+    try {
+      const newContractGroupsData: any[] = [];
+      const instancesPromises = contractGroups.map(async (group) => {
+        if (!group.id) {
+          console.warn('Skipping group without ID:', group);
           return [];
         }
-      } else {
-        console.error(`Failed to fetch contract instances for group ${group.id}:`, response.status);
-        return [];
-      }
-    });
-    const allInstances = (await Promise.all(instancesPromises)).flat();
-    setInstances(allInstances);
-    setContractGroupsData(newContractGroupsData);
-  } catch (error) {
-    console.error("Error fetching contract instances:", error);
-  }
-};
+        console.log(`Fetching instances for group: ${group.id}`);
+        const response = await fetch(`${BASE_API_URL}/contract-registry/group/get/${group.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          newContractGroupsData.push(data);
+          console.log(`Data for group ${group.id}:`, data);
+          const contracts = data.contracts;
+          console.log(`Contracts for group ${group.id}:`, contracts);
+          if (Array.isArray(contracts)) {
+            const instances = contracts.flatMap(contract => contract.instances || []);
+            console.log(`Instances for group ${group.id}:`, instances);
+            return instances;
+          } else {
+            console.error(`Expected contracts to be an array for group ${group.id}`);
+            return [];
+          }
+        } else {
+          console.error(`Failed to fetch contract instances for group ${group.id}:`, response.status);
+          return [];
+        }
+      });
+      const allInstances = (await Promise.all(instancesPromises)).flat();
+      setInstances(allInstances);
+      setContractGroupsData(newContractGroupsData);
+    } catch (error) {
+      console.error("Error fetching contract instances:", error);
+    }
+  };
 
 
   const handleSaveNext = () => {
@@ -237,7 +205,8 @@ const ConfigureBasicDetails: React.FC = () => {
         privacy,
         teamId,
         selectedContracts: selectedContractNames,
-        networkDetails
+        networkDetails,
+        contractDetails
       };
       localStorage.setItem("formData", JSON.stringify(newData));
       window.location.href = "/app/new/field";
@@ -251,27 +220,35 @@ const ConfigureBasicDetails: React.FC = () => {
     }));
   };
 
-  const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNetworkDetails(prevDetails => ({
       ...prevDetails,
-      [name]: value,
+      config: {
+        ...prevDetails.config,
+        [name]: value,
+      },
     }));
   };
 
-  const handleAddressChange = (contractName: string, index: number, value: string) => {
+  const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setNetworkDetails(prevDetails => ({
+      ...prevDetails,
+      type: value,
+    }));
+  };
+
+  const handleAddressChange = (contractName: string, address: string) => {
     setContractDetails(prevDetails => {
-      const newDetails = { ...prevDetails };
-      if (!newDetails[contractName]) {
-        newDetails[contractName] = [];
-      }
-      newDetails[contractName][index] = value;
+      const newDetails = prevDetails.filter(contract => contract.name !== contractName);
+      newDetails.push({ name: contractName, address });
       return newDetails;
     });
   };
 
-  console.log("contractDetails:- ", contractDetails)
   console.log("contractGroupsData:- ", contractGroupsData)
+  console.log("contractDetails:- ", contractDetails)
 
   return (
     <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
@@ -471,27 +448,68 @@ const ConfigureBasicDetails: React.FC = () => {
               </div>
             )}
             {privacy === "private" && teamId && contractGroupsFetched && instances.length === 0 && (
-              <div className="mt-4">
-                <label className="text-[#727679] font-semibold text-lg xl:text-xl">Contract Details:</label>
-
+              <div className="mt-4 ">
+                <div className="text-center">
+                  <label className="text-[#727679] font-semibold text-lg xl:text-xl underline underline-offset-2">Configure Contract Details</label>
+                </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-semibold">Network:</label>
-                  <input
-                    type="text"
-                    name="rpc_url"
-                    value={networkDetails.rpc_url}
-                    onChange={handleNetworkChange}
-                    className="border rounded p-2"
-                    placeholder="RPC URL"
-                  />
-                  <input
-                    type="text"
-                    name="chain_id"
-                    value={networkDetails.chain_id}
-                    onChange={handleNetworkChange}
-                    className="border rounded p-2"
-                    placeholder="Chain ID"
-                  />
+                  <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
+                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
+                    <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
+                      Network Type
+                    </label>
+                    <select
+                      id="networkType"
+                      className="flex-grow p-2 border border-gray-300 rounded"
+                      value={networkDetails.type}
+                      onChange={handleNetworkTypeChange}
+                    >
+                      <option value="ethereum">Ethereum</option>
+                      {/* <option value="mina">Mina</option> */}
+                    </select>
+                  </div>
+                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
+                    <label htmlFor="rpcUrl" className="w-full md:w-28 flex-shrink-0">
+                      RPC URL
+                    </label>
+                    <input
+                      type="text"
+                      id="rpcUrl"
+                      name="rpcUrl"
+                      className="flex-grow p-2 border border-gray-300 rounded"
+                      placeholder="Enter RPC URL"
+                      value={networkDetails.config.rpcUrl}
+                      onChange={handleNetworkChange}
+                    />
+                  </div>
+                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
+                    <label htmlFor="chainId" className="w-full md:w-28 flex-shrink-0">
+                      Chain ID
+                    </label>
+                    <input
+                      type="text"
+                      id="chainId"
+                      name="chainId"
+                      className="flex-grow p-2 border border-gray-300 rounded"
+                      placeholder="Enter Chain ID"
+                      value={networkDetails.config.chainId}
+                      onChange={handleNetworkChange}
+                    />
+                  </div>
+                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
+                    <label htmlFor="exploreUrl" className="w-full md:w-28 flex-shrink-0">
+                      Explore URL
+                    </label>
+                    <input
+                      type="text"
+                      id="exploreUrl"
+                      name="exploreUrl"
+                      className="flex-grow p-2 border border-gray-300 rounded"
+                      placeholder="Enter Explorer URL (optional)"
+                      value={networkDetails.config.exploreUrl}
+                      onChange={handleNetworkChange}
+                    />
+                  </div>
                 </div>
                 {Object.keys(selectedContracts).filter(contract => selectedContracts[contract]).map((contract, index) => (
                   <div key={contract} className="mt-4 md:mt-6">
@@ -517,10 +535,8 @@ const ConfigureBasicDetails: React.FC = () => {
                                         type="text"
                                         className="focus:outline-none border border-gray-300 rounded py-2 px-4 md:px-6 bg-gray-100 text-sm md:text-base w-full"
                                         placeholder="Enter address"
-                                        value={contractDetails[contractItem.name]?.[index] || ""}
-                                        onChange={(e) =>
-                                          handleAddressChange(contractItem.name, index, e.target.value)
-                                        }
+                                        value={contractDetails.find((detail) => detail.name === contractItem.name)?.address || ""}
+                                        onChange={(e) => handleAddressChange(contractItem.name, e.target.value)}
                                       />
                                     </td>
                                   </tr>
