@@ -15,7 +15,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [publicContractGroups, setPublicContractGroups] = useState<any[]>([]);
   const [showApiKeySection, setShowApiKeySection] = useState(false);
   const [generatedApiKey, setGeneratedApiKey] = useState("");
-  const [apiKeys, setApiKeys] = useState([]);
+  const [apiKeysList, setApiKeysList] = useState<any[]>([]);
   const [popup, setPopup] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -241,8 +241,34 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
     }
   };
 
-  
-
+  const fetchApiKeys = async () => {
+    try {
+      const response = await fetch(
+        `${BASE_API_URL}/auth/api-key/list`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const apiKeyList = await response.json();
+        console.log(apiKeyList);
+        setApiKeysList(apiKeyList);
+      } else {
+        console.error(
+          "Failed to fetch API keys::",
+          response.status
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching API keys:", error);
+    }
+  };
+  console.log(apiKeysList);
+  console.log(typeof apiKeysList);
   // const copyApiKey = () => {
   //   navigator.clipboard.writeText(apiKey);
   //   toast.info("API Key copied to clipboard!");
@@ -400,8 +426,8 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
           </div>
         </div>
         {showApiKeySection && (
-          <div className={`p-6 bg-gray-200 rounded shadow-lg max-w-xl mx-auto mt-2 ${!showApiKeySection ? "hidden" : ""}`}>
-            <h3 className="text-lg md:text-xl font-bold text-center">API Key Management</h3>
+          <div className={`p-3 px-4 bg-gray-200 rounded shadow-lg max-w-xl mx-auto mt-2 ${!showApiKeySection ? "hidden" : ""}`}>
+            <h3 className="text-lg md:text-xl font-bold text-center text-[#4a4b4c] underline underline-offset-2">API Key Management</h3>
             <div className="mt-2 relative">
               <input
                 type="text"
@@ -428,10 +454,36 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
                 Generate API Key
               </button>
             </div>
+            <div className="bg-gray-100 p-3 rounded-md shadow-md max-w-lg mx-auto mt-4 relative">
+              <h2 className="text-[#727679] font-semibold text-lg text-cente mb-2">Existing API Keys</h2>
+              {apiKeysList.length > 0 ? (
+              <ul className="space-y-2 h-36 overflow-auto">
+                {apiKeysList.map(apiKey => (
+                  <li key={apiKey.id} className="flex items-center justify-between bg-white rounded-md p-3 shadow-sm border border-gray-200">
+                    <span className="flex-1 truncate">{apiKey.api_key}</span>
+                    <img
+                      src={copyClipboard}
+                      alt="Copy to Clipboard"
+                      className="cursor-copy p-1 bg-slate-700"
+                      onClick={() => copyToClipboard(apiKey.api_key)}
+                      title="Copy API Key"
+                    />
+                  </li>
+                ))}
+                {popup  && (
+                <div className="absolute right-3.5 md:right top-1.5 text-blue-600 font-bold p-0.5 rounded bg-white text-sm">
+                  copied!
+                </div>
+              )}
+              </ul>
+            ) : (
+              <p>No API keys found.</p>
+            )}
+            </div>
             <div className="flex items-center mt-4 cursor-pointer" title="Back to Teams">
-              
-                 <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 128 128" onClick={() => setShowApiKeySection(false)} className="xl:text-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"><path fill="#427687" d="M116 4H12c-4.4 0-8 3.6-8 8v104c0 4.4 3.6 8 8 8h104c4.4 0 8-3.6 8-8V12c0-4.4-3.6-8-8-8"/><path fill="#8cafbf" d="M109.7 4H11.5C7.4 4 4 7.4 4 11.5v97.9c0 4.2 3.4 7.5 7.5 7.5h98.1c4.2 0 7.5-3.4 7.5-7.5V11.5c.2-4.1-3.3-7.5-7.4-7.5"/><path fill="#b4e1ed" d="M39.7 12.9c0-2.3-1.6-3-10.8-2.7c-7.7.3-11.5 1.2-13.8 4s-2.9 8.5-3 15.3c0 4.8 0 9.3 2.5 9.3c3.4 0 3.4-7.9 6.2-12.3c5.4-8.7 18.9-10.6 18.9-13.6" opacity="0.5"/><path fill="#fafafa" d="m47.4 71l-24-24c-1.8-1.6-1.8-4.4 0-6l24-24c2.6-2.3 6.6-.4 6.6 3v14c0 1.1.9 2 2 2h46c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H56c-1.1 0-2 .9-2 2v14c0 3.4-4 5.3-6.6 3M14 110.9V85.4c0-.6.5-1 1-1h8.4c3.1 0 5.5.6 7.1 1.9c1.6 1.2 2.4 3.1 2.4 5.6c0 1.3-.3 2.4-1 3.4s-1.7 1.8-3 2.3c1.5.4 2.6 1.2 3.4 2.3c.8 1.1 1.2 2.4 1.2 4c0 2.6-.8 4.6-2.5 6s-4 2.1-7.1 2.1h-9c-.5-.1-.9-.5-.9-1.1M18.8 95c0 .6.5 1 1 1h3.7c1.5 0 2.6-.3 3.5-1s1.3-1.6 1.3-2.9c0-1.4-.4-2.3-1.2-2.9s-2-.9-3.6-.9h-3.6c-.6 0-1 .4-1 1zm0 5.5v6.6c0 .6.5 1 1 1h4.3c1.5 0 2.7-.4 3.5-1.1s1.3-1.8 1.3-3.1c0-2.8-1.5-4.3-4.4-4.4h-4.7c-.6 0-1 .4-1 1m34.3 5h-9.2c-.4 0-.8.3-1 .7l-1.8 5.1c-.1.4-.5.7-1 .7h-2.8c-.7 0-1.2-.7-.9-1.4L46.1 85c.2-.4.5-.7.9-.7h3c.4 0 .8.3.9.7l9.6 25.5c.2.7-.2 1.4-.9 1.4h-2.8c-.4 0-.8-.3-1-.7l-1.8-5.1c-.1-.3-.5-.6-.9-.6m-7.2-3.9H51c.7 0 1.2-.7 1-1.3L49.5 93c-.3-.9-1.6-.9-1.9 0l-2.6 7.3c-.3.7.2 1.3.9 1.3m37.7 1.3c.6 0 1.1.6 1 1.2c-.4 2.4-1.5 4.2-3.1 5.7c-1.9 1.7-4.4 2.5-7.5 2.5c-2.2 0-4.1-.5-5.8-1.6s-3-2.5-3.9-4.4s-1.4-4.1-1.4-6.7V97c0-2.6.5-4.9 1.4-6.9s2.2-3.5 4-4.6c1.7-1.1 3.7-1.6 6-1.6c3 0 5.5.8 7.3 2.5c1.6 1.4 2.6 3.3 3.1 5.8c.1.6-.4 1.2-1 1.2H81c-.5 0-.9-.3-1-.8c-.3-1.6-.8-2.7-1.6-3.5c-.9-.9-2.3-1.3-4.1-1.3c-2.1 0-3.7.8-4.8 2.3c-1.1 1.5-1.7 3.8-1.7 6.7v2.4c0 3 .5 5.2 1.6 6.8c1.1 1.6 2.6 2.3 4.7 2.3c1.9 0 3.3-.4 4.2-1.3c.8-.7 1.4-1.9 1.7-3.4c.1-.5.5-.8 1-.8c-.1.1 2.6.1 2.6.1m12.5-2l-2 2.1c-.2.2-.3.4-.3.7v7.2c0 .6-.4 1-1 1H90c-.6 0-1-.4-1-1V85.4c0-.6.4-1 1-1h2.8c.6 0 1 .4 1 1v9.1c0 .9 1.2 1.4 1.8.6l.8-1.1l7.8-9.3c.2-.2.5-.4.8-.4h3.2c.9 0 1.3 1 .8 1.7l-8.3 9.9c-.3.3-.3.9-.1 1.2l9.2 13.1a1 1 0 0 1-.8 1.6h-3.2c-.3 0-.6-.2-.8-.4L97.7 101c-.4-.5-1.1-.5-1.6-.1"/></svg>
-             
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 128 128" onClick={() => setShowApiKeySection(false)} className="xl:text-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105"><path fill="#427687" d="M116 4H12c-4.4 0-8 3.6-8 8v104c0 4.4 3.6 8 8 8h104c4.4 0 8-3.6 8-8V12c0-4.4-3.6-8-8-8" /><path fill="#8cafbf" d="M109.7 4H11.5C7.4 4 4 7.4 4 11.5v97.9c0 4.2 3.4 7.5 7.5 7.5h98.1c4.2 0 7.5-3.4 7.5-7.5V11.5c.2-4.1-3.3-7.5-7.4-7.5" /><path fill="#b4e1ed" d="M39.7 12.9c0-2.3-1.6-3-10.8-2.7c-7.7.3-11.5 1.2-13.8 4s-2.9 8.5-3 15.3c0 4.8 0 9.3 2.5 9.3c3.4 0 3.4-7.9 6.2-12.3c5.4-8.7 18.9-10.6 18.9-13.6" opacity="0.5" /><path fill="#fafafa" d="m47.4 71l-24-24c-1.8-1.6-1.8-4.4 0-6l24-24c2.6-2.3 6.6-.4 6.6 3v14c0 1.1.9 2 2 2h46c2.2 0 4 1.8 4 4v8c0 2.2-1.8 4-4 4H56c-1.1 0-2 .9-2 2v14c0 3.4-4 5.3-6.6 3M14 110.9V85.4c0-.6.5-1 1-1h8.4c3.1 0 5.5.6 7.1 1.9c1.6 1.2 2.4 3.1 2.4 5.6c0 1.3-.3 2.4-1 3.4s-1.7 1.8-3 2.3c1.5.4 2.6 1.2 3.4 2.3c.8 1.1 1.2 2.4 1.2 4c0 2.6-.8 4.6-2.5 6s-4 2.1-7.1 2.1h-9c-.5-.1-.9-.5-.9-1.1M18.8 95c0 .6.5 1 1 1h3.7c1.5 0 2.6-.3 3.5-1s1.3-1.6 1.3-2.9c0-1.4-.4-2.3-1.2-2.9s-2-.9-3.6-.9h-3.6c-.6 0-1 .4-1 1zm0 5.5v6.6c0 .6.5 1 1 1h4.3c1.5 0 2.7-.4 3.5-1.1s1.3-1.8 1.3-3.1c0-2.8-1.5-4.3-4.4-4.4h-4.7c-.6 0-1 .4-1 1m34.3 5h-9.2c-.4 0-.8.3-1 .7l-1.8 5.1c-.1.4-.5.7-1 .7h-2.8c-.7 0-1.2-.7-.9-1.4L46.1 85c.2-.4.5-.7.9-.7h3c.4 0 .8.3.9.7l9.6 25.5c.2.7-.2 1.4-.9 1.4h-2.8c-.4 0-.8-.3-1-.7l-1.8-5.1c-.1-.3-.5-.6-.9-.6m-7.2-3.9H51c.7 0 1.2-.7 1-1.3L49.5 93c-.3-.9-1.6-.9-1.9 0l-2.6 7.3c-.3.7.2 1.3.9 1.3m37.7 1.3c.6 0 1.1.6 1 1.2c-.4 2.4-1.5 4.2-3.1 5.7c-1.9 1.7-4.4 2.5-7.5 2.5c-2.2 0-4.1-.5-5.8-1.6s-3-2.5-3.9-4.4s-1.4-4.1-1.4-6.7V97c0-2.6.5-4.9 1.4-6.9s2.2-3.5 4-4.6c1.7-1.1 3.7-1.6 6-1.6c3 0 5.5.8 7.3 2.5c1.6 1.4 2.6 3.3 3.1 5.8c.1.6-.4 1.2-1 1.2H81c-.5 0-.9-.3-1-.8c-.3-1.6-.8-2.7-1.6-3.5c-.9-.9-2.3-1.3-4.1-1.3c-2.1 0-3.7.8-4.8 2.3c-1.1 1.5-1.7 3.8-1.7 6.7v2.4c0 3 .5 5.2 1.6 6.8c1.1 1.6 2.6 2.3 4.7 2.3c1.9 0 3.3-.4 4.2-1.3c.8-.7 1.4-1.9 1.7-3.4c.1-.5.5-.8 1-.8c-.1.1 2.6.1 2.6.1m12.5-2l-2 2.1c-.2.2-.3.4-.3.7v7.2c0 .6-.4 1-1 1H90c-.6 0-1-.4-1-1V85.4c0-.6.4-1 1-1h2.8c.6 0 1 .4 1 1v9.1c0 .9 1.2 1.4 1.8.6l.8-1.1l7.8-9.3c.2-.2.5-.4.8-.4h3.2c.9 0 1.3 1 .8 1.7l-8.3 9.9c-.3.3-.3.9-.1 1.2l9.2 13.1a1 1 0 0 1-.8 1.6h-3.2c-.3 0-.6-.2-.8-.4L97.7 101c-.4-.5-1.1-.5-1.6-.1" /></svg>
+
             </div>
           </div>
         )}
