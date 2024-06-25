@@ -1,0 +1,19 @@
+{
+    "name": "Simple App",
+    "description": "This is a simple app with one input text field",
+    "components": [
+        {
+            "type": "text",
+            "placement": "input",
+            "label": "Enter your name",
+            "id": "name"
+        },
+        {
+            "type": "button",
+            "label": "Submit",
+            "id": "submit",
+            "placement": "action",
+            "code": "alert('Hello, ' + data[\"name\"])"
+        }
+    ]
+}
