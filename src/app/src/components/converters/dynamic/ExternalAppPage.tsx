@@ -122,7 +122,7 @@ const ExternalAppPage = () => {
            <input
             className="py-2"
             type="text"
-            size={50}
+            size={80}
             placeholder="Enter github url of the app here"
             value={externalAppUrl}
             onChange={(e) => setExternalAppUrl(e.target.value)}
@@ -130,10 +130,9 @@ const ExternalAppPage = () => {
             />
             <button
                 className="px-4 py-2 bg-blue-500 rounded-md"
-                value="Load App"
                 style={{margin: "20px"}}
                 onClick={() => loadApp()}
-            />
+            >Load App</button>
         </div>
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
@@ -149,9 +148,6 @@ const ExternalAppPage = () => {
               <h1 className="font-semibold md:text-xl hidden md:block">
                 {appName}
               </h1>
-              <h3 className="font-semibold md:text-xl hidden md:block">
-                {appDescription}
-              </h3>
               <button
                 className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
                 onClick={goBack}
@@ -162,6 +158,12 @@ const ExternalAppPage = () => {
                 Back
               </button>
             </div>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+            <h3 className="md:text-l hidden md:block">
+                {appDescription}
+            </h3>
+            </div>
+
 
             {(components.length > 0) && (
             <App
