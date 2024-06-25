@@ -34,7 +34,7 @@ interface ContractInstance {
 }
 
 const ConfigureBasicDetails: React.FC = () => {
-  const [privacy, setPrivacy] = useState("public");
+  const [privacy, setPrivacy] = useState("");
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamId, setTeamId] = useState("");
   const [fieldErrors, setFieldErrors] = useState({
@@ -57,6 +57,7 @@ const ConfigureBasicDetails: React.FC = () => {
       exploreUrl: "",
     },
   });
+  console.log("privacy:-> ", privacy);
 
   useEffect(() => {
     if (privacy === "private") {
@@ -175,7 +176,7 @@ const ConfigureBasicDetails: React.FC = () => {
           console.log(`Contracts for group ${group.id}:`, contracts);
           if (Array.isArray(contracts)) {
             const instances = contracts.flatMap(contract => contract.instances || []);
-            console.log('Instances:', instances); 
+            console.log('Instances:', instances);
             return instances;
           } else {
             console.error(`Expected contracts to be an array for group ${group.id}`);
@@ -195,6 +196,11 @@ const ConfigureBasicDetails: React.FC = () => {
   };
 
   const handleSaveNext = () => {
+    if (!privacy) {
+      toast.error("Please select privacy settings.");
+      return;
+    }
+    
     if (privacy === "private" && !teamId) {
       setFieldErrors({ ...fieldErrors, privacy: true });
       return;
@@ -204,7 +210,7 @@ const ConfigureBasicDetails: React.FC = () => {
       (contract) => selectedContracts[contract]
     );
 
-    if (selectedContractNames.length === 0) {
+    if (privacy === "private" && selectedContractNames.length === 0) {
       toast.error("Please select at least one contract group.");
       return;
     }
@@ -212,11 +218,11 @@ const ConfigureBasicDetails: React.FC = () => {
     const allAddressesProvided = selectedContractNames.every(contractName =>
       contractDetails.some(detail => detail.address !== "")
     );
-    
+
     if (!allAddressesProvided) {
       toast.error("Please provide addresses for all selected contract groups.");
       return;
-    }    
+    }
 
     const existingFormData = localStorage.getItem("formData");
     const existingData = existingFormData ? JSON.parse(existingFormData) : {};
@@ -352,6 +358,14 @@ const ConfigureBasicDetails: React.FC = () => {
             </div>
             {privacy === "private" && (
               <div className="mt-2">
+                <div className="flex justify-end">
+                  <button
+                    className="bg-blue-500 text-white rounded font-semibold px-4 py-2"
+                    onClick={() => setShowTeams(true)}
+                  >
+                    Create a team
+                  </button>
+                </div>
                 <label
                   htmlFor="team"
                   className="text-[#727679] font-semibold text-lg xl:text-xl"
@@ -639,7 +653,6 @@ const ConfigureBasicDetails: React.FC = () => {
         </div>
       </div>
       {/* <ToastContainer /> */}
-      {/* <ToastContainer limit={1} /> */}
       {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}
     </div>
   );

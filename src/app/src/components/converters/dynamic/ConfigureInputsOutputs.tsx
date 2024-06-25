@@ -1181,7 +1181,7 @@ const ConfigureInputsOutputs: React.FC = () => {
             </button>
           </div>
         </div>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
       </div>
     </>
   );
