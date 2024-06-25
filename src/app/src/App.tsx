@@ -9,6 +9,7 @@ import Header from "./components/Header";
 import ConfigureVisibilitySelector from "./components/converters/dynamic/ConfigureVisibilitySelector";
 import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
 import UserActionPage from "./components/converters/dynamic/UserActionPage";
+import ExternalAppPage from "./components/converters/dynamic/ExternalAppPage";
 import Action from "./components/converters/dynamic/ActionPage";
 import ConfigureThumbnail from "./components/converters/dynamic/ConfigureThumbnail";
 import SharePage from "./components/share/SharePage";
@@ -44,7 +45,7 @@ const AppContent: React.FC = () => {
           <Route path="/app/new/preview" element={<Action />} />
           <Route path="/app/new/thumbnail" element={<ConfigureThumbnail />} />
           <Route path="/app/published/:appId" element={<UserActionPage />} />
-          <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
+          <Route path="/app/external" element={<ExternalAppPage />} />
         </Routes>
         <ToastContainer /> 
     </>
