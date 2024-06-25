@@ -638,7 +638,7 @@ const ConfigureBasicDetails: React.FC = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {/* <ToastContainer limit={1} /> */}
       {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}
     </div>

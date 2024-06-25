@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Home from "./components/Home";
 import Converter from "./components/Converter";
 import "./App.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import ConfigureVisibilitySelector from "./components/converters/dynamic/ConfigureVisibilitySelector";
 import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
@@ -44,6 +46,7 @@ const AppContent: React.FC = () => {
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
         </Routes>
+        <ToastContainer /> 
     </>
   );
 };
