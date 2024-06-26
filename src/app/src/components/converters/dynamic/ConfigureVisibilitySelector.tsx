@@ -210,10 +210,10 @@ const ConfigureBasicDetails: React.FC = () => {
       (contract) => selectedContracts[contract]
     );
 
-    if (privacy === "private" && selectedContractNames.length === 0) {
-      toast.error("Please select at least one contract group.");
-      return;
-    }
+    // if (privacy === "private" && selectedContractNames.length === 0) {
+    //   toast.error("Please select at least one contract group.");
+    //   return;
+    // }
 
     const allAddressesProvided = selectedContractNames.every(contractName =>
       contractDetails.some(detail => detail.address !== "")
@@ -452,7 +452,6 @@ const ConfigureBasicDetails: React.FC = () => {
                 </div>
               </div>
             )}
-            {/* {privacy === "private" && publicContractGroups.length > 0 && ( */}
             {(publicContractGroups.length > 0 && (privacy === "private" && teamId || privacy === "public")) && (
               <div className="mt-2">
                 <label
@@ -489,49 +488,6 @@ const ConfigureBasicDetails: React.FC = () => {
               </div>
             )}
 
-            {/* {(privacy === "private" && teamId && publicContractGroups.length > 0) || (privacy === "public" && publicContractGroups.length > 0) ? (
-              <div className="mt-2">
-                <label
-                  htmlFor="contract-groups"
-                  className="text-[#727679] font-semibold text-lg xl:text-xl"
-                >
-                  Public Contract Groups:
-                </label>
-                <div id="contract-groups">
-                  {publicContractGroups.map((group, index) => (
-                    <div
-                      key={`${group.name}-${index}`}
-                      className="flex items-center mt-2"
-                    >
-                      <input
-                        type="checkbox"
-                        id={`public-${group.name}-${index}`}
-                        name={group.name}
-                        value={`${group.owner}-${group.name}`}
-                        // checked={!!selectedContracts[group.name]}
-                        // onChange={() => handleContractSelection(group.name)}
-                        checked={selectedContracts[`${group.name}`] || false}
-                        onChange={() => handleContractSelection(`${group.name}`)}
-                      />
-                      <label
-                        htmlFor={`public-${group.name}-${index}`}
-                        className="ml-2 text-[#727679] text-lg xl:text-xl"
-                      >
-                        {group.name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              privacy === "private" && (
-                <p className="text-sm text-red-500 mt-2">
-                  Please select a team to view contract groups.
-                </p>
-              )
-            )} */}
-
-            {/* {privacy === "private" && teamId && contractGroupsFetched && instances.length === 0 && ( */}
             {(privacy === "private" && teamId || privacy === "public") && contractGroupsFetched && instances.length === 0 && (
               <div className="mt-4 ">
                 <div className="text-center">
