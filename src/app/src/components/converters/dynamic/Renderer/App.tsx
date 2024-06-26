@@ -17,6 +17,14 @@ interface Props {
 const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   const [loading, setLoading] = useState(false);
 
+  // const mcLib = {
+  //   web3: new Web3(window.ethereum),
+  //   injectedContracts: {
+  //     ContractName: new web3.eth.Contract(abi, address),
+  //     lock: new web3.eth.Contract(abi, address),
+  //   },
+  // };
+
   useEffect(() => {
     console.log(components);
     components.forEach((component) => {
@@ -35,6 +43,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
     try {
       setLoading(true);
       const config = web3.config;
+      console.log(config);
       const result = await eval(code);
       if (typeof result === "object") {
         setData((prevData) => ({ ...prevData, ...result }));
@@ -68,6 +77,13 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     // setLoading(true);
     const web3 = new Web3(window.ethereum);
+    // const mcLib {
+    //   web3: web3,
+    //   injectedContracts: {
+    //     ContractName: web3.contract(abi, address),
+    //     lock: web3.contract(abi, address),
+    //   }
+    // }
     try {
       setLoading(true);
       const config = web3.config;
@@ -75,6 +91,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
       // console.log("code: ", code);
       // console.log(typeof code)
       const result = await eval(code);
+      // const result = await eval(`(async () => {
+      //   const mcLib = ${JSON.stringify(mcLib)};
+      //   ${code}
+      // })();`);
       let vals = data;
       if (typeof result === "object") {
         for (const key in result) {

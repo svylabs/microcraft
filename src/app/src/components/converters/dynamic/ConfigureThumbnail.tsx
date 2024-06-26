@@ -110,6 +110,9 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           component_definition: JSON.stringify(components),
           privacy: loadedData.privacy,
           teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
+          selectedContracts: loadedData.selectedContracts,
+          networkDetails: loadedData.networkDetails,
+          contractDetails: loadedData.contractDetails,
          }),
       });
 
@@ -133,6 +136,8 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
   const goBack = () => {
     window.location.href = "/app/new/preview";
   };
+
+  console.log(loadedData)
 
   return (
     <>

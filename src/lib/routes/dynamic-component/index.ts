@@ -122,7 +122,19 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
         {
           name: "teamId",
           value: req.body.privacy === "private" ? req.body.teamId : null,
-        }
+        },
+        {
+          name: "selectedContracts",
+          value: req.body.selectedContracts,
+        },
+        {
+          name: "networkDetails",
+          value: req.body.networkDetails
+        },
+        {
+          name: "contractDetails",
+          value: req.body.contractDetails
+        }     
       ],
     };
        // Create a background task
