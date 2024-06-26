@@ -16,7 +16,9 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
   const [showApiKeySection, setShowApiKeySection] = useState(false);
   const [generatedApiKey, setGeneratedApiKey] = useState("");
   const [apiKeysList, setApiKeysList] = useState<any[]>([]);
-  const [popup, setPopup] = useState(false);
+  const [popupGeneratedApiKey, setPopupGeneratedApiKey] = useState(false);
+  const [popupExistingApiKey, setPopupExistingApiKey] = useState(false);
+  const [copiedApiKeyId, setCopiedApiKeyId] = useState(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -267,21 +269,21 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
       console.error("Error fetching API keys:", error);
     }
   };
-  console.log(apiKeysList);
-  console.log(typeof apiKeysList);
-  // const copyApiKey = () => {
-  //   navigator.clipboard.writeText(apiKey);
-  //   toast.info("API Key copied to clipboard!");
-  // };
 
-  const copyToClipboard = (apiKey) => {
+  const copyToClipboard = (apiKey, setPopup, apiKeyId = null) => {
     navigator.clipboard.writeText(apiKey);
     setPopup(true);
+    if (apiKeyId !== null) {
+      setCopiedApiKeyId(apiKeyId);
+    }
     setTimeout(() => {
       setPopup(false);
-    }, 1500);
+      setCopiedApiKeyId(null);
+    }, 15000);
   };
 
+  // console.log(apiKeysList);
+  // console.log(typeof apiKeysList);
   // console.log(privateContractGroups);
 
   return (
@@ -436,10 +438,10 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
                 placeholder="Your API Key will appear here"
                 className="p-3 border rounded focus:outline-none bg-gray-100 w-full shadow-md"
               />
-              <span className="absolute right-0 top-0 mt-3 mr-3 cursor-copy bg-slate-700 rounded" onClick={() => copyToClipboard(generatedApiKey)} title="Copy API Key">
+              <span className="absolute right-0 top-0 mt-3 mr-3 cursor-copy bg-slate-700 rounded" onClick={() => copyToClipboard(generatedApiKey, setPopupGeneratedApiKey)} title="Copy API Key">
                 <img src={copyClipboard} alt="copyClipboard" className="p-1" />
               </span>
-              {popup && generatedApiKey && (
+              {popupGeneratedApiKey && generatedApiKey && (
                 <div className="absolute -right-4 md:right-0 -top-6 text-blue-600 font-bold p-0.5 rounded bg-white text-sm">
                   copied!
                 </div>
@@ -457,28 +459,28 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
             <div className="bg-gray-100 p-3 rounded-md shadow-md max-w-lg mx-auto mt-4 relative">
               <h2 className="text-[#727679] font-semibold text-lg text-cente mb-2">Existing API Keys</h2>
               {apiKeysList.length > 0 ? (
-              <ul className="space-y-2 h-36 overflow-auto">
-                {apiKeysList.map(apiKey => (
-                  <li key={apiKey.id} className="flex items-center justify-between bg-white rounded-md p-3 shadow-sm border border-gray-200">
-                    <span className="flex-1 truncate">{apiKey.api_key}</span>
-                    <img
-                      src={copyClipboard}
-                      alt="Copy to Clipboard"
-                      className="cursor-copy p-1 bg-slate-700"
-                      onClick={() => copyToClipboard(apiKey.api_key)}
-                      title="Copy API Key"
-                    />
-                  </li>
-                ))}
-                {popup  && (
-                <div className="absolute right-3.5 md:right top-1.5 text-blue-600 font-bold p-0.5 rounded bg-white text-sm">
-                  copied!
-                </div>
+                <ul className="space-y-2 h-36 overflow-auto">
+                  {apiKeysList.map(apiKey => (
+                    <li key={apiKey.id} className="flex items-center justify-between bg-white rounded-md p-3 shadow-sm border border-gray-200 relative">
+                      <span className="flex-1 truncate">{apiKey.api_key}</span>
+                      <img
+                        src={copyClipboard}
+                        alt="Copy to Clipboard"
+                        className="cursor-copy p-1 bg-slate-700"
+                        onClick={() => copyToClipboard(apiKey.api_key, setPopupExistingApiKey, apiKey.id)}
+                        title="Copy API Key"
+                      />
+                      {copiedApiKeyId === apiKey.id && (
+                        <div className="absolute right-10 md:right top-[0.8rem] text-blue-600 font-bold p-0.5 rounded bg-white text-sm">
+                          copied!
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No API keys found.</p>
               )}
-              </ul>
-            ) : (
-              <p>No API keys found.</p>
-            )}
             </div>
             <div className="flex items-center mt-4 cursor-pointer" title="Back to Teams">
 
