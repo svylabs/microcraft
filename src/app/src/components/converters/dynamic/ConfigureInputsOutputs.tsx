@@ -8,6 +8,7 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
+import ContractDetails from "./Renderer/ContractDetails";
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -52,9 +53,10 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [currentEvent, setCurrentEvent] = useState<string>("");
   const [eventCode, setEventCode] = useState<string>("");
-  const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
-  const [fromAmount, setFromAmount] = useState<string>("");
-  const [toAmount, setToAmount] = useState<string>("");
+  const [showContractDetails, setShowContractDetails] = useState(false);
+  // const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
+  // const [fromAmount, setFromAmount] = useState<string>("");
+  // const [toAmount, setToAmount] = useState<string>("");
 
   const [config, setConfig] = useState<any>({
     styles: {
@@ -266,8 +268,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       ...currentComponent,
       config:
         currentComponent.placement === "input" ||
-        currentComponent.placement === "action" ||
-        currentComponent.placement === "output"
+          currentComponent.placement === "action" ||
+          currentComponent.placement === "output"
           ? currentComponent.config || JSON.stringify(config, null, 2)
           : "",
       events: [...events],
@@ -547,32 +549,32 @@ const ConfigureInputsOutputs: React.FC = () => {
           {(currentComponent.placement === "input" ||
             currentComponent.placement === "action" ||
             currentComponent.placement === "output") && (
-            <div>
-              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                Configuration:
-              </label>
-              <div className="flex bg-gray-900 rounded-md p-2">
-                <div
-                  className="px-2 text-gray-500"
-                  ref={numbersRef}
-                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                ></div>
-                <textarea
-                  ref={textareaRef}
-                  className="flex-1 bg-gray-900 text-white outline-none"
-                  style={{ overflowY: "hidden" }}
-                  placeholder=""
-                  name="config"
-                  cols={30}
-                  rows={60}
-                  value={
-                    currentComponent.config || JSON.stringify(config, null, 2)
-                  }
-                  onChange={handleChange}
-                ></textarea>
+              <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Configuration:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder=""
+                    name="config"
+                    cols={30}
+                    rows={60}
+                    value={
+                      currentComponent.config || JSON.stringify(config, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
             Label:
@@ -718,6 +720,14 @@ const ConfigureInputsOutputs: React.FC = () => {
           )}
 
           <button
+          className="block justify-end mt-4 bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2  px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            onClick={() => setShowContractDetails(!showContractDetails)}
+            title="Click to View Contract Information"
+          >
+            Contract Details
+          </button>
+
+          <button
             className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
             onClick={handleAddComponent}
           >
@@ -760,50 +770,50 @@ const ConfigureInputsOutputs: React.FC = () => {
                     component.type === "table" ||
                     component.type === "json" ||
                     component.type === "graph") && (
-                    <div>
-                      <div className="flex justify-between">
-                        <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                          {component.label}:
-                        </label>
-                        <div className="flex gap-3 md:gap-5">
-                          <button
-                            onClick={() => handleEditComponent(index)}
-                            title="Edit"
-                          >
-                            <img src={edit} alt="edit"></img>
-                          </button>
-                          <button
-                            onClick={() => handleDeleteComponent(component.id)}
-                            title="Delete"
-                          >
-                            <img src={trash} alt="trash"></img>
-                          </button>
+                      <div>
+                        <div className="flex justify-between">
+                          <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                            {component.label}:
+                          </label>
+                          <div className="flex gap-3 md:gap-5">
+                            <button
+                              onClick={() => handleEditComponent(index)}
+                              title="Edit"
+                            >
+                              <img src={edit} alt="edit"></img>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteComponent(component.id)}
+                              title="Delete"
+                            >
+                              <img src={trash} alt="trash"></img>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                      {/* {console.log(component)}
+                        {/* {console.log(component)}
                       {console.log(typeof component)}
                       {console.log(component.config)}
                       {console.log(typeof component.config)} */}
-                      {/* {console.log(JSON.parse(component.config).styles)} */}
-                      {/* JSON.parse(component.sliderConfig).interval.min */}
-                      <input
-                        className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                        style={{
-                          ...(component.config &&
-                          typeof component.config === "string"
-                            ? JSON.parse(component.config).styles
-                            : {}),
-                        }}
-                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                        type={component.type}
-                        id={component.id}
-                        value={data[component.id]}
-                        onChange={(e) =>
-                          handleInputChange(component.id, e.target.value)
-                        }
-                      />
-                    </div>
-                  )}
+                        {/* {console.log(JSON.parse(component.config).styles)} */}
+                        {/* JSON.parse(component.sliderConfig).interval.min */}
+                        <input
+                          className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                          style={{
+                            ...(component.config &&
+                              typeof component.config === "string"
+                              ? JSON.parse(component.config).styles
+                              : {}),
+                          }}
+                          onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                          type={component.type}
+                          id={component.id}
+                          value={data[component.id]}
+                          onChange={(e) =>
+                            handleInputChange(component.id, e.target.value)
+                          }
+                        />
+                      </div>
+                    )}
                   {component.type === "swap" && (
                     <div>
                       <div className="flex justify-between">
@@ -828,7 +838,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       <div
                         style={{
                           ...(component.config &&
-                          typeof component.config === "string"
+                            typeof component.config === "string"
                             ? JSON.parse(component.config).styles
                             : {}),
                         }}
@@ -875,7 +885,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }
                         style={{
                           ...(component.config &&
-                          typeof component.config === "string"
+                            typeof component.config === "string"
                             ? JSON.parse(component.config).styles
                             : {}),
                         }}
@@ -924,11 +934,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                             return (
                               <div
                                 key={idx}
-                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                                  optionWidth > 200
-                                    ? "overflow-x-auto md:h-8"
-                                    : ""
-                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                  ? "overflow-x-auto md:h-8"
+                                  : ""
+                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                               >
                                 <input
                                   type="radio"
@@ -993,11 +1002,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                             return (
                               <div
                                 key={idx}
-                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                                  optionWidth > 200
-                                    ? "overflow-x-auto md:h-8"
-                                    : ""
-                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                  ? "overflow-x-auto md:h-8"
+                                  : ""
+                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                               >
                                 <input
                                   type="checkbox"
@@ -1158,7 +1166,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         id={component.id}
                         style={{
                           ...(component.config &&
-                          typeof component.config === "string"
+                            typeof component.config === "string"
                             ? JSON.parse(component.config).styles
                             : {}),
                         }}
@@ -1182,6 +1190,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         </div>
         {/* <ToastContainer /> */}
+        {showContractDetails && <ContractDetails onClose={() => setShowContractDetails(false)} />}
       </div>
     </>
   );

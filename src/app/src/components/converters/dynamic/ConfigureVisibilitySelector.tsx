@@ -33,7 +33,7 @@ interface ContractInstance {
   }[];
 }
 
-const ConfigureBasicDetails: React.FC = () => {
+const ConfigureVisibilitySelector: React.FC = () => {
   const [privacy, setPrivacy] = useState("");
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamId, setTeamId] = useState("");
@@ -614,4 +614,4 @@ const ConfigureBasicDetails: React.FC = () => {
   );
 };
 
-export default ConfigureBasicDetails;
+export default ConfigureVisibilitySelector;

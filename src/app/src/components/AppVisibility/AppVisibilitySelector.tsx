@@ -457,7 +457,7 @@ const AppVisibilitySelector = ({ setShowTeams }) => {
               </button>
             </div>
             <div className="bg-gray-100 p-3 rounded-md shadow-md max-w-lg mx-auto mt-4 relative">
-              <h2 className="text-[#727679] font-semibold text-lg text-cente mb-2">Existing API Keys</h2>
+              <h2 className="text-[#727679] font-semibold text-lg mb-2">Existing API Keys</h2>
               {apiKeysList.length > 0 ? (
                 <ul className="space-y-2 h-36 overflow-auto">
                   {apiKeysList.map(apiKey => (
