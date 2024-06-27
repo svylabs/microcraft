@@ -48,7 +48,8 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
-  const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
+  // const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
+  const [contractDetails, setContractDetails] = useState<{ name: string, address: string, abi: any[] }[]>([]);
   const [networkDetails, setNetworkDetails] = useState({
     type: "ethereum",
     config: {
@@ -57,7 +58,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
       exploreUrl: "",
     },
   });
-  console.log("privacy:-> ", privacy);
+  // console.log("privacy:-> ", privacy);
 
   useEffect(() => {
     if (privacy === "private") {
@@ -232,7 +233,10 @@ const ConfigureVisibilitySelector: React.FC = () => {
       teamId,
       selectedContracts: selectedContractNames,
       networkDetails,
-      contractDetails
+      contractDetails,
+      contractGroupsData: selectedContractNames.map(contractName => 
+        contractGroupsData.find(groupData => groupData.name === contractName)
+      ),
     };
     localStorage.setItem("formData", JSON.stringify(newData));
     window.location.href = "/app/new/field";
@@ -264,10 +268,38 @@ const ConfigureVisibilitySelector: React.FC = () => {
     }));
   };
 
+  // const handleAddressChange = (contractName: string, address: string) => {
+  //   const abi = contractGroup.contracts[0]?.versions[0]?.properties?.abi || [];
+  //   setContractDetails(prevDetails => {
+  //     const newDetails = prevDetails.filter(contract => contract.name !== contractName);
+  //     newDetails.push({ name: contractName, address, abi });
+  //     return newDetails;
+  //   });
+  // };
+
   const handleAddressChange = (contractName: string, address: string) => {
+    const contractGroup = contractGroupsData.find(group => {
+      return group.contracts.some(contract => contract.name === contractName);
+    });
+    
+    if (!contractGroup) {
+      console.error(`Contract group data not found for contract: ${contractName}`);
+      console.log('Available contract groups:', contractGroupsData);
+      return;
+    }
+    
+    const contract = contractGroup.contracts.find(contract => contract.name === contractName);
+    
+    if (!contract) {
+      console.error(`Contract data not found for contract: ${contractName}`);
+      return;
+    }
+    
+    const abi = contract.versions[0]?.properties?.abi || [];
+  
     setContractDetails(prevDetails => {
       const newDetails = prevDetails.filter(contract => contract.name !== contractName);
-      newDetails.push({ name: contractName, address });
+      newDetails.push({ name: contractName, address, abi });
       return newDetails;
     });
   };

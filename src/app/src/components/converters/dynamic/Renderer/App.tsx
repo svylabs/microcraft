@@ -17,13 +17,28 @@ interface Props {
 const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   const [loading, setLoading] = useState(false);
 
-  // const mcLib = {
-  //   web3: new Web3(window.ethereum),
-  //   injectedContracts: {
-  //     ContractName: new web3.eth.Contract(abi, address),
-  //     lock: new web3.eth.Contract(abi, address),
-  //   },
-  // };
+  const existingFormData = localStorage.getItem("formData");
+  const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+  console.log(existingData);
+  
+  const mcLib = {
+    web3: new Web3(window.ethereum),
+    // injectedContracts: existingData.contractDetails.reduce((contracts, contract) => {
+    //   contracts[contract.name] = new Web3(window.ethereum).eth.Contract(contract.abi, contract.address);
+    //   contracts[contract.name] = new Web3(window.ethereum).contract(contract.abi, contract.address);
+    //   return contracts;
+    
+    // only display ContractName: (abi, address),
+    injectedContracts: existingData.contractDetails.reduce((contracts, contract) => {
+      contracts[contract.name] = {
+        abi: contract.abi,
+        address: contract.address,
+      };
+      return contracts;
+    }, {}),
+  };
+  
+  console.log(mcLib);
 
   useEffect(() => {
     console.log(components);
@@ -42,7 +57,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
     const web3 = new Web3(window.ethereum);
     try {
       setLoading(true);
-      const config = web3.config;
+      // const config = web3.config;
+      const config = mcLib.web3.config;
       console.log(config);
       const result = await eval(code);
       if (typeof result === "object") {
@@ -72,21 +88,15 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   //     }));
   //   }
   // };
-  
+
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     // setLoading(true);
     const web3 = new Web3(window.ethereum);
-    // const mcLib {
-    //   web3: web3,
-    //   injectedContracts: {
-    //     ContractName: web3.contract(abi, address),
-    //     lock: web3.contract(abi, address),
-    //   }
-    // }
     try {
       setLoading(true);
-      const config = web3.config;
+      // const config = web3.config;
+      const config = mcLib.web3.config;
       console.log(config);
       // console.log("code: ", code);
       // console.log(typeof code)
@@ -123,12 +133,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
             <li key={index} className="mb-4">
               {(component.placement === "input" ||
                 component.placement === "output") && (
-                <div>
-                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                    {component.label}:
-                  </label>
-                </div>
-              )}
+                  <div>
+                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                      {component.label}:
+                    </label>
+                  </div>
+                )}
 
               {/* display the output data where developers/users want */}
               {component.placement === "output" && (
@@ -141,11 +151,11 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                         return (
                           <pre
                             className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
-                            // style={{
-                            //   ...(component.config && typeof component.config === 'string'
-                            //     ? JSON.parse(component.config).styles
-                            //     : {}),
-                            // }}
+                          // style={{
+                          //   ...(component.config && typeof component.config === 'string'
+                          //     ? JSON.parse(component.config).styles
+                          //     : {}),
+                          // }}
                           >
                             {data[component.id]
                               ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
@@ -183,7 +193,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     style={{
                       ...(component.config &&
-                      typeof component.config === "string"
+                        typeof component.config === "string"
                         ? JSON.parse(component.config).styles
                         : {}),
                     }}
@@ -199,7 +209,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                 <div
                   style={{
                     ...(component.config &&
-                    typeof component.config === "string"
+                      typeof component.config === "string"
                       ? JSON.parse(component.config).styles
                       : {}),
                   }}
@@ -224,7 +234,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   }
                   style={{
                     ...(component.config &&
-                    typeof component.config === "string"
+                      typeof component.config === "string"
                       ? JSON.parse(component.config).styles
                       : {}),
                   }}
@@ -250,9 +260,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                       return (
                         <div
                           key={idx}
-                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                            optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                          } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
+                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
                         >
                           <input
                             type="radio"
@@ -292,9 +301,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                       return (
                         <div
                           key={idx}
-                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${
-                            optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                          } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                            } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                         >
                           <input
                             type="checkbox"
@@ -309,8 +317,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                               const updatedValue = isChecked
                                 ? [...currentValue, option]
                                 : currentValue.filter(
-                                    (item) => item !== option
-                                  );
+                                  (item) => item !== option
+                                );
                               handleInputChange(component.id, updatedValue);
                             }}
                             className="mr-2 absolute"
@@ -358,11 +366,11 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
-                    // style={{
-                    //   ...(component.config && typeof component.config === 'string'
-                    //     ? JSON.parse(component.config).styles
-                    //     : {}),
-                    // }}
+                  // style={{
+                  //   ...(component.config && typeof component.config === 'string'
+                  //     ? JSON.parse(component.config).styles
+                  //     : {}),
+                  // }}
                   />
                   <span className="font-semibold">
                     {data[component.id] ||
@@ -398,7 +406,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
                   className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   style={{
                     ...(component.config &&
-                    typeof component.config === "string"
+                      typeof component.config === "string"
                       ? JSON.parse(component.config).styles
                       : {}),
                   }}

@@ -110,9 +110,9 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           component_definition: JSON.stringify(components),
           privacy: loadedData.privacy,
           teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
-          selectedContracts: loadedData.selectedContracts,
-          networkDetails: loadedData.networkDetails,
-          contractDetails: loadedData.contractDetails,
+          selected_contracts: loadedData.selected_contracts,
+          network_details: loadedData.network_details,
+          contract_details: loadedData.contract_details,
          }),
       });
 

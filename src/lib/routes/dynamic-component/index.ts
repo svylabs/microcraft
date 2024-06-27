@@ -124,16 +124,17 @@ dynamicComponentRouter.post("/new", authenticatedUser, async (req: Request, res:
           value: req.body.privacy === "private" ? req.body.teamId : null,
         },
         {
-          name: "selectedContracts",
-          value: req.body.selectedContracts,
+          name: "selected_contracts",
+          value: req.body.selected_contracts,
         },
         {
-          name: "networkDetails",
-          value: req.body.networkDetails
+          name: "network_details",
+          value: req.body.network_details,
         },
         {
-          name: "contractDetails",
-          value: req.body.contractDetails
+          name: "contract_details",
+          value: req.body.contract_details,
+          excludeFromIndexes: true,
         }     
       ],
     };
