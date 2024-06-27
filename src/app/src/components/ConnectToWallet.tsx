@@ -121,22 +121,22 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
   };
 
   return (
-    <div ref={modalRef} className="z-50">
+    <div ref={modalRef}>
       <button
         onClick={handleConnectToWallet}
         className="common-button flex gap-3 text-lg items-center justify-center cursor-pointer"
-        title="Connect to Wallet"
+        title="Click to connect your wallet"
       >
         <img
           src={ConnectWallet}
           alt="MetaMask Logo"
           className="w-10 h-10 md:w-11 md:h-11 rounded-full p-1.5 bg-slate-100 hover:scale-110 shadow-lg "
         />
-        <span className="md:hidden">Connect to wallet</span>
+        <span>Connect to wallet</span>
       </button>
 
       {showWalletOptions && (
-        <div className="flex flex-col gap-3 p-2 lg:p-3 lg:px-5 absolute z-10 md:top-16 lg:top-20 right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="flex flex-col gap-3 p-2 lg:p-3 lg:px-5 absolute right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
           <button
             onClick={handleConnectToMetaMask}
             className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"

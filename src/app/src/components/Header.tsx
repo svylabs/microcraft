@@ -9,6 +9,7 @@ const Header: React.FC = () => {
   const [userAvatar, setUserAvatar] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchUserData();
@@ -49,9 +50,28 @@ const Header: React.FC = () => {
     setIsMenuOpen((prevState) => !prevState);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && event.target instanceof Node && !modalRef.current.contains(event.target)) {
+        const targetElement = event.target as HTMLElement;
+        if (!targetElement.closest(".header-menu-toggle")) {
+          // setIsMenuOpen(false);
+          if (window.innerWidth >= 768) {
+            setIsMenuOpen(false);
+          }
+        }
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
-      <header className="sticky top-0 bg-white z-50 flex justify-between">
+      <header className="sticky top-0 bg-white z-auto flex justify-between">
         <div className="flex gap-1 md:gap-3 lg:gap-5 items-center">
           <img
             src="/microcraft.png"
@@ -65,16 +85,38 @@ const Header: React.FC = () => {
             </span>
           </h2>
         </div>
-        <div className="flex items-center">
+        <div className="flex gap-5 items-center">
+
+          <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
+            {userName !== "" ? (
+              <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin} title={`Signed in as ${userName}`}>
+                <img
+                  className="w-8 h-8 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                  src={userAvatar}
+                  alt={userName}
+                ></img>
+              </div>
+            ) : (
+              <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
+                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                  <span
+                    className="text-gray-600 cursor-pointer text-[10px]"
+                  >
+                    Avatar
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
           <button
             onClick={toggleMenu}
-            className="md:hidden focus:outline-none"
+            className="header-menu-toggle focus:outline-none"
             aria-label={isMenuOpen ? "Close Menu" : "Open Menu"}
           >
             {isMenuOpen ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7"
+                className="h-7 w-7 md:w-8 md:h-8 text-red-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -89,7 +131,7 @@ const Header: React.FC = () => {
             ) : (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7"
+                className="h-7 w-7 md:w-8 md:h-8 text-slate-800"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -104,72 +146,78 @@ const Header: React.FC = () => {
             )}
           </button>
         </div>
-        <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
-          <div className="flex gap-3 self-center">
-            {userName !== "" && (
-              <div className="flex gap-3 self-center" title={`Welcome to the Microcraft universe, ${userName}! Your adventure awaits!`}>
-                <img
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
-                  src={userAvatar}
-                  alt={userName}
-                  onClick={handleLogin}
-                ></img>
-                <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                  <span className="font-bold">Hello!   </span>{userName}
-                </p>
-              </div>
-            )}
-            {userName === "" && (
-              <div className="flex gap-3 self-center" title="Click to log in and start your adventure!">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                  <span className="text-gray-600" onClick={handleLogin}>
-                    Avatar
-                  </span>
-                </div>
-                <p className="hidden md:flex self-center text-[#092C4C] text-lg xl:text-xl">
-                  <span className="font-bold">Hello!</span> Guest
-                </p>
-              </div>
-            )}
-          </div>
-          <ConnectToWallet />
-          <AppVisibleModal />
-        </div>
       </header>
       {isMenuOpen && (
-        <div className="bg-slate-200 p-2 rounded md:hidden">
-          <div className="flex flex-col  gap-3">
-            {userName !== "" ? (
-              <div className="flex gap-3 items-center">
-                <img
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
-                  src={userAvatar}
-                  alt={userName}
-                  onClick={handleLogin}
-                ></img>
-                <p className="text-[#092C4C] text-lg xl:text-xl">
-                  <span className="font-bold">Hello!</span> {userName}
-                </p>
-              </div>
-            ) : (
-              <div className="flex gap-3 items-center">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                  <span
-                    className="text-gray-600 cursor-pointer"
-                    onClick={handleLogin}
-                  >
-                    Avatar
-                  </span>
+        <>
+          <div className="bg-slate-200 p-2 rounded md:hidden">
+            <div className="flex flex-col gap-3">
+              {userName !== "" ? (
+                <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
+                  <img
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                    src={userAvatar}
+                    alt={userName}
+                  ></img>
+                  <p className="flex self-center items-center text-[#092C4C] text-lg xl:text-xl">
+                    <span className="text-base mr-2">Signed in as </span>
+                    <span className="font-bold">{userName}</span>
+                  </p>
                 </div>
-                <p className="text-[#092C4C] text-lg xl:text-xl">
-                  <span className="font-bold">Hello!</span> Guest
-                </p>
-              </div>
-            )}
-            <ConnectToWallet />
-            <AppVisibleModal />
+              ) : (
+                <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                    <span
+                      className="text-gray-600 cursor-pointer text-[12px]"
+                    >
+                      Avatar
+                    </span>
+                  </div>
+                  <p className="flex self-center items-center text-[#092C4C] text-lg xl:text-xl">
+                    <span className="text-base mr-2">Hello! </span>
+                    <span className="font-bold">Guest</span>
+                  </p>
+                </div>
+              )}
+              <ConnectToWallet />
+              <AppVisibleModal />
+            </div>
           </div>
-        </div>
+          <div className="hidden md:block relative">
+            <div  ref={modalRef} className="absolute right-0 bg-slate-200 p-2 rounded max-w-xs">
+              <div className="flex flex-col gap-3">
+                {userName !== "" ? (
+                  <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
+                    <img
+                      className="w-10 h-10 md:w-11 md:h-11 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
+                      src={userAvatar}
+                      alt={userName}
+                    ></img>
+                    <p className="flex self-center items-center text-[#092C4C] text-lg">
+                      <span className="text-base mr-2">Signed in as </span>
+                      <span className="font-bold">{userName}</span>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
+                    <div className="w-10 h-10 md:w-11 md:h-11 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                      <span
+                        className="text-gray-600 cursor-pointer text-[12px]"
+                      >
+                        Avatar
+                      </span>
+                    </div>
+                    <p className="flex self-center items-center text-[#092C4C] text-lg">
+                      <span className="text-base mr-2">Hello! </span>
+                      <span className="font-bold">Guest</span>
+                    </p>
+                  </div>
+                )}
+                <ConnectToWallet />
+                <AppVisibleModal />
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       {isModalOpen && <LoginSignupModal closeModal={closeModal} />}

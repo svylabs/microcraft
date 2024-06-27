@@ -28,18 +28,18 @@ const AppVisibleModal = () => {
   };
 
   return (
-    <div ref={modalRef} className="z-50">
+    <div ref={modalRef}>
       <button
         onClick={handleManageTeams}
         className="common-button flex gap-3 text-lg items-center justify-center cursor-pointer"
-        title="Manage Teams"
+        title="Click to expand Manage Teams"
       >
         <img
           src={usersIcon}
           alt="usersIcon"
           className="w-10 h-10 md:w-11 md:h-11 rounded-full p-1.5 bg-slate-100 hover:scale-110 shadow-lg "
         />
-        <span className="md:hidden">Manage Teams</span>
+        <span>Manage Teams</span>
       </button>
 
       {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}

@@ -19,17 +19,22 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
 
   const existingFormData = localStorage.getItem("formData");
   const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-  console.log(existingData);
+  const [loadedData, setLoadedData] = useState(existingData);
   
+  useEffect(() => {
+    setLoadedData(existingData);
+  }, []);
+  console.log(loadedData);
+
   const mcLib = {
     web3: new Web3(window.ethereum),
-    // injectedContracts: existingData.contractDetails.reduce((contracts, contract) => {
+    // injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
     //   contracts[contract.name] = new Web3(window.ethereum).eth.Contract(contract.abi, contract.address);
     //   contracts[contract.name] = new Web3(window.ethereum).contract(contract.abi, contract.address);
     //   return contracts;
-    
+
     // only display ContractName: (abi, address),
-    injectedContracts: existingData.contractDetails.reduce((contracts, contract) => {
+    injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
       contracts[contract.name] = {
         abi: contract.abi,
         address: contract.address,
@@ -37,7 +42,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
       return contracts;
     }, {}),
   };
-  
+
   console.log(mcLib);
 
   useEffect(() => {
