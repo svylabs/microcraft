@@ -199,39 +199,6 @@ const Header: React.FC = () => {
       </header>
       {isMenuOpen && (
         <>
-          {/* <div className="bg-slate-200 p-2 rounded md:hidden">
-            <div className="flex flex-col gap-3">
-              {userName !== "" ? (
-                <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
-                  <img
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full cursor-pointer transform hover:scale-110 shadow-lg"
-                    src={userAvatar}
-                    alt={userName}
-                  ></img>
-                  <p className="flex self-center items-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="text-base mr-2">Signed in as </span>
-                    <span className="font-bold">{userName}</span>
-                  </p>
-                </div>
-              ) : (
-                <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                    <span
-                      className="text-gray-600 cursor-pointer text-[12px]"
-                    >
-                      Avatar
-                    </span>
-                  </div>
-                  <p className="flex self-center items-center text-[#092C4C] text-lg xl:text-xl">
-                    <span className="text-base mr-2">Hello! </span>
-                    <span className="font-bold">Guest</span>
-                  </p>
-                </div>
-              )}
-              <ConnectToWallet />
-              <AppVisibleModal />
-            </div>
-          </div> */}
           <div className="block relative">
             <div ref={modalRef} className="absolute right-1 md:right-0 bg-slate-200 p-3 md:p-2 rounded max-w-xs">
               <div className="flex flex-col gap-3">

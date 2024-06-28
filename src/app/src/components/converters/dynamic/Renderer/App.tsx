@@ -24,27 +24,33 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   useEffect(() => {
     setLoadedData(existingData);
   }, []);
+
   console.log(loadedData);
 
+  const web3 = new Web3(window.ethereum);
+
+  const injectedContracts = loadedData.contractDetails?.reduce((contracts, contract) => {
+    contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+    return contracts;
+  }, {}) || {};
+
   const mcLib = {
-    web3: new Web3(window.ethereum),
-    // injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
-    //   contracts[contract.name] = new Web3(window.ethereum).eth.Contract(contract.abi, contract.address);
-    //   contracts[contract.name] = new Web3(window.ethereum).contract(contract.abi, contract.address);
-    //   return contracts;
-
-    // only display ContractName: (abi, address),
-    injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
-      contracts[contract.name] = {
-        abi: contract.abi,
-        address: contract.address,
-      };
-      return contracts;
-    }, {}),
+    web3: web3,
+    injectedContracts: injectedContracts,
   };
-
   console.log(mcLib);
 
+  // const mcLib = {
+  //   // only display ContractName: (abi, address),
+  //   injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
+  //     contracts[contract.name] = {
+  //       abi: contract.abi,
+  //       address: contract.address,
+  //     };
+  //     return contracts;
+  //   }, {}),
+  // };
+  
   useEffect(() => {
     console.log(components);
     components.forEach((component) => {
@@ -59,7 +65,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   }, [components]);
 
   const executeOnLoadCode = async (code) => {
-    const web3 = new Web3(window.ethereum);
     try {
       setLoading(true);
       // const config = web3.config;
@@ -96,8 +101,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
 
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
-    // setLoading(true);
-    const web3 = new Web3(window.ethereum);
     try {
       setLoading(true);
       // const config = web3.config;
@@ -106,10 +109,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
       // console.log("code: ", code);
       // console.log(typeof code)
       const result = await eval(code);
-      // const result = await eval(`(async () => {
-      //   const mcLib = ${JSON.stringify(mcLib)};
-      //   ${code}
-      // })();`);
       let vals = data;
       if (typeof result === "object") {
         for (const key in result) {
