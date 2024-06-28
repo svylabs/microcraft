@@ -55,10 +55,10 @@ const Header: React.FC = () => {
       if (modalRef.current && event.target instanceof Node && !modalRef.current.contains(event.target)) {
         const targetElement = event.target as HTMLElement;
         if (!targetElement.closest(".header-menu-toggle")) {
-          // setIsMenuOpen(false);
-          if (window.innerWidth >= 768) {
-            setIsMenuOpen(false);
-          }
+          setIsMenuOpen(false);
+          // if (window.innerWidth >= 768) {
+          //   setIsMenuOpen(false);
+          // }
         }
       }
     };
@@ -85,6 +85,56 @@ const Header: React.FC = () => {
             </span>
           </h2>
         </div>
+        <div className="hidden md:flex items-center">
+          <ul className="flex gap-3 lg:gap-5">
+            <li className="group relative">
+              <a
+                href="#"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+              >
+                Home
+              </a>
+              <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+            <li className="group relative">
+              <a
+                href="#"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+              >
+                Features
+              </a>
+              <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+            <li className="group relative">
+              <a
+                href="#"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+              >
+                Resources
+              </a>
+              <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+            <li className="group relative">
+              <a
+                href="#"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+              >
+                Pricing
+              </a>
+              <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+            <li className="group relative">
+              <a
+                href="#"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+              >
+                Team
+              </a>
+              <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+            </li>
+          </ul>
+        </div>
+
         <div className="flex gap-5 items-center">
 
           <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
@@ -149,7 +199,7 @@ const Header: React.FC = () => {
       </header>
       {isMenuOpen && (
         <>
-          <div className="bg-slate-200 p-2 rounded md:hidden">
+          {/* <div className="bg-slate-200 p-2 rounded md:hidden">
             <div className="flex flex-col gap-3">
               {userName !== "" ? (
                 <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
@@ -181,9 +231,9 @@ const Header: React.FC = () => {
               <ConnectToWallet />
               <AppVisibleModal />
             </div>
-          </div>
-          <div className="hidden md:block relative">
-            <div  ref={modalRef} className="absolute right-0 bg-slate-200 p-2 rounded max-w-xs">
+          </div> */}
+          <div className="block relative">
+            <div ref={modalRef} className="absolute right-1 md:right-0 bg-slate-200 p-3 md:p-2 rounded max-w-xs">
               <div className="flex flex-col gap-3">
                 {userName !== "" ? (
                   <div className="flex gap-3 items-center cursor-pointer" onClick={handleLogin}>
@@ -214,6 +264,56 @@ const Header: React.FC = () => {
                 )}
                 <ConnectToWallet />
                 <AppVisibleModal />
+              </div>
+              <hr className="md:hidden border border-t-slate-500 my-3"></hr>
+              <div className="flex md:hidden items-center">
+                <ul className="flex flex-col gap-3">
+                  <li className="group relative">
+                    <a
+                      href="#"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+                    >
+                      Home
+                    </a>
+                    <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                  </li>
+                  <li className="group relative">
+                    <a
+                      href="#"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+                    >
+                      Features
+                    </a>
+                    <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                  </li>
+                  <li className="group relative">
+                    <a
+                      href="#"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+                    >
+                      Resources
+                    </a>
+                    <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                  </li>
+                  <li className="group relative">
+                    <a
+                      href="#"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+                    >
+                      Pricing
+                    </a>
+                    <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                  </li>
+                  <li className="group relative">
+                    <a
+                      href="#"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
+                    >
+                      Team
+                    </a>
+                    <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>

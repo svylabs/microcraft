@@ -104,7 +104,7 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ onClose }) => {
                             <h3 className="text-[#727679] font-semibold text-lg">Contract Details:</h3>
                             <ul className="list-disc list-inside">
                                 {formData.contractDetails.map((detail, index) => (
-                                    <li key={index} className="text-gray-700">
+                                    <li key={index} className="text-gray-700 overflow-scroll">
                                         Name: {detail.name}, Address: {detail.address}
                                     </li>
                                 ))}

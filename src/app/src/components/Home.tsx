@@ -395,7 +395,7 @@ const Home: React.FC = () => {
   return (
     <>
       <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8 flex-grow">
-        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
+        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 md:pb-3">
           {/* <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
@@ -404,8 +404,8 @@ const Home: React.FC = () => {
             onChange={(e) => handleSearch(e.target.value)}
           /> */}
 
-          <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
-          <div className="hidden md:flex justify-center space-x-4 mb-1">
+          {/* <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div> */}
+          <div className="hidden md:flex justify-center space-x-4 mb-">
             {categories.map((category) => (
               <button
                 key={category}
