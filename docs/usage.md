@@ -1,4 +1,5 @@
 # Usage Docs
+
 [1. Signup](#signup)
 [2. Creating team (optional)](#creating-team)
 [3. Creating App](#creating-app)
