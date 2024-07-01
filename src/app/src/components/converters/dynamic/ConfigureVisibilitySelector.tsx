@@ -520,7 +520,6 @@ const ConfigureVisibilitySelector: React.FC = () => {
               </div>
             )}
 
-
             {(privacy === "private" && teamId || privacy === "public") && contractGroupsFetched && instances.length === 0 && (
               <div className="mt-4 ">
                 <div className="text-center">
