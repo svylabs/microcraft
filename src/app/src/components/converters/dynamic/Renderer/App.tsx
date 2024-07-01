@@ -56,11 +56,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     };
 
     fetchData();
-  }, [isActionPage]);
+  }, [isActionPage, appId]);
 
-  console.log(loadedData);
+  // console.log(loadedData);
 
   const web3 = new Web3(window.ethereum);
+  // web3.setMaxListeners(0);
 
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
     contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
@@ -71,7 +72,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     web3: web3,
     injectedContracts: injectedContracts,
   };
-  console.log(mcLib);
+  // console.log(mcLib);
+
+  useEffect(() => {
+    console.log(loadedData);
+    console.log(mcLib);
+  }, [loadedData]);
 
   useEffect(() => {
     console.log(components);
@@ -110,17 +116,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       [id]: value,
     }));
   };
-
-  // const handleSwapChange = (id: string, swapData: any) => {
-  //   // Check if the new swap data is different from the existing data
-  //   if (data[id] !== swapData) {
-  //     setData((prevData) => ({
-  //       ...prevData,
-  //       [id]: swapData,
-  //     }));
-  //   }
-  // };
-
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
@@ -409,7 +404,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                 <div>
                   <Wallet
                     configurations={
-                      JSON.parse(component.config).custom.walletConfig
+                      // JSON.parse(component.config).custom.walletConfig
+                      loadedData.networkDetails || loadedData.network_details
                     }
                     onSelectAddress={(address) =>
                       handleInputChange(component.id, {

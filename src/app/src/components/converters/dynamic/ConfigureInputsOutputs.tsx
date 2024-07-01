@@ -54,9 +54,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [currentEvent, setCurrentEvent] = useState<string>("");
   const [eventCode, setEventCode] = useState<string>("");
   const [showContractDetails, setShowContractDetails] = useState(false);
-  // const [currentTrade, setCurrentTrade] = useState<{ [key: string]: any }>({});
-  // const [fromAmount, setFromAmount] = useState<string>("");
-  // const [toAmount, setToAmount] = useState<string>("");
+  const [loadedData, setLoadedData] = useState<any>({});
 
   const [config, setConfig] = useState<any>({
     styles: {
@@ -112,18 +110,18 @@ const ConfigureInputsOutputs: React.FC = () => {
         value: 50,
         step: 1,
       },
-      walletConfig: {
-        message:
-          "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
-        network: {
-          type: "mina | ethereum | keplr",
-          config: {
-            rpcUrl: "",
-            chainId: "",
-            exploreUrl: "(optional)",
-          },
-        },
-      },
+      // walletConfig: {
+      //   message:
+      //     "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
+      //   network: {
+      //     type: "mina | ethereum | keplr",
+      //     config: {
+      //       rpcUrl: "",
+      //       chainId: "",
+      //       exploreUrl: "(optional)",
+      //     },
+      //   },
+      // },
       swapConfig: {
         tokens: [
           {
@@ -177,11 +175,17 @@ const ConfigureInputsOutputs: React.FC = () => {
   });
 
   useEffect(() => {
+    const existingFormData = localStorage.getItem("formData");
+    const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+    setLoadedData(existingData);
+
     const savedComponents = getDataFromLocalStorage("components");
     if (savedComponents && Array.isArray(savedComponents)) {
       setComponents(savedComponents);
     }
   }, []);
+  // console.log(loadedData)
+  // console.log(components)
 
   const handleDragStart = (position: number) => {
     draggingPos.current = position;
@@ -1123,7 +1127,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       /> */}
                       <Wallet
                         configurations={
-                          JSON.parse(component.config).custom.walletConfig
+                          // JSON.parse(component.config).custom.walletConfig
+                          loadedData.networkDetails || loadedData.network_details
                         }
                         onSelectAddress={(address) =>
                           handleInputChange(component.id, {

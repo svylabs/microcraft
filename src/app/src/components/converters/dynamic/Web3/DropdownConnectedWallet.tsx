@@ -11,11 +11,11 @@ interface DropdownConnectedWalletProps {
 
 
 const getChainInfo = (config: any): ChainInfo => {
-  const chainId = config?.network?.config?.chainId || "cosmoshub-4";
-  const rpcUrl = config?.network?.config?.rpcUrl || "";
+  const chainId = config?.config?.chainId || "cosmoshub-4";
+  const rpcUrl = config?.config?.rpcUrl || "";
   return {
     chainId,
-    chainName: config?.network?.type || "Custom Chain",
+    chainName: config?.type || "Custom Chain",
     rpc: rpcUrl,
     rest: rpcUrl,
     bip44: {
@@ -70,8 +70,12 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
   onSelectAddress,
   onUpdateBalance, //del
 }) => {
+  console.log(configurations)
   const [config, setConfig] = useState<any | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string>("");
+  // console.log(config?.config?.chainId)
+  // console.log(config?.config?.rpcUrl)
+  // console.log(config?.config?.exploreUrl)
 
   useEffect(() => {
     const parseConfigurations = (configurationsString: any) => {
@@ -92,12 +96,13 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
       console.warn("Configurations are not a valid string or object.");
     }
   }, [configurations]);
-  // console.log("configurations:-> ", config)
+  console.log("configurations:-> ", config)
 
   useEffect(() => {
     const fetchUserAddress = async () => {
       try {
-        const networkType = config?.network?.type?.toLowerCase();
+        // const networkType = config?.network?.type?.toLowerCase();
+        const networkType = config?.type?.toLowerCase();
 
         if (!networkType) {
           console.error("Network type not specified in configurations.");
@@ -160,7 +165,7 @@ const DropdownConnectedWallet: React.FC<DropdownConnectedWalletProps> = ({
           <option value={selectedAddress}>{selectedAddress}</option>
         </select>
       </div>
-      <WalletBalance address={selectedAddress} networkType={config?.network?.type?.toLowerCase()} onUpdateBalance={onUpdateBalance}/>
+      <WalletBalance address={selectedAddress} networkType={config?.type?.toLowerCase()} onUpdateBalance={onUpdateBalance}/>
     </>
   );
 };
