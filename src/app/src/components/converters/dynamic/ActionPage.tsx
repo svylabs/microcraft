@@ -164,6 +164,8 @@ const ActionPage: React.FC = () => {
             data={data}
             setData={setData}
             setOutputCode={setOutputCode}
+            isActionPage={true}
+            appId={""}
           />
 
           <div className="flex justify-end">

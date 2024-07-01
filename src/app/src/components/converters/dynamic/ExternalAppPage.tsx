@@ -120,7 +120,7 @@ const ExternalAppPage = () => {
         <ToastContainer />
         <div className="text-s md:text-xs font-bold py-2 mx-auto">
            <input
-            className="py-2"
+            className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
             type="text"
             size={80}
             placeholder="Enter github url of the app here"
@@ -129,7 +129,7 @@ const ExternalAppPage = () => {
             id="output"
             />
             <button
-                className="px-4 py-2 bg-blue-500 rounded-md"
+                className="px-4 py-2 bg-blue-500 rounded"
                 style={{margin: "20px"}}
                 onClick={() => loadApp()}
             >Load App</button>
@@ -171,6 +171,8 @@ const ExternalAppPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
+              isActionPage={false}
+              appId={""}
             />
             )}
           </div>

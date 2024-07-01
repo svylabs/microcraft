@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL } from "~/components/constants";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import flower from "../../photos/flower.png";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
@@ -97,6 +99,11 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
   const saveClick = async () => {
     try {
+      if (!preferredImageURL) {
+        toast.error("Please select or upload an image.");
+        throw new Error("Please select or upload an image.");
+      }
+      
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
         credentials: "include",
         method: "POST",
@@ -110,10 +117,10 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           component_definition: JSON.stringify(components),
           privacy: loadedData.privacy,
           teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
-          selected_contracts: loadedData.selected_contracts,
-          network_details: loadedData.network_details,
-          contract_details: loadedData.contract_details,
-         }),
+          selected_contracts: loadedData.selectedContracts,
+          network_details: loadedData.networkDetails,
+          contract_details: loadedData.contractDetails,
+        }),
       });
 
       if (!response.ok) {
@@ -122,6 +129,17 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
       localStorage.removeItem("formData");
       localStorage.removeItem("components");
+
+      toast.success('Data saved successfully!', {
+        position: "bottom-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
       setPopup(true);
       setTimeout(() => {
         setPopup(false);
@@ -143,7 +161,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
         <div className="p-1 md:p-4 bg-gray-100 rounded">
-        <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center">
+          <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center">
             <Link to="/app/inbuilt/New-App" className="group">
               <p className="flex gap-2 items-center text-[#414A53]">
                 <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3 rounded-full font-bold">
@@ -175,14 +193,14 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
               </p>
             </Link>
             <Link to="/app/new/preview" className="group">
-            <p className="flex gap-2 items-center text-[#414A53]">
-              <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
-                4
-              </span>
-              Preview the app
-              <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-              <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[10.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
-            </p>
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                  4
+                </span>
+                Preview the app
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[10.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+              </p>
             </Link>
             <p className="flex gap-2 items-center text-[#414A53]">
               <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
@@ -222,7 +240,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </div>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-blue font-bold">Upload Thumbnail :</span>
+            <span className="text-blue font-bold">Upload Thumbnail :</span>
           </p>
 
           <div className="flex justify-between">
@@ -265,7 +283,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </p>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-black font-bold text-xl">OR</span>
+            <span className="text-black font-bold text-xl">OR</span>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col">
@@ -336,7 +354,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
         </div>
 
         {loading && <Loading />}
-        
+
         {popup && (
           <div className="popupThanks flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">

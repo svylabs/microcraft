@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BASE_API_URL } from "~/components/constants";
 import Web3 from "web3";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
@@ -7,29 +8,61 @@ import TextOutput from "../outputPlacement/TextOutput";
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 
+interface ContractDetail {
+  name: string;
+  abi: any;
+  address: string;
+}
+
+interface LoadedData {
+  contractDetails?: ContractDetail[];
+  contract_details?: ContractDetail[];
+  [key: string]: any;
+}
+
 interface Props {
   components: any[];
   data: { [key: string]: any };
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   setOutputCode: React.Dispatch<React.SetStateAction<any>>;
+  isActionPage: boolean;
+  appId: string;
 }
 
-const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
+const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActionPage, appId }) => {
+  // console.log(appId);
   const [loading, setLoading] = useState(false);
+  const [loadedData, setLoadedData] = useState<LoadedData>({});
 
-  const existingFormData = localStorage.getItem("formData");
-  const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-  const [loadedData, setLoadedData] = useState(existingData);
-  
   useEffect(() => {
-    setLoadedData(existingData);
-  }, []);
+    const fetchData = async () => {
+      if (isActionPage) {
+        const existingFormData = localStorage.getItem("formData");
+        const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+        setLoadedData(existingData);
+      } else {
+        try {
+          setLoading(true);
+          // const response = await fetch(`${BASE_API_URL}/dynamic-component/all`);
+          const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
+          const data = await response.json();
+          setLoadedData(data);
+        } catch (error) {
+          console.error("Error fetching data from backend:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [isActionPage]);
 
   console.log(loadedData);
 
   const web3 = new Web3(window.ethereum);
 
-  const injectedContracts = loadedData.contractDetails?.reduce((contracts, contract) => {
+  const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
     contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
     return contracts;
   }, {}) || {};
@@ -40,17 +73,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode }) => {
   };
   console.log(mcLib);
 
-  // const mcLib = {
-  //   // only display ContractName: (abi, address),
-  //   injectedContracts: loadedData.contractDetails.reduce((contracts, contract) => {
-  //     contracts[contract.name] = {
-  //       abi: contract.abi,
-  //       address: contract.address,
-  //     };
-  //     return contracts;
-  //   }, {}),
-  // };
-  
   useEffect(() => {
     console.log(components);
     components.forEach((component) => {

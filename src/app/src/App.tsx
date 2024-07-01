@@ -45,6 +45,7 @@ const AppContent: React.FC = () => {
           <Route path="/app/new/preview" element={<Action />} />
           <Route path="/app/new/thumbnail" element={<ConfigureThumbnail />} />
           <Route path="/app/published/:appId" element={<UserActionPage />} />
+          <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
           <Route path="/app/external" element={<ExternalAppPage />} />
         </Routes>
         <ToastContainer /> 

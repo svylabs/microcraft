@@ -13,6 +13,7 @@ interface Output {
 const UserActionPage = () => {
   const location = useLocation();
   const { appId } = useParams<{ appId: string; title?: string }>();
+  // const { appId } = useParams<{ appId: string }>();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState(
@@ -198,6 +199,8 @@ const UserActionPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
+              isActionPage={false}
+              appId={appId || ""}
             />
           </div>
 
