@@ -13,6 +13,7 @@ interface Output {
 const ExternalAppPage = () => {
   const location = useLocation();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
+  const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState([]);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
@@ -50,6 +51,54 @@ const ExternalAppPage = () => {
     }
     return data;
   };
+
+  useEffect(() => {
+    const source = queryParams.get("source") || "";
+    const urlPath = queryParams.get("path") || "";
+    console.log(source, urlPath);
+    if (source === "github" && urlPath !== undefined) {
+      setExternalAppUrl(urlPath);
+      loadApp();
+    }
+    if (source === "local") {
+        loadAppFromLocal(urlPath);
+    }
+  }, []);
+
+  const loadAppFromLocal = async(localPath) => {
+    setLoading(true);
+    try {
+      if (!localPath) {
+         setLoading(false);
+         return;
+      }
+      let url = "/applet/app.json";
+      const data = await (await fetch(url + "?base_path=" + localPath)).json();
+      const appName = data.name;
+      const appDescription = data.description;
+      const components = data.components;
+      for (let i = 0; i < components.length; i++) {
+        const component = components[i];
+        if (component.type === "button") {
+          if (component.codeRef !== undefined) {
+             const codeRefParts = component.codeRef.split("#");
+             const relPath = codeRefParts[0];
+             //const entryPoint = codeRefParts[1];
+             let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+             const data = await (await fetch(codeUrl)).text();
+             component.code = data;
+          }
+        }
+      }
+      setAppDescription(appDescription);
+      setAppName(appName);
+      setComponents(components);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("Error loading external app: ", error);
+    }
+  }
 
   const loadApp = async() => {
     setLoading(true);
@@ -131,7 +180,7 @@ const ExternalAppPage = () => {
             <button
                 className="px-4 py-2 bg-blue-500 rounded"
                 style={{margin: "20px"}}
-                onClick={() => loadApp()}
+                onClick={() => loadApp()}  
             >Load App</button>
         </div>
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
