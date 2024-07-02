@@ -35,6 +35,7 @@ const JsonViewer: React.FC<JsonViewerProps> = ({ jsonData, setJsonData }) => {
         onEdit={handleEdit}
         onAdd={handleAdd}
         onDelete={handleDelete}
+        // theme="monokai"
       />
     </div>
   );
