@@ -9,6 +9,7 @@ import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
 import ContractDetails from "./Renderer/ContractDetails";
+import JsonViewer from './Renderer/JsonViewer';
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -473,6 +474,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   <option value="text">Text</option>
                   <option value="number">Number</option>
+                  <option value="json">JSON</option>
                   <option value="file">File</option>
                   <option value="dropdown">Dropdown</option>
                   <option value="radio">Radio</option>
@@ -712,7 +714,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           )}
 
           <button
-          className="block justify-end mt-4 bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2  px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            className="block justify-end mt-4 bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2  px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
             onClick={() => setShowContractDetails(!showContractDetails)}
             title="Click to View Contract Information"
           >
@@ -760,7 +762,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                     component.type === "number" ||
                     component.type === "file" ||
                     component.type === "table" ||
-                    component.type === "json" ||
+                    // component.type === "json" ||
                     component.type === "graph") && (
                       <div>
                         <div className="flex justify-between">
@@ -806,6 +808,43 @@ const ConfigureInputsOutputs: React.FC = () => {
                         />
                       </div>
                     )}
+                  {(component.type === "json") && (
+                    <div>
+                      <div className="flex justify-between">
+                        <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                          {component.label}:
+                        </label>
+                        <div className="flex gap-3 md:gap-5">
+                          <button
+                            onClick={() => handleEditComponent(index)}
+                            title="Edit"
+                          >
+                            <img src={edit} alt="edit"></img>
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComponent(component.id)}
+                            title="Delete"
+                          >
+                            <img src={trash} alt="trash"></img>
+                          </button>
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          ...(component.config &&
+                            typeof component.config === "string"
+                            ? JSON.parse(component.config).styles
+                            : {}),
+                        }}
+                        id={component.id}
+                      >
+                        <JsonViewer
+                          jsonData={data[component.id]}
+                          setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
+                        />
+                      </div>
+                    </div>
+                  )}
                   {component.type === "swap" && (
                     <div>
                       <div className="flex justify-between">

@@ -1,53 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactJson, { InteractionProps } from 'react-json-view';
 
-const JsonViewer: React.FC = () => {
-  const [jsonData, setJsonData] = useState<any>({});
-  const [jsonInput, setJsonInput] = useState<string>('{}');
-  const [error, setError] = useState<string | null>(null);
+interface JsonViewerProps {
+  jsonData: any;
+  setJsonData: React.Dispatch<React.SetStateAction<any>>;
+}
 
-  const handleJsonInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const input = event.target.value;
-    setJsonInput(input);
-
-    try {
-      const parsedJson = JSON.parse(input);
-      setJsonData(parsedJson);
-      setError(null);
-    } catch (e) {
-      setError('Invalid JSON');
-    }
-  };
-
+const JsonViewer: React.FC<JsonViewerProps> = ({ jsonData, setJsonData }) => {
   const handleEdit = (edit: InteractionProps) => {
     const { updated_src } = edit;
+    console.log('Editing JSON:', updated_src);
     setJsonData(updated_src);
-    setJsonInput(JSON.stringify(updated_src, null, 2));
   };
 
   const handleAdd = (add: InteractionProps) => {
     const { updated_src } = add;
+    console.log('Adding to JSON:', updated_src);
     setJsonData(updated_src);
-    setJsonInput(JSON.stringify(updated_src, null, 2));
   };
 
   const handleDelete = (del: InteractionProps) => {
     const { updated_src } = del;
+    console.log('Deleting from JSON:', updated_src);
     setJsonData(updated_src);
-    setJsonInput(JSON.stringify(updated_src, null, 2));
   };
 
+  console.log('JsonViewer jsonData:', jsonData);
+  console.log(typeof jsonData);
+
   return (
-    <div>
-      <h1>JSON Viewer</h1>
-      <textarea
-        value={jsonInput}
-        onChange={handleJsonInputChange}
-        rows={10}
-        cols={50}
-        style={{ width: '100%' }}
-      />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+    <div className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none">
       <ReactJson
         src={jsonData}
         onEdit={handleEdit}

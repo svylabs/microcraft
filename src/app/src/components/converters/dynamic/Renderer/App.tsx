@@ -7,6 +7,7 @@ import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
+import JsonViewer from './JsonViewer';
 
 interface ContractDetail {
   name: string;
@@ -225,6 +226,23 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                       handleInputChange(component.id, e.target.value)
                     }
                   />
+                )}
+              {component.placement === "input" &&
+                (component.type === "json") && (
+                  <div
+                    style={{
+                      ...(component.config &&
+                        typeof component.config === "string"
+                        ? JSON.parse(component.config).styles
+                        : {}),
+                    }}
+                    id={component.id}
+                  >
+                    <JsonViewer
+                      jsonData={data[component.id]}
+                      setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
+                    />
+                  </div>
                 )}
               {component.type === "swap" && (
                 <div
