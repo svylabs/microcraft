@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import LoginSignupModal from "./LoginSignupModal";
 import { BASE_API_URL } from "./constants";
 import ConnectToWallet from "./ConnectToWallet";
-import AppVisibleModal from "./AppVisibility/AppVisibleModal";
+import ManageTeamsModal from "./ManageTeams/ManageTeamsModal";
+import ManageApiKeysModal from "./ManageApiKeys/ManageApiKeysModal";
 
 const Header: React.FC = () => {
   const [userName, setUserName] = useState("");
@@ -230,7 +231,8 @@ const Header: React.FC = () => {
                   </div>
                 )}
                 <ConnectToWallet />
-                <AppVisibleModal />
+                <ManageTeamsModal />
+                <ManageApiKeysModal />
               </div>
               <hr className="md:hidden border border-t-slate-500 my-3"></hr>
               <div className="flex md:hidden items-center">

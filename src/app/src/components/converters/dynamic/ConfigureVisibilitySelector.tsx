@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
-import AppVisibilitySelector from "../../AppVisibility/AppVisibilitySelector";
+import AppVisibilitySelector from "../../ManageTeams/ManageTeamsSelector";
 
 interface Team {
   id: string;

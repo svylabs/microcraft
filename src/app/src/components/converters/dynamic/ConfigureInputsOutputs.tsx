@@ -110,18 +110,6 @@ const ConfigureInputsOutputs: React.FC = () => {
         value: 50,
         step: 1,
       },
-      // walletConfig: {
-      //   message:
-      //     "Welcome to your wallet configuration settings! Please fill in the following details to customize your experience.",
-      //   network: {
-      //     type: "mina | ethereum | keplr",
-      //     config: {
-      //       rpcUrl: "",
-      //       chainId: "",
-      //       exploreUrl: "(optional)",
-      //     },
-      //   },
-      // },
       swapConfig: {
         tokens: [
           {

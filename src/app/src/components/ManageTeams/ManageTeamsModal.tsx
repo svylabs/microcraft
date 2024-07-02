@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import usersIcon from "../photos/users-solid.svg";
-import AppVisibilitySelector from "./AppVisibilitySelector";
+import ManageTeamsSelector from "./ManageTeamsSelector";
 
-const AppVisibleModal = () => {
+const ManageTeamsModal = () => {
   const [showTeams, setShowTeams] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -42,9 +42,9 @@ const AppVisibleModal = () => {
         <span>Manage Teams</span>
       </button>
 
-      {showTeams && <AppVisibilitySelector setShowTeams={setShowTeams} />}
+      {showTeams && <ManageTeamsSelector setShowTeams={setShowTeams} />}
     </div>
   );
 };
 
-export default AppVisibleModal;
+export default ManageTeamsModal;
