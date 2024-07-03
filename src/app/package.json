@@ -45,6 +45,7 @@
     "d3": "^7.9.0",
     "diff": "^5.1.0",
     "elliptic": "^6.5.4",
+    "ethers": "^6.13.1",
     "express": "^4.19.2",
     "file-saver": "^2.0.5",
     "generate-api-key": "^1.0.2",

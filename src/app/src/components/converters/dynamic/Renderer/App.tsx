@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BASE_API_URL } from "~/components/constants";
+import { ethers } from 'ethers';
 import Web3 from "web3";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
@@ -8,6 +9,7 @@ import TextOutput from "../outputPlacement/TextOutput";
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
+import Alert from "./Alert";
 
 interface ContractDetail {
   name: string;
@@ -34,6 +36,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   // console.log(appId);
   const [loading, setLoading] = useState(false);
   const [loadedData, setLoadedData] = useState<LoadedData>({});
+  const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [networkName, setNetworkName] = useState('');
+  const [chainId, setChainId] = useState('');
+  const [networkStatus, setNetworkStatus] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +65,69 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     fetchData();
   }, [isActionPage, appId]);
 
-  // console.log(loadedData);
+  const addNetwork = async () => {
+    const { ethereum } = window;
+    if (ethereum) {
+      try {
+        const provider = new ethers.BrowserProvider(ethereum);
+        await ethereum.send("eth_requestAccounts", []);
+        const network = await provider.getNetwork();
+        console.log("Network:", network);
+        if (network && network.chainId && network.name) {
+          setNetworkName(network.name);
+          setChainId(network.chainId.toString());
+
+          const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+          console.log("supportedNetworks type:", typeof supportedNetworks);
+
+          let isSupported = false;
+          // console.log("isSupported1:", isSupported);
+
+          if (Array.isArray(supportedNetworks)) {
+            for (const supportedNetwork of supportedNetworks) {
+              if (supportedNetwork.config.chainId === network.chainId.toString()) {
+                isSupported = true;
+                // console.log("isSupported2:", isSupported);
+                break;
+              }
+            }
+          } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
+            if (supportedNetworks.config.chainId === network.chainId.toString()) {
+              isSupported = true;
+              // console.log("isSupported3:", isSupported);
+            }
+          }
+
+          if (isSupported) {
+            setNetworkStatus(`Connected to ${network.name}`);
+          } else {
+            setNetworkStatus(`Connected to unsupported network: ${network.name}. Please connect to a supported network.`);
+            setAlertOpen(true);
+          }
+        } else {
+          console.error("Invalid network object:", network);
+          setNetworkStatus('Error getting network. Please check your connection and try again.');
+          setAlertOpen(true);
+        }
+      } catch (error) {
+        console.error('Error getting network:', error);
+        setNetworkStatus('Error getting network. Please check your connection and try again.');
+        setAlertOpen(true);
+      }
+    } else {
+      setNetworkStatus('Not connected to any network. Please connect your wallet.');
+      setAlertOpen(true);
+    }
+  };
+
+
+  useEffect(() => {
+    addNetwork();
+    // console.log(networkName);
+    // console.log(typeof networkName);
+    // console.log(chainId);
+    // console.log(typeof chainId);
+  }, [loadedData]);
 
   const web3 = new Web3(window.ethereum);
   // web3.setMaxListeners(0);
@@ -489,6 +557,14 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         ))} */}
       </div>
       {loading && <Loading />}
+      {networkStatus !== `Connected to ${networkName}` && (
+        <Alert
+          message={networkStatus}
+          isOpened={alertOpen}
+          setAlertOpen={setAlertOpen}
+          // addNetwork={addNetwork}
+        />
+      )}
     </>
   );
 };
