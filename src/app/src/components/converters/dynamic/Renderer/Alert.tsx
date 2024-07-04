@@ -1,61 +1,22 @@
 import React, { useEffect } from "react";
-import { useDisclosure } from "@mantine/hooks";
-import { Modal, Button, Group, useMantineTheme } from "@mantine/core";
+import { Modal, Button } from "@mantine/core";
 import { Text, Paper } from "@mantine/core";
 
-interface Props {
-  message: string;
-  isOpened: boolean;
-  setAlertOpen: (isOpened: boolean) => void;
-  // addNetwork: () => void;
+interface AlertProps {
+  isOpen: boolean;
+  onClose: () => void;
+  networkStatus: string;
+  onSwitchNetwork: () => void;
 }
 
-const Alert: React.FC<Props> = ({ message, isOpened, setAlertOpen }) => {
-  const [opened, { open, close }] = useDisclosure(false);
-  const theme = useMantineTheme();
-
-  useEffect(() => {
-    if (isOpened) {
-      open();
-    } else {
-      close();
-    }
-  }, [isOpened]);
-
-  const handleClose = () => {
-    setAlertOpen(false);
-    // addNetwork();
-  };
-
+const Alert: React.FC<AlertProps> = ({ isOpen, onClose, networkStatus, onSwitchNetwork }) => {
   return (
-    <Modal
-      withCloseButton={true}
-      opened={opened}
-      onClose={handleClose}
-      title={"Alert"}
-      centered
-      overlayColor={
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[9]
-          : theme.colors.gray[2]
-      }
-      overlayOpacity={0.55}
-      overlayBlur={3}
-    >
+    <Modal opened={isOpen} onClose={onClose} centered title="Network Status">
       <Paper shadow="xs" p="md">
-        <Text fw={500}>{message}</Text>
-        <div style={{ marginTop: "20px", float: "right" }}>
-          <Button
-            variant="outline"
-            radius={5}
-            onClick={handleClose}
-            color="red.5"
-            style={{
-              backgroundColor: "transparent",
-            }}
-          >
-            Switch Network
-          </Button>
+        <Text fw={500}>{networkStatus}</Text>
+        <div className="flex gap-3 justify-between">
+          <Button className="bg-red-50 text-red-500 hover:text-blue-500 hover:bg-blue-50" mt="md" onClick={onClose} title="Close">cancel</Button>
+          <Button className="bg-green-50 text-green-500 hover:text-blue-500 hover:bg-blue-50" mt="md" onClick={onSwitchNetwork} title="Switch to Selected Network">Switch Network</Button>
         </div>
       </Paper>
     </Modal>

@@ -120,6 +120,94 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     }
   };
 
+  const switchToSupportedNetwork = async () => {
+    const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+  
+    const formatChainId = (chainId) => {
+      if (typeof chainId === 'number') {
+        return `0x${chainId.toString(16)}`;
+      } else if (typeof chainId === 'string' && !chainId.startsWith('0x')) {
+        return `0x${parseInt(chainId, 10).toString(16)}`;
+      }
+      return chainId;
+    };
+  
+    const validateNetworkParams = (network) => {
+      // console.log('validateNetworkParams', network.config.rpcUrl.length)
+      return network.config.chainId && network.config.rpcUrl && network.config.rpcUrl.length > 0;
+    };
+  
+    const addAndSwitchNetwork = async (supportedNetwork) => {
+      if (!validateNetworkParams(supportedNetwork)) {
+        console.error('Missing required network parameters:', supportedNetwork);
+        setNetworkStatus('Failed to add network. Missing required parameters.');
+        setAlertOpen(true);
+        return;
+      }
+  
+      const chainId = formatChainId(supportedNetwork.config.chainId);
+      // console.log(chainId);
+      // console.log(typeof chainId);
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [{
+            chainId,
+            chainName: supportedNetwork.type,
+            rpcUrls: [supportedNetwork.config.rpcUrl],
+            blockExplorerUrls: [supportedNetwork.config.exploreUrl],
+          }],
+        });
+        setAlertOpen(false);
+        setNetworkStatus(`Connected to ${supportedNetwork.type}`);
+      } catch (addError) {
+        console.error('Error adding network:', addError);
+        setNetworkStatus('Failed to add network. Please try again.');
+        setAlertOpen(true);
+      }
+    };
+  
+    const switchNetwork = async (supportedNetwork) => {
+      if (!supportedNetwork.config.chainId) {
+        console.error('Missing required network parameter: chainId', supportedNetwork);
+        setNetworkStatus('Failed to switch network. Missing chainId.');
+        setAlertOpen(true);
+        return;
+      }
+  
+      const chainId = formatChainId(supportedNetwork.config.chainId);
+      // console.log(chainId);
+      // console.log(typeof chainId);
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId }],
+        });
+        setAlertOpen(false);
+        setNetworkStatus(`Connected to ${supportedNetwork.type}`);
+      } catch (switchError:any) {
+        console.error('Error switching network:', switchError);
+        if (switchError.code === 4902) {
+          await addAndSwitchNetwork(supportedNetwork);
+        } else {
+          setNetworkStatus('Failed to switch network. Please try again.');
+          setAlertOpen(true);
+        }
+      }
+    };
+  
+    if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
+      // console.log(supportedNetworks);
+      await switchNetwork(supportedNetworks[0]);
+    } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
+      // console.log(supportedNetworks);
+      await switchNetwork(supportedNetworks);
+    } else {
+      console.error('No supported networks available.');
+      setNetworkStatus('No supported networks available. Please add a supported network.');
+      setAlertOpen(true);
+    }
+  };
 
   useEffect(() => {
     addNetwork();
@@ -559,10 +647,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       {loading && <Loading />}
       {networkStatus !== `Connected to ${networkName}` && (
         <Alert
-          message={networkStatus}
-          isOpened={alertOpen}
-          setAlertOpen={setAlertOpen}
-          // addNetwork={addNetwork}
+          isOpen={alertOpen}
+          onClose={() => setAlertOpen(false)}
+          networkStatus={networkStatus}
+          onSwitchNetwork={switchToSupportedNetwork}
         />
       )}
     </>
