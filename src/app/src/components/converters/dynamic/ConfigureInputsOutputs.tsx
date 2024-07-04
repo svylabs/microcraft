@@ -399,6 +399,130 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   // console.log(components);
+  const renderConfig = () => {
+    switch (currentComponent.type) {
+      case 'text':
+        return (
+          <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Configuration:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder=""
+                    name="config"
+                    // cols={30}
+                    // rows={60}
+                    value={
+                      currentComponent.config || JSON.stringify(config, null, 2)
+                    }
+                    // value={
+                    //   currentComponent.config.styles || JSON.stringify(config.styles, null, 2)
+                    // }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+        );
+      case 'dropdown':
+        return (
+          <div>
+                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                  Configuration:
+                </label>
+                <div className="flex bg-gray-900 rounded-md p-2">
+                  <div
+                    className="px-2 text-gray-500"
+                    ref={numbersRef}
+                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                  ></div>
+                  <textarea
+                    ref={textareaRef}
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    style={{ overflowY: "hidden" }}
+                    placeholder=""
+                    name="config"
+                    // cols={30}
+                    // rows={60}
+                    value={
+                      currentComponent.config.styles || currentComponent.config.optionsConfig || JSON.stringify({ ...config.styles, ...config.custom.optionsConfig }, null, 2)
+                    }
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+        );
+      case 'slider':
+        return (
+          <div>
+            <label>Slider Message:
+              <input
+                type="text"
+                name="sliderMessage"
+                value={config.custom.sliderConfig.message}
+                onChange={(e) =>
+                  setConfig((prevConfig) => ({
+                    ...prevConfig,
+                    custom: {
+                      ...prevConfig.custom,
+                      sliderConfig: {
+                        ...prevConfig.custom.sliderConfig,
+                        message: e.target.value,
+                      },
+                    },
+                  }))
+                }
+              />
+            </label>
+            {/* Add other slider config fields */}
+          </div>
+        );
+      case 'swap':
+        return (
+          <div>
+            <label>Swap Tokens:
+              {/* Example of rendering token fields */}
+              {config.custom.swapConfig.tokens.map((token, index) => (
+                <div key={index}>
+                  <input
+                    type="text"
+                    name={`tokenName${index}`}
+                    value={token.name}
+                    onChange={(e) =>
+                      setConfig((prevConfig) => {
+                        const newTokens = [...prevConfig.custom.swapConfig.tokens];
+                        newTokens[index].name = e.target.value;
+                        return {
+                          ...prevConfig,
+                          custom: {
+                            ...prevConfig.custom,
+                            swapConfig: {
+                              ...prevConfig.custom.swapConfig,
+                              tokens: newTokens,
+                            },
+                          },
+                        };
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </label>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+  
 
   return (
     <>
@@ -484,6 +608,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="swap">Swap</option>
                 </select>
               </label>
+              {renderConfig()}
 
               {/* {currentComponent.type === "swap" && (
                 <div>
@@ -517,6 +642,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="button">Button</option>
                 </select>
               </label>
+              {renderConfig()}
             </div>
           )}
 
@@ -537,10 +663,11 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="graph">Graph</option>
                 </select>
               </label>
+              {renderConfig()}
             </div>
           )}
 
-          {(currentComponent.placement === "input" ||
+          {/* {(currentComponent.placement === "input" ||
             currentComponent.placement === "action" ||
             currentComponent.placement === "output") && (
               <div>
@@ -568,7 +695,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   ></textarea>
                 </div>
               </div>
-            )}
+            )} */}
 
           <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
             Label:
