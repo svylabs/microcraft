@@ -211,10 +211,35 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEvents(components[index].events || []);
   };
 
+  // const handleChange = (
+  //   e: React.ChangeEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {
+  //   const { name, value } = e.target;
+
+  //   if (
+  //     name === "placement" &&
+  //     (value === "action" || value === "output") &&
+  //     currentComponent.type === "text"
+  //   ) {
+  //     console.log("handle-1");
+  //     setCurrentComponent((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //       type: "button",
+  //     }));
+  //   } else {
+  //     console.log("handle-2");
+  //     setCurrentComponent((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
@@ -223,18 +248,48 @@ const ConfigureInputsOutputs: React.FC = () => {
       (value === "action" || value === "output") &&
       currentComponent.type === "text"
     ) {
+      console.log("handle-1");
       setCurrentComponent((prevState) => ({
         ...prevState,
         [name]: value,
         type: "button",
       }));
     } else {
+      console.log("handle-2");
       setCurrentComponent((prevState) => ({
         ...prevState,
         [name]: value,
       }));
     }
+  
+    if (
+      name === "placement" &&
+      (value === "action" || value === "output") &&
+      currentComponent.type === "text"
+    ) {
+      console.log("handle-3");
+      setCurrentComponent((prevState) => ({
+        ...prevState,
+        [name]: value,
+        type: "button",
+        config: {
+          ...prevState.config,
+          [name]: value,
+        },
+      }));
+    } else {
+      console.log("handle-4");
+      setCurrentComponent((prevState) => ({
+        ...prevState,
+        [name]: value,
+        config: {
+          ...prevState.config,
+          [name]: value,
+        },
+      }));
+    }
   };
+  
 
   const handleAddComponent = () => {
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
@@ -311,16 +366,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     }));
   };
 
-  // const handleSwapChange = (id: string, swapData: any) => {
-  //   // Check if the new swap data is different from the existing data
-  //   if (data[id] !== swapData) {
-  //     setData((prevData) => ({
-  //       ...prevData,
-  //       [id]: swapData,
-  //     }));
-  //   }
-  // };
-
   const handleDeleteComponent = (id: string) => {
     setComponents((prevComponents) =>
       prevComponents.filter((component) => component.id !== id)
@@ -364,7 +409,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       }
     };
     // }, [currentComponent.type]);
-  }, [currentComponent.type, currentComponent.placement, currentEvent]);
+  }, [currentComponent.type, currentComponent.placement, currentEvent, currentComponent.config]);
 
   const handleAddEvent = () => {
     if (currentEvent && eventCode.trim() !== "") {
@@ -399,130 +444,151 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   // console.log(components);
+
+  // const renderConfig = () => {
+  //   let configValue = "";
+
+  //   switch (currentComponent.type) {
+  //     case 'text':
+  //     case 'number':
+  //     case 'file':
+  //     case 'json':
+  //     case 'walletDropdown':
+  //     case 'button':
+  //     case 'table':
+  //       configValue = currentComponent.config?.styles || JSON.stringify(config.styles, null, 2);
+  //       break;
+  //     case 'dropdown':
+  //     case 'radio':
+  //     case 'checkbox':
+  //       configValue = (currentComponent.config?.styles && currentComponent.config?.optionsConfig) || JSON.stringify({ ...config.styles, ...config.custom.optionsConfig }, null, 2);
+  //       break;
+  //     case 'slider':
+  //       configValue = (currentComponent.config?.styles && currentComponent.config?.sliderConfig) || JSON.stringify({ ...config.styles, ...config.custom.sliderConfig }, null, 2);
+  //       break;
+  //     case 'swap':
+  //       configValue = (currentComponent.config?.styles && currentComponent.config?.swapConfig) || JSON.stringify({ ...config.styles, ...config.custom.swapConfig }, null, 2);
+  //       break;
+  //     case 'graph':
+  //       configValue = (currentComponent.config?.styles && currentComponent.config?.graphConfig) || JSON.stringify({ ...config.styles, ...config.custom.graphConfig }, null, 2);
+  //       break;
+  //     default:
+  //       return null;
+  //   }
+  //   // console.log(configValue);
+  //   // console.log(typeof configValue);
+
+  //   console.log("currentComponent.config ", currentComponent.config);
+  //   console.log("typeof currentComponent ", typeof currentComponent);
+  //   console.log("typeof currentComponent.config ", typeof currentComponent.config);
+  //   // const roh = JSON.stringify(config, null, 2);
+  //   // console.log(roh);
+  //   // console.log(typeof roh);
+  //   console.log(currentComponent.config)
+  //   console.log(currentComponent.config.styles)
+  //   // const configParse = JSON.parse(currentComponent.config);
+  //   // console.log(configParse);
+
+
+  //   return (
+  //     <div>
+  //       {(currentComponent.placement === "input" ||
+  //         currentComponent.placement === "action" ||
+  //         currentComponent.placement === "output") && (
+  //           <div>
+  //             <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+  //               Configuration:
+  //             </label>
+  //             <div className="flex bg-gray-900 rounded-md p-2">
+  //               <div
+  //                 className="px-2 text-gray-500"
+  //                 ref={numbersRef}
+  //                 style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+  //               ></div>
+  //               <textarea
+  //                 ref={textareaRef}
+  //                 className="flex-1 bg-gray-900 text-white outline-none"
+  //                 style={{ overflowY: "hidden" }}
+  //                 placeholder=""
+  //                 name="styles"
+  //                 // rows={7}
+  //                 value={configValue}
+  //                 // value={
+  //                 //   currentComponent.config || JSON.stringify(config, null, 2)
+  //                 // }
+  //                 onChange={handleChange}
+  //               ></textarea>
+  //             </div>
+  //           </div>
+  //         )}
+  //     </div>
+  //   );
+  // };
+
   const renderConfig = () => {
+    let configValue = "";
+  
     switch (currentComponent.type) {
       case 'text':
-        return (
-          <div>
-                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder=""
-                    name="config"
-                    // cols={30}
-                    // rows={60}
-                    value={
-                      currentComponent.config || JSON.stringify(config, null, 2)
-                    }
-                    // value={
-                    //   currentComponent.config.styles || JSON.stringify(config.styles, null, 2)
-                    // }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
-        );
+      case 'number':
+      case 'file':
+      case 'json':
+      case 'walletDropdown':
+      case 'button':
+      case 'table':
+        configValue = currentComponent.config?.styles || JSON.stringify(config.styles, null, 2);
+        break;
       case 'dropdown':
-        return (
-          <div>
-                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder=""
-                    name="config"
-                    // cols={30}
-                    // rows={60}
-                    value={
-                      currentComponent.config.styles || currentComponent.config.optionsConfig || JSON.stringify({ ...config.styles, ...config.custom.optionsConfig }, null, 2)
-                    }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
-        );
+      case 'radio':
+      case 'checkbox':
+        configValue = (currentComponent.config?.styles && currentComponent.config?.optionsConfig) || JSON.stringify({ ...config.styles, ...config.custom.optionsConfig }, null, 2);
+        break;
       case 'slider':
-        return (
-          <div>
-            <label>Slider Message:
-              <input
-                type="text"
-                name="sliderMessage"
-                value={config.custom.sliderConfig.message}
-                onChange={(e) =>
-                  setConfig((prevConfig) => ({
-                    ...prevConfig,
-                    custom: {
-                      ...prevConfig.custom,
-                      sliderConfig: {
-                        ...prevConfig.custom.sliderConfig,
-                        message: e.target.value,
-                      },
-                    },
-                  }))
-                }
-              />
-            </label>
-            {/* Add other slider config fields */}
-          </div>
-        );
+        configValue = (currentComponent.config?.styles && currentComponent.config?.sliderConfig) || JSON.stringify({ ...config.styles, ...config.custom.sliderConfig }, null, 2);
+        break;
       case 'swap':
-        return (
-          <div>
-            <label>Swap Tokens:
-              {/* Example of rendering token fields */}
-              {config.custom.swapConfig.tokens.map((token, index) => (
-                <div key={index}>
-                  <input
-                    type="text"
-                    name={`tokenName${index}`}
-                    value={token.name}
-                    onChange={(e) =>
-                      setConfig((prevConfig) => {
-                        const newTokens = [...prevConfig.custom.swapConfig.tokens];
-                        newTokens[index].name = e.target.value;
-                        return {
-                          ...prevConfig,
-                          custom: {
-                            ...prevConfig.custom,
-                            swapConfig: {
-                              ...prevConfig.custom.swapConfig,
-                              tokens: newTokens,
-                            },
-                          },
-                        };
-                      })
-                    }
-                  />
-                </div>
-              ))}
-            </label>
-          </div>
-        );
+        configValue = (currentComponent.config?.styles && currentComponent.config?.swapConfig) || JSON.stringify({ ...config.styles, ...config.custom.swapConfig }, null, 2);
+        break;
+      case 'graph':
+        configValue = (currentComponent.config?.styles && currentComponent.config?.graphConfig) || JSON.stringify({ ...config.styles, ...config.custom.graphConfig }, null, 2);
+        break;
       default:
         return null;
     }
+  
+    return (
+      <div>
+        {(currentComponent.placement === "input" ||
+          currentComponent.placement === "action" ||
+          currentComponent.placement === "output") && (
+            <div>
+              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                Configuration:
+              </label>
+              <div className="flex bg-gray-900 rounded-md p-2">
+                <div
+                  className="px-2 text-gray-500"
+                  ref={numbersRef}
+                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                ></div>
+                <textarea
+                  ref={textareaRef}
+                  className="flex-1 bg-gray-900 text-white outline-none"
+                  style={{ overflowY: "hidden" }}
+                  placeholder=""
+                  name="styles" // Adjust name accordingly based on the config property
+                  value={configValue}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
+            </div>
+          )}
+      </div>
+    );
   };
   
+  
+
 
   return (
     <>
@@ -666,36 +732,6 @@ const ConfigureInputsOutputs: React.FC = () => {
               {renderConfig()}
             </div>
           )}
-
-          {/* {(currentComponent.placement === "input" ||
-            currentComponent.placement === "action" ||
-            currentComponent.placement === "output") && (
-              <div>
-                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder=""
-                    name="config"
-                    cols={30}
-                    rows={60}
-                    value={
-                      currentComponent.config || JSON.stringify(config, null, 2)
-                    }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
-            )} */}
 
           <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
             Label:
@@ -919,12 +955,13 @@ const ConfigureInputsOutputs: React.FC = () => {
                         {/* JSON.parse(component.sliderConfig).interval.min */}
                         <input
                           className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                          style={{
-                            ...(component.config &&
-                              typeof component.config === "string"
-                              ? JSON.parse(component.config).styles
-                              : {}),
-                          }}
+                          // style={{
+                          //   ...(component.config &&
+                          //     typeof component.config === "string"
+                          //     ? JSON.parse(component.config).styles
+                          //     : {}),
+                          // }}
+                          style={JSON.parse(component.config.styles)}
                           onWheel={(e) => (e.target as HTMLInputElement).blur()}
                           type={component.type}
                           id={component.id}
