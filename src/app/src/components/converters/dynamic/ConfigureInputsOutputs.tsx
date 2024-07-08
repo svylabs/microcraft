@@ -206,7 +206,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEditIndex(index);
     setCurrentComponent({
       ...components[index],
-      config: components[index].config || JSON.stringify(config, null, 2),
+      // config: components[index].config || JSON.stringify(config, null, 2),
+      config: components[index].config || {},
     });
     setEvents(components[index].events || []);
   };
@@ -263,7 +264,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         currentComponent.placement === "input" ||
           currentComponent.placement === "action" ||
           currentComponent.placement === "output"
-          ? currentComponent.config || JSON.stringify(config, null, 2)
+          // ? currentComponent.config || JSON.stringify(config, null, 2)
+          ? currentComponent.config || {}
           : "",
       events: [...events],
     };
@@ -290,7 +292,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       type: "text",
       placement: "input",
       code: "",
-      config: "",
+      // config: "",
+      config: {},
     });
   };
 
@@ -310,16 +313,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       [id]: value,
     }));
   };
-
-  // const handleSwapChange = (id: string, swapData: any) => {
-  //   // Check if the new swap data is different from the existing data
-  //   if (data[id] !== swapData) {
-  //     setData((prevData) => ({
-  //       ...prevData,
-  //       [id]: swapData,
-  //     }));
-  //   }
-  // };
 
   const handleDeleteComponent = (id: string) => {
     setComponents((prevComponents) =>
@@ -398,7 +391,92 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEvents(updatedEvents);
   };
 
-  // console.log(components);
+  console.log(currentComponent); 
+
+  const renderConfig = () => {
+    const [localConfig, setLocalConfig] = useState("");
+  
+    useEffect(() => {
+      let initialConfig = {};
+  
+      switch (currentComponent.type) {
+        case 'text':
+        case 'number':
+        case 'file':
+        case 'json':
+        case 'walletDropdown':
+        case 'button':
+        case 'table':
+          initialConfig = { styles: { ...config.styles } };
+          break;
+        case 'dropdown':
+        case 'radio':
+        case 'checkbox':
+          initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
+          break;
+        case 'slider':
+          initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
+          break;
+        case 'swap':
+          initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
+          break;
+        case 'graph':
+          initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
+          break;
+        default:
+          initialConfig = {};
+      }
+  
+      setLocalConfig(JSON.stringify(initialConfig, null, 2));
+    }, [currentComponent.type]);
+  
+    const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const { value } = e.target;
+      setLocalConfig(value);
+    };
+  
+    const handleSaveConfig = () => {
+      try {
+        const parsedConfig = JSON.parse(localConfig);
+        setCurrentComponent((prevState) => ({
+          ...prevState,
+          config: parsedConfig,
+        }));
+      } catch (error) {
+        toast.error("Invalid JSON format. Please provide valid JSON.");
+      }
+    };
+  
+    return (
+      <div>
+        <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+          Configuration:
+        </label>
+        <div className="flex bg-gray-900 rounded-md p-2">
+          <div
+            className="px-2 text-gray-500"
+            style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+          >
+          </div>
+          <textarea
+            className="flex-1 bg-gray-900 text-white outline-none"
+            style={{ overflowY: "hidden" }}
+            placeholder=""
+            rows={30}
+            value={localConfig}
+            onChange={handleConfigChange}
+          ></textarea>
+        </div>
+        <button
+          onClick={handleSaveConfig}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Save Configuration
+        </button>
+      </div>
+    );
+  };
+  
 
   return (
     <>
@@ -484,23 +562,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="swap">Swap</option>
                 </select>
               </label>
-
-              {/* {currentComponent.type === "swap" && (
-                <div>
-                  <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                    Token Swap:
-                  </label>
-                  {components.map((component, index) => (
-                  <Swap 
-                  key={index}
-                  configurations={config.custom.swapConfig} 
-                  onSwapChange={(swapData) =>
-                    handleSwapChange(component.id, swapData)
-                  }
-                  />
-                  ))}
-                </div>
-              )} */}
+              {renderConfig()}
             </>
           )}
 
@@ -517,6 +579,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="button">Button</option>
                 </select>
               </label>
+              {renderConfig()}
             </div>
           )}
 
@@ -537,38 +600,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="graph">Graph</option>
                 </select>
               </label>
+              {renderConfig()}
             </div>
           )}
-
-          {(currentComponent.placement === "input" ||
-            currentComponent.placement === "action" ||
-            currentComponent.placement === "output") && (
-              <div>
-                <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                  Configuration:
-                </label>
-                <div className="flex bg-gray-900 rounded-md p-2">
-                  <div
-                    className="px-2 text-gray-500"
-                    ref={numbersRef}
-                    style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                  ></div>
-                  <textarea
-                    ref={textareaRef}
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    style={{ overflowY: "hidden" }}
-                    placeholder=""
-                    name="config"
-                    cols={30}
-                    rows={60}
-                    value={
-                      currentComponent.config || JSON.stringify(config, null, 2)
-                    }
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
-            )}
 
           <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
             Label:
@@ -744,7 +778,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                 >
                   ID: {component.id}, Label: {component.label}, Type:{" "}
                   {component.type}, Placement: {component.placement}
-                  {component.config && `, Configuration : ${component.config}`}
+                  {/* {component.config && `, Configuration : ${component.config}`} */}
+                  {component.config && `, Configuration : ${JSON.stringify(component.config)}`}
                   {component.code && `, Code: ${component.code}`}
                   {component.events &&
                     component.events.map((eventObj, index) => (
