@@ -10,6 +10,7 @@ import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
 import ContractDetails from "./Renderer/ContractDetails";
 import JsonViewer from './Renderer/JsonViewer';
+import useDebounce from './Renderer/useDebounce';
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -56,6 +57,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [eventCode, setEventCode] = useState<string>("");
   const [showContractDetails, setShowContractDetails] = useState(false);
   const [loadedData, setLoadedData] = useState<any>({});
+  const [localConfig, setLocalConfig] = useState("");
+  const debouncedConfig = useDebounce(localConfig, 2000);
 
   const [config, setConfig] = useState<any>({
     styles: {
@@ -206,8 +209,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEditIndex(index);
     setCurrentComponent({
       ...components[index],
-      // config: components[index].config || JSON.stringify(config, null, 2),
-      config: components[index].config || {},
+      config: components[index].config || JSON.stringify(config, null, 2),
     });
     setEvents(components[index].events || []);
   };
@@ -264,8 +266,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         currentComponent.placement === "input" ||
           currentComponent.placement === "action" ||
           currentComponent.placement === "output"
-          // ? currentComponent.config || JSON.stringify(config, null, 2)
-          ? currentComponent.config || {}
+          ? currentComponent.config || JSON.stringify(config, null, 2)
           : "",
       events: [...events],
     };
@@ -292,8 +293,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       type: "text",
       placement: "input",
       code: "",
-      // config: "",
-      config: {},
+      config: "",
     });
   };
 
@@ -332,7 +332,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const numbersRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const updateTextareaNumber = () => {
     const textarea = textareaRef.current;
     const numbers = numbersRef.current;
 
@@ -356,7 +356,14 @@ const ConfigureInputsOutputs: React.FC = () => {
         textarea.removeEventListener("input", updateLineNumbers);
       }
     };
-    // }, [currentComponent.type]);
+  };
+
+  useEffect(() => {
+    updateTextareaNumber();
+  });
+  
+  useEffect(() => {
+    updateTextareaNumber();
   }, [currentComponent.type, currentComponent.placement, currentEvent]);
 
   const handleAddEvent = () => {
@@ -391,14 +398,47 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEvents(updatedEvents);
   };
 
-  console.log(currentComponent); 
+  console.log(currentComponent);
 
   const renderConfig = () => {
-    const [localConfig, setLocalConfig] = useState("");
-  
-    useEffect(() => {
+
+    // useEffect(() => {
+    //   let initialConfig = {};
+
+    //   switch (currentComponent.type) {
+    //     case 'text':
+    //     case 'number':
+    //     case 'file':
+    //     case 'json':
+    //     case 'walletDropdown':
+    //     case 'button':
+    //     case 'table':
+    //       initialConfig = { styles: { ...config.styles } };
+    //       break;
+    //     case 'dropdown':
+    //     case 'radio':
+    //     case 'checkbox':
+    //       initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
+    //       break;
+    //     case 'slider':
+    //       initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
+    //       break;
+    //     case 'swap':
+    //       initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
+    //       break;
+    //     case 'graph':
+    //       initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
+    //       break;
+    //     default:
+    //       initialConfig = {};
+    //   }
+
+    //   setLocalConfig(JSON.stringify(initialConfig, null, 2));
+    // }, [currentComponent.type]);
+
+    const updateInitialConfig = () => {
       let initialConfig = {};
-  
+
       switch (currentComponent.type) {
         case 'text':
         case 'number':
@@ -426,27 +466,49 @@ const ConfigureInputsOutputs: React.FC = () => {
         default:
           initialConfig = {};
       }
-  
+
       setLocalConfig(JSON.stringify(initialConfig, null, 2));
+    };
+
+    useEffect(() => {
+      updateInitialConfig();
     }, [currentComponent.type]);
-  
+
+    useEffect(() => {
+      updateInitialConfig();
+    }, []);
+
+    useEffect(() => {
+      if (debouncedConfig) {
+        try {
+          const parsedConfig = JSON.parse(debouncedConfig);
+          setCurrentComponent((prevState) => ({
+            ...prevState,
+            config: parsedConfig,
+          }));
+        } catch (error) {
+          toast.error("Invalid JSON format. Please provide valid JSON.");
+        }
+      }
+    }, [debouncedConfig]);
+
     const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const { value } = e.target;
       setLocalConfig(value);
     };
-  
-    const handleSaveConfig = () => {
-      try {
-        const parsedConfig = JSON.parse(localConfig);
-        setCurrentComponent((prevState) => ({
-          ...prevState,
-          config: parsedConfig,
-        }));
-      } catch (error) {
-        toast.error("Invalid JSON format. Please provide valid JSON.");
-      }
-    };
-  
+
+    // const handleSaveConfig = () => {
+    //   try {
+    //     const parsedConfig = JSON.parse(localConfig);
+    //     setCurrentComponent((prevState) => ({
+    //       ...prevState,
+    //       config: parsedConfig,
+    //     }));
+    //   } catch (error) {
+    //     toast.error("Invalid JSON format. Please provide valid JSON.");
+    //   }
+    // };
+
     return (
       <div>
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -455,28 +517,23 @@ const ConfigureInputsOutputs: React.FC = () => {
         <div className="flex bg-gray-900 rounded-md p-2">
           <div
             className="px-2 text-gray-500"
+            ref={numbersRef}
             style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-          >
-          </div>
+          ></div>
           <textarea
+            ref={textareaRef}
             className="flex-1 bg-gray-900 text-white outline-none"
             style={{ overflowY: "hidden" }}
-            placeholder=""
-            rows={30}
+            // cols={30}
+            // rows={60}
             value={localConfig}
             onChange={handleConfigChange}
           ></textarea>
         </div>
-        <button
-          onClick={handleSaveConfig}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-        >
-          Save Configuration
-        </button>
       </div>
     );
   };
-  
+
 
   return (
     <>
@@ -825,12 +882,18 @@ const ConfigureInputsOutputs: React.FC = () => {
                       {console.log(typeof component.config)} */}
                         {/* {console.log(JSON.parse(component.config).styles)} */}
                         {/* JSON.parse(component.sliderConfig).interval.min */}
+                        {/* {console.log(component.config)} */}
                         <input
                           className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                          // style={{
+                          //   ...(component.config &&
+                          //     typeof component.config === "string"
+                          //     ? JSON.parse(component.config).styles
+                          //     : {}),
+                          // }}
                           style={{
-                            ...(component.config &&
-                              typeof component.config === "string"
-                              ? JSON.parse(component.config).styles
+                            ...(component.config && typeof component.config.styles === 'object'
+                              ? component.config.styles
                               : {}),
                           }}
                           onWheel={(e) => (e.target as HTMLInputElement).blur()}
@@ -866,9 +929,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       <div
                         style={{
-                          ...(component.config &&
-                            typeof component.config === "string"
-                            ? JSON.parse(component.config).styles
+                          ...(component.config && typeof component.config.styles === 'object'
+                            ? component.config.styles
                             : {}),
                         }}
                         id={component.id}
@@ -903,9 +965,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       <div
                         style={{
-                          ...(component.config &&
-                            typeof component.config === "string"
-                            ? JSON.parse(component.config).styles
+                          ...(component.config && typeof component.config.styles === 'object'
+                            ? component.config.styles
                             : {}),
                         }}
                       >
@@ -950,9 +1011,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                           handleInputChange(component.id, e.target.value)
                         }
                         style={{
-                          ...(component.config &&
-                            typeof component.config === "string"
-                            ? JSON.parse(component.config).styles
+                          ...(component.config && typeof component.config.styles === 'object'
+                            ? component.config.styles
                             : {}),
                         }}
                       >
@@ -1232,9 +1292,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                         className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                         id={component.id}
                         style={{
-                          ...(component.config &&
-                            typeof component.config === "string"
-                            ? JSON.parse(component.config).styles
+                          ...(component.config && typeof component.config.styles === 'object'
+                            ? component.config.styles
                             : {}),
                         }}
                       >
