@@ -209,11 +209,10 @@ const ConfigureInputsOutputs: React.FC = () => {
   const handleEditComponent = (index: number) => {
     setIsEditMode(true);
     setEditIndex(index);
-    setCurrentComponent({
-      ...components[index],
-      config: components[index].config || JSON.stringify(config, null, 2),
-    });
-    setEvents(components[index].events || []);
+    const componentToEdit = components[index];
+    setCurrentComponent(componentToEdit);
+    setLocalConfig(componentToEdit.config ? JSON.stringify(componentToEdit.config, null, 2) : JSON.stringify(initialConfig, null, 2));
+    setEvents(componentToEdit.events || []);
   };
 
   const handleChange = (
