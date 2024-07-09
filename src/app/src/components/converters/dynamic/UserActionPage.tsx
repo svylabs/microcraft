@@ -85,29 +85,15 @@ const UserActionPage = () => {
 
           const initialDropdownState = {};
 
-          component_def.forEach((component) => {
-            if (component.type === "dropdown") {
-              initialDropdownState[component.id] =
-                component.config.optionsConfig
-                  .values[0].trim();
-            }
-          });
-
-          component_def.forEach((component) => {
-            if (component.type === "slider") {
-              setData((prevData) => ({
-                ...prevData,
-                [component.id]: component.config.sliderConfig.value,
-              }));
-            }
-          });
-
           // component_def.forEach((component) => {
           //   if (component.type === "dropdown") {
           //     initialDropdownState[component.id] =
           //       component.config.optionsConfig
           //         .values[0].trim();
           //   }
+          // });
+
+          // component_def.forEach((component) => {
           //   if (component.type === "slider") {
           //     setData((prevData) => ({
           //       ...prevData,
@@ -115,6 +101,20 @@ const UserActionPage = () => {
           //     }));
           //   }
           // });
+
+          component_def.forEach((component) => {
+            if (component.type === "dropdown") {
+              initialDropdownState[component.id] =
+                component.config.optionsConfig
+                  .values[0].trim();
+            }
+            if (component.type === "slider") {
+              setData((prevData) => ({
+                ...prevData,
+                [component.id]: component.config.sliderConfig.value,
+              }));
+            }
+          });
 
           setData((prevData) => ({
             ...prevData,

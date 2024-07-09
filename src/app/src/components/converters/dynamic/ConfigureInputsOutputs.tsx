@@ -210,6 +210,10 @@ const ConfigureInputsOutputs: React.FC = () => {
     setIsEditMode(true);
     setEditIndex(index);
     const componentToEdit = components[index];
+    // setCurrentComponent({
+    //   ...components[index],
+    //   config: components[index].config || JSON.stringify(config, null, 2),
+    // });
     setCurrentComponent(componentToEdit);
     setLocalConfig(componentToEdit.config ? JSON.stringify(componentToEdit.config, null, 2) : JSON.stringify(initialConfig, null, 2));
     setEvents(componentToEdit.events || []);
@@ -400,7 +404,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setEvents(updatedEvents);
   };
 
-  console.log(currentComponent);
+  // console.log(currentComponent);
 
   const renderConfig = () => {
     const updateInitialConfig = () => {
