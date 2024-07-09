@@ -166,6 +166,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     },
   });
 
+  let initialConfig = {};
+
   useEffect(() => {
     const existingFormData = localStorage.getItem("formData");
     const existingData = existingFormData ? JSON.parse(existingFormData) : {};
@@ -295,6 +297,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       code: "",
       config: "",
     });
+    setLocalConfig(JSON.stringify(initialConfig, null, 2));
   };
 
   const handlePreview = async () => {
@@ -361,7 +364,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   useEffect(() => {
     updateTextareaNumber();
   });
-  
+
   useEffect(() => {
     updateTextareaNumber();
   }, [currentComponent.type, currentComponent.placement, currentEvent]);
@@ -401,43 +404,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   console.log(currentComponent);
 
   const renderConfig = () => {
-
-    // useEffect(() => {
-    //   let initialConfig = {};
-
-    //   switch (currentComponent.type) {
-    //     case 'text':
-    //     case 'number':
-    //     case 'file':
-    //     case 'json':
-    //     case 'walletDropdown':
-    //     case 'button':
-    //     case 'table':
-    //       initialConfig = { styles: { ...config.styles } };
-    //       break;
-    //     case 'dropdown':
-    //     case 'radio':
-    //     case 'checkbox':
-    //       initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
-    //       break;
-    //     case 'slider':
-    //       initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
-    //       break;
-    //     case 'swap':
-    //       initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
-    //       break;
-    //     case 'graph':
-    //       initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
-    //       break;
-    //     default:
-    //       initialConfig = {};
-    //   }
-
-    //   setLocalConfig(JSON.stringify(initialConfig, null, 2));
-    // }, [currentComponent.type]);
-
     const updateInitialConfig = () => {
-      let initialConfig = {};
+      // let initialConfig = {};
 
       switch (currentComponent.type) {
         case 'text':
@@ -497,18 +465,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       setLocalConfig(value);
     };
 
-    // const handleSaveConfig = () => {
-    //   try {
-    //     const parsedConfig = JSON.parse(localConfig);
-    //     setCurrentComponent((prevState) => ({
-    //       ...prevState,
-    //       config: parsedConfig,
-    //     }));
-    //   } catch (error) {
-    //     toast.error("Invalid JSON format. Please provide valid JSON.");
-    //   }
-    // };
-
     return (
       <div>
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -524,8 +480,6 @@ const ConfigureInputsOutputs: React.FC = () => {
             ref={textareaRef}
             className="flex-1 bg-gray-900 text-white outline-none"
             style={{ overflowY: "hidden" }}
-            // cols={30}
-            // rows={60}
             value={localConfig}
             onChange={handleConfigChange}
           ></textarea>
@@ -533,7 +487,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       </div>
     );
   };
-
 
   return (
     <>
@@ -972,7 +925,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                       >
                         <Swap
                           configurations={
-                            JSON.parse(component.config).custom.swapConfig
+                            // JSON.parse(component.config).custom.swapConfig
+                            component.config.swapConfig
                           }
                           onSwapChange={(swapData) =>
                             handleInputChange(component.id, swapData)
@@ -1017,14 +971,19 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }}
                       >
                         {/* Options for dropdown */}
-                        {component.config &&
+                        {/* {component.config &&
                           JSON.parse(
                             component.config
                           ).custom.optionsConfig.values.map((option, idx) => (
                             <option key={idx} value={option.trim()}>
                               {option.trim()}
                             </option>
-                          ))}
+                          ))} */}
+                        {component.config && component.config.optionsConfig && component.config.optionsConfig.values.map((option, idx) => (
+                          <option key={idx} value={option.trim()}>
+                            {option.trim()}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   )}
@@ -1051,48 +1010,47 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for radio */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.config &&
-                          JSON.parse(
-                            component.config
-                          ).custom.optionsConfig.values.map((option, idx) => {
-                            const optionWidth = option.trim().length * 8 + 48;
+                        {component.config && component.config.optionsConfig &&
+                          component.config
+                            .optionsConfig.values.map((option, idx) => {
+                              const optionWidth = option.trim().length * 8 + 48;
 
-                            return (
-                              <div
-                                key={idx}
-                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                  ? "overflow-x-auto md:h-8"
-                                  : ""
-                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                              >
-                                <input
-                                  type="radio"
-                                  id={`${component.id}_${idx}`}
-                                  name={component.id}
-                                  value={option.trim()}
-                                  checked={data[component.id] === option}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      component.id,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="mr-2 absolute"
-                                  style={{
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                  }}
-                                />
-                                <label
-                                  htmlFor={`${component.id}_${idx}`}
-                                  className="whitespace-nowrap"
-                                  style={{ marginLeft: "1.5rem" }}
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                    } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                                 >
-                                  {option.trim()}
-                                </label>
-                              </div>
-                            );
-                          })}
+                                  <input
+                                    type="radio"
+                                    id={`${component.id}_${idx}`}
+                                    name={component.id}
+                                    value={option.trim()}
+                                    checked={data[component.id] === option}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        component.id,
+                                        e.target.value
+                                      )
+                                    }
+                                    className="mr-2 absolute"
+                                    style={{
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={`${component.id}_${idx}`}
+                                    className="whitespace-nowrap"
+                                    style={{ marginLeft: "1.5rem" }}
+                                  >
+                                    {option.trim()}
+                                  </label>
+                                </div>
+                              );
+                            })}
                       </div>
                     </div>
                   )}
@@ -1119,11 +1077,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                       {/* Options for checkbox */}
                       <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                        {component.config &&
-                          JSON.parse(
-                            component.config
-                          ).custom.optionsConfig.values.map((option, idx) => {
-                            const optionWidth = option.trim().length * 8 + 48;
+                        {component.config && component.config.optionsConfig &&
+                          component.config
+                            .optionsConfig.values.map((option, idx) => {
+                              const optionWidth = option.trim().length * 8 + 48;
 
                             return (
                               <div
@@ -1191,20 +1148,20 @@ const ConfigureInputsOutputs: React.FC = () => {
                           className="w-full md:w-[60%] h-8"
                           name={component.label}
                           min={
-                            JSON.parse(component.config).custom.sliderConfig
+                            component.config.sliderConfig
                               .interval.min
                           }
                           max={
-                            JSON.parse(component.config).custom.sliderConfig
+                            component.config.sliderConfig
                               .interval.max
                           }
                           step={
-                            JSON.parse(component.config).custom.sliderConfig
+                            component.config.sliderConfig
                               .step
                           }
                           value={
                             data[component.id] ||
-                            JSON.parse(component.config).custom.sliderConfig
+                            component.config.sliderConfig
                               .value
                           }
                           onChange={(e) =>
@@ -1213,7 +1170,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                         />
                         <span className="font-semibold">
                           {data[component.id] ||
-                            JSON.parse(component.config).custom.sliderConfig
+                            component.config.sliderConfig
                               .value}
                         </span>
                       </div>

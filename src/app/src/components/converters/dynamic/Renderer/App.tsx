@@ -122,7 +122,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
 
   const switchToSupportedNetwork = async () => {
     const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
-  
+
     const formatChainId = (chainId) => {
       if (typeof chainId === 'number') {
         return `0x${chainId.toString(16)}`;
@@ -131,12 +131,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       }
       return chainId;
     };
-  
+
     const validateNetworkParams = (network) => {
       // console.log('validateNetworkParams', network.config.rpcUrl.length)
       return network.config.chainId && network.config.rpcUrl && network.config.rpcUrl.length > 0;
     };
-  
+
     const addAndSwitchNetwork = async (supportedNetwork) => {
       if (!validateNetworkParams(supportedNetwork)) {
         console.error('Missing required network parameters:', supportedNetwork);
@@ -144,7 +144,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         setAlertOpen(true);
         return;
       }
-  
+
       const chainId = formatChainId(supportedNetwork.config.chainId);
       // console.log(chainId);
       // console.log(typeof chainId);
@@ -166,7 +166,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         setAlertOpen(true);
       }
     };
-  
+
     const switchNetwork = async (supportedNetwork) => {
       if (!supportedNetwork.config.chainId) {
         console.error('Missing required network parameter: chainId', supportedNetwork);
@@ -174,7 +174,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         setAlertOpen(true);
         return;
       }
-  
+
       const chainId = formatChainId(supportedNetwork.config.chainId);
       // console.log(chainId);
       // console.log(typeof chainId);
@@ -185,7 +185,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         });
         setAlertOpen(false);
         setNetworkStatus(`Connected to ${supportedNetwork.type}`);
-      } catch (switchError:any) {
+      } catch (switchError: any) {
         console.error('Error switching network:', switchError);
         if (switchError.code === 4902) {
           await addAndSwitchNetwork(supportedNetwork);
@@ -195,7 +195,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
         }
       }
     };
-  
+
     if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
       // console.log(supportedNetworks);
       await switchNetwork(supportedNetworks[0]);
@@ -329,11 +329,11 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                         return (
                           <pre
                             className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto border border-gray-300 rounded-lg"
-                          // style={{
-                          //   ...(component.config && typeof component.config === 'string'
-                          //     ? JSON.parse(component.config).styles
-                          //     : {}),
-                          // }}
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
                           >
                             {data[component.id]
                               ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
@@ -349,8 +349,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                               key={`graph-${component.id}`}
                               output={data[component.id]}
                               configurations={
-                                JSON.parse(component.config).custom
-                                  .graphConfig
+                                component.config.graphConfig
                               }
                               graphId={`graph-container-${component.id}`}
                             />
@@ -370,9 +369,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                   <input
                     className="w-full px-4  p-2 mt-1 border bg-slate-200 border-gray-300 rounded focus:outline-none"
                     style={{
-                      ...(component.config &&
-                        typeof component.config === "string"
-                        ? JSON.parse(component.config).styles
+                      ...(component.config && typeof component.config.styles === 'object'
+                        ? component.config.styles
                         : {}),
                     }}
                     type={component.type}
@@ -387,9 +385,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                 (component.type === "json") && (
                   <div
                     style={{
-                      ...(component.config &&
-                        typeof component.config === "string"
-                        ? JSON.parse(component.config).styles
+                      ...(component.config && typeof component.config.styles === 'object'
+                        ? component.config.styles
                         : {}),
                     }}
                     id={component.id}
@@ -403,15 +400,14 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
               {component.type === "swap" && (
                 <div
                   style={{
-                    ...(component.config &&
-                      typeof component.config === "string"
-                      ? JSON.parse(component.config).styles
+                    ...(component.config && typeof component.config.styles === 'object'
+                      ? component.config.styles
                       : {}),
                   }}
                 >
                   <Swap
                     configurations={
-                      JSON.parse(component.config).custom.swapConfig
+                      component.config.swapConfig
                     }
                     onSwapChange={(swapData) =>
                       handleInputChange(component.id, swapData)
@@ -428,110 +424,104 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                     handleInputChange(component.id, e.target.value)
                   }
                   style={{
-                    ...(component.config &&
-                      typeof component.config === "string"
-                      ? JSON.parse(component.config).styles
+                    ...(component.config && typeof component.config.styles === 'object'
+                      ? component.config.styles
                       : {}),
                   }}
                 >
-                  {component.config &&
-                    JSON.parse(
-                      component.config
-                    ).custom.optionsConfig.values.map((option, idx) => (
-                      <option key={idx} value={option.trim()}>
-                        {option.trim()}
-                      </option>
-                    ))}
+                  {component.config && component.config.optionsConfig && component.config.optionsConfig.values.map((option, idx) => (
+                    <option key={idx} value={option.trim()}>
+                      {option.trim()}
+                    </option>
+                  ))}
                 </select>
               )}
               {component.type === "radio" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                  {component.config &&
-                    JSON.parse(
-                      component.config
-                    ).custom.optionsConfig.values.map((option, idx) => {
-                      const optionWidth = option.trim().length * 8 + 48;
+                  {component.config && component.config.optionsConfig &&
+                    component.config
+                      .optionsConfig.values.map((option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
 
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                            } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
-                        >
-                          <input
-                            type="radio"
-                            id={`${component.id}_${idx}`}
-                            name={component.id}
-                            value={option.trim()}
-                            checked={data[component.id] === option}
-                            onChange={(e) =>
-                              handleInputChange(component.id, e.target.value)
-                            }
-                            className="mr-2 absolute"
-                            style={{
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                            }}
-                          />
-                          <label
-                            htmlFor={`${component.id}_${idx}`}
-                            className="whitespace-nowrap"
-                            style={{ marginLeft: "1.5rem" }}
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                              } h-7 md:w-[12.4rem] lg:w-[15rem] xl:w-[14.1rem] relative`}
                           >
-                            {option.trim()}
-                          </label>
-                        </div>
-                      );
-                    })}
+                            <input
+                              type="radio"
+                              id={`${component.id}_${idx}`}
+                              name={component.id}
+                              value={option.trim()}
+                              checked={data[component.id] === option}
+                              onChange={(e) =>
+                                handleInputChange(component.id, e.target.value)
+                              }
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      })}
                 </div>
               )}
               {component.type === "checkbox" && (
                 <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                  {component.config &&
-                    JSON.parse(
-                      component.config
-                    ).custom.optionsConfig.values.map((option, idx) => {
-                      const optionWidth = option.trim().length * 8 + 48;
+                  {component.config && component.config.optionsConfig &&
+                    component.config
+                      .optionsConfig.values.map((option, idx) => {
+                        const optionWidth = option.trim().length * 8 + 48;
 
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
-                            } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                        >
-                          <input
-                            type="checkbox"
-                            id={`${component.id}_${idx}`}
-                            checked={
-                              data[component.id] &&
-                              data[component.id].includes(option)
-                            }
-                            onChange={(e) => {
-                              const isChecked = e.target.checked;
-                              const currentValue = data[component.id] || [];
-                              const updatedValue = isChecked
-                                ? [...currentValue, option]
-                                : currentValue.filter(
-                                  (item) => item !== option
-                                );
-                              handleInputChange(component.id, updatedValue);
-                            }}
-                            className="mr-2 absolute"
-                            style={{
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                            }}
-                          />
-                          <label
-                            htmlFor={`${component.id}_${idx}`}
-                            className="whitespace-nowrap"
-                            style={{ marginLeft: "1.5rem" }}
+                        return (
+                          <div
+                            key={idx}
+                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200 ? "overflow-x-auto md:h-8" : ""
+                              } h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                           >
-                            {option.trim()}
-                          </label>
-                        </div>
-                      );
-                    })}
+                            <input
+                              type="checkbox"
+                              id={`${component.id}_${idx}`}
+                              checked={
+                                data[component.id] &&
+                                data[component.id].includes(option)
+                              }
+                              onChange={(e) => {
+                                const isChecked = e.target.checked;
+                                const currentValue = data[component.id] || [];
+                                const updatedValue = isChecked
+                                  ? [...currentValue, option]
+                                  : currentValue.filter(
+                                    (item) => item !== option
+                                  );
+                                handleInputChange(component.id, updatedValue);
+                              }}
+                              className="mr-2 absolute"
+                              style={{
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                              }}
+                            />
+                            <label
+                              htmlFor={`${component.id}_${idx}`}
+                              className="whitespace-nowrap"
+                              style={{ marginLeft: "1.5rem" }}
+                            >
+                              {option.trim()}
+                            </label>
+                          </div>
+                        );
+                      })}
                 </div>
               )}
               {component.type === "slider" && (
@@ -542,34 +532,29 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                     className="w-full md:w-[60%] h-8"
                     name={component.label}
                     min={
-                      JSON.parse(component.config).custom.sliderConfig
+                      component.config.sliderConfig
                         .interval.min
                     }
                     max={
-                      JSON.parse(component.config).custom.sliderConfig
+                      component.config.sliderConfig
                         .interval.max
                     }
                     step={
-                      JSON.parse(component.config).custom.sliderConfig
+                      component.config.sliderConfig
                         .step
                     }
                     value={
                       data[component.id] ||
-                      JSON.parse(component.config).custom.sliderConfig
+                      component.config.sliderConfig
                         .value
                     }
                     onChange={(e) =>
                       handleInputChange(component.id, e.target.value)
                     }
-                  // style={{
-                  //   ...(component.config && typeof component.config === 'string'
-                  //     ? JSON.parse(component.config).styles
-                  //     : {}),
-                  // }}
                   />
                   <span className="font-semibold">
                     {data[component.id] ||
-                      JSON.parse(component.config).custom.sliderConfig
+                      component.config.sliderConfig
                         .value}
                   </span>
                 </div>
@@ -578,7 +563,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                 <div>
                   <Wallet
                     configurations={
-                      // JSON.parse(component.config).custom.walletConfig
                       loadedData.networkDetails || loadedData.network_details
                     }
                     onSelectAddress={(address) =>
@@ -601,9 +585,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
                 <button
                   className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
                   style={{
-                    ...(component.config &&
-                      typeof component.config === "string"
-                      ? JSON.parse(component.config).styles
+                    ...(component.config && typeof component.config.styles === 'object'
+                      ? component.config.styles
                       : {}),
                   }}
                   id={component.id}
