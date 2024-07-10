@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { BASE_API_URL } from "~/components/constants";
 import { ethers } from 'ethers';
 import Web3 from "web3";
+// import { SigningStargateClient } from "@cosmjs/stargate";
+import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
+import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
@@ -40,6 +43,14 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const [networkName, setNetworkName] = useState('');
   const [chainId, setChainId] = useState('');
   const [networkStatus, setNetworkStatus] = useState<string>('');
+  const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
+
+  const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+  const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
+  // console.log(supportedNetworks);
+  // console.log("supportedNetworks type:", typeof supportedNetworks);
+  // console.log(supportedNetworks.config.rpcUrl);
+  console.log(rpcUrls);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +61,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       } else {
         try {
           setLoading(true);
-          // const response = await fetch(`${BASE_API_URL}/dynamic-component/all`);
           const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
           const data = await response.json();
           setLoadedData(data);
@@ -77,8 +87,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
           setNetworkName(network.name);
           setChainId(network.chainId.toString());
 
-          const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
-          console.log("supportedNetworks type:", typeof supportedNetworks);
+          // const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+          // console.log("supportedNetworks type:", typeof supportedNetworks);
 
           let isSupported = false;
           // console.log("isSupported1:", isSupported);
@@ -121,7 +131,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   };
 
   const switchToSupportedNetwork = async () => {
-    const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+    // const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
 
     const formatChainId = (chainId) => {
       if (typeof chainId === 'number') {
@@ -133,7 +143,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     };
 
     const validateNetworkParams = (network) => {
-      // console.log('validateNetworkParams', network.config.rpcUrl.length)
       return network.config.chainId && network.config.rpcUrl && network.config.rpcUrl.length > 0;
     };
 
@@ -146,8 +155,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       }
 
       const chainId = formatChainId(supportedNetwork.config.chainId);
-      // console.log(chainId);
-      // console.log(typeof chainId);
       try {
         await window.ethereum.request({
           method: 'wallet_addEthereumChain',
@@ -176,8 +183,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       }
 
       const chainId = formatChainId(supportedNetwork.config.chainId);
-      // console.log(chainId);
-      // console.log(typeof chainId);
       try {
         await window.ethereum.request({
           method: 'wallet_switchEthereumChain',
@@ -210,6 +215,22 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   };
 
   useEffect(() => {
+    const initializeCosmosClient = async () => {
+      if (rpcUrls) {
+        try {
+          const wallet = await DirectSecp256k1HdWallet.fromMnemonic("mnemonic here");
+          const client = await SigningStargateClient.connectWithSigner(rpcUrls, wallet);
+          setCosmosClient(client);
+        } catch (error) {
+          console.error("Error initializing Cosmos client:", error);
+        }
+      }
+    };
+
+    initializeCosmosClient();
+  }, [rpcUrls]);
+
+  useEffect(() => {
     addNetwork();
     // console.log(networkName);
     // console.log(typeof networkName);
@@ -228,6 +249,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const mcLib = {
     web3: web3,
     injectedContracts: injectedContracts,
+    cosmosClient: cosmosClient,
   };
   // console.log(mcLib);
 
