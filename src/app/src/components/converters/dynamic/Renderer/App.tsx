@@ -214,12 +214,17 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     }
   };
 
-  useEffect(() => {
     const initializeCosmosClient = async () => {
       if (rpcUrls) {
         try {
-          const wallet = await DirectSecp256k1HdWallet.fromMnemonic("mnemonic here");
-          const client = await SigningStargateClient.connectWithSigner(rpcUrls, wallet);
+          if (!window.keplr) {
+            throw new Error("Keplr extension is not installed");
+          }
+
+          await window.keplr.enable("cosmoshub-4");
+          const offlineSigner = window.getOfflineSigner("cosmoshub-4");
+          const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
+
           setCosmosClient(client);
         } catch (error) {
           console.error("Error initializing Cosmos client:", error);
@@ -227,11 +232,9 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
       }
     };
 
-    initializeCosmosClient();
-  }, [rpcUrls]);
-
   useEffect(() => {
     addNetwork();
+    initializeCosmosClient();
     // console.log(networkName);
     // console.log(typeof networkName);
     // console.log(chainId);
