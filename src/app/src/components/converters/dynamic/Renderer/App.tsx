@@ -45,7 +45,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
 
   const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+  const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
+  const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
+  // console.log(networkType);
+  // console.log(rpcUrls);
+  // console.log(chainIds);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -199,23 +204,26 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     }
   };
 
-    const initializeCosmosClient = async () => {
-      if (rpcUrls) {
-        try {
-          if (!window.keplr) {
-            throw new Error("Keplr extension is not installed");
-          }
+  const initializeCosmosClient = async () => {
+    if (rpcUrls) {
+      try {
+        let network = networkType || "cosmoshub-4";
+        const chainId = chainIds || "cosmoshub-4";
 
-          await window.keplr.enable("cosmoshub-4");
-          const offlineSigner = window.getOfflineSigner("cosmoshub-4");
-          const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
-
-          setCosmosClient(client);
-        } catch (error) {
-          console.error("Error initializing Cosmos client:", error);
+        if (!window.keplr) {
+          throw new Error("Keplr extension is not installed");
         }
+
+        await window.keplr.enable(network);
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
+
+        setCosmosClient(client);
+      } catch (error) {
+        console.error("Error initializing Cosmos client:", error);
       }
-    };
+    }
+  };
 
   useEffect(() => {
     addNetwork();

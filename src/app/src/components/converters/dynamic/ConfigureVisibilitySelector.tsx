@@ -525,66 +525,6 @@ const ConfigureVisibilitySelector: React.FC = () => {
                 <div className="text-center">
                   <label className="text-[#727679] font-semibold text-lg xl:text-xl underline underline-offset-2">Configure Contract Details</label>
                 </div>
-                {/* <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
-                      Network Type
-                    </label>
-                    <select
-                      id="networkType"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      value={networkDetails.type}
-                      onChange={handleNetworkTypeChange}
-                    >
-                      <option value="ethereum">Ethereum</option>
-                      <option value="mina">Mina</option>
-                      <option value="keplr">Keplr</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="rpcUrl" className="w-full md:w-28 flex-shrink-0">
-                      RPC URL
-                    </label>
-                    <input
-                      type="text"
-                      id="rpcUrl"
-                      name="rpcUrl"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter RPC URL"
-                      value={networkDetails.config.rpcUrl}
-                      onChange={handleNetworkChange}
-                    />
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="chainId" className="w-full md:w-28 flex-shrink-0">
-                      Chain ID
-                    </label>
-                    <input
-                      type="text"
-                      id="chainId"
-                      name="chainId"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter Chain ID"
-                      value={networkDetails.config.chainId}
-                      onChange={handleNetworkChange}
-                    />
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="exploreUrl" className="w-full md:w-28 flex-shrink-0">
-                      Explore URL
-                    </label>
-                    <input
-                      type="text"
-                      id="exploreUrl"
-                      name="exploreUrl"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter Explorer URL (optional)"
-                      value={networkDetails.config.exploreUrl}
-                      onChange={handleNetworkChange}
-                    />
-                  </div>
-                </div> */}
                 {Object.keys(selectedContracts).filter(contract => selectedContracts[contract]).map((contract, index) => (
                   <div key={contract} className="">
                     <label className="text-gray-700 text-lg xl:text-xl">{contract}:</label>
@@ -642,6 +582,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
                       <option value="ethereum">Ethereum</option>
                       <option value="mina">Mina</option>
                       <option value="keplr">Keplr</option>
+                      <option value="cosmoshub-4">Cosmoshub-4</option>
                     </select>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
