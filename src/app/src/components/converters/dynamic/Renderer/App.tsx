@@ -36,7 +36,6 @@ interface Props {
 }
 
 const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActionPage, appId }) => {
-  // console.log(appId);
   const [loading, setLoading] = useState(false);
   const [loadedData, setLoadedData] = useState<LoadedData>({});
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
@@ -47,10 +46,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
 
   const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
-  // console.log(supportedNetworks);
-  // console.log("supportedNetworks type:", typeof supportedNetworks);
-  // console.log(supportedNetworks.config.rpcUrl);
-  console.log(rpcUrls);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,24 +82,18 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
           setNetworkName(network.name);
           setChainId(network.chainId.toString());
 
-          // const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
-          // console.log("supportedNetworks type:", typeof supportedNetworks);
-
           let isSupported = false;
-          // console.log("isSupported1:", isSupported);
 
           if (Array.isArray(supportedNetworks)) {
             for (const supportedNetwork of supportedNetworks) {
               if (supportedNetwork.config.chainId === network.chainId.toString()) {
                 isSupported = true;
-                // console.log("isSupported2:", isSupported);
                 break;
               }
             }
           } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
             if (supportedNetworks.config.chainId === network.chainId.toString()) {
               isSupported = true;
-              // console.log("isSupported3:", isSupported);
             }
           }
 
@@ -131,8 +120,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   };
 
   const switchToSupportedNetwork = async () => {
-    // const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
-
     const formatChainId = (chainId) => {
       if (typeof chainId === 'number') {
         return `0x${chainId.toString(16)}`;
@@ -202,10 +189,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     };
 
     if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
-      // console.log(supportedNetworks);
       await switchNetwork(supportedNetworks[0]);
     } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
-      // console.log(supportedNetworks);
       await switchNetwork(supportedNetworks);
     } else {
       console.error('No supported networks available.');
@@ -254,7 +239,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
     injectedContracts: injectedContracts,
     cosmosClient: cosmosClient,
   };
-  // console.log(mcLib);
+  console.log(mcLib);
 
   useEffect(() => {
     console.log(loadedData);
