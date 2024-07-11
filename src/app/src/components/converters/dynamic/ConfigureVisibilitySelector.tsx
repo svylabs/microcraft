@@ -50,7 +50,22 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [instances, setInstances] = useState<ContractInstance[]>([]);
   // const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
   const [contractDetails, setContractDetails] = useState<{ name: string, address: string, abi: any[] }[]>([]);
-  const [networkDetails, setNetworkDetails] = useState({
+  // const [networkDetails, setNetworkDetails] = useState({
+  //   type: "ethereum",
+  //   config: {
+  //     rpcUrl: "",
+  //     chainId: "",
+  //     exploreUrl: "",
+  //   },
+  // });
+  const [networkDetails, setNetworkDetails] = useState<{
+    type: string;
+    config: {
+      rpcUrl: string;
+      chainId: string;
+      exploreUrl: string;
+    };
+  }>({
     type: "ethereum",
     config: {
       rpcUrl: "",
@@ -249,33 +264,36 @@ const ConfigureVisibilitySelector: React.FC = () => {
     }));
   };
 
-  const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setNetworkDetails(prevDetails => ({
-      ...prevDetails,
-      config: {
-        ...prevDetails.config,
-        [name]: value,
-      },
-    }));
-  };
-
-  const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { value } = e.target;
-    setNetworkDetails(prevDetails => ({
-      ...prevDetails,
-      type: value,
-    }));
-  };
-
-  // const handleAddressChange = (contractName: string, address: string) => {
-  //   const abi = contractGroup.contracts[0]?.versions[0]?.properties?.abi || [];
-  //   setContractDetails(prevDetails => {
-  //     const newDetails = prevDetails.filter(contract => contract.name !== contractName);
-  //     newDetails.push({ name: contractName, address, abi });
-  //     return newDetails;
-  //   });
+  // const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   const { name, value } = e.target;
+  //   setNetworkDetails(prevDetails => ({
+  //     ...prevDetails,
+  //     config: {
+  //       ...prevDetails.config,
+  //       [name]: value,
+  //     },
+  //   }));
   // };
+
+  // const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const { value } = e.target;
+  //   setNetworkDetails(prevDetails => ({
+  //     ...prevDetails,
+  //     type: value,
+  //   }));
+  // };
+
+  const handleNetworkChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    try {
+      const parsedConfig = JSON.parse(value);
+      setNetworkDetails(parsedConfig);
+    } catch (error) {
+      toast.error("Invalid JSON format. Please provide valid JSON.");
+    }
+  };
+
+  const networkConfigJson = JSON.stringify(networkDetails, null, 2);
 
   const handleAddressChange = (contractName: string, address: string) => {
     const contractGroup = contractGroupsData.find(group => {
@@ -569,7 +587,14 @@ const ConfigureVisibilitySelector: React.FC = () => {
 
                 <div className="flex flex-col gap-2 mt-2">
                   <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
+                  <textarea
+          className="flex-1 bg-gray-900 text-white outline-none"
+          rows={10}
+          value={networkConfigJson}
+          onChange={handleNetworkChange}
+          placeholder="Enter network configuration JSON"
+        />
+                  {/* <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
                     <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
                       Network Type
                     </label>
@@ -626,7 +651,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
                       value={networkDetails.config.exploreUrl}
                       onChange={handleNetworkChange}
                     />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             )}
