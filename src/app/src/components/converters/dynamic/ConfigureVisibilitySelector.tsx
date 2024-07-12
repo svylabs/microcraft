@@ -65,6 +65,8 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [localConfig, setLocalConfig] = useState("");
   const debouncedConfig = useDebounce(localConfig, 2000);
   const networkConfigJson = JSON.stringify(networkDetails, null, 2);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const numbersRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (privacy === "private") {
@@ -316,6 +318,36 @@ const ConfigureVisibilitySelector: React.FC = () => {
       return newDetails;
     });
   };
+
+  const updateTextareaNumber = () => {
+    const textarea = textareaRef.current;
+    const numbers = numbersRef.current;
+
+    const updateLineNumbers = () => {
+      if (textarea && numbers) {
+        const lines = textarea.value.split("\n").length;
+        numbers.innerHTML = Array.from(
+          { length: lines },
+          (_, index) => index + 1
+        ).join("<br>");
+      }
+    };
+
+    if (textarea) {
+      updateLineNumbers();
+      textarea.addEventListener("input", updateLineNumbers);
+    }
+
+    return () => {
+      if (textarea) {
+        textarea.removeEventListener("input", updateLineNumbers);
+      }
+    };
+  };
+
+  useEffect(() => {
+    updateTextareaNumber();
+  });
 
   console.log("contractGroupsData:- ", contractGroupsData)
   console.log("contractDetails:- ", contractDetails)
@@ -576,13 +608,27 @@ const ConfigureVisibilitySelector: React.FC = () => {
 
                 <div className="flex flex-col gap-2 mt-2">
                   <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
-                  <textarea
+                  {/* <textarea
                     className="flex-1 bg-gray-900 text-white outline-none"
                     rows={10}
                     value={localConfig || networkConfigJson}
                     onChange={handleNetworkChange}
                     placeholder="Enter network configuration JSON"
-                  />
+                  /> */}
+                  <div className="flex bg-gray-900 rounded-md p-2">
+                    <div
+                      className="px-2 text-gray-500"
+                      ref={numbersRef}
+                      style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                    ></div>
+                    <textarea
+                      ref={textareaRef}
+                      className="flex-1 bg-gray-900 text-white outline-none"
+                      style={{ overflowY: "hidden" }}
+                      value={localConfig || networkConfigJson}
+                      onChange={handleNetworkChange}
+                    ></textarea>
+                  </div>
                   {/* <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
                     <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
                       Network Type
