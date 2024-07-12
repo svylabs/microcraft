@@ -34,6 +34,15 @@ interface ContractInstance {
   }[];
 }
 
+interface NetworkDetails {
+  type: string;
+  config: {
+    rpcUrl: string;
+    chainId: string;
+    exploreUrl: string;
+  };
+}
+
 const ConfigureVisibilitySelector: React.FC = () => {
   const [privacy, setPrivacy] = useState("");
   const [teams, setTeams] = useState<Team[]>([]);
@@ -50,10 +59,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
   const [contractDetails, setContractDetails] = useState<{ name: string, address: string, abi: any[] }[]>([]);
-  const [networkDetails, setNetworkDetails] = useState<{
-    type: string;
-    config: { [key: string]: string };
-  }>({
+  const [networkDetails, setNetworkDetails] = useState<NetworkDetails>({
     type: "ethereum",
     config: {
       rpcUrl: "",
@@ -257,24 +263,13 @@ const ConfigureVisibilitySelector: React.FC = () => {
     }));
   };
 
-  // const handleNetworkChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  //   const { name, value } = e.target;
-  //   setNetworkDetails(prevDetails => ({
-  //     ...prevDetails,
-  //     config: {
-  //       ...prevDetails.config,
-  //       [name]: value,
-  //     },
-  //   }));
-  // };
-
-  // const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   const { value } = e.target;
-  //   setNetworkDetails(prevDetails => ({
-  //     ...prevDetails,
-  //     type: value,
-  //   }));
-  // };
+  const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target;
+    setNetworkDetails((prevDetails) => ({
+      ...prevDetails,
+      type: value,
+    }));
+  };
 
   const handleNetworkChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
@@ -608,13 +603,17 @@ const ConfigureVisibilitySelector: React.FC = () => {
 
                 <div className="flex flex-col gap-2 mt-2">
                   <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
-                  {/* <textarea
-                    className="flex-1 bg-gray-900 text-white outline-none"
-                    rows={10}
-                    value={localConfig || networkConfigJson}
-                    onChange={handleNetworkChange}
-                    placeholder="Enter network configuration JSON"
-                  /> */}
+                  <select
+                    id="networkType"
+                    className="flex-grow p-2 border border-gray-300 rounded"
+                    value={networkDetails.type}
+                    onChange={handleNetworkTypeChange}
+                  >
+                    <option value="ethereum">Ethereum</option>
+                    <option value="mina">Mina</option>
+                    <option value="keplr">Keplr</option>
+                    <option value="cosmoshub-4">Cosmoshub-4</option>
+                  </select>
                   <div className="flex bg-gray-900 rounded-md p-2">
                     <div
                       className="px-2 text-gray-500"
@@ -629,64 +628,6 @@ const ConfigureVisibilitySelector: React.FC = () => {
                       onChange={handleNetworkChange}
                     ></textarea>
                   </div>
-                  {/* <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
-                      Network Type
-                    </label>
-                    <select
-                      id="networkType"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      value={networkDetails.type}
-                      onChange={handleNetworkTypeChange}
-                    >
-                      <option value="ethereum">Ethereum</option>
-                      <option value="mina">Mina</option>
-                      <option value="keplr">Keplr</option>
-                      <option value="cosmoshub-4">Cosmoshub-4</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="rpcUrl" className="w-full md:w-28 flex-shrink-0">
-                      RPC URL
-                    </label>
-                    <input
-                      type="text"
-                      id="rpcUrl"
-                      name="rpcUrl"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter RPC URL"
-                      value={networkDetails.config.rpcUrl}
-                      onChange={handleNetworkChange}
-                    />
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="chainId" className="w-full md:w-28 flex-shrink-0">
-                      Chain ID
-                    </label>
-                    <input
-                      type="text"
-                      id="chainId"
-                      name="chainId"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter Chain ID"
-                      value={networkDetails.config.chainId}
-                      onChange={handleNetworkChange}
-                    />
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
-                    <label htmlFor="exploreUrl" className="w-full md:w-28 flex-shrink-0">
-                      Explore URL
-                    </label>
-                    <input
-                      type="text"
-                      id="exploreUrl"
-                      name="exploreUrl"
-                      className="flex-grow p-2 border border-gray-300 rounded"
-                      placeholder="Enter Explorer URL (optional)"
-                      value={networkDetails.config.exploreUrl}
-                      onChange={handleNetworkChange}
-                    />
-                  </div> */}
                 </div>
               </div>
             )}
