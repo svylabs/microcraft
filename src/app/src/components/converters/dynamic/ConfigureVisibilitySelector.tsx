@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
 import AppVisibilitySelector from "../../ManageTeams/ManageTeamsSelector";
+import useDebounce from './Renderer/useDebounce';
 
 interface Team {
   id: string;
@@ -48,23 +49,10 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [contractGroupsFetched, setContractGroupsFetched] = useState(false);
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
-  // const [contractDetails, setContractDetails] = useState<{ name: string, address: string }[]>([]);
   const [contractDetails, setContractDetails] = useState<{ name: string, address: string, abi: any[] }[]>([]);
-  // const [networkDetails, setNetworkDetails] = useState({
-  //   type: "ethereum",
-  //   config: {
-  //     rpcUrl: "",
-  //     chainId: "",
-  //     exploreUrl: "",
-  //   },
-  // });
   const [networkDetails, setNetworkDetails] = useState<{
     type: string;
-    config: {
-      rpcUrl: string;
-      chainId: string;
-      exploreUrl: string;
-    };
+    config: { [key: string]: string };
   }>({
     type: "ethereum",
     config: {
@@ -73,7 +61,10 @@ const ConfigureVisibilitySelector: React.FC = () => {
       exploreUrl: "",
     },
   });
-  // console.log("privacy:-> ", privacy);
+
+  const [localConfig, setLocalConfig] = useState("");
+  const debouncedConfig = useDebounce(localConfig, 2000);
+  const networkConfigJson = JSON.stringify(networkDetails, null, 2);
 
   useEffect(() => {
     if (privacy === "private") {
@@ -285,15 +276,19 @@ const ConfigureVisibilitySelector: React.FC = () => {
 
   const handleNetworkChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
-    try {
-      const parsedConfig = JSON.parse(value);
-      setNetworkDetails(parsedConfig);
-    } catch (error) {
-      toast.error("Invalid JSON format. Please provide valid JSON.");
-    }
+    setLocalConfig(value);
   };
 
-  const networkConfigJson = JSON.stringify(networkDetails, null, 2);
+  useEffect(() => {
+    if (debouncedConfig) {
+      try {
+        const parsedConfig = JSON.parse(debouncedConfig);
+        setNetworkDetails(parsedConfig);
+      } catch (error) {
+        toast.error("Invalid JSON format. Please provide valid JSON.");
+      }
+    }
+  }, [debouncedConfig]);
 
   const handleAddressChange = (contractName: string, address: string) => {
     const contractGroup = contractGroupsData.find(group => {
@@ -479,15 +474,11 @@ const ConfigureVisibilitySelector: React.FC = () => {
                       className="flex items-center mt-2"
                       title={group.description}
                     >
-                      {/* {console.group(group)}
-                        {console.group(group.owner)} */}
                       <input
                         type="checkbox"
                         id={`private-${group.name}-${index}`}
                         name={group.name}
                         value={`${group.owner}-${group.name}`}
-                        // checked={!!selectedContracts[group.name]}
-                        // onChange={() => handleContractSelection(group.name)}
                         checked={selectedContracts[`${group.name}`] || false}
                         onChange={() => handleContractSelection(`${group.name}`)}
                       />
@@ -521,8 +512,6 @@ const ConfigureVisibilitySelector: React.FC = () => {
                         id={`public-${group.name}-${index}`}
                         name={group.name}
                         value={`${group.owner}-${group.name}`}
-                        // checked={!!selectedContracts[group.name]}
-                        // onChange={() => handleContractSelection(group.name)}
                         checked={selectedContracts[`${group.name}`] || false}
                         onChange={() => handleContractSelection(`${group.name}`)}
                       />
@@ -588,12 +577,12 @@ const ConfigureVisibilitySelector: React.FC = () => {
                 <div className="flex flex-col gap-2 mt-2">
                   <label className="text-gray-700 text-lg xl:text-xl">Network Settings:</label>
                   <textarea
-          className="flex-1 bg-gray-900 text-white outline-none"
-          rows={10}
-          value={networkConfigJson}
-          onChange={handleNetworkChange}
-          placeholder="Enter network configuration JSON"
-        />
+                    className="flex-1 bg-gray-900 text-white outline-none"
+                    rows={10}
+                    value={localConfig || networkConfigJson}
+                    onChange={handleNetworkChange}
+                    placeholder="Enter network configuration JSON"
+                  />
                   {/* <div className="flex flex-col md:flex-row md:items-center justify-center gap-0.5 md:gap-5">
                     <label htmlFor="networkType" className="w-full md:w-28 flex-shrink-0">
                       Network Type
