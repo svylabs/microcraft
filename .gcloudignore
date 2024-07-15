@@ -16,3 +16,4 @@ datastore/
 
 # Node.js dependencies:
 node_modules/
+samplecontracts/

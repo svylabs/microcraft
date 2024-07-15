@@ -83,35 +83,44 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
       console.error("Error during Google login:", error);
     }
   };
+  console.log(userData)
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="bg-white rounded-md p-4 md:p-8 w-full max-w-md"
+        className="bg-white rounded-md p-4 md:p-8 w-full max-w-md relative"
+      // relative
       >
         <span
-          className="absolute font-bold top-0 right-0 cursor-pointer bg-slate-500 text-2xl rounded-full  pb-1 px-2.5 m-1 transition duration-300 hover:bg-gray-700 hover:text-white hover:scale-110"
+          className="absolute font-bold top-0 right-0 cursor-pointer bg-slate-300 text-2xl rounded-full  pb-1 px-2.5 m-1 transition duration-300 hover:bg-gray-500 hover:text-white hover:scale-110"
           onClick={closeModal}
         >
           &times;
         </span>
 
         {userData ? (
-          <div className="flex flex-col gap-4 text-center">
-            <h2 className="text-2xl font-bold ">Welcome, {userData.login}</h2>
-            <p className="text-gray-600 ">Created on: {userData.created_on}</p>
-            <img
-              className="mx-auto w-32 h-32 rounded-full object-cover "
-              src={userData.avatar_url}
-              alt="User Avatar"
-            />
-            <button
-              onClick={handleLogout}
-              className="mx-auto cursor-pointer bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md xl:text-xl px-4 py-2 font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Log out
-            </button>
+          <div className="flex flex-col items-center bg-gray-100 rounded-md shadow-md py-5 overflow-hidden">
+            <div className="w-full h-24 bg-gradient-to-r from-purple-400 to-indigo-600 rounded-t-md"></div>
+            <div className="flex flex-col items-center gap-4 relative z-10 -mt-16">
+              <img
+                className="w-32 h-32 rounded-full object-cover border-4 border-white"
+                src={userData.avatar_url}
+                alt="User Avatar"
+              />
+
+              <div className="flex flex-col gap-1 text-center text-gray-600">
+                <h2 className="text-lg">{`Welcome, ${userData.name}`}</h2>
+                <p className="text-lg text-gray-700 font-semibold">{userData.email}</p>
+                <p className="">Created on: {userData.created_on}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-gradient-to-r from-purple-400 to-indigo-600 text-white rounded-md px-4 py-2 font-semibold shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Log out
+              </button>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5 bg-gray-100 rounded-md shadow-md">
@@ -121,7 +130,7 @@ const LoginSignupModal = ({ closeModal }: { closeModal: () => void }) => {
 
             <div className="flex flex-col space-y-4">
               <a
-                href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}`}
+                href={`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=user:email`}
                 className="mx-auto md:mx-0 w-full"
               >
                 <button

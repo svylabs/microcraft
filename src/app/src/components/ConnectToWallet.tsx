@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MetaMaskLogo from "./photos/metamask-icon.svg";
 import ConnectWallet from "./photos/connect-wallet.svg";
 import AuroLogo from "./photos/auro-wallet.png";
+import KeplrLogo from "./photos/keplrWallet.png";
 
 interface WalletProps {}
 
@@ -12,6 +13,7 @@ declare global {
   interface Window {
     ethereum?: any;
     mina?: any;
+    // keplr?: any;
   }
 }
 
@@ -94,23 +96,47 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
     }
   };
 
+  const handleConnectToKeplrWallet = async () => {
+    try {
+      if (window.keplr) {
+        const chainId = "cosmoshub-4";
+        await window.keplr.enable(chainId);
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+        const account = accounts[0];
+        console.log("Keplr Wallet Account Address:", account.address);
+
+        toast.success("Successfully connected to Keplr Wallet", {
+          autoClose: 3000,
+        });
+
+        setShowWalletOptions(false);
+      } else {
+        alert("Please install Keplr Wallet.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to connect to Keplr Wallet. Please try again.");
+    }
+  };
+
   return (
-    <div ref={modalRef} className="z-50">
+    <div ref={modalRef}>
       <button
         onClick={handleConnectToWallet}
         className="common-button flex gap-3 text-lg items-center justify-center cursor-pointer"
-        title="Connect to Wallet"
+        title="Click to connect your wallet"
       >
         <img
           src={ConnectWallet}
           alt="MetaMask Logo"
           className="w-10 h-10 md:w-11 md:h-11 rounded-full p-1.5 bg-slate-100 hover:scale-110 shadow-lg "
         />
-        <span className="md:hidden">Connect to wallet</span>
+        <span>Connect to wallet</span>
       </button>
 
       {showWalletOptions && (
-        <div className="flex flex-col gap-3 p-2 lg:p-3 lg:px-5 absolute z-10 md:top-16 lg:top-20 right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="flex flex-col gap-3 p-2 lg:p-3 lg:px-5 absolute right-0 mr-3 md:mr-0 bg-white border border-gray-200 rounded-md shadow-lg">
           <button
             onClick={handleConnectToMetaMask}
             className="flex items-center cursor-pointer bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
@@ -132,6 +158,17 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
               className="w-6 h-6 mr-2"
             />{" "}
             Auro Wallet
+          </button>
+          <button
+            onClick={handleConnectToKeplrWallet}
+            className="flex items-center cursor-pointer bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+          >
+            <img
+              src={KeplrLogo}
+              alt="Keplr Wallet Logo"
+              className="w-6 h-6 mr-2"
+            />{" "}
+            Keplr Wallet
           </button>
         </div>
       )}

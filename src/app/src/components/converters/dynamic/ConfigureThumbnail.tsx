@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BASE_API_URL } from "~/components/constants";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import flower from "../../photos/flower.png";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
@@ -97,6 +99,11 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
   const saveClick = async () => {
     try {
+      if (!preferredImageURL) {
+        toast.error("Please select or upload an image.");
+        throw new Error("Please select or upload an image.");
+      }
+      
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
         credentials: "include",
         method: "POST",
@@ -107,8 +114,13 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           title: loadedData.title,
           description: loadedData.description,
           image_url: preferredImageURL, //selected image url
-          component_definition: JSON.stringify(components)
-         }),
+          component_definition: JSON.stringify(components),
+          privacy: loadedData.privacy,
+          teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
+          selected_contracts: loadedData.selectedContracts,
+          network_details: loadedData.networkDetails,
+          contract_details: loadedData.contractDetails,
+        }),
       });
 
       if (!response.ok) {
@@ -117,6 +129,17 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
 
       localStorage.removeItem("formData");
       localStorage.removeItem("components");
+
+      toast.success('Data saved successfully!', {
+        position: "bottom-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+
       setPopup(true);
       setTimeout(() => {
         setPopup(false);
@@ -132,47 +155,59 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
     window.location.href = "/app/new/preview";
   };
 
+  console.log(loadedData)
+
   return (
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
         <div className="p-1 md:p-4 bg-gray-100 rounded">
-          <div className="relative flex overflow-auto gap-8 border-b pb-5 items-center">
+          <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center">
             <Link to="/app/inbuilt/New-App" className="group">
-              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-                <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3.5 rounded-full font-bold">
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3 rounded-full font-bold">
                   1
                 </span>
                 Configure basic details
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[11rem] xl:w-[15rem] bg-[#31A05D]  opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] lg:w-[9rem] xl:w-[12.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <Link to="/app/new" className="group">
-              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
+            <Link to="/app/new/contract" className="group">
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
                   2
+                </span>
+                Configure Visibility
+                <img className="w-5 h-5" src={arrow} alt="arrow"></img>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+              </p>
+            </Link>
+            <Link to="/app/new/field" className="group">
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                  3
                 </span>
                 Configure layout
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[8rem] lg:w-[9rem] xl:w-[12rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[10.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
             <Link to="/app/new/preview" className="group">
-              <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
-                  3
+              <p className="flex gap-2 items-center text-[#414A53]">
+                <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                  4
                 </span>
                 Preview the app
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
-                <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] md:w-[7.2rem] lg:w-[8rem] xl:w-[11rem] 2xl:w-[11.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
+                <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[10.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <p className="flex gap-4 lg:gap-3 items-center text-[#414A53] lg:text-lg">
-              <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3.5 rounded-full font-bold">
-                4
+            <p className="flex gap-2 items-center text-[#414A53]">
+              <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
+                5
               </span>
-              Select Thumnail
-              <span className="absolute bottom-0 ml-1 h-[2px] w-[7.5rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D]"></span>
+              Publish the app
+              <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] xl:w-[10rem] bg-[#31A05D]"></span>
             </p>
           </div>
 
@@ -205,7 +240,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </div>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-blue font-bold">Upload Thumbnail :</span>
+            <span className="text-blue font-bold">Upload Thumbnail :</span>
           </p>
 
           <div className="flex justify-between">
@@ -248,7 +283,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
           </p>
 
           <p className="text-left py-3 text-[#727679] justify-between md:text-lg">
-              <span className="text-black font-bold text-xl">OR</span>
+            <span className="text-black font-bold text-xl">OR</span>
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col">
@@ -319,7 +354,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
         </div>
 
         {loading && <Loading />}
-        
+
         {popup && (
           <div className="popupThanks flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 md:w-[25rem] md:h-[20rem] lg:w-[30rem] xl:p-4 flex flex-col justify-center items-center">

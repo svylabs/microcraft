@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import "./Home.scss";
 import { FiTrash2 } from "react-icons/fi";
 import { BASE_API_URL } from "./constants";
-import ro from "./photos/metamask-fox-logo.png";
 
 interface Converter {
   id: string;
@@ -20,6 +19,8 @@ interface DynamicComponent {
   description: string;
   image_url: string;
   component_definition: any[];
+  privacy: string;
+  teamId: string;
 }
 
 const Home: React.FC = () => {
@@ -28,8 +29,13 @@ const Home: React.FC = () => {
   const [dynamicComponents, setDynamicComponents] = useState<
     DynamicComponent[]
   >([]);
+  const [teams, setTeams] = useState<any[]>([]);
+  const [selectedPrivacy, setSelectedPrivacy] = useState("public");
+  console.log(dynamicComponents);
 
   useEffect(() => {
+    fetchTeams();
+
     const storedRecentTools = localStorage.getItem("recentTools");
     if (storedRecentTools) {
       setRecentTools(JSON.parse(storedRecentTools));
@@ -49,9 +55,44 @@ const Home: React.FC = () => {
       });
   }, []);
 
+  const fetchTeams = async () => {
+    try {
+      const response = await fetch(`${BASE_API_URL}/teams/list`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const teamsData = await response.json();
+        setTeams(teamsData);
+      } else {
+        console.error("Failed to fetch teams:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching teams:", error);
+    }
+  };
+
+  const handlePrivacyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPrivacy(event.target.value);
+  };
+
+  const filteredDynamicComponents = dynamicComponents.filter((component) => {
+    if (selectedPrivacy === "public") {
+      return component.privacy === "public";
+    } else {
+      return component.teamId === selectedPrivacy;
+    }
+  });
+
   const handleImageClick = (componentDefinition: any) => {
     navigate(
-      `/app/view/` + componentDefinition.id + "/" + componentDefinition.title.replaceAll(" ", "-")
+      `/app/view/` +
+        componentDefinition.id +
+        "/" +
+        componentDefinition.title.replaceAll(" ", "-")
     ),
       {
         state: { output: componentDefinition },
@@ -307,24 +348,24 @@ const Home: React.FC = () => {
     setCustomComponentCategory(category);
   };
 
-  // Filter custom components based on category
+  // Filter custom components based on category, privacy, and selected team
   let filteredCustomComponents: DynamicComponent[] = [];
   switch (customComponentCategory) {
     case "all":
-      filteredCustomComponents = dynamicComponents;
+      filteredCustomComponents = filteredDynamicComponents;
       break;
     case "pending":
-      filteredCustomComponents = dynamicComponents.filter(
+      filteredCustomComponents = filteredDynamicComponents.filter(
         (component) => component.approval_status === "pending"
       );
       break;
     case "approved":
-      filteredCustomComponents = dynamicComponents.filter(
+      filteredCustomComponents = filteredDynamicComponents.filter(
         (component) => component.approval_status === "approved"
       );
       break;
     default:
-      filteredCustomComponents = dynamicComponents;
+      filteredCustomComponents = filteredDynamicComponents;
       break;
   }
 
@@ -354,17 +395,17 @@ const Home: React.FC = () => {
   return (
     <>
       <div className="max-w-screen-xl mx-auto px-3 md:px-4 lg:px-8 flex-grow">
-        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 pb-3">
-          <input
+        <header className="sticky top-[4.75rem] md:top-[5rem] lg:top-[6.208rem] xl:top-[6.216rem] bg-white z-40 pt-3 md:pt-0 md:pb-3">
+          {/* <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
             placeholder="Describe your intent, eg: Swap USDT to ETH on Uniswap"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
-          />
+          /> */}
 
-          <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div>
-          <div className="hidden md:flex justify-center space-x-4 mb-1">
+          {/* <div className="md:hidden mb-4">{renderMobileCategoryDropdown()}</div> */}
+          <div className="hidden md:flex justify-center space-x-4 mb-">
             {categories.map((category) => (
               <button
                 key={category}
@@ -540,9 +581,34 @@ const Home: React.FC = () => {
               <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
                 Published apps
               </h2>
-              <div className="justify-center mb-2 text-lg md:text-xl">
-                <a href="/app/inbuilt/New-App" className="md:px-4 py-2 rounded bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-violet-500">Publish</a>
-                <a href="/app/inbuilt/Request an app" className="md:px-4 py-2 rounded bg-clip-text text-transparent  bg-gradient-to-r from-blue-500 to-violet-500">Request</a>
+              <div className="flex flex-wrap justify-between gap-3 md:gap-5 font-medium">
+                <select
+                  id="privacyFilter"
+                  value={selectedPrivacy}
+                  onChange={handlePrivacyChange}
+                  className="border border-gray-300 rounded px-2 py-1"
+                >
+                  <option value="public">Public</option>
+                  {teams.map((team) => (
+                    <option key={team.id} value={team.id}>
+                      {team.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex gap-3 text-lg">
+                  <a
+                    href="/app/inbuilt/New-App"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Create
+                  </a>
+                  <a
+                    href="/app/inbuilt/Request an app"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                  >
+                    Request
+                  </a>
+                </div>
               </div>
             </div>
             {renderCustomComponentCategories()}

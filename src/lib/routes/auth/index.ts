@@ -4,6 +4,8 @@ import axios from "axios";
 import { encode } from "url-safe-base64";
 import { Session } from "express-session";
 import { google } from "googleapis";
+import { generateApiKey } from 'generate-api-key';
+import { randomUUID } from "crypto";
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -40,8 +42,10 @@ interface User {
   name: string;
   login: string;
   id: number;
+  email?: string;
   avatar_url: string;
   created_on: string;
+  teams?: string[];
 }
 
 export interface CustomSession extends Session {
@@ -55,6 +59,13 @@ const addUserToSession = (req: Request, res: Response, user: User) => {
   session.userid = user.id;
 };
 
+const getUser = async (userid: number) => {
+  const datastore = getDatastore();
+  const key = datastore.key(["User", userid]);
+  const [user] = await datastore.get(key);
+  return user;
+};
+
 const addUserToDatastore = async (user: User) => {
   const kind = "User";
   const datastore = getDatastore();
@@ -62,33 +73,9 @@ const addUserToDatastore = async (user: User) => {
   const key = datastore.key([kind, user.id]);
   const entity = {
     key: key,
-    data: [
-      {
-        name: "name",
-        value: user.name,
-      },
-      {
-        name: "login",
-        value: user.login,
-      },
-      {
-        name: "id",
-        value: user.id,
-      },
-      {
-        name: "avatar_url",
-        value: user.avatar_url,
-      },
-      {
-        name: "created_on",
-        value: new Date().toISOString(),
-      },
-    ],
+    data: user,
   };
-  const [existing_user] = await datastore.get(key);
-  if (!existing_user) {
-    await datastore.save(entity);
-  }
+  await datastore.save(entity);
 };
 
 export const authenticatedUser = async (
@@ -96,11 +83,30 @@ export const authenticatedUser = async (
   res: Response,
   next: NextFunction
 ) => {
+  const datastore = getDatastore();
+  if (req.headers.authorization) {
+    // TODO: Implement proper token / api key validation here
+    const token = req.headers.authorization;
+    const tokenParts = token.split(" ");
+    const apiKey = tokenParts[1];
+    //const decoded = Buffer.from(token, "base64").toString("utf-8");
+    const query = datastore.createQuery("APIKey")
+                    .filter("api_key", "=", apiKey)
+                    .filter("active", "=", true);
+    const [keys] = await datastore.runQuery(query);
+    if (keys.length > 0 && keys[0].active) {
+      const key = keys[0];
+      const session = req.session as CustomSession;
+      session.userid = key.user_id;
+      const user = await getUser(key.user_id);
+      session.user = user;
+      return next();
+    }
+  }
   console.log(req.session);
   const session = req.session as CustomSession;
   if (session.userid !== undefined) {
     const userid = session.userid;
-    const datastore = getDatastore();
     const result = await datastore.get(datastore.key(["User", userid]));
     if (result[0]) {
       //(req as any).user = result[0];
@@ -145,6 +151,61 @@ githubRouter.get(
   }
 );
 
+
+githubRouter.post("/api-key/new", authenticatedUser, async (req: Request, res: Response) => {
+    const result = generateApiKey({
+      method: 'string',
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
+      length: 20
+    });
+    const datastore = getDatastore();
+    const session = req.session as CustomSession;
+    const id = randomUUID();
+    const key = datastore.key(["APIKey", id]);
+    const entity = {
+        key: key,
+        data: {
+            id: id,
+            api_key: result,
+            user_id: session.userid,
+            created_on: new Date().toISOString(),
+            active: true
+        }
+    };
+    await datastore.save(entity);
+    res.send({ api_key: result});
+});
+
+githubRouter.get("/api-key/list", authenticatedUser, async (req: Request, res: Response) => {
+    const datastore = getDatastore();
+    const session = req.session as CustomSession;
+    const query = datastore.createQuery("APIKey")
+                      .filter("user_id", "=", session.userid)
+                      .filter("active", "=", true);
+    const [results] = await datastore.runQuery(query);
+    res.send(results);
+});
+
+githubRouter.post("/api-key/deactivate", authenticatedUser, async (req: Request, res: Response) => {
+  const datastore = getDatastore();
+  const session = req.session as CustomSession;
+  const query = datastore.createQuery("APIKey").filter("id", "=", req.body.id);
+  const [result] = await datastore.runQuery(query);
+  if (result.length > 0) {
+    const key = result[0][datastore.KEY];
+    const entity = {
+      key: key,
+      data: {
+        ...result[0].data,
+        active: false
+      }
+    };
+    await datastore.update(entity);
+    res.send({ message: "API Key deactivated successfully"});
+  }
+  res.status(404).send({ message: "API Key not found"});
+});
+
 githubRouter.get("/github/callback", async (req, res, next) => {
   // The req.query object has the query params that were sent to this route.
   const requestToken = req.query.code;
@@ -164,18 +225,30 @@ githubRouter.get("/github/callback", async (req, res, next) => {
       Authorization: "bearer " + accessToken,
     },
   });
+  let emailData = await axios({
+    method: "get",
+    url: `https://api.github.com/user/emails`,
+    headers: {
+      Authorization: "bearer " + accessToken,
+    },
+  });
+  const email = emailData.data.find((e: any) => e.primary === true);
+  const existingUser = await getUser(userData.data.id);
   console.log("user data:-", userData.data);
   const userDetail = {
     name: userData.data.name,
     login: userData.data.login,
     id: userData.data.id,
+    email: email.email,
     avatar_url: userData.data.avatar_url,
-    created_on: new Date().toISOString(),
+    created_on: existingUser?.created_at || new Date().toISOString(),
+    teams: existingUser?.teams || [],
+    updated_at: new Date().toISOString()
   };
   console.log("user details:-", userDetail);
   try {
-    addUserToSession(req, res, userDetail);
     await addUserToDatastore(userDetail);
+    addUserToSession(req, res, userDetail as User);
     if (process.env.NODE_ENV === "development") {
         res.redirect("http://localhost:5173/");
     }

@@ -5,3 +5,5 @@ node_modules/
 **/dist/
 datastore/
 public/
+samplecontracts
+.vscode
