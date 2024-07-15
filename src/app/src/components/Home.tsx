@@ -399,7 +399,7 @@ const Home: React.FC = () => {
           {/* <input
             type="text"
             className="focus:outline-none border border-[#E2E3E8] rounded-lg p-3 md:mt-3 bg-[#F7F8FB] text-lg lg:text-xl placeholder-italic w-full mb-4"
-            placeholder="Discover apps to interact with your favorite protocols..."
+            placeholder="Describe your intent, eg: Swap USDT to ETH on Uniswap"
             value={searchQuery}
             onChange={(e) => handleSearch(e.target.value)}
           /> */}
@@ -577,9 +577,9 @@ const Home: React.FC = () => {
                   */}
 
           <div>
-            <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:gap-5 mb-4">
-              <h2 className="text-lg md:text-2xl font-semibold md:mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
-                Community published apps
+            <div className="flex full-width">
+              <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+                Published apps
               </h2>
               <div className="flex flex-wrap justify-between gap-3 md:gap-5 font-medium">
                 <select
