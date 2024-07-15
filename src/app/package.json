@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cosmjs/launchpad": "^0.27.1",
     "@cosmjs/stargate": "^0.32.4",
     "@emotion/react": "^11.10.5",
     "@fontsource/roboto": "^5.0.13",

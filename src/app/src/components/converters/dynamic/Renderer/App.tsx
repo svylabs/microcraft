@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { BASE_API_URL } from "~/components/constants";
 import { ethers } from 'ethers';
 import Web3 from "web3";
-// import { SigningStargateClient } from "@cosmjs/stargate";
-import { SigningStargateClient, StargateClient } from "@cosmjs/stargate";
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
+import { SigningStargateClient } from "@cosmjs/stargate";
+import { SigningCosmosClient } from "@cosmjs/launchpad";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
@@ -43,6 +42,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const [chainId, setChainId] = useState('');
   const [networkStatus, setNetworkStatus] = useState<string>('');
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
+  // const [cosmosClient, setCosmosClient] = useState<any>("");
 
   const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
   const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
@@ -207,18 +207,26 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const initializeCosmosClient = async () => {
     if (rpcUrls) {
       try {
-        let network = networkType || "cosmoshub-4";
+        // let network = networkType || "cosmoshub-4";
         const chainId = chainIds || "cosmoshub-4";
 
         if (!window.keplr) {
           throw new Error("Keplr extension is not installed");
         }
 
-        await window.keplr.enable(network);
+        // await window.keplr.enable(network);
+        await window.keplr.enable(chainId);
         const offlineSigner = window.getOfflineSigner(chainId);
         const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
+      //   const accounts = await offlineSigner.getAccounts();
+      //   const cosmJS = new SigningCosmosClient(
+      //     "https://lcd-cosmoshub.keplr.app/rest",
+      //     accounts[0].address,
+      //     offlineSigner,
+      // );
 
         setCosmosClient(client);
+        // setCosmosClient(cosmJS);
       } catch (error) {
         console.error("Error initializing Cosmos client:", error);
       }
