@@ -7,3 +7,4 @@ datastore/
 public/
 samplecontracts
 .vscode
+**/hello-world/

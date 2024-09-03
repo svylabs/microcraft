@@ -22,7 +22,7 @@ const createApp = async(name, description) => {
                     label: "Submit",
                     id: "submit",
                     placement: "action",
-                    codeRef: "alert(`Hello, ${data[\"name\"]}`);"
+                    code: "alert(`Hello, ${data[\"name\"]}`);"
                 }
             ]
         }
