@@ -13,7 +13,6 @@ interface Output {
 }
 
 const ActionPage: React.FC = () => {
-  // const [components, setComponents] = useState(output);
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
@@ -163,8 +162,7 @@ const ActionPage: React.FC = () => {
             data={data}
             setData={setData}
             setOutputCode={setOutputCode}
-            isActionPage={true}
-            appId={""}
+            contractMetaData={loadedData}
           />
 
           <div className="flex justify-end">

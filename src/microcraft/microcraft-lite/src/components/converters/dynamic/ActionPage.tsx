@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
+import { BASE_API_URL } from "~/components/constants";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
@@ -12,7 +13,6 @@ interface Output {
 }
 
 const ActionPage: React.FC = () => {
-  // const [components, setComponents] = useState(output);
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [outputFormat, setOutputFormat] = useState<string>("json");
   const [graphType, setGraphType] = useState<string>("bar");
@@ -32,23 +32,44 @@ const ActionPage: React.FC = () => {
   // console.log(components);
   // console.log("loadedData-> ", loadedData);
 
+  const setSelectedApp = (appId: string) => {
+    fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        credentials: "include",
+      },
+      body: JSON.stringify({ selected_app: appId }),
+    }).then((response) => {
+      if (response.ok) {
+        console.log("App selected successfully");
+      } else {
+        if (toast) {
+          toast.error(
+            "Error initializing the app - some features of the app may not function properly. Please refresh the page and try again."
+          );
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     setLoadedData(savedFormData);
     setComponents(savedComponentsData);
+    setSelectedApp("sandbox-" + savedFormData.title);
 
     // Initialize dropdowns with their first options
     const initialDropdownState = {};
     components.forEach((component) => {
-      if (component.type === "dropdown" && component.optionsConfig) {
-        initialDropdownState[component.id] = JSON.parse(
-          component.optionsConfig
-        ).values[0].trim();
+      if (component.type === "dropdown") {
+        initialDropdownState[component.id] =
+          component.config.optionsConfig
+            .values[0].trim();
       }
-      if (component.type === "slider" && component.sliderConfig) {
-        const sliderConfig = JSON.parse(component.sliderConfig);
+      if (component.type === "slider") {
         setData((prevData) => ({
           ...prevData,
-          [component.id]: sliderConfig.value,
+          [component.id]: component.config.sliderConfig.value,
         }));
       }
     });
@@ -75,7 +96,7 @@ const ActionPage: React.FC = () => {
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
         {/* <ToastContainer /> */}
         <div className="p-2 md:p-4 bg-gray-100 rounded">
-        <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center mb-2">
+          <div className="relative flex overflow-auto gap-5 md:gap-8 lg:gap-5 xl:gap-2 border-b pb-5 items-center mb-2">
             <Link to="/app/inbuilt/New-App" className="group">
               <p className="flex gap-2 items-center text-[#414A53]">
                 <span className="bg-[#31A05D] text-white p-1 px-3 md:px-3 rounded-full font-bold">
@@ -141,8 +162,7 @@ const ActionPage: React.FC = () => {
             data={data}
             setData={setData}
             setOutputCode={setOutputCode}
-            isActionPage={true}
-            appId={""}
+            contractMetaData={loadedData}
           />
 
           <div className="flex justify-end">

@@ -26,11 +26,35 @@ const UserActionPage = () => {
   const [loading, setLoading] = useState(false);
   // const [feedback, setFeedback] = useState(false);
 
-  const savedFormDataString = localStorage.getItem("formData");
-  const savedFormData = savedFormDataString
-    ? JSON.parse(savedFormDataString)
-    : [];
-  const [loadedData, setLoadedData] = useState(savedFormData);
+  // const savedFormDataString = localStorage.getItem("formData");
+  // const savedFormData = savedFormDataString
+  //   ? JSON.parse(savedFormDataString)
+  //   : [];
+  // const [loadedData, setLoadedData] = useState(savedFormData);
+  const [loadedData, setLoadedData] = useState({});
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setLoadedData(data);
+    } catch (error) {
+      console.error("Error fetching data from backend:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (appId) { 
+    fetchData();
+  }
+}, [appId]);
+
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -61,7 +85,7 @@ const UserActionPage = () => {
   };
 
   useEffect(() => {
-    setLoadedData(savedFormData);
+    // setLoadedData(savedFormData);
     if (components.length === 0) {
       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
@@ -84,20 +108,17 @@ const UserActionPage = () => {
           }
 
           const initialDropdownState = {};
-          component_def.forEach((component) => {
-            if (component.type === "dropdown" && component.optionsConfig) {
-              initialDropdownState[component.id] = JSON.parse(
-                component.optionsConfig
-              ).values[0].trim();
-            }
-          });
 
           component_def.forEach((component) => {
-            if (component.type === "slider" && component.sliderConfig) {
-              const sliderConfig = JSON.parse(component.sliderConfig);
+            if (component.type === "dropdown") {
+              initialDropdownState[component.id] =
+                component.config.optionsConfig
+                  .values[0].trim();
+            }
+            if (component.type === "slider") {
               setData((prevData) => ({
                 ...prevData,
-                [component.id]: sliderConfig.value,
+                [component.id]: component.config.sliderConfig.value,
               }));
             }
           });
@@ -199,8 +220,7 @@ const UserActionPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
-              isActionPage={false}
-              appId={appId || ""}
+              contractMetaData={loadedData}
             />
           </div>
 

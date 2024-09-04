@@ -372,7 +372,7 @@ const Home: React.FC = () => {
   // Render custom component category buttons
   const renderCustomComponentCategories = () => {
     return (
-      <div className="flex gap-3 mb-4 ">
+      <div className="flex gap-3 my-4 ">
         {["all", "pending", "approved"].map((category) => (
           <button
             key={category}
@@ -578,10 +578,10 @@ const Home: React.FC = () => {
 
           <div>
             <div className="flex full-width">
-              <h2 className="text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+              <h2 className=" text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
                 Published apps
               </h2>
-              <div className="flex flex-wrap justify-between gap-3 md:gap-5 font-medium">
+              <div className="flex flex-wrap justify-between gap-8 md:gap-5 font-medium">
                 <select
                   id="privacyFilter"
                   value={selectedPrivacy}
@@ -595,7 +595,8 @@ const Home: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                <div className="flex gap-3 text-lg">
+                <div className="-ml-16 md:ml-0">
+                  <div className="flex md:gap-3 text-lg">
                   <a
                     href="/app/inbuilt/New-App"
                     className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
@@ -608,6 +609,7 @@ const Home: React.FC = () => {
                   >
                     Request
                   </a>
+                  </div>
                 </div>
               </div>
             </div>

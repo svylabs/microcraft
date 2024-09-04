@@ -220,8 +220,7 @@ const ExternalAppPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
-              isActionPage={false}
-              appId={""}
+              contractMetaData={""}
             />
             )}
           </div>

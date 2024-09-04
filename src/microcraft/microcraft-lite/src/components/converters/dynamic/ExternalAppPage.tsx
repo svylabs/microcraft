@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 
@@ -219,8 +220,7 @@ const ExternalAppPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
-              isActionPage={false}
-              appId={""}
+              contractMetaData={""}
             />
             )}
           </div>
