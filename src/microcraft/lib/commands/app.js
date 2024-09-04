@@ -24,6 +24,36 @@ const createApp = async(name, description) => {
                     placement: "action",
                     code: "alert(`Hello, ${data[\"name\"]}`);"
                 }
+            ],
+            // contractMetaData: [] // Initialize as an empty array
+            contractMetaData: [
+                {
+                    contractDetails: [
+                        {
+                            name: "Lock",
+                            address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                            abi: []
+                        }
+                    ],
+                    contractGroupsData: [
+                        {
+                            owner: "public",
+                            updated_at: new Date().toISOString(),
+                            name: "sales_agreements_2"
+                        }
+                    ],
+                    networkDetails: {
+                        type: "ethereum",
+                        config: {
+                            rpcUrl: "123",
+                            chainId: "122123",
+                            exploreUrl: "12"
+                        }
+                    },
+                    privacy: "public",
+                    selectedContracts: ["sales_agreements_2"],
+                    teamId: ""
+                }
             ]
         }
         // Create a directory with the name of the app and store app.json there

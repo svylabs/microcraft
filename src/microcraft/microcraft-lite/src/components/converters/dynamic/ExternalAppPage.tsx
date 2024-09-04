@@ -15,6 +15,7 @@ const ExternalAppPage = () => {
   const [output, setOutput] = useState<any>(location?.state?.output || {});
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState([]);
+  const [contractMetaData, setContractMetaData] = useState([]);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [loading, setLoading] = useState(false);
@@ -77,6 +78,7 @@ const ExternalAppPage = () => {
       const appName = data.name;
       const appDescription = data.description;
       const components = data.components;
+      const contractMetaData = data.contractMetaData || [];
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
         if (component.type === "button") {
@@ -93,6 +95,7 @@ const ExternalAppPage = () => {
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
+      setContractMetaData(contractMetaData);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -130,6 +133,7 @@ const ExternalAppPage = () => {
       const appName = data.name;
       const appDescription = data.description;
       const components = data.components;
+      const contractMetaData = data.contractMetaData || [];
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
         if (component.type === "button") {
@@ -146,6 +150,7 @@ const ExternalAppPage = () => {
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
+      setContractMetaData(contractMetaData);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -220,7 +225,7 @@ const ExternalAppPage = () => {
               data={data}
               setData={setData}
               setOutputCode={setOutputCode}
-              contractMetaData={""}
+              contractMetaData={contractMetaData}
             />
             )}
           </div>
