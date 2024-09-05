@@ -45,9 +45,9 @@ const createApp = async(name, description) => {
                     networkDetails: {
                         type: "ethereum",
                         config: {
-                            rpcUrl: "123",
-                            chainId: "122123",
-                            exploreUrl: "12"
+                            rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+                            chainId: "1",
+                            exploreUrl: "https://etherscan.io"
                         }
                     },
                     privacy: "public",
@@ -80,6 +80,9 @@ const open_command = async (source, url) => {
     try {
         const app = express();
         app.use(express.static(path.join(__dirname, '../../microcraft-lite/public')));
+        // Serve static files from the current working directory
+        app.use(express.static(process.cwd()));
+        
         app.use("/app", (req, res) => {
             res.sendFile(path.join(__dirname, "..", "..", "microcraft-lite", 'index.html'));
         });
