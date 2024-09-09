@@ -79,12 +79,12 @@ const new_command = async (name, description, options) => {
 const open_command = async (source, url) => {
     try {
         const app = express();
-        app.use(express.static(path.join(__dirname, '../../microcraft-lite/public')));
+        app.use(express.static(path.join(__dirname, '../../microcraft-lite/dist')));
         // Serve static files from the current working directory
         app.use(express.static(process.cwd()));
         
         app.use("/app", (req, res) => {
-            res.sendFile(path.join(__dirname, "..", "..", "microcraft-lite", 'index.html'));
+            res.sendFile(path.join(__dirname, "..", "..", "microcraft-lite", 'dist', 'index.html'));
         });
         let pathParam = `source=${source}&path=${url}`;
         if (source === 'local') {
