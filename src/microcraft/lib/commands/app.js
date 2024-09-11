@@ -35,13 +35,6 @@ const createApp = async(name, description) => {
                             abi: []
                         }
                     ],
-                    contractGroupsData: [
-                        {
-                            owner: "public",
-                            updated_at: new Date().toISOString(),
-                            name: "sales_agreements_2"
-                        }
-                    ],
                     networkDetails: {
                         type: "ethereum",
                         config: {
@@ -49,10 +42,7 @@ const createApp = async(name, description) => {
                             chainId: "1",
                             exploreUrl: "https://etherscan.io"
                         }
-                    },
-                    privacy: "public",
-                    selectedContracts: ["sales_agreements_2"],
-                    teamId: ""
+                    }
                 }
             ]
         }
