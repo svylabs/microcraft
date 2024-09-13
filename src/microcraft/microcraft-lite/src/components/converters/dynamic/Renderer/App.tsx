@@ -43,33 +43,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   console.log("typeof app.TSX-loadedData: ", typeof loadedData);
 
   const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+  // console.log("supportedNetworks: ", supportedNetworks);
   const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
   const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (isActionPage) {
-  //       const existingFormData = localStorage.getItem("formData");
-  //       const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-  //       console.log(existingData);
-  //       setLoadedData(existingData);
-  //     } else {
-  //       try {
-  //         setLoading(true);
-  //         const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
-  //         const data = await response.json();
-  //         setLoadedData(data);
-  //       } catch (error) {
-  //         console.error("Error fetching data from backend:", error);
-  //       } finally {
-  //         setLoading(false);
-  //       }
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [isActionPage, appId]);
 
   const addNetwork = async () => {
     const { ethereum } = window;
