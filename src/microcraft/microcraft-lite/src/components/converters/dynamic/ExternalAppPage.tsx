@@ -26,11 +26,6 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   // const [feedback, setFeedback] = useState(false);
 
-  // console.log("components", components);
-  // console.log("contracts", contracts);
-  // console.log("networks", networks);
-  // console.log("contractMetaData", contractMetaData);
-
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
       return true;
