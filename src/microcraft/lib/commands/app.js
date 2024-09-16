@@ -2,14 +2,14 @@ const fs = require('fs');
 const express = require('express');
 const path = require('path');
 
-const createApp = async(name, description) => {
+const createApp = async (name, description) => {
     try {
         // Create a new app json locally
         const app = {
             name,
             description,
-            contracts: [],
-            network: {},
+            // contracts: [],
+            // network: {},
             components: [
                 {
                     type: "text",
@@ -22,9 +22,24 @@ const createApp = async(name, description) => {
                     label: "Submit",
                     id: "submit",
                     placement: "action",
-                    codeRef: "alert(`Hello, ${data[\"name\"]}`);"
+                    code: "alert(`Hello, ${data[\"name\"]}`);"
                 }
-            ]
+            ],
+            contracts: [
+                {
+                    name: "Lock",
+                    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                    abi: []
+                }
+            ],
+            network: {
+                type: "ethereum",
+                config: {
+                    rpcUrl: "your_rpc_url",
+                    chainId: "your_chain_id",
+                    exploreUrl: "your_explore_url"
+                }
+            }
         }
         // Create a directory with the name of the app and store app.json there
         fs.mkdirSync(name);
@@ -33,7 +48,7 @@ const createApp = async(name, description) => {
         console.log("You can run the app using `microcraft app open <dir>` command")
     } catch (error) {
         console.error('Error creating app:', error.message);
-    
+
     }
 }
 
@@ -49,9 +64,12 @@ const new_command = async (name, description, options) => {
 const open_command = async (source, url) => {
     try {
         const app = express();
-        app.use(express.static(path.join(__dirname, '../../microcraft-lite/public')));
+        app.use(express.static(path.join(__dirname, '../../microcraft-lite/dist')));
+        // Serve static files from the current working directory
+        app.use(express.static(process.cwd()));
+
         app.use("/app", (req, res) => {
-            res.sendFile(path.join(__dirname, "..", "..", "microcraft-lite", 'index.html'));
+            res.sendFile(path.join(__dirname, "..", "..", "microcraft-lite", 'dist', 'index.html'));
         });
         let pathParam = `source=${source}&path=${url}`;
         if (source === 'local') {
@@ -71,9 +89,9 @@ const open_command = async (source, url) => {
         app.listen(2112, () => {
             console.log('Server started at http://localhost:2112');
             console.log("Opening app in browser..");
-            open.default('http://localhost:2112/app/external?'  + pathParam);
+            open.default('http://localhost:2112/app/external?' + pathParam);
         });
-        
+
     } catch (error) {
         console.log(error);
         console.error('Error opening app:', error.message);

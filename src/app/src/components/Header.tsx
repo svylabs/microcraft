@@ -82,7 +82,7 @@ const Header: React.FC = () => {
           <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500 overflow-hidden">
             Microcraft
             <span className="text-xs md:text-sm lg:text-base font-light text-transparent whitespace-nowrap">
-               DeFi Gateway
+            Your Gateway to DeFi
             </span>
           </h2>
         </div>

@@ -13,30 +13,19 @@ import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
 import Alert from "./Alert";
 
-interface ContractDetail {
-  name: string;
-  abi: any;
-  address: string;
-}
-
-interface LoadedData {
-  contractDetails?: ContractDetail[];
-  contract_details?: ContractDetail[];
-  [key: string]: any;
-}
-
 interface Props {
   components: any[];
+  contractMetaData: any;
+  network?: any;
+  contracts?: any;
   data: { [key: string]: any };
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   setOutputCode: React.Dispatch<React.SetStateAction<any>>;
-  isActionPage: boolean;
-  appId: string;
 }
 
-const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActionPage, appId }) => {
+const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contractMetaData }) => {
   const [loading, setLoading] = useState(false);
-  const [loadedData, setLoadedData] = useState<LoadedData>({});
+  const [loadedData, setLoadedData] = useState<any>({});
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [networkName, setNetworkName] = useState('');
   const [chainId, setChainId] = useState('');
@@ -44,36 +33,45 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
   // const [cosmosClient, setCosmosClient] = useState<any>("");
 
+  useEffect(() => {
+    if (contractMetaData) {
+      setLoadedData(contractMetaData);
+    } else {
+      console.error("No contract metadata found.");
+    }
+  }, [contractMetaData]);
+
+  console.log("app.TSX-loadedData: ", loadedData);
+  console.log("typeof app.TSX-loadedData: ", typeof loadedData);
+
   const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
   const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
   const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
-  // console.log(networkType);
-  // console.log(rpcUrls);
-  // console.log(chainIds);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (isActionPage) {
-        const existingFormData = localStorage.getItem("formData");
-        const existingData = existingFormData ? JSON.parse(existingFormData) : {};
-        setLoadedData(existingData);
-      } else {
-        try {
-          setLoading(true);
-          const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
-          const data = await response.json();
-          setLoadedData(data);
-        } catch (error) {
-          console.error("Error fetching data from backend:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (isActionPage) {
+  //       const existingFormData = localStorage.getItem("formData");
+  //       const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+  //       console.log(existingData);
+  //       setLoadedData(existingData);
+  //     } else {
+  //       try {
+  //         setLoading(true);
+  //         const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
+  //         const data = await response.json();
+  //         setLoadedData(data);
+  //       } catch (error) {
+  //         console.error("Error fetching data from backend:", error);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
 
-    fetchData();
-  }, [isActionPage, appId]);
+  //   fetchData();
+  // }, [isActionPage, appId]);
 
   const addNetwork = async () => {
     const { ethereum } = window;
@@ -252,7 +250,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
 
   const mcLib = {
     web3: web3,
-    injectedContracts: injectedContracts,
+    contracts: injectedContracts,
     cosmosClient: cosmosClient,
   };
   console.log(mcLib);
@@ -624,34 +622,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, isActi
             </li>
           ))}
         </ul>
-
-        {/* display all output data one after one */}
-        {/* {components.map((component, index) => (
-          <div key={index} className="mb-5">
-            {component.placement === "output" && component.type === "text" && (
-              <TextOutput data={data[component.id]} />
-            )}
-            {component.placement === "output" && component.type === "json" && (
-              <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
-                {data[component.id]
-                  ? `${component.id}: ${JSON.stringify(data[component.id], null, 2)}`
-                  : ""}
-              </pre>
-            )}
-            {component.placement === "output" && component.type === "table" && (
-              <Table data={data[component.id]} />
-            )}
-            {component.placement === "output" && component.type === "graph" && (
-              <div>
-                <Graph
-                  output={data[component.id]}
-                  configurations={component.config}
-                  graphId={`graph-container-${component.id}`}
-                />
-              </div>
-            )}
-          </div>
-        ))} */}
       </div>
       {loading && <Loading />}
       {networkStatus !== `Connected to ${networkName}` && (
