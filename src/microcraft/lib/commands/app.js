@@ -5,42 +5,123 @@ const path = require('path');
 const createApp = async (name, description) => {
     try {
         // Create a new app json locally
+        // const app = {
+        //     name,
+        //     description,
+        //     // contracts: [],
+        //     // network: {},
+        //     components: [
+        //         {
+        //             type: "text",
+        //             label: "Enter your name",
+        //             id: "name",
+        //             placement: "input"
+        //         },
+        //         {
+        //             type: "button",
+        //             label: "Submit",
+        //             id: "submit",
+        //             placement: "action",
+        //             code: "alert(`Hello, ${data[\"name\"]}`);"
+        //         }
+        //     ],
+        //     contracts: [
+        //         {
+        //             name: "Lock",
+        //             address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+        //             abi: []
+        //         }
+        //     ],
+        //     network: {
+        //         type: "ethereum",
+        //         config: {
+        //             rpcUrl: "your_rpc_url",
+        //             chainId: "your_chain_id",
+        //             exploreUrl: "your_explore_url"
+        //         }
+        //     }
+        // }
+
         const app = {
             name,
             description,
-            // contracts: [],
-            // network: {},
             components: [
                 {
                     type: "text",
-                    label: "Enter your name",
-                    id: "name",
-                    placement: "input"
+                    label: "Total LUSD in circulation",
+                    id: "lusdTotal",
+                    placement: "output"
                 },
                 {
                     type: "button",
-                    label: "Submit",
-                    id: "submit",
+                    label: "fetch LUSD Total",
+                    id: "fetchLUSDTotal",
                     placement: "action",
-                    code: "alert(`Hello, ${data[\"name\"]}`);"
+                    code: `
+                    async function fetchLUSDTotal() {
+                        const contract = new ethers.Contract(
+                            "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+                            ${JSON.stringify([
+                                {
+                                    constant: true,
+                                    inputs: [],
+                                    name: "totalSupply",
+                                    outputs: [
+                                        {
+                                            name: "",
+                                            type: "uint256"
+                                        }
+                                    ],
+                                    payable: false,
+                                    stateMutability: "view",
+                                    type: "function"
+                                }
+                            ])},
+                            
+                        );
+                        const totalSupply = await contract.totalSupply();
+                        let lusdTotal = ethers.utils.formatUnits(totalSupply, 18);
+                        console.log('Total LUSD in circulation:', lusdTotal);
+                        document.getElementById("lusdTotal").innerText = lusdTotal;
+                    }
+                    fetchLUSDTotal();
+                    `
+
                 }
             ],
             contracts: [
                 {
-                    name: "Lock",
-                    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-                    abi: []
+                    name: "LUSD Token",
+                    address: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+                    abi: [
+                        {
+                            constant: true,
+                            inputs: [],
+                            name: "totalSupply",
+                            outputs: [
+                                {
+                                    name: "",
+                                    type: "uint256"
+                                }
+                            ],
+                            payable: false,
+                            stateMutability: "view",
+                            type: "function"
+                        }
+                    ]
                 }
             ],
             network: {
                 type: "ethereum",
                 config: {
                     rpcUrl: "your_rpc_url",
-                    chainId: "your_chain_id",
-                    exploreUrl: "your_explore_url"
+                    chainId: "1",
+                    exploreUrl: "https://etherscan.io"
                 }
             }
-        }
+        };
+
+
         // Create a directory with the name of the app and store app.json there
         fs.mkdirSync(name);
         fs.writeFileSync(`${name}/app.json`, JSON.stringify(app, null, 2));
