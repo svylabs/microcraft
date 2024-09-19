@@ -20,35 +20,7 @@ const createApp = async (name, description) => {
                     label: "fetch LUSD Total",
                     id: "fetchLUSDTotal",
                     placement: "action",
-                    code: `
-                    async function fetchLUSDTotal() {
-                        const web3 = new Web3(new Web3.providers.HttpProvider("https://1rpc.io/eth"));
-                        const contract = new web3.eth.Contract(
-                            ${JSON.stringify([
-                                {
-                                    constant: true,
-                                    inputs: [],
-                                    name: "totalSupply",
-                                    outputs: [
-                                        {
-                                            name: "",
-                                            type: "uint256"
-                                        }
-                                    ],
-                                    payable: false,
-                                    stateMutability: "view",
-                                    type: "function"
-                                }
-                            ])},
-                            "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0"
-                        );
-                        const totalSupply = await contract.methods.totalSupply().call();
-                        let lusdTotal = web3.utils.fromWei(totalSupply, 'ether');
-                        console.log('Total LUSD in circulation:', lusdTotal);
-                        return { lusdTotal };
-                    }
-                    fetchLUSDTotal();
-                    `
+                    code: '' 
                 }
             ],
             contracts: [
@@ -83,15 +55,45 @@ const createApp = async (name, description) => {
             }
         };
 
+        // Define the code after app is initialized
+        app.components[1].code = `
+        async function fetchLUSDTotal() {
+            const web3 = new Web3(new Web3.providers.HttpProvider("https://1rpc.io/eth"));
+            const contractAddress = "${app.contracts[0].address}"; // Get address from contracts
+            const contract = new web3.eth.Contract(
+                ${JSON.stringify([
+                    {
+                        constant: true,
+                        inputs: [],
+                        name: "totalSupply",
+                        outputs: [
+                            {
+                                name: "",
+                                type: "uint256"
+                            }
+                        ],
+                        payable: false,
+                        stateMutability: "view",
+                        type: "function"
+                    }
+                ])},
+                contractAddress
+            );
+            const totalSupply = await contract.methods.totalSupply().call();
+            let lusdTotal = web3.utils.fromWei(totalSupply, 'ether');
+            console.log('Total LUSD in circulation:', lusdTotal);
+            return { lusdTotal };
+        }
+        fetchLUSDTotal();
+        `;
 
         // Create a directory with the name of the app and store app.json there
         fs.mkdirSync(name);
         fs.writeFileSync(`${name}/app.json`, JSON.stringify(app, null, 2));
         console.log("A simple app has been created", app);
-        console.log("You can run the app using `microcraft app open <dir>` command")
+        console.log("You can run the app using `microcraft app open <dir>` command");
     } catch (error) {
         console.error('Error creating app:', error.message);
-
     }
 }
 
