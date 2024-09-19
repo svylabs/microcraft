@@ -134,7 +134,7 @@ const open_command = async (source, url) => {
         app.listen(2112, () => {
             console.log('Server started at http://localhost:2112');
             console.log("Opening app in browser..");
-            open.default('http://localhost:2112/app/external?' + pathParam);
+            open.default('http://localhost:2112/?' + pathParam);
         });
 
     } catch (error) {

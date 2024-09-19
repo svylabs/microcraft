@@ -35,10 +35,6 @@ const AppContent: React.FC = () => {
       </div>
         <Routes>
           <Route path="/" element={<ExternalAppPage />} />
-          <Route path="/app/new/contract" element={<ConfigureVisibilitySelector />} />
-          <Route path="/app/new/field" element={<ConfigureInputsOutputs />} />
-          <Route path="/app/new/preview" element={<Action />} />
-          <Route path="/app/external" element={<ExternalAppPage />} />
         </Routes>
         <ToastContainer /> 
     </>
