@@ -42,6 +42,11 @@
             "type": "function"
         }
     ]
+    },
+    {
+      "name": "ERC20",
+      "template": "ERC20",
+      "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0"
     }
   ],
   "network": {

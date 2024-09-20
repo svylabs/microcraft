@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from 'ethers';
 import Web3 from "web3";
+import OpenZeppelinContracts from '@openzeppelin/contracts';
 import { SigningStargateClient } from "@cosmjs/stargate";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
@@ -217,8 +218,24 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const web3 = new Web3(window.ethereum);
   // web3.setMaxListeners(0);
 
+  // const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
+  //   contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+  //   return contracts;
+  // }, {}) || {};
+
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-    contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+    if (contract.abi) {
+      contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+    } else if (contract.template) {
+      const templateContract = OpenZeppelinContracts.find((c) => c.name === contract.template);
+      if (templateContract) {
+        contracts[contract.name] = new web3.eth.Contract(templateContract.abi, contract.address);
+      } else {
+        console.error(`Template contract ${contract.template} not found in OpenZeppelin Contracts`);
+      }
+    } else {
+      console.error(`No ABI or template found for contract ${contract.name}`);
+    }
     return contracts;
   }, {}) || {};
 
