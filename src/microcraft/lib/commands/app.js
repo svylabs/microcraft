@@ -11,81 +11,34 @@ const createApp = async (name, description) => {
             components: [
                 {
                     type: "text",
-                    label: "Total LUSD in circulation",
-                    id: "lusdTotal",
-                    placement: "output"
+                    label: "Enter your name",
+                    id: "name",
+                    placement: "input"
                 },
                 {
                     type: "button",
-                    label: "fetch LUSD Total",
-                    id: "fetchLUSDTotal",
+                    label: "Submit",
+                    id: "submit",
                     placement: "action",
-                    code: '' 
+                    code: "alert(`Hello, ${data[\"name\"]}`);"
                 }
             ],
             contracts: [
                 {
-                    name: "ERC20",
-                    address: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
-                    abi: [
-                        {
-                            constant: true,
-                            inputs: [],
-                            name: "totalSupply",
-                            outputs: [
-                                {
-                                    name: "",
-                                    type: "uint256"
-                                }
-                            ],
-                            payable: false,
-                            stateMutability: "view",
-                            type: "function"
-                        }
-                    ]
+                    name: "Lock",
+                    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+                    abi: []
                 }
             ],
             network: {
                 type: "ethereum",
                 config: {
-                    rpcUrl: "https://1rpc.io/eth",
-                    chainId: "1",
-                    exploreUrl: "https://etherscan.io"
+                    rpcUrl: "your_rpc_url",
+                    chainId: "your_chain_id",
+                    exploreUrl: "your_explore_url"
                 }
             }
         };
-
-        // Define the code after app is initialized
-        app.components[1].code = `
-        async function fetchLUSDTotal() {
-            const web3 = new Web3(new Web3.providers.HttpProvider("https://1rpc.io/eth"));
-            const contractAddress = "${app.contracts[0].address}"; // Get address from contracts
-            const contract = new web3.eth.Contract(
-                ${JSON.stringify([
-                    {
-                        constant: true,
-                        inputs: [],
-                        name: "totalSupply",
-                        outputs: [
-                            {
-                                name: "",
-                                type: "uint256"
-                            }
-                        ],
-                        payable: false,
-                        stateMutability: "view",
-                        type: "function"
-                    }
-                ])},
-                contractAddress
-            );
-            const totalSupply = await contract.methods.totalSupply().call();
-            let lusdTotal = web3.utils.fromWei(totalSupply, 'ether');
-            console.log('Total LUSD in circulation:', lusdTotal);
-            return { lusdTotal };
-        }
-        fetchLUSDTotal();
-        `;
 
         // Create a directory with the name of the app and store app.json there
         fs.mkdirSync(name);
