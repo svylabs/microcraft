@@ -1,0 +1,55 @@
+{
+  "name": "total-lusd-circulation",
+  "description": "Total LUSD in Circulation",
+  "components": [
+    {
+      "type": "text",
+      "label": "Enter ERC20 Address",
+      "id": "erc20Address",
+      "placement": "input"
+    },
+    {
+      "type": "button",
+      "label": "fetchERC20Balance",
+      "id": "fetchERC20",
+      "placement": "action",
+      "codeRef": "actions/fetch_lusd.js"
+    },
+    {
+      "type": "text",
+      "label": "Total ERC20 Balance",
+      "id": "lusdTotal",
+      "placement": "output"
+    }
+  ],
+  "contracts": [
+    {
+      "name": "ERC20",
+      "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+      "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ]
+    }
+  ],
+  "network": {
+    "type": "ethereum",
+    "config": {
+      "rpcUrl": "your_rpc_url",
+      "chainId": "your_chain_id",
+      "exploreUrl": "your_explore_url"
+    }
+  }
+}
