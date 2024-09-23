@@ -1,6 +1,6 @@
 {
-  "name": "total-lusd-circulation",
-  "description": "Total LUSD in Circulation",
+  "name": "total-lusd-template-circulation",
+  "description": "Tracks LUSD circulation metrics using a template structure.",
   "components": [
     {
       "type": "text",
@@ -26,22 +26,8 @@
     {
       "name": "ERC20",
       "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
-      "abi": [
-        {
-            "constant": true,
-            "inputs": [],
-            "name": "totalSupply",
-            "outputs": [
-                {
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "payable": false,
-            "stateMutability": "view",
-            "type": "function"
-        }
-    ]
+      "template": "ERC20",
+      "abi": []
     }
   ],
   "network": {

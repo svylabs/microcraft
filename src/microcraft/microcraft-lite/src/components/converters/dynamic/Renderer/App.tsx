@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from 'ethers';
 import Web3 from "web3";
-import OpenZeppelinContracts from '@openzeppelin/contracts';
 import { SigningStargateClient } from "@cosmjs/stargate";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
@@ -11,6 +10,9 @@ import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
 import Alert from "./Alert";
+import { ERC20_ABI } from './ABI/ERC20_ABI';
+import { ERC721_ABI } from './ABI/ERC721_ABI';
+import { ERC1155_ABI } from './ABI/ERC1155_ABI';;
 
 interface Props {
   components: any[];
@@ -224,20 +226,37 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   // }, {}) || {};
 
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-    if (contract.abi) {
-      contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
-    } else if (contract.template) {
-      const templateContract = OpenZeppelinContracts.find((c) => c.name === contract.template);
-      if (templateContract) {
-        contracts[contract.name] = new web3.eth.Contract(templateContract.abi, contract.address);
-      } else {
-        console.error(`Template contract ${contract.template} not found in OpenZeppelin Contracts`);
-      }
+  if (contract.abi && contract.abi.length > 0) {
+    // If ABI is directly provided, use it.
+    // contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+    contracts[contract.name] = {
+      // instance: new web3.eth.Contract(contract.abi, contract.address),
+      ...new web3.eth.Contract(contract.abi, contract.address),
+      abi: contract.abi
+    };
+  } else if (contract.template) {
+    const templateMap = {
+      'ERC20': ERC20_ABI,
+      'ERC721': ERC721_ABI,
+      'ERC1155': ERC1155_ABI,
+    };
+
+    const contractPath = templateMap[contract.template];
+    if (contractPath) {
+      contracts[contract.name] = {
+        // instance: new web3.eth.Contract(contractPath, contract.address),
+        ...new web3.eth.Contract(contract.abi, contract.address),
+        abi: contractPath
+      };
     } else {
-      console.error(`No ABI or template found for contract ${contract.name}`);
+      console.error(`No valid template found for contract: ${contract.template}`);
     }
-    return contracts;
-  }, {}) || {};
+  } else {
+    console.error(`No ABI or template found for contract ${contract.name}`);
+  }
+  return contracts;
+}, {}) || {};
+  
 
   const mcLib = {
     web3: web3,
