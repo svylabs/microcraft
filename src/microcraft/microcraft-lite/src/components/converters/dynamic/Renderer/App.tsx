@@ -228,9 +228,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
   if (contract.abi && contract.abi.length > 0) {
     // If ABI is directly provided, use it.
-    // contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
     contracts[contract.name] = {
-      // instance: new web3.eth.Contract(contract.abi, contract.address),
       ...new web3.eth.Contract(contract.abi, contract.address),
       abi: contract.abi
     };
@@ -244,7 +242,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
     const contractPath = templateMap[contract.template];
     if (contractPath) {
       contracts[contract.name] = {
-        // instance: new web3.eth.Contract(contractPath, contract.address),
         ...new web3.eth.Contract(contract.abi, contract.address),
         abi: contractPath
       };

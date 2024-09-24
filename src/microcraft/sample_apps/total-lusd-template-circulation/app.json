@@ -9,12 +9,6 @@
       "placement": "input"
     },
     {
-      "type": "text",
-      "label": "Enter Wallet Address",
-      "id": "walletAddressInput",
-      "placement": "input"
-    },
-    {
       "type": "button",
       "label": "Fetch ERC20 Data",
       "id": "fetchERC20Data",
@@ -38,6 +32,26 @@
       "label": "ERC20 Token Symbol",
       "id": "erc20Symbol",
       "placement": "output"
+    },
+    {
+      "type": "walletDropdown",
+      "label": "Select Connected Wallet Address",
+      "id": "walletAddressSelect",
+      "options": [],
+      "placement": "input"
+    },
+    {
+      "type": "text",
+      "label": "Or Enter Wallet Address",
+      "id": "walletAddressInput",
+      "placement": "input"
+    },
+    {
+      "type": "button",
+      "label": "Fetch Wallet Data",
+      "id": "fetchWalletInfo",
+      "placement": "action",
+      "codeRef": "actions/fetch_wallet.js"
     },
     {
       "type": "text",
