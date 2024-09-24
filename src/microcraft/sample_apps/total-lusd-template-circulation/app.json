@@ -1,6 +1,6 @@
 {
   "name": "total-lusd-template-circulation",
-  "description": "Tracks LUSD circulation metrics using a template structure.",
+  "description": "Tracks LUSD circulation metrics and user balances with advanced features.",
   "components": [
     {
       "type": "text",
@@ -9,16 +9,40 @@
       "placement": "input"
     },
     {
+      "type": "text",
+      "label": "Enter Wallet Address",
+      "id": "walletAddressInput",
+      "placement": "input"
+    },
+    {
       "type": "button",
-      "label": "fetchERC20Balance",
-      "id": "fetchERC20",
+      "label": "Fetch ERC20 Data",
+      "id": "fetchERC20Data",
       "placement": "action",
       "codeRef": "actions/fetch_lusd.js"
     },
     {
       "type": "text",
-      "label": "Total ERC20 Balance",
-      "id": "lusdTotal",
+      "label": "Total ERC20 Supply",
+      "id": "erc20TotalSupply",
+      "placement": "output"
+    },
+    {
+      "type": "text",
+      "label": "ERC20 Token Name",
+      "id": "erc20Name",
+      "placement": "output"
+    },
+    {
+      "type": "text",
+      "label": "ERC20 Token Symbol",
+      "id": "erc20Symbol",
+      "placement": "output"
+    },
+    {
+      "type": "text",
+      "label": "User's ERC20 Balance",
+      "id": "erc20UserBalance",
       "placement": "output"
     }
   ],
