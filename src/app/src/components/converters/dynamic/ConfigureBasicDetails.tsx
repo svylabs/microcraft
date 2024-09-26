@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./ConfigureBasicDetails.scss";
+import { toast } from "react-toastify";
 import arrow from "../../photos/angle-right-solid.svg";
 import { Link } from "react-router-dom";
 import { GITHUB_CLIENT_ID, BASE_API_URL } from "~/components/constants";
@@ -36,6 +37,62 @@ const ConfigureBasicDetails: React.FC = () => {
       // window.location.href = "/app/new";
       window.location.href = "/app/new/contract";
     }
+  };
+
+  // Allow users to build apps via CLI and import them into the UI for preview and editing of components.
+
+  // Helper to save data to local storage
+  const saveDataToLocalStorage = (key, data) => {
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+
+  // Function to handle file upload and parse JSON
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target?.files?.[0]; //optional chaining
+    if (!file) {
+      toast.error("Please select a file to upload.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target && typeof e.target.result === 'string') {
+        try {
+          const jsonData = JSON.parse(e.target.result);
+          const { name, description, components, contracts, network } = jsonData;
+
+          // Get existing formData from localStorage
+          const existingFormData = localStorage.getItem("formData");
+          const existingData = existingFormData ? JSON.parse(existingFormData) : {};
+
+          // Set title, description, contracts, and network details in formData
+          const updatedFormData = {
+            ...existingData,
+            title: name,
+            description: description,
+            contractDetails: contracts,
+            networkDetails: network,
+          };
+
+          // Update local storage with the new formData
+          // localStorage.setItem("formData", JSON.stringify(updatedFormData));
+          saveDataToLocalStorage("formData", updatedFormData);
+
+          // Save components in localStorage
+          saveDataToLocalStorage("components", components);
+
+          // Redirect to preview page after uploading
+          window.location.href = "/app/new/preview";
+
+        } catch (error) {
+          console.error("Error parsing JSON file:", error);
+          toast.error("Invalid JSON file format.");
+        }
+      } else {
+        toast.error("Failed to read file.");
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -114,7 +171,29 @@ const ConfigureBasicDetails: React.FC = () => {
                 onChange={(e) => setDescription(e.target.value)}
               ></textarea>
             </div>
-            <div className="flex justify-end">
+            <div className="flex flex-col gap-2 md:flex-row md:gap-0 md:items-center md:justify-between">
+              <div className="flex flex-col">
+                <label htmlFor="fileUpload" className="text-lg font-semibold text-gray-700">Upload JSON File:</label>
+                <input
+                  type="file"
+                  id="fileUpload"
+                  accept=".json"
+                  onChange={handleFileUpload}
+                  className="border border-gray-300 rounded-lg p-2 bg-white hover:bg-gray-100 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Link to="#" onClick={handleSaveNext} className="mx-0">
+                  <button
+                    className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
+                    type="submit"
+                  >
+                    Save & Next
+                  </button>
+                </Link>
+              </div>
+            </div>
+            {/* <div className="flex justify-end">
               <Link to="#" onClick={handleSaveNext} className="mx-0">
                 <button
                   className="cursor-pointer text-white bg-[#31A05D] rounded-md xl:text-xl p-2 md:p-3 md:px-5 font-semibold text-center"
@@ -123,7 +202,7 @@ const ConfigureBasicDetails: React.FC = () => {
                   Save & Next
                 </button>
               </Link>
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-3 py-5">
