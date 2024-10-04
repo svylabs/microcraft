@@ -82,7 +82,7 @@ const ConfigureBasicDetails: React.FC = () => {
           saveDataToLocalStorage("components", components);
 
           // Redirect to preview page after uploading
-          window.location.href = "/app/new/preview";
+          window.location.href = "/app/new/field";
 
         } catch (error) {
           console.error("Error parsing JSON file:", error);
