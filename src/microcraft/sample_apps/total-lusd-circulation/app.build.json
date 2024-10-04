@@ -1,0 +1,55 @@
+{
+  "name": "total-lusd-circulation",
+  "description": "Total LUSD in Circulation",
+  "components": [
+    {
+      "type": "text",
+      "label": "Enter ERC20 Address",
+      "id": "erc20AddressInput",
+      "placement": "input"
+    },
+    {
+      "type": "button",
+      "label": "fetchERC20Balance",
+      "id": "fetchERC20",
+      "placement": "action",
+      "code": "async function fetchERC20Balance() {\n    console.log(\"mcLib;- \", mcLib);\n    // mcLib is injected by the framework.\n    const contractAddress = data.erc20AddressInput || mcLib.contracts.ERC20._address;\n\n    // ABI for the ERC20 contract\n    const abi = [\n        {\n            constant: true,\n            inputs: [],\n            name: \"totalSupply\",\n            outputs: [\n                {\n                    name: \"\",\n                    type: \"uint256\"\n                }\n            ],\n            payable: false,\n            stateMutability: \"view\",\n            type: \"function\"\n        }\n    ];\n\n    // Create a contract instance with the ABI and contract address\n    // const contract = new mcLib.web3.eth.Contract(abi, contractAddress);\n    const contract = new mcLib.web3.eth.Contract(abi, contractAddress);\n\n    // Call the totalSupply function from the contract\n    const totalSupply = await contract.methods.totalSupply().call();\n\n    let lusdTotal = mcLib.web3.utils.fromWei(totalSupply, 'ether');\n    console.log('Total LUSD in circulation:', lusdTotal);\n\n    return { lusdTotal };\n}\n\n// Fetch the ERC20 balance\nfetchERC20Balance();\n"
+    },
+    {
+      "type": "text",
+      "label": "Total ERC20 Balance",
+      "id": "lusdTotal",
+      "placement": "output"
+    }
+  ],
+  "contracts": [
+    {
+      "name": "ERC20",
+      "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+      "abi": [
+        {
+          "constant": true,
+          "inputs": [],
+          "name": "totalSupply",
+          "outputs": [
+            {
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "payable": false,
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+    }
+  ],
+  "network": {
+    "type": "ethereum",
+    "config": {
+      "rpcUrl": "your_rpc_url",
+      "chainId": "your_chain_id",
+      "exploreUrl": "your_explore_url"
+    }
+  }
+}

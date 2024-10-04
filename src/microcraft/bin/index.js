@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
-const { new_command, open_command } = require('../lib/commands/app');
+const { new_command, open_command, build_command } = require('../lib/commands/app');
 
 
 const program = new Command();
@@ -15,5 +15,9 @@ app.command('new <name> <description>')
 app.command('open <source> <url>')
     .description("Opens the app in the browser")
     .action(open_command);
+
+app.command('build <folder>')
+    .description('Builds and merges all files in the specified folder')
+    .action(build_command);
 
 program.parse(process.argv);
