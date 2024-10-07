@@ -1,0 +1,101 @@
+{
+  "name": "Total-Stablecoin-Circulation",
+  "description": "Tracks total circulation for popular stablecoins or a user-provided ERC20 contract address.",
+  "components": [
+    {
+      "type": "dropdown",
+      "label": "Select Stablecoin (Optional)",
+      "id": "stablecoinSelect",
+      "config": {
+        "optionsConfig": {
+          "values": [
+            "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+            "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+            "0xBF319dDC2Edc1Eb6FDf9910E39b37Be221C8805F",
+            "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+          ]
+        }
+      },
+      "placement": "input"
+    },
+    {
+      "type": "text",
+      "label": "Or Enter ERC20 Address (Overrides Dropdown)",
+      "id": "erc20AddressInput",
+      "placement": "input"
+    },
+    {
+      "type": "button",
+      "label": "Fetch Stablecoin Data",
+      "id": "fetchStablecoinData",
+      "placement": "action",
+      "codeRef": "actions/fetch_stablecoin_data.js"
+    },
+    {
+      "type": "text",
+      "label": "Total Stablecoin Supply",
+      "id": "erc20TotalSupply",
+      "placement": "output"
+    },
+    {
+      "type": "text",
+      "label": "Stablecoin Name",
+      "id": "erc20Name",
+      "placement": "output"
+    },
+    {
+      "type": "text",
+      "label": "Stablecoin Symbol",
+      "id": "erc20Symbol",
+      "placement": "output"
+    }
+  ],
+  "contracts": [
+    {
+      "name": "DAI",
+      "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "template": "ERC20",
+      "abi": []
+    },
+    {
+      "name": "LUSD",
+      "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+      "template": "ERC20",
+      "abi": []
+    },
+    {
+      "name": "FRAX",
+      "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "template": "ERC20",
+      "abi": []
+    },
+    {
+      "name": "CurveUSD",
+      "address": "0xBF319dDC2Edc1Eb6FDf9910E39b37Be221C8805F",
+      "template": "ERC20",
+      "abi": []
+    },
+    {
+      "name": "Tether",
+      "address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "template": "ERC20",
+      "abi": []
+    },
+    {
+      "name": "USDC",
+      "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "template": "ERC20",
+      "abi": []
+    }
+  ],
+  "network": {
+    "type": "ethereum",
+    "config": {
+      "rpcUrl": "your_rpc_url",
+      "chainId": "your_chain_id",
+      "exploreUrl": "your_explore_url"
+    }
+  }
+}

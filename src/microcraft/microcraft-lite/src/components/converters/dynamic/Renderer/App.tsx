@@ -10,6 +10,9 @@ import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
 import Alert from "./Alert";
+import { ERC20_ABI } from './ABI/ERC20_ABI';
+import { ERC721_ABI } from './ABI/ERC721_ABI';
+import { ERC1155_ABI } from './ABI/ERC1155_ABI';
 
 interface Props {
   components: any[];
@@ -217,10 +220,40 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const web3 = new Web3(window.ethereum);
   // web3.setMaxListeners(0);
 
+  // const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
+  //   contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
+  //   return contracts;
+  // }, {}) || {};
+
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-    contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
-    return contracts;
-  }, {}) || {};
+  if (contract.abi && contract.abi.length > 0) {
+    // If ABI is directly provided, use it.
+    contracts[contract.name] = {
+      ...new web3.eth.Contract(contract.abi, contract.address),
+      abi: contract.abi
+    };
+  } else if (contract.template) {
+    const templateMap = {
+      'ERC20': ERC20_ABI,
+      'ERC721': ERC721_ABI,
+      'ERC1155': ERC1155_ABI,
+    };
+
+    const contractPath = templateMap[contract.template];
+    if (contractPath) {
+      contracts[contract.name] = {
+        ...new web3.eth.Contract(contract.abi, contract.address),
+        abi: contractPath
+      };
+    } else {
+      console.error(`No valid template found for contract: ${contract.template}`);
+    }
+  } else {
+    console.error(`No ABI or template found for contract ${contract.name}`);
+  }
+  return contracts;
+}, {}) || {};
+  
 
   const mcLib = {
     web3: web3,

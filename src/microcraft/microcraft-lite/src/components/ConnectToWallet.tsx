@@ -162,7 +162,7 @@ const ConnectToWallet: React.FC<WalletProps> = () => {
           </button> */}
           <button
             onClick={handleConnectToKeplrWallet}
-            className="flex items-center cursor-pointer bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+            className="flex items-center whitespace-nowrap cursor-pointer bg-gradient-to-r from-purple-400 to-purple-500 hover:from-purple-500 hover:to-purple-600 text-white rounded-md xl:text-lg p-1.5 px-2 md:p-2 md:px-5 font-semibold text-center shadow-md transition duration-300 ease-in-out transform hover:scale-105"
           > 
             <img
               src={KeplrLogo}

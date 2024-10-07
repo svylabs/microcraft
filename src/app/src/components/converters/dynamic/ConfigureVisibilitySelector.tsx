@@ -225,11 +225,6 @@ const ConfigureVisibilitySelector: React.FC = () => {
       (contract) => selectedContracts[contract]
     );
 
-    // if (privacy === "private" && selectedContractNames.length === 0) {
-    //   toast.error("Please select at least one contract group.");
-    //   return;
-    // }
-
     const allAddressesProvided = selectedContractNames.every(contractName =>
       contractDetails.some(detail => detail.address !== "")
     );
