@@ -193,12 +193,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
         await window.keplr.enable(chainId);
         const offlineSigner = window.getOfflineSigner(chainId);
         const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
-      //   const accounts = await offlineSigner.getAccounts();
-      //   const cosmJS = new SigningCosmosClient(
-      //     "https://lcd-cosmoshub.keplr.app/rest",
-      //     accounts[0].address,
-      //     offlineSigner,
-      // );
+        //   const accounts = await offlineSigner.getAccounts();
+        //   const cosmJS = new SigningCosmosClient(
+        //     "https://lcd-cosmoshub.keplr.app/rest",
+        //     accounts[0].address,
+        //     offlineSigner,
+        // );
 
         setCosmosClient(client);
         // setCosmosClient(cosmJS);
@@ -226,34 +226,33 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   // }, {}) || {};
 
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-  if (contract.abi && contract.abi.length > 0) {
-    // If ABI is directly provided, use it.
-    contracts[contract.name] = {
-      ...new web3.eth.Contract(contract.abi, contract.address),
-      abi: contract.abi
-    };
-  } else if (contract.template) {
-    const templateMap = {
-      'ERC20': ERC20_ABI,
-      'ERC721': ERC721_ABI,
-      'ERC1155': ERC1155_ABI,
-    };
-
-    const contractPath = templateMap[contract.template];
-    if (contractPath) {
+    if (contract.abi && contract.abi.length > 0) {
+      // If ABI is directly provided, use it.
       contracts[contract.name] = {
         ...new web3.eth.Contract(contract.abi, contract.address),
-        abi: contractPath
+        abi: contract.abi
       };
+    } else if (contract.template) {
+      const templateMap = {
+        'ERC20': ERC20_ABI,
+        'ERC721': ERC721_ABI,
+        'ERC1155': ERC1155_ABI,
+      };
+
+      const contractPath = templateMap[contract.template];
+      if (contractPath) {
+        contracts[contract.name] = {
+          ...new web3.eth.Contract(contract.abi, contract.address),
+          abi: contractPath
+        };
+      } else {
+        console.error(`No valid template found for contract: ${contract.template}`);
+      }
     } else {
-      console.error(`No valid template found for contract: ${contract.template}`);
+      console.error(`No ABI or template found for contract ${contract.name}`);
     }
-  } else {
-    console.error(`No ABI or template found for contract ${contract.name}`);
-  }
-  return contracts;
-}, {}) || {};
-  
+    return contracts;
+  }, {}) || {};
 
   const mcLib = {
     web3: web3,

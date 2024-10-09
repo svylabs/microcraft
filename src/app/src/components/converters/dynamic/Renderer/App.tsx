@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BASE_API_URL } from "~/components/constants";
 import { ethers } from 'ethers';
 import Web3 from "web3";
 import { SigningStargateClient } from "@cosmjs/stargate";
-import { SigningCosmosClient } from "@cosmjs/launchpad";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
@@ -195,12 +193,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
         await window.keplr.enable(chainId);
         const offlineSigner = window.getOfflineSigner(chainId);
         const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
-      //   const accounts = await offlineSigner.getAccounts();
-      //   const cosmJS = new SigningCosmosClient(
-      //     "https://lcd-cosmoshub.keplr.app/rest",
-      //     accounts[0].address,
-      //     offlineSigner,
-      // );
+        //   const accounts = await offlineSigner.getAccounts();
+        //   const cosmJS = new SigningCosmosClient(
+        //     "https://lcd-cosmoshub.keplr.app/rest",
+        //     accounts[0].address,
+        //     offlineSigner,
+        // );
 
         setCosmosClient(client);
         // setCosmosClient(cosmJS);
@@ -240,7 +238,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
         'ERC721': ERC721_ABI,
         'ERC1155': ERC1155_ABI,
       };
-  
+
       const contractPath = templateMap[contract.template];
       if (contractPath) {
         contracts[contract.name] = {
