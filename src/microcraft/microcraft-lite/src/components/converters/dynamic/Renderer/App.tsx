@@ -32,7 +32,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const [chainId, setChainId] = useState('');
   const [networkStatus, setNetworkStatus] = useState<string>('');
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
-  // const [cosmosClient, setCosmosClient] = useState<any>("");
 
   useEffect(() => {
     if (contractMetaData) {
@@ -182,26 +181,17 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const initializeCosmosClient = async () => {
     if (rpcUrls) {
       try {
-        // let network = networkType || "cosmoshub-4";
         const chainId = chainIds || "cosmoshub-4";
 
         if (!window.keplr) {
           throw new Error("Keplr extension is not installed");
         }
 
-        // await window.keplr.enable(network);
         await window.keplr.enable(chainId);
         const offlineSigner = window.getOfflineSigner(chainId);
         const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
-        //   const accounts = await offlineSigner.getAccounts();
-        //   const cosmJS = new SigningCosmosClient(
-        //     "https://lcd-cosmoshub.keplr.app/rest",
-        //     accounts[0].address,
-        //     offlineSigner,
-        // );
 
         setCosmosClient(client);
-        // setCosmosClient(cosmJS);
       } catch (error) {
         console.error("Error initializing Cosmos client:", error);
       }
@@ -211,19 +201,9 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   useEffect(() => {
     addNetwork();
     initializeCosmosClient();
-    // console.log(networkName);
-    // console.log(typeof networkName);
-    // console.log(chainId);
-    // console.log(typeof chainId);
   }, [loadedData]);
 
   const web3 = new Web3(window.ethereum);
-  // web3.setMaxListeners(0);
-
-  // const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-  //   contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
-  //   return contracts;
-  // }, {}) || {};
 
   const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
     if (contract.abi && contract.abi.length > 0) {
@@ -282,7 +262,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const executeOnLoadCode = async (code) => {
     try {
       setLoading(true);
-      // const config = web3.config;
       const config = mcLib.web3.config;
       console.log(config);
       const result = await eval(code);
@@ -307,11 +286,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
       setLoading(true);
-      // const config = web3.config;
       const config = mcLib.web3.config;
       console.log(config);
-      // console.log("code: ", code);
-      // console.log(typeof code)
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
@@ -323,8 +299,6 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
       console.log(vals);
       console.log(result);
       setOutputCode(vals);
-      // setgraphData(result);
-      // setOutputCode(result);
     } catch (error) {
       console.log(`Error: ${error}`);
       setOutputCode(`Error: ${error}`);
