@@ -90,13 +90,13 @@ const Home: React.FC = () => {
   const handleImageClick = (componentDefinition: any) => {
     navigate(
       `/app/view/` +
-        componentDefinition.id +
-        "/" +
-        componentDefinition.title.replaceAll(" ", "-")
+      componentDefinition.id +
+      "/" +
+      componentDefinition.title.replaceAll(" ", "-")
     ),
-      {
-        state: { output: componentDefinition },
-      };
+    {
+      state: { output: componentDefinition },
+    };
   };
 
   const allConverters: Converter[] = [
@@ -317,11 +317,10 @@ const Home: React.FC = () => {
               {categories.map((category) => (
                 <button
                   key={category}
-                  className={`${
-                    activeCategory === category
+                  className={`${activeCategory === category
                       ? "bg-blue-500 text-white"
                       : "text-gray-900"
-                  } block px-4 py-2 text-sm w-full text-left`}
+                    } block px-4 py-2 text-sm w-full text-left`}
                   onClick={() => {
                     handleCategoryChange(category);
                     toggleMobileMenu();
@@ -376,11 +375,10 @@ const Home: React.FC = () => {
         {["all", "pending", "approved"].map((category) => (
           <button
             key={category}
-            className={`px-4 py-2 rounded ${
-              customComponentCategory === category
+            className={`px-4 py-2 rounded ${customComponentCategory === category
                 ? "bg-blue-500 text-white"
                 : "bg-slate-400 text-gray-800"
-            } hover:bg-blue-600 focus:outline-none`}
+              } hover:bg-blue-600 focus:outline-none`}
             onClick={() => handleCustomComponentCategoryChange(category)}
           >
             {category === "all"
@@ -409,11 +407,10 @@ const Home: React.FC = () => {
             {categories.map((category) => (
               <button
                 key={category}
-                className={`px-4 py-2 rounded ${
-                  activeCategory === category
+                className={`px-4 py-2 rounded ${activeCategory === category
                     ? "bg-blue-500 text-white"
                     : "bg-gray-200 text-gray-800"
-                } hover:bg-blue-600 focus:outline-none`}
+                  } hover:bg-blue-600 focus:outline-none`}
                 onClick={() => handleCategoryChange(category)}
               >
                 {category === "recent"
@@ -577,16 +574,16 @@ const Home: React.FC = () => {
                   */}
 
           <div>
-            <div className="flex full-width">
-              <h2 className=" text-lg md:text-xl font-semibold mb-2 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
+            <div className="flex flex-col md:flex-row md:items-center justify-between w-full mb-4">
+              <h2 className="text-lg md:text-xl font-semibold mb-4 md:mb-0 bg-gradient-to-r bg-clip-text text-transparent from-blue-500 to-sky-500">
                 Published apps
               </h2>
-              <div className="flex flex-wrap justify-between gap-8 md:gap-5 font-medium">
+              <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-5 w-full md:w-auto">
                 <select
                   id="privacyFilter"
                   value={selectedPrivacy}
                   onChange={handlePrivacyChange}
-                  className="border border-gray-300 rounded px-2 py-1"
+                  className="border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="public">Public</option>
                   {teams.map((team) => (
@@ -595,24 +592,23 @@ const Home: React.FC = () => {
                     </option>
                   ))}
                 </select>
-                <div className="-ml-16 md:ml-0">
-                  <div className="flex md:gap-3 text-lg">
+                <div className="flex gap-4 justify-center md:justify-start">
                   <a
                     href="/app/inbuilt/New-App"
-                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     Create
                   </a>
                   <a
                     href="/app/inbuilt/Request an app"
-                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white p-1 px-2 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                    className="inline-block bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded shadow-md transition duration-300 ease-in-out transform hover:scale-105"
                   >
                     Request
                   </a>
-                  </div>
                 </div>
               </div>
             </div>
+
             {renderCustomComponentCategories()}
             {filteredCustomComponents.length === 0 ? (
               <div className="text-gray-600">None found.</div>
@@ -621,11 +617,10 @@ const Home: React.FC = () => {
                 {filteredCustomComponents.map((data, index) => (
                   <div
                     key={index}
-                    className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${
-                      data.approval_status === "pending"
+                    className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${data.approval_status === "pending"
                         ? "border border-dashed border-red-400"
                         : ""
-                    }`}
+                      }`}
                     onClick={() => handleImageClick(data)}
                   >
                     <div className="home-image">
