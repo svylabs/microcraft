@@ -10,6 +10,11 @@ interface Output {
   [key: string]: any;
 }
 
+interface LoadedData {
+  contract_details: any[];
+  network_details: any;
+}
+
 const UserActionPage = () => {
   const location = useLocation();
   const { appId } = useParams<{ appId: string; title?: string }>();
@@ -25,13 +30,7 @@ const UserActionPage = () => {
   const [initialTrigger, setInitialTrigger] = useState(false);
   const [loading, setLoading] = useState(false);
   // const [feedback, setFeedback] = useState(false);
-
-  // const savedFormDataString = localStorage.getItem("formData");
-  // const savedFormData = savedFormDataString
-  //   ? JSON.parse(savedFormDataString)
-  //   : [];
-  // const [loadedData, setLoadedData] = useState(savedFormData);
-  const [loadedData, setLoadedData] = useState({});
+  const [loadedData, setLoadedData] = useState<LoadedData | null>(null);
 
 useEffect(() => {
   const fetchData = async () => {
@@ -85,7 +84,6 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    // setLoadedData(savedFormData);
     if (components.length === 0) {
       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
@@ -215,13 +213,21 @@ useEffect(() => {
               </h1>
             </div>
 
-            <App
+            {/* <App
               components={components}
               data={data}
               setData={setData}
-              setOutputCode={setOutputCode}
+              debug={setOutputCode}
               contractMetaData={loadedData}
-            />
+            /> */}
+            <App
+            components={components}
+            data={data}
+            setData={setData}
+            contracts={loadedData?.contract_details || []}
+            network={loadedData?.network_details || {}}
+            debug={setOutputCode}
+          />
           </div>
 
           {/* {feedback && (
