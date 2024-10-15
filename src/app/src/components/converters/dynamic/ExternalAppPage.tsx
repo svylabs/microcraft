@@ -30,7 +30,7 @@ const ExternalAppPage = () => {
     return false;
   };
 
-  const fetchGithubContent = async (url: string, branch: string, type: "json" | "str"="json") => {
+  const fetchGithubContent = async (url: string, branch: string, type: "json" | "str" = "json") => {
     //console.log(url);
     const contentUrl = url + ((branch !== undefined && branch !== "") ? "?ref=" + branch : "");
     console.log(contentUrl)
@@ -46,8 +46,8 @@ const ExternalAppPage = () => {
     if (type === "str") {
       return atob(appRawData.content);
     } else {
-        const data = JSON.parse(atob(appRawData.content));
-        return data;
+      const data = JSON.parse(atob(appRawData.content));
+      return data;
     }
     return data;
   };
@@ -61,16 +61,16 @@ const ExternalAppPage = () => {
       loadApp();
     }
     if (source === "local") {
-        loadAppFromLocal(urlPath);
+      loadAppFromLocal(urlPath);
     }
   }, []);
 
-  const loadAppFromLocal = async(localPath) => {
+  const loadAppFromLocal = async (localPath) => {
     setLoading(true);
     try {
       if (!localPath) {
-         setLoading(false);
-         return;
+        setLoading(false);
+        return;
       }
       let url = "/applet/app.json";
       const data = await (await fetch(url + "?base_path=" + localPath)).json();
@@ -81,12 +81,12 @@ const ExternalAppPage = () => {
         const component = components[i];
         if (component.type === "button") {
           if (component.codeRef !== undefined) {
-             const codeRefParts = component.codeRef.split("#");
-             const relPath = codeRefParts[0];
-             //const entryPoint = codeRefParts[1];
-             let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
-             const data = await (await fetch(codeUrl)).text();
-             component.code = data;
+            const codeRefParts = component.codeRef.split("#");
+            const relPath = codeRefParts[0];
+            //const entryPoint = codeRefParts[1];
+            let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+            const data = await (await fetch(codeUrl)).text();
+            component.code = data;
           }
         }
       }
@@ -100,12 +100,12 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadApp = async() => {
+  const loadApp = async () => {
     setLoading(true);
     try {
       if (!externalAppUrl) {
-         setLoading(false);
-         return;
+        setLoading(false);
+        return;
       }
       if (externalAppUrl.indexOf("github.com/") === -1) {
         toast.error("Please enter a valid github url");
@@ -120,8 +120,8 @@ const ExternalAppPage = () => {
       let branch = "";
       if (repoParts.length >= 4) {
         if (repoParts.length > 4) {
-            appPath = repoParts.slice(4).join("/"); 
-            appPath += "/";
+          appPath = repoParts.slice(4).join("/");
+          appPath += "/";
         }
         branch = repoParts[3];
       }
@@ -134,12 +134,12 @@ const ExternalAppPage = () => {
         const component = components[i];
         if (component.type === "button") {
           if (component.codeRef !== undefined) {
-             const codeRefParts = component.codeRef.split("#");
-             const relPath = codeRefParts[0];
-             //const entryPoint = codeRefParts[1];
-             let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
-             const data = await fetchGithubContent(codeUrl, branch, "str");
-             component.code = data;
+            const codeRefParts = component.codeRef.split("#");
+            const relPath = codeRefParts[0];
+            //const entryPoint = codeRefParts[1];
+            let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+            const data = await fetchGithubContent(codeUrl, branch, "str");
+            component.code = data;
           }
         }
       }
@@ -168,7 +168,7 @@ const ExternalAppPage = () => {
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
         <div className="text-s md:text-xs font-bold py-2 mx-auto">
-           <input
+          <input
             className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
             type="text"
             size={80}
@@ -176,12 +176,12 @@ const ExternalAppPage = () => {
             value={externalAppUrl}
             onChange={(e) => setExternalAppUrl(e.target.value)}
             id="output"
-            />
-            <button
-                className="px-4 py-2 bg-blue-500 rounded"
-                style={{margin: "20px"}}
-                onClick={() => loadApp()}  
-            >Load App</button>
+          />
+          <button
+            className="px-4 py-2 bg-blue-500 rounded"
+            style={{ margin: "20px" }}
+            onClick={() => loadApp()}
+          >Load App</button>
         </div>
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
@@ -208,20 +208,21 @@ const ExternalAppPage = () => {
               </button>
             </div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-            <h3 className="md:text-l hidden md:block">
+              <h3 className="md:text-l hidden md:block">
                 {appDescription}
-            </h3>
+              </h3>
             </div>
 
 
             {(components.length > 0) && (
-            <App
-              components={components}
-              data={data}
-              setData={setData}
-              setOutputCode={setOutputCode}
-              contractMetaData={""}
-            />
+              <App
+                components={components}
+                data={data}
+                setData={setData}
+                contracts={""}
+                network={""}
+                debug={setOutputCode}
+              />
             )}
           </div>
 
