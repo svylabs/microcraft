@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -214,7 +215,15 @@ const ExternalAppPage = () => {
             </div>
 
             {(components.length > 0) && (
-              <App
+              // <App
+              //   components={components}
+              //   data={data}
+              //   setData={setData}
+              //   contracts={""}
+              //   network={""}
+              //   debug={setOutputCode}
+              // />
+              <DynamicApp
                 components={components}
                 data={data}
                 setData={setData}

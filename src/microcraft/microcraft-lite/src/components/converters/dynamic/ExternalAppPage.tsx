@@ -6,6 +6,7 @@ import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 import { net } from "web3";
+// import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -238,6 +239,14 @@ const ExternalAppPage = () => {
                 network={network || {}}
                 debug={setOutputCode}
               />
+              //     <DynamicApp
+              //   components={components}
+              //   data={data}
+              //   setData={setData}
+              //   contracts={contracts || []}
+              //   network={network || {}}
+              //   debug={setOutputCode}
+              // />
             )}
           </div>
 

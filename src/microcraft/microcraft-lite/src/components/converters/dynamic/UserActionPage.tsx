@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+// import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -213,13 +214,6 @@ useEffect(() => {
               </h1>
             </div>
 
-            {/* <App
-              components={components}
-              data={data}
-              setData={setData}
-              debug={setOutputCode}
-              contractMetaData={loadedData}
-            /> */}
             <App
             components={components}
             data={data}
@@ -228,6 +222,15 @@ useEffect(() => {
             network={loadedData?.network_details || {}}
             debug={setOutputCode}
           />
+          
+          {/* <DynamicApp
+            components={components}
+            data={data}
+            setData={setData}
+            contracts={loadedData?.contract_details || []}
+            network={loadedData?.network_details || {}}
+            debug={setOutputCode}
+          /> */}
           </div>
 
           {/* {feedback && (
