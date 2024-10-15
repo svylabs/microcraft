@@ -318,8 +318,8 @@ const Home: React.FC = () => {
                 <button
                   key={category}
                   className={`${activeCategory === category
-                      ? "bg-blue-500 text-white"
-                      : "text-gray-900"
+                    ? "bg-blue-500 text-white"
+                    : "text-gray-900"
                     } block px-4 py-2 text-sm w-full text-left`}
                   onClick={() => {
                     handleCategoryChange(category);
@@ -376,8 +376,8 @@ const Home: React.FC = () => {
           <button
             key={category}
             className={`px-4 py-2 rounded ${customComponentCategory === category
-                ? "bg-blue-500 text-white"
-                : "bg-slate-400 text-gray-800"
+              ? "bg-blue-500 text-white"
+              : "bg-slate-400 text-gray-800"
               } hover:bg-blue-600 focus:outline-none`}
             onClick={() => handleCustomComponentCategoryChange(category)}
           >
@@ -408,8 +408,8 @@ const Home: React.FC = () => {
               <button
                 key={category}
                 className={`px-4 py-2 rounded ${activeCategory === category
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-800"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-800"
                   } hover:bg-blue-600 focus:outline-none`}
                 onClick={() => handleCategoryChange(category)}
               >
@@ -618,8 +618,8 @@ const Home: React.FC = () => {
                   <div
                     key={index}
                     className={`common-button flex flex-col w-full md:w-[47.8%] lg:w-[31.6%] xl:w-[23.6%] justify-center items-center bg-white rounded-lg overflow-hidden p-4 shadow-md hover:shadow-lg transform transition-transform hover:scale-105 m-2 ${data.approval_status === "pending"
-                        ? "border border-dashed border-red-400"
-                        : ""
+                      ? "border border-dashed border-red-400"
+                      : ""
                       }`}
                     onClick={() => handleImageClick(data)}
                   >
@@ -635,7 +635,7 @@ const Home: React.FC = () => {
                         <span>{data.description}</span>
                       </div>
                     </div>
-                    <p className="block text-lg font-bold mb-1">{data.title}</p>
+                    <p className="block text-lg font-bold mb-1 text-center">{data.title}</p>
                     {data.approval_status === "pending" && (
                       <span className="absolute text-hover text-red-500 text-center font-medium bg-black bg-opacity-50 p-2 rounded-md z-50 animate-puls">
                         ⚠️ Caution: Component under review. Use with care.

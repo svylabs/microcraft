@@ -69,6 +69,7 @@ const ConfigureBasicDetails: React.FC = () => {
             ...existingData,
             title: name,
             description: description,
+            privacy: "public",
             contractDetails: contracts,
             networkDetails: network,
           };

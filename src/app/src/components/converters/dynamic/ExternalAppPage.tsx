@@ -213,7 +213,6 @@ const ExternalAppPage = () => {
               </h3>
             </div>
 
-
             {(components.length > 0) && (
               <App
                 components={components}
