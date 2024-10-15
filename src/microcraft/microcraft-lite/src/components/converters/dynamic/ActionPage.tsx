@@ -7,6 +7,7 @@ import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+// import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -157,13 +158,31 @@ const ActionPage: React.FC = () => {
             </button>
           </div>
 
+          {/* <App
+            components={components}
+            data={data}
+            setData={setData}
+            debug={setOutputCode}
+            contractMetaData={loadedData}
+          /> */}
+
           <App
             components={components}
             data={data}
             setData={setData}
-            setOutputCode={setOutputCode}
-            contractMetaData={loadedData}
+            contracts={loadedData.contractDetails}
+            network={loadedData.networkDetails}
+            debug={setOutputCode}
           />
+
+
+          {/* <DynamicApp
+            components={components}
+            data={data}
+            setData={setData}
+            debug={setOutputCode}
+            contractMetaData={loadedData}
+          /> */}
 
           <div className="flex justify-end">
             <button

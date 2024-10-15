@@ -23,9 +23,8 @@ interface Props {
   debug: React.Dispatch<React.SetStateAction<any>>;
 }
 
-  const App: React.FC<Props> = ({ components, data, setData, debug, network, contracts }) => {
+const App: React.FC<Props> = ({ components, data, setData, debug, network, contracts }) => {
   const [loading, setLoading] = useState(false);
-  // const [loadedData, setLoadedData] = useState<any>({});
   const [networkDetails, setNetworkDetails] = useState<any>(null);
   const [contractDetails, setContractDetails] = useState<any[]>([]);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);

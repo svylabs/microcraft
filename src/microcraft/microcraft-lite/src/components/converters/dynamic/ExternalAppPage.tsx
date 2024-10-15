@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+import { net } from "web3";
 
 interface Output {
   [key: string]: any;
@@ -16,8 +17,7 @@ const ExternalAppPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState([]);
   const [contracts, setContracts] = useState([]);
-  const [networks, setNetworks] = useState([]);
-  const [contractMetaData, setContractMetaData] = useState<any>(null);
+  const [network, setNetwork] = useState({});
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [loading, setLoading] = useState(false);
@@ -82,12 +82,6 @@ const ExternalAppPage = () => {
       const components = data.components;
       const contractDetails = data.contracts || [];
       const networkDetails = data.network;
-      
-      // Combine contracts and networks into contractMetaData
-      const combinedMetaData = {
-        contractDetails: contractDetails,
-        networkDetails: networkDetails
-      };
 
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
@@ -106,12 +100,12 @@ const ExternalAppPage = () => {
       setAppName(appName);
       setComponents(components);
       setContracts(contractDetails);
-      setNetworks(networkDetails);
-      setContractMetaData(combinedMetaData);
-      setLoading(false);
+      setNetwork(networkDetails);
     } catch (error) {
+      console.error("Error loading external app: ", error);
+      toast.error("Error loading external app. Please try again.");
+    } finally {
       setLoading(false);
-      console.log("Error loading external app: ", error);
     }
   }
 
@@ -148,12 +142,6 @@ const ExternalAppPage = () => {
       const contractDetails = data.contracts || [];
       const networkDetails = data.network;
 
-      // Combine contracts and networks into contractMetaData
-      const combinedMetaData = {
-        contractDetails: contractDetails,
-        networkDetails: networkDetails
-      };
-
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
         if (component.type === "button") {
@@ -171,12 +159,12 @@ const ExternalAppPage = () => {
       setAppName(appName);
       setComponents(components);
       setContracts(contractDetails);
-      setNetworks(networkDetails);
-      setContractMetaData(combinedMetaData);
-      setLoading(false);
+      setNetwork(networkDetails);
     } catch (error) {
+      console.error("Error loading external app: ", error);
+      toast.error("Error loading external app. Please try again.");
+    } finally {
       setLoading(false);
-      console.log("Error loading external app: ", error);
     }
   }
 
@@ -246,8 +234,9 @@ const ExternalAppPage = () => {
                 components={components}
                 data={data}
                 setData={setData}
-                setOutputCode={setOutputCode}
-                contractMetaData={contractMetaData}
+                contracts={contracts || []}
+                network={network || {}}
+                debug={setOutputCode}
               />
             )}
           </div>

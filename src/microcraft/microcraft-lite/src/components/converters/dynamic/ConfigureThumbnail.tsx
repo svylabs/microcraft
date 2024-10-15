@@ -103,24 +103,26 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
         toast.error("Please select or upload an image.");
         throw new Error("Please select or upload an image.");
       }
-      
+
+      const body = {
+        title: loadedData.title,
+        description: loadedData.description || "",
+        image_url: preferredImageURL, // selected image url
+        component_definition: JSON.stringify(components),
+        privacy: loadedData.privacy || "",
+        teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
+        selected_contracts: loadedData.selectedContracts || [],
+        network_details: loadedData.networkDetails || {},
+        contract_details: loadedData.contractDetails || [],
+      };
+
       const response = await fetch(`${BASE_API_URL}/dynamic-component/new`, {
         credentials: "include",
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          title: loadedData.title,
-          description: loadedData.description,
-          image_url: preferredImageURL, //selected image url
-          component_definition: JSON.stringify(components),
-          privacy: loadedData.privacy,
-          teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
-          selected_contracts: loadedData.selectedContracts,
-          network_details: loadedData.networkDetails,
-          contract_details: loadedData.contractDetails,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
