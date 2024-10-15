@@ -4,7 +4,7 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-import App from "./Renderer/App";
+// import App from "./Renderer/App";
 import DynamicApp from 'microcraft-lib';
 
 interface Output {
@@ -213,7 +213,7 @@ const UserActionPage = () => {
                 {output.title || appId}
               </h1>
             </div>
-            
+
             {/* <App
             components={components}
             data={data}

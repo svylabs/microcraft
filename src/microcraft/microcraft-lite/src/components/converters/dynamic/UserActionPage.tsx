@@ -4,8 +4,8 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-import App from "./Renderer/App";
-// import DynamicApp from 'microcraft-lib';
+// import App from "./Renderer/App";
+import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -33,27 +33,27 @@ const UserActionPage = () => {
   // const [feedback, setFeedback] = useState(false);
   const [loadedData, setLoadedData] = useState<LoadedData | null>(null);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setLoadedData(data);
+      } catch (error) {
+        console.error("Error fetching data from backend:", error);
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
-      setLoadedData(data);
-    } catch (error) {
-      console.error("Error fetching data from backend:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  if (appId) { 
-    fetchData();
-  }
-}, [appId]);
+    if (appId) {
+      fetchData();
+    }
+  }, [appId]);
 
 
   const isAuthenticated = () => {
@@ -214,16 +214,7 @@ useEffect(() => {
               </h1>
             </div>
 
-            <App
-            components={components}
-            data={data}
-            setData={setData}
-            contracts={loadedData?.contract_details || []}
-            network={loadedData?.network_details || {}}
-            debug={setOutputCode}
-          />
-          
-          {/* <DynamicApp
+            {/* <App
             components={components}
             data={data}
             setData={setData}
@@ -231,6 +222,15 @@ useEffect(() => {
             network={loadedData?.network_details || {}}
             debug={setOutputCode}
           /> */}
+
+            <DynamicApp
+              components={components}
+              data={data}
+              setData={setData}
+              contracts={loadedData?.contract_details || []}
+              network={loadedData?.network_details || {}}
+              debug={setOutputCode}
+            />
           </div>
 
           {/* {feedback && (

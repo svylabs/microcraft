@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
-import App from "./Renderer/App";
+// import App from "./Renderer/App";
 import DynamicApp from 'microcraft-lib';
 
 interface Output {
