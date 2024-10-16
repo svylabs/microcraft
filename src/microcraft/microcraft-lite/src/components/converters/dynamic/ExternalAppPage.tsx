@@ -6,7 +6,7 @@ import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 import { net } from "web3";
-// import DynamicApp from 'microcraft-lib';
+import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -169,10 +169,10 @@ const ExternalAppPage = () => {
     }
   }
 
-  const goBack = () => {
-    // setFeedback(true);
-    window.location.href = "/";
-  };
+  // const goBack = () => {
+  //   // setFeedback(true);
+  //   window.location.href = "/";
+  // };
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -183,7 +183,7 @@ const ExternalAppPage = () => {
     <>
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
-        <div className="text-s md:text-xs font-bold py-2 mx-auto">
+        <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
           <input
             className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
             type="text"
@@ -193,12 +193,14 @@ const ExternalAppPage = () => {
             onChange={(e) => setExternalAppUrl(e.target.value)}
             id="output"
           />
+          <div className="mx-auto">
           <button
-            className="px-4 py-2 bg-blue-500 rounded"
-            style={{ margin: "20px" }}
+            className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
             onClick={() => loadApp()}
           >Load App</button>
+          </div>
         </div>
+
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
             <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
@@ -210,10 +212,10 @@ const ExternalAppPage = () => {
           )}
           <div className="px-2 md:p- text-wrap">
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h1 className="font-semibold md:text-xl hidden md:block">
+              <h1 className="font-semibold md:text-xl">
                 {appName}
               </h1>
-              <button
+              {/* <button
                 className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
                 onClick={goBack}
               >
@@ -221,10 +223,10 @@ const ExternalAppPage = () => {
                   Back To Home
                 </span>
                 Back
-              </button>
+              </button> */}
             </div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h3 className="md:text-l hidden md:block">
+              <h3 className="">
                 {appDescription}
               </h3>
             </div>
@@ -239,7 +241,7 @@ const ExternalAppPage = () => {
                 network={network || {}}
                 debug={setOutputCode}
               />
-              //     <DynamicApp
+              // <DynamicApp
               //   components={components}
               //   data={data}
               //   setData={setData}
