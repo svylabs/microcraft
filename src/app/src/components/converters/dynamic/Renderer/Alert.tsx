@@ -8,7 +8,7 @@ interface AlertProps {
 }
 
 const Alert: React.FC<AlertProps> = ({ isOpen, onClose, networkStatus, onSwitchNetwork }) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null; // Hide modal when not open
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
