@@ -49,7 +49,6 @@ const createApp = async (name, description) => {
         };
 
         // Store app.json in the newly created directory
-        // fs.mkdirSync(name);
         fs.writeFileSync(`${name}/app.json`, JSON.stringify(app, null, 2));
         console.log("A simple app has been created", app);
         console.log("You can run the app using `microcraft app open <dir>` command");
