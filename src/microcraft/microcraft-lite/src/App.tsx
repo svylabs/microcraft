@@ -1,13 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
-import ConfigureVisibilitySelector from "./components/converters/dynamic/ConfigureVisibilitySelector";
-import ConfigureInputsOutputs from "./components/converters/dynamic/ConfigureInputsOutputs";
 import ExternalAppPage from "./components/converters/dynamic/ExternalAppPage";
-import Action from "./components/converters/dynamic/ActionPage";
 import SharePage from "./components/share/SharePage";
 
 const App: React.FC = () => {

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { BASE_API_URL } from "~/components/constants";
 import { ethers } from 'ethers';
 import Web3 from "web3";
 import { SigningStargateClient } from "@cosmjs/stargate";
-import { SigningCosmosClient } from "@cosmjs/launchpad";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
@@ -18,36 +16,41 @@ import { ERC1155_ABI } from './ABI/ERC1155_ABI';
 
 interface Props {
   components: any[];
-  contractMetaData: any;
   network?: any;
   contracts?: any;
   data: { [key: string]: any };
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
-  setOutputCode: React.Dispatch<React.SetStateAction<any>>;
+  debug: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contractMetaData }) => {
+const App: React.FC<Props> = ({ components, data, setData, debug, network, contracts }) => {
   const [loading, setLoading] = useState(false);
-  const [loadedData, setLoadedData] = useState<any>({});
+  const [networkDetails, setNetworkDetails] = useState<any>(null);
+  const [contractDetails, setContractDetails] = useState<any[]>([]);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [networkName, setNetworkName] = useState('');
   const [chainId, setChainId] = useState('');
   const [networkStatus, setNetworkStatus] = useState<string>('');
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
-  // const [cosmosClient, setCosmosClient] = useState<any>("");
 
   useEffect(() => {
-    if (contractMetaData) {
-      setLoadedData(contractMetaData);
-    } else {
-      console.error("No contract metadata found.");
+    // Update network details if available
+    if (network) {
+      setNetworkDetails(network);
     }
-  }, [contractMetaData]);
 
-  console.log("app.TSX-loadedData: ", loadedData);
-  console.log("typeof app.TSX-loadedData: ", typeof loadedData);
+    // Update contract details if available
+    if (contracts) {
+      setContractDetails(contracts);
+    }
+  }, [network, contracts]);
 
-  const supportedNetworks = loadedData.networkDetails || loadedData.network_details || [];
+  console.log("app.TSX-loadedData: ", networkDetails);
+  console.log("typeof app.TSX-loadedData: ", typeof networkDetails);
+  console.log("app.TSX-loadedData: ", contractDetails);
+  console.log("typeof app.TSX-loadedData: ", typeof contractDetails);
+
+  const supportedNetworks = networkDetails || [];
   const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
   const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
@@ -184,26 +187,17 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const initializeCosmosClient = async () => {
     if (rpcUrls) {
       try {
-        // let network = networkType || "cosmoshub-4";
         const chainId = chainIds || "cosmoshub-4";
 
         if (!window.keplr) {
           throw new Error("Keplr extension is not installed");
         }
 
-        // await window.keplr.enable(network);
         await window.keplr.enable(chainId);
         const offlineSigner = window.getOfflineSigner(chainId);
         const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
-      //   const accounts = await offlineSigner.getAccounts();
-      //   const cosmJS = new SigningCosmosClient(
-      //     "https://lcd-cosmoshub.keplr.app/rest",
-      //     accounts[0].address,
-      //     offlineSigner,
-      // );
 
         setCosmosClient(client);
-        // setCosmosClient(cosmJS);
       } catch (error) {
         console.error("Error initializing Cosmos client:", error);
       }
@@ -213,21 +207,11 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   useEffect(() => {
     addNetwork();
     initializeCosmosClient();
-    // console.log(networkName);
-    // console.log(typeof networkName);
-    // console.log(chainId);
-    // console.log(typeof chainId);
-  }, [loadedData]);
+  }, [networkDetails]);
 
   const web3 = new Web3(window.ethereum);
-  // web3.setMaxListeners(0);
 
-  // const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
-  //   contracts[contract.name] = new web3.eth.Contract(contract.abi, contract.address);
-  //   return contracts;
-  // }, {}) || {};
-
-  const injectedContracts = (loadedData.contractDetails || loadedData.contract_details)?.reduce((contracts, contract) => {
+  const injectedContracts = contractDetails?.reduce((contracts, contract) => {
     if (contract.abi && contract.abi.length > 0) {
       // If ABI is directly provided, use it.
       contracts[contract.name] = {
@@ -240,7 +224,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
         'ERC721': ERC721_ABI,
         'ERC1155': ERC1155_ABI,
       };
-  
+
       const contractPath = templateMap[contract.template];
       if (contractPath) {
         contracts[contract.name] = {
@@ -264,9 +248,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   console.log(mcLib);
 
   useEffect(() => {
-    console.log(loadedData);
     console.log(mcLib);
-  }, [loadedData]);
+  }, [networkDetails]);
 
   useEffect(() => {
     console.log(components);
@@ -284,13 +267,12 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const executeOnLoadCode = async (code) => {
     try {
       setLoading(true);
-      // const config = web3.config;
       const config = mcLib.web3.config;
       console.log(config);
       const result = await eval(code);
       if (typeof result === "object") {
         setData((prevData) => ({ ...prevData, ...result }));
-        setOutputCode((prevOutputCode) => ({ ...prevOutputCode, ...result }));
+        debug((prevOutputCode) => ({ ...prevOutputCode, ...result }));
       }
     } catch (error) {
       console.error("Error executing onLoad code:", error);
@@ -309,11 +291,8 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
       setLoading(true);
-      // const config = web3.config;
       const config = mcLib.web3.config;
       console.log(config);
-      // console.log("code: ", code);
-      // console.log(typeof code)
       const result = await eval(code);
       let vals = data;
       if (typeof result === "object") {
@@ -324,12 +303,10 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
       }
       console.log(vals);
       console.log(result);
-      setOutputCode(vals);
-      // setgraphData(result);
-      // setOutputCode(result);
+      debug(vals);
     } catch (error) {
       console.log(`Error: ${error}`);
-      setOutputCode(`Error: ${error}`);
+      debug(`Error: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -595,7 +572,7 @@ const App: React.FC<Props> = ({ components, data, setData, setOutputCode, contra
                 <div>
                   <Wallet
                     configurations={
-                      loadedData.networkDetails || loadedData.network_details
+                      networkDetails
                     }
                     onSelectAddress={(address) =>
                       handleInputChange(component.id, {

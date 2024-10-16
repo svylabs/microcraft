@@ -4,10 +4,16 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-import App from "./Renderer/App";
+// import App from "./Renderer/App";
+import DynamicApp from 'microcraft-lib';
 
 interface Output {
   [key: string]: any;
+}
+
+interface LoadedData {
+  contract_details: any[];
+  network_details: any;
 }
 
 const UserActionPage = () => {
@@ -25,35 +31,29 @@ const UserActionPage = () => {
   const [initialTrigger, setInitialTrigger] = useState(false);
   const [loading, setLoading] = useState(false);
   // const [feedback, setFeedback] = useState(false);
+  const [loadedData, setLoadedData] = useState<LoadedData | null>(null);
 
-  // const savedFormDataString = localStorage.getItem("formData");
-  // const savedFormData = savedFormDataString
-  //   ? JSON.parse(savedFormDataString)
-  //   : [];
-  // const [loadedData, setLoadedData] = useState(savedFormData);
-  const [loadedData, setLoadedData] = useState({});
-
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${BASE_API_URL}/dynamic-component/${appId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setLoadedData(data);
+      } catch (error) {
+        console.error("Error fetching data from backend:", error);
+      } finally {
+        setLoading(false);
       }
-      const data = await response.json();
-      setLoadedData(data);
-    } catch (error) {
-      console.error("Error fetching data from backend:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  if (appId) { 
-    fetchData();
-  }
-}, [appId]);
+    if (appId) {
+      fetchData();
+    }
+  }, [appId]);
 
 
   const isAuthenticated = () => {
@@ -85,7 +85,6 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    // setLoadedData(savedFormData);
     if (components.length === 0) {
       fetch(`${BASE_API_URL}/dynamic-component/${appId}`)
         .then((response) => response.json())
@@ -215,12 +214,22 @@ useEffect(() => {
               </h1>
             </div>
 
-            <App
+            {/* <App
+            components={components}
+            data={data}
+            setData={setData}
+            contracts={loadedData?.contract_details || []}
+            network={loadedData?.network_details || {}}
+            debug={setOutputCode}
+          /> */}
+
+            <DynamicApp
               components={components}
               data={data}
               setData={setData}
-              setOutputCode={setOutputCode}
-              contractMetaData={loadedData}
+              contracts={loadedData?.contract_details || []}
+              network={loadedData?.network_details || {}}
+              debug={setOutputCode}
             />
           </div>
 

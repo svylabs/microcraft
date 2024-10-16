@@ -16,8 +16,8 @@ app.command('open <source> <url>')
     .description("Opens the app in the browser")
     .action(open_command);
 
-app.command('build <folder>')
-    .description('Builds and merges all files in the specified folder')
+app.command('build <appDirectory>')
+    .description('Builds and merges all files in the specified app directory')
     .action(build_command);
 
 program.parse(process.argv);
