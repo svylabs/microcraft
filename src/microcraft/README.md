@@ -13,19 +13,19 @@ This README provides details on how to use the CLI commands for creating, runnin
 
 To create a new app, use the following command:
 
-```bash
+```
 node bin/index.js app new <app-name> "<app-description>"
 ```
 
 ### Example:
 
 1. Create a `hello-world` app with the description "Sample App":
-   ```bash
+   ```
    node bin/index.js app new hello-world "Sample App"
    ```
 
 2. Create a `total-lusd-circulation` app with the description "Total LUSD in Circulation":
-   ```bash
+   ```
    node bin/index.js app new total-lusd-circulation "Total LUSD in Circulation"
    ```
 
@@ -33,19 +33,19 @@ node bin/index.js app new <app-name> "<app-description>"
 
 To run or open an app locally, use the following command:
 
-```bash
+```
 node bin/index.js app open local <app-name>
 ```
 
 ### Example:
 
 1. Run or open the `hello-world` app:
-   ```bash
+   ```
    node bin/index.js app open local hello-world
    ```
 
 2. Run or open the `total-lusd-circulation` app:
-   ```bash
+   ```
    node bin/index.js app open local total-lusd-circulation
    ```
 
@@ -53,19 +53,19 @@ node bin/index.js app open local <app-name>
 
 To build an app, use the following command:
 
-```bash
+```
 node bin/index.js app build <app-name>
 ```
 
 ### Example:
 
 1. Build the `hello-world` app:
-   ```bash
+   ```
    node bin/index.js app build hello-world
    ```
 
 2. Build the `total-lusd-circulation` app:
-   ```bash
+   ```
    node bin/index.js app build total-lusd-circulation
    ```
 
@@ -75,36 +75,36 @@ For apps located in the `sample_apps` folder, use the following commands:
 
 ### Create a New App in `sample_apps`
 
-```bash
+```
 node bin/index.js app new sample_apps/<app-name> "<app-description>"
 ```
 
 #### Example:
 Create a `total-lusd-circulation` app inside `sample_apps`:
-```bash
+```
 node bin/index.js app new sample_apps/total-lusd-circulation "Total LUSD in Circulation"
 ```
 
 ### Run or Open a Sample App
 
-```bash
+```
 node bin/index.js app open local sample_apps/<app-name>
 ```
 
 #### Example:
 Run or open the `total-lusd-circulation` app inside `sample_apps`:
-```bash
+```
 node bin/index.js app open local sample_apps/total-lusd-circulation
 ```
 
 ### Build a Sample App
 
-```bash
+```
 node bin/index.js app build sample_apps/<app-name>
 ```
 
 #### Example:
 Build the `total-lusd-circulation` app inside `sample_apps`:
-```bash
+```
 node bin/index.js app build sample_apps/total-lusd-circulation
 ```
