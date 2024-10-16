@@ -4,6 +4,14 @@ const express = require('express');
 
 const createApp = async (name, description) => {
     try {
+        // Check if the directory already exists
+        if (!fs.existsSync(name)) {
+            fs.mkdirSync(name);
+        } else {
+            console.error(`Directory ${name} already exists.`);
+            return;
+        }
+        
         // Create a new app json locally
         const app = {
             name,
@@ -40,8 +48,8 @@ const createApp = async (name, description) => {
             }
         };
 
-        // Create a directory with the name of the app and store app.json there
-        fs.mkdirSync(name);
+        // Store app.json in the newly created directory
+        // fs.mkdirSync(name);
         fs.writeFileSync(`${name}/app.json`, JSON.stringify(app, null, 2));
         console.log("A simple app has been created", app);
         console.log("You can run the app using `microcraft app open <dir>` command");
@@ -97,10 +105,10 @@ const open_command = async (source, url) => {
 }
 
 // Function to merge content from JS files into the app JSON
-const buildApp = async (folder) => {
+const buildApp = async (appDirectory) => {
     try {
         // Read the app.json file
-        const appPath = path.join(folder, 'app.json');
+        const appPath = path.join(appDirectory, 'app.json');
         const appData = JSON.parse(fs.readFileSync(appPath, 'utf-8'));
 
         // Process each component to update 'code' with the content from the referenced js file (if `codeRef` or `coderef` exists)
@@ -109,7 +117,7 @@ const buildApp = async (folder) => {
             const codeReference = component.coderef || component.codeRef;
             
             if (codeReference) {
-                const codePath = path.join(folder, codeReference);  // Holds the path to JS file
+                const codePath = path.join(appDirectory, codeReference);  // Holds the path to JS file
                 if (fs.existsSync(codePath)) {
                     const codeContent = fs.readFileSync(codePath, 'utf-8');
                     component.code = codeContent;  // Replace the reference with actual code content
@@ -123,10 +131,10 @@ const buildApp = async (folder) => {
         }));
 
         // Write the new app.json file with merged code
-        const outputPath = path.join(folder, 'app.build.json');
+        const outputPath = path.join(appDirectory, 'app.build.json');
         fs.writeFileSync(outputPath, JSON.stringify(appData, null, 2));
 
-        console.log(`App has been built successfully! Merged app.json saved as app.build.json in the ${folder} folder.`);
+        console.log(`App has been built successfully! Merged app.json saved as app.build.json in the ${appDirectory} directory.`);
     } catch (error) {
         console.error('Error building the app:', error.message);
     }
@@ -134,9 +142,9 @@ const buildApp = async (folder) => {
 
 
 // Command to build the app and merge code references
-const build_command = async (folder) => {
+const build_command = async (appDirectory) => {
     try {
-        await buildApp(folder);
+        await buildApp(appDirectory);
     } catch (error) {
         console.error('Error building app:', error.message);
     }
