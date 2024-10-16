@@ -2,10 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { BASE_API_URL } from "~/components/constants";
+// import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-import App from "./Renderer/App";
-import { net } from "web3";
+// import App from "./Renderer/App";
+// import { net } from "web3";
 import DynamicApp from 'microcraft-lib';
 
 interface Output {
@@ -233,15 +233,7 @@ const ExternalAppPage = () => {
 
 
             {(components.length > 0) && (
-              <App
-                components={components}
-                data={data}
-                setData={setData}
-                contracts={contracts || []}
-                network={network || {}}
-                debug={setOutputCode}
-              />
-              // <DynamicApp
+              // <App
               //   components={components}
               //   data={data}
               //   setData={setData}
@@ -249,6 +241,14 @@ const ExternalAppPage = () => {
               //   network={network || {}}
               //   debug={setOutputCode}
               // />
+              <DynamicApp
+                components={components}
+                data={data}
+                setData={setData}
+                contracts={contracts || []}
+                network={network || {}}
+                debug={setOutputCode}
+              />
             )}
           </div>
 
