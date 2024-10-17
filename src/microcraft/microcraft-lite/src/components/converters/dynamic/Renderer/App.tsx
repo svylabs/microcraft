@@ -63,6 +63,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         await ethereum.send("eth_requestAccounts", []);
         const network = await provider.getNetwork();
         console.log("Network:", network);
+        
         if (network && network.chainId && network.name) {
           setNetworkName(network.name);
           setChainId(network.chainId.toString());
@@ -139,9 +140,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         });
         setAlertOpen(false);
         setNetworkStatus(`Connected to ${supportedNetwork.type}`);
-      } catch (addError) {
+      } catch (addError: any) {
         console.error('Error adding network:', addError);
-        setNetworkStatus('Failed to add network. Please try again.');
+        setNetworkStatus(`Failed to add network: ${addError.message}`);
         setAlertOpen(true);
       }
     };
@@ -167,7 +168,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         if (switchError.code === 4902) {
           await addAndSwitchNetwork(supportedNetwork);
         } else {
-          setNetworkStatus('Failed to switch network. Please try again.');
+          setNetworkStatus(`Failed to switch network: ${switchError.message}`);
           setAlertOpen(true);
         }
       }
