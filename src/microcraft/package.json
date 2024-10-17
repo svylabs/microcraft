@@ -1,13 +1,14 @@
 {
-  "name": "microcraft",
-  "version": "1.0.0",
+  "name": "@svylabs/microcraft",
+  "version": "1.0.1",
   "description": "CLI to develop and use decentralized frontends",
   "main": "index.js",
   "bin": {
     "microcraft": "./bin/index.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cd microcraft-lite && npm run build"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -24,5 +25,8 @@
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.45",
     "tailwindcss": "^3.4.10"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
