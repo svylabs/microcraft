@@ -175,8 +175,10 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     };
 
     if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
+      await addNetwork();
       await switchNetwork(supportedNetworks[0]);
     } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
+      await addNetwork();
       await switchNetwork(supportedNetworks);
     } else {
       console.error('No supported networks available.');
