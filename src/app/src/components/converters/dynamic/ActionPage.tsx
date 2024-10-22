@@ -7,7 +7,7 @@ import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
 // import App from "./Renderer/App";
-import DynamicApp from 'microcraft-lib';
+import DynamicApp from '@svylabs/microcraft-lib';
 
 interface Output {
   [key: string]: any;

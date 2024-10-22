@@ -4,9 +4,9 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 // import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-// import App from "./Renderer/App";
+import App from "./Renderer/App";
 // import { net } from "web3";
-import DynamicApp from 'microcraft-lib';
+import DynamicApp from '@svylabs/microcraft-lib';
 
 interface Output {
   [key: string]: any;
@@ -169,11 +169,6 @@ const ExternalAppPage = () => {
     }
   }
 
-  // const goBack = () => {
-  //   // setFeedback(true);
-  //   window.location.href = "/";
-  // };
-
   // function submitFeedback() {
   //   setFeedback(false);
   //   window.location.href = "/";
@@ -215,15 +210,6 @@ const ExternalAppPage = () => {
               <h1 className="font-semibold md:text-xl">
                 {appName}
               </h1>
-              {/* <button
-                className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
-                onClick={goBack}
-              >
-                <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
-                  Back To Home
-                </span>
-                Back
-              </button> */}
             </div>
             <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
               <h3 className="">
