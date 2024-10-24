@@ -98,16 +98,8 @@ $mobile-media-query: '(pointer: coarse)' !default;
       $antWidth: 10px;
       $doubleAntWidth: 10px * 2;
 
-      @keyframes marching-ants {
-        0% {
-          background-position: 0 0, 0 100%, 0 0, 100% 0;
-        }
-        100% {
-          background-position: $doubleAntWidth 0, (-$doubleAntWidth) 100%, 0 (-$doubleAntWidth), 100% $doubleAntWidth;
-        }
-      }
-
-      animation: marching-ants 1s;
+      & {
+        animation: marching-ants 1s;
       background-image: linear-gradient(to right, #fff 50%, #444 50%), linear-gradient(to right, #fff 50%, #444 50%),
         linear-gradient(to bottom, #fff 50%, #444 50%), linear-gradient(to bottom, #fff 50%, #444 50%);
       background-size: $antWidth 1px, $antWidth 1px, 1px $antWidth, 1px $antWidth;
@@ -117,6 +109,27 @@ $mobile-media-query: '(pointer: coarse)' !default;
       animation-play-state: running;
       animation-timing-function: linear;
       animation-iteration-count: infinite;
+      }
+
+      @keyframes marching-ants {
+        0% {
+          background-position: 0 0, 0 100%, 0 0, 100% 0;
+        }
+        100% {
+          background-position: $doubleAntWidth 0, (-$doubleAntWidth) 100%, 0 (-$doubleAntWidth), 100% $doubleAntWidth;
+        }
+      }
+
+      // animation: marching-ants 1s;
+      // background-image: linear-gradient(to right, #fff 50%, #444 50%), linear-gradient(to right, #fff 50%, #444 50%),
+      //   linear-gradient(to bottom, #fff 50%, #444 50%), linear-gradient(to bottom, #fff 50%, #444 50%);
+      // background-size: $antWidth 1px, $antWidth 1px, 1px $antWidth, 1px $antWidth;
+      // background-position: 0 0, 0 100%, 0 0, 100% 0;
+      // background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+      // color: #fff;
+      // animation-play-state: running;
+      // animation-timing-function: linear;
+      // animation-iteration-count: infinite;
     }
 
     &:focus {
