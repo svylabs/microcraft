@@ -1,0 +1,30 @@
+$color_1: white;
+$font-family_1: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+$background-color_1: #474747;
+
+.popup_container {
+	position: fixed;
+	height: 40px;
+	z-index: 10;
+	top: 90px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.popup {
+	height: 40px;
+	margin: auto;
+	z-index: 10;
+	min-width: 280px;
+	max-width: 300px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: $background-color_1;
+	color: $color_1;
+	font-size: 14px;
+	animation: bounceInDown 1s ease;
+	font-family: $font-family_1;
+}
