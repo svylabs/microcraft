@@ -1178,8 +1178,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 .value}
                           </span>
                         </div>
-                        <p className="mt-1 text-sm text-gray-500 flex items-center gap-1">
-                          <svg className="w-4 h-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <p className="text-sm text-gray-500 flex items-center">
+                          <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
                           </svg>
                           <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>

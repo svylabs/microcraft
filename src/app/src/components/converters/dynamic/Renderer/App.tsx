@@ -63,6 +63,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         await ethereum.send("eth_requestAccounts", []);
         const network = await provider.getNetwork();
         console.log("Network:", network);
+
         if (network && network.chainId && network.name) {
           setNetworkName(network.name);
           setChainId(network.chainId.toString());
@@ -139,9 +140,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         });
         setAlertOpen(false);
         setNetworkStatus(`Connected to ${supportedNetwork.type}`);
-      } catch (addError) {
+      } catch (addError: any) {
         console.error('Error adding network:', addError);
-        setNetworkStatus('Failed to add network. Please try again.');
+        setNetworkStatus(`Failed to add network: ${addError.message}`);
         setAlertOpen(true);
       }
     };
@@ -167,15 +168,17 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         if (switchError.code === 4902) {
           await addAndSwitchNetwork(supportedNetwork);
         } else {
-          setNetworkStatus('Failed to switch network. Please try again.');
+          setNetworkStatus(`Failed to switch network: ${switchError.message}`);
           setAlertOpen(true);
         }
       }
     };
 
     if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
+      await addNetwork();
       await switchNetwork(supportedNetworks[0]);
     } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
+      await addNetwork();
       await switchNetwork(supportedNetworks);
     } else {
       console.error('No supported networks available.');
@@ -534,38 +537,46 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                 </div>
               )}
               {component.type === "slider" && (
-                <div className="flex items-center gap-3">
-                  <input
-                    type="range"
-                    id={component.id}
-                    className="w-full md:w-[60%] h-8"
-                    name={component.label}
-                    min={
-                      component.config.sliderConfig
-                        .interval.min
-                    }
-                    max={
-                      component.config.sliderConfig
-                        .interval.max
-                    }
-                    step={
-                      component.config.sliderConfig
-                        .step
-                    }
-                    value={
-                      data[component.id] ||
-                      component.config.sliderConfig
-                        .value
-                    }
-                    onChange={(e) =>
-                      handleInputChange(component.id, e.target.value)
-                    }
-                  />
-                  <span className="font-semibold">
-                    {data[component.id] ||
-                      component.config.sliderConfig
-                        .value}
-                  </span>
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      id={component.id}
+                      className="w-full md:w-[60%] h-8 cursor-pointer"
+                      name={component.label}
+                      min={
+                        component.config.sliderConfig
+                          .interval.min
+                      }
+                      max={
+                        component.config.sliderConfig
+                          .interval.max
+                      }
+                      step={
+                        component.config.sliderConfig
+                          .step
+                      }
+                      value={
+                        data[component.id] ||
+                        component.config.sliderConfig
+                          .value
+                      }
+                      onChange={(e) =>
+                        handleInputChange(component.id, e.target.value)
+                      }
+                    />
+                    <span className="font-semibold">
+                      {data[component.id] ||
+                        component.config.sliderConfig
+                          .value}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-500 flex items-center">
+                    <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
+                    </svg>
+                    <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
+                  </p>
                 </div>
               )}
               {component.type === "walletDropdown" && (
