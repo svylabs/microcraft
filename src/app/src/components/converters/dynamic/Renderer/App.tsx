@@ -259,13 +259,31 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     components.forEach((component) => {
       if (component.events) {
         component.events.forEach((event) => {
-          if (event.eventsCode) {
+          // if (event.eventsCode) {
+          //   executeOnLoadCode(event.eventsCode);
+          // }
+          // if (event.type === "onLoad" && event.eventsCode) {
+          //   executeOnLoadCode(event.eventsCode);
+          // }
+          if (event.event === "onLoad" && event.eventsCode) {
             executeOnLoadCode(event.eventsCode);
           }
         });
       }
     });
   }, [components]);
+
+  // useEffect(() => {
+  //   components.forEach((component) => {
+  //     if (component.events) {
+  //       component.events.forEach((event) => {
+  //         if (event.event === "onChange") {
+  //           executeOnChangeCode(event.eventsCode);
+  //         }
+  //       });
+  //     }
+  //   });
+  // }, [data]); // This hook will trigger on `data` changes, simulating `onChange` events
 
   const executeOnLoadCode = async (code) => {
     try {
@@ -284,12 +302,47 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
-  const handleInputChange = (id: string, value: any) => {
+  const executeOnChangeCode = async (code, data) => {
+    try {
+      setLoading(true);
+      console.log("Executing onChange code:", code);
+      const config = mcLib.web3.config;
+      const result = await eval(code);
+      let updatedData = { ...data };
+      
+      if (typeof result === "object") {
+        for (const key in result) {
+          updatedData[key] = result[key];
+        }
+        setData(updatedData);
+        debug(updatedData);
+      }
+    } catch (error) {
+      console.error("Error executing onChange code:", error);
+      debug(`Error: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
+    
+    // Ensure eventType is checked correctly
+    if (eventType === "onChange" && eventCode) {
+      executeOnChangeCode(eventCode, { [id]: value });
+    }
   };
+
+  // const handleInputChange = (id: string, value: any) => {
+  //   setData((prevInputValues) => ({
+  //     ...prevInputValues,
+  //     [id]: value,
+  //   }));
+  // };
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
@@ -562,7 +615,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                           .value
                       }
                       onChange={(e) =>
-                        handleInputChange(component.id, e.target.value)
+                        // handleInputChange(component.id, e.target.value)
+                        handleInputChange(component.id, e.target.value, component.events.eventsCode, "onChange")
                       }
                     />
                     <span className="font-semibold">
