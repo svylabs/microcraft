@@ -234,7 +234,8 @@ const ConfigureInputsOutputs: React.FC = () => {
       setCurrentComponent((prevState) => ({
         ...prevState,
         [name]: value,
-        type: "button",
+        // type: "button",
+        type: value === "action" ? "button" : "",
       }));
     } else {
       setCurrentComponent((prevState) => ({
@@ -245,11 +246,22 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleAddComponent = () => {
+    // Check for both ID and Label fields
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
       toast.error("Please provide both ID and Label.");
       return;
     }
 
+    // Check for type when placement is "output"
+    if (
+      currentComponent.placement === "output" &&
+      !currentComponent.type?.trim()
+    ) {
+      toast.error("Please select a type for output placement.");
+      return;
+    }
+
+    // Check for code when placement is "action"
     if (
       currentComponent.placement === "action" &&
       !currentComponent.code?.trim()
@@ -641,7 +653,8 @@ const ConfigureInputsOutputs: React.FC = () => {
             />
           </label>
 
-          {currentComponent.placement === "input" && (
+          {/* {currentComponent.placement === "input" && ( */}
+          {(currentComponent.placement === "input" || currentComponent.placement === "output") && (
             <>
               <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
                 Events:
