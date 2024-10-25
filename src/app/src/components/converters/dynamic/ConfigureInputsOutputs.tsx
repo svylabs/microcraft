@@ -1085,41 +1085,41 @@ const ConfigureInputsOutputs: React.FC = () => {
                             .optionsConfig.values.map((option, idx) => {
                               const optionWidth = option.trim().length * 8 + 48;
 
-                            return (
-                              <div
-                                key={idx}
-                                className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                  ? "overflow-x-auto md:h-8"
-                                  : ""
-                                  } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                              >
-                                <input
-                                  type="checkbox"
-                                  id={`${component.id}_${idx}`}
-                                  name={component.id}
-                                  value={option.trim()}
-                                  onChange={(e) =>
-                                    handleInputChange(
-                                      component.id,
-                                      e.target.value
-                                    )
-                                  }
-                                  className="mr-2 absolute"
-                                  style={{
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                  }}
-                                />
-                                <label
-                                  htmlFor={`${component.id}_${idx}`}
-                                  className="whitespace-nowrap"
-                                  style={{ marginLeft: "1.5rem" }}
+                              return (
+                                <div
+                                  key={idx}
+                                  className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                    ? "overflow-x-auto md:h-8"
+                                    : ""
+                                    } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
                                 >
-                                  {option.trim()}
-                                </label>
-                              </div>
-                            );
-                          })}
+                                  <input
+                                    type="checkbox"
+                                    id={`${component.id}_${idx}`}
+                                    name={component.id}
+                                    value={option.trim()}
+                                    onChange={(e) =>
+                                      handleInputChange(
+                                        component.id,
+                                        e.target.value
+                                      )
+                                    }
+                                    className="mr-2 absolute"
+                                    style={{
+                                      top: "50%",
+                                      transform: "translateY(-50%)",
+                                    }}
+                                  />
+                                  <label
+                                    htmlFor={`${component.id}_${idx}`}
+                                    className="whitespace-nowrap"
+                                    style={{ marginLeft: "1.5rem" }}
+                                  >
+                                    {option.trim()}
+                                  </label>
+                                </div>
+                              );
+                            })}
                       </div>
                     </div>
                   )}
@@ -1144,38 +1144,46 @@ const ConfigureInputsOutputs: React.FC = () => {
                           </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="range"
-                          id={component.id}
-                          className="w-full md:w-[60%] h-8"
-                          name={component.label}
-                          min={
-                            component.config.sliderConfig
-                              .interval.min
-                          }
-                          max={
-                            component.config.sliderConfig
-                              .interval.max
-                          }
-                          step={
-                            component.config.sliderConfig
-                              .step
-                          }
-                          value={
-                            data[component.id] ||
-                            component.config.sliderConfig
-                              .value
-                          }
-                          onChange={(e) =>
-                            handleInputChange(component.id, e.target.value)
-                          }
-                        />
-                        <span className="font-semibold">
-                          {data[component.id] ||
-                            component.config.sliderConfig
-                              .value}
-                        </span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="range"
+                            id={component.id}
+                            className="w-full md:w-[60%] h-8 cursor-pointer"
+                            name={component.label}
+                            min={
+                              component.config.sliderConfig
+                                .interval.min
+                            }
+                            max={
+                              component.config.sliderConfig
+                                .interval.max
+                            }
+                            step={
+                              component.config.sliderConfig
+                                .step
+                            }
+                            value={
+                              data[component.id] ||
+                              component.config.sliderConfig
+                                .value
+                            }
+                            onChange={(e) =>
+                              handleInputChange(component.id, e.target.value)
+                            }
+                          />
+                          <span className="font-semibold">
+                            {data[component.id] ||
+                              component.config.sliderConfig
+                                .value}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm text-gray-500 flex items-center gap-1">
+                          <svg className="w-4 h-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
+                          </svg>
+                          <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
+                        </p>
                       </div>
                     </div>
                   )}
