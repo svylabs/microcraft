@@ -1,3 +1,4 @@
+import DynamicApp from '@svylabs/microcraft-lib';
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
@@ -6,8 +7,7 @@ import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
-// import App from "./Renderer/App";
-import DynamicApp from '@svylabs/microcraft-lib';
+import App from "./Renderer/App";
 
 interface Output {
   [key: string]: any;
@@ -157,23 +157,23 @@ const ActionPage: React.FC = () => {
             </button>
           </div>
 
-          {/* <App
+          <App
             components={components}
             data={data}
             setData={setData}
             contracts={loadedData.contractDetails}
             network={loadedData.networkDetails}
             debug={setOutputCode}
-          /> */}
+          />
 
-          <DynamicApp
+          {/* <DynamicApp
             components={components}
             data={data}
             setData={setData}
             contracts={loadedData?.contractDetails || []}
             network={loadedData?.networkDetails || {}}
             debug={setOutputCode}
-          />
+          /> */}
 
           <div className="flex justify-end">
             <button

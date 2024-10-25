@@ -1,3 +1,4 @@
+import DynamicApp from '@svylabs/microcraft-lib';
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
@@ -7,7 +8,6 @@ import arrow from "../../photos/angle-right-solid.svg";
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
 // import App from "./Renderer/App";
-import DynamicApp from '@svylabs/microcraft-lib';
 
 interface Output {
   [key: string]: any;
