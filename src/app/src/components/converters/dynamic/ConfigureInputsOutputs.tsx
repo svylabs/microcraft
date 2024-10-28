@@ -313,6 +313,9 @@ const ConfigureInputsOutputs: React.FC = () => {
       config: "",
     });
     setLocalConfig(JSON.stringify(initialConfig, null, 2));
+
+    // Refresh the page
+    // window.location.reload();
   };
 
   const handlePreview = async () => {

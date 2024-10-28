@@ -259,9 +259,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     components.forEach((component) => {
       if (component.events) {
         component.events.forEach((event) => {
-          // if (event.eventsCode) {
-          //   executeOnLoadCode(event.eventsCode);
-          // }
           // if (event.type === "onLoad" && event.eventsCode) {
           //   executeOnLoadCode(event.eventsCode);
           // }
@@ -272,18 +269,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       }
     });
   }, [components]);
-
-  // useEffect(() => {
-  //   components.forEach((component) => {
-  //     if (component.events) {
-  //       component.events.forEach((event) => {
-  //         if (event.event === "onChange") {
-  //           executeOnChangeCode(event.eventsCode, data);
-  //         }
-  //       });
-  //     }
-  //   });
-  // }, [data]); // This hook will trigger on `data` changes, simulating `onChange` events
 
   const executeOnLoadCode = async (code) => {
     try {
@@ -309,7 +294,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       const config = mcLib.web3.config;
       const result = await eval(code);
       let updatedData = { ...data };
-      
+
       if (typeof result === "object") {
         for (const key in result) {
           updatedData[key] = result[key];
@@ -325,27 +310,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
-  const handleInputChange = (id: string, value: any, eventCode?: any, eventType?: string) => {
-    // console.log("handleInputChange:", id, value);
+  const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
-    
-    // console.log("handleInputChange:", id, value, eventCode, eventType);
-    // // Ensure eventType is checked correctly
-    // if (eventType === "onChange" && eventCode) {
-    //   console.log("Executing onChange code:", eventCode);
-    //   executeOnChangeCode(eventCode, { [id]: value });
-    // }
-  };
 
-  // const handleInputChange = (id: string, value: any) => {
-  //   setData((prevInputValues) => ({
-  //     ...prevInputValues,
-  //     [id]: value,
-  //   }));
-  // };
+    console.log("handleInputChange Data:", id, value, eventCode, eventType);
+
+    if (eventType === "onChange" && eventCode) {
+      // console.log("Executing onChange code:", eventCode);
+      executeOnChangeCode(eventCode, { [id]: value });
+    }
+  };
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
     try {
@@ -444,9 +421,22 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     type={component.type}
                     id={component.id}
                     value={data[component.id] || ""}
-                    onChange={(e) =>
-                      handleInputChange(component.id, e.target.value)
-                    }
+                    // onChange={(e) =>
+                    //   handleInputChange(component.id, e.target.value)
+                    // }
+                    onChange={(e) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, e.target.value);
+                      });
+                    }}
                   />
                 )}
               {component.placement === "input" &&
@@ -459,9 +449,25 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     }}
                     id={component.id}
                   >
-                    <JsonViewer
+                    {/* <JsonViewer
                       jsonData={data[component.id]}
                       setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
+                    /> */}
+                    <JsonViewer
+                      jsonData={data[component.id]}
+                      setJsonData={(updatedData) => {
+                        components.forEach((elements) => {
+                          if (elements.events) {
+                            elements.events.forEach((event) => {
+                              if (event.event === "onChange") {
+                                const eventCode = event.eventsCode;
+                                handleInputChange(component.id, updatedData, eventCode, "onChange");
+                              }
+                            });
+                          } 
+                          handleInputChange(component.id, updatedData);
+                        });
+                      }}
                     />
                   </div>
                 )}
@@ -473,13 +479,29 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                       : {}),
                   }}
                 >
-                  <Swap
+                  {/* <Swap
                     configurations={
                       component.config.swapConfig
                     }
                     onSwapChange={(swapData) =>
                       handleInputChange(component.id, swapData)
                     }
+                  /> */}
+                  <Swap
+                    configurations={component.config.swapConfig}
+                    onSwapChange={(swapData) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, swapData, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, swapData);
+                      });
+                    }}
                   />
                 </div>
               )}
@@ -488,9 +510,22 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                   id={component.id}
                   value={data[component.id]}
-                  onChange={(e) =>
-                    handleInputChange(component.id, e.target.value)
-                  }
+                  // onChange={(e) =>
+                  //   handleInputChange(component.id, e.target.value)
+                  // }
+                  onChange={(e) => {
+                    components.forEach((elements) => {
+                      if (elements.events) {
+                        elements.events.forEach((event) => {
+                          if (event.event === "onChange") {
+                            const eventCode = event.eventsCode;
+                            handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                          }
+                        });
+                      }
+                      handleInputChange(component.id, e.target.value);
+                    });
+                  }}
                   style={{
                     ...(component.config && typeof component.config.styles === 'object'
                       ? component.config.styles
@@ -523,9 +558,22 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                               name={component.id}
                               value={option.trim()}
                               checked={data[component.id] === option}
-                              onChange={(e) =>
-                                handleInputChange(component.id, e.target.value)
-                              }
+                              // onChange={(e) =>
+                              //   handleInputChange(component.id, e.target.value)
+                              // }
+                              onChange={(e) => {
+                                components.forEach((elements) => {
+                                  if (elements.events) {
+                                    elements.events.forEach((event) => {
+                                      if (event.event === "onChange") {
+                                        const eventCode = event.eventsCode;
+                                        handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                                      }
+                                    });
+                                  }
+                                  handleInputChange(component.id, e.target.value);
+                                });
+                              }}
                               className="mr-2 absolute"
                               style={{
                                 top: "50%",
@@ -572,7 +620,18 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                                   : currentValue.filter(
                                     (item) => item !== option
                                   );
-                                handleInputChange(component.id, updatedValue);
+                                // handleInputChange(component.id, updatedValue);
+                                components.forEach((elements) => {
+                                  if (elements.events) {
+                                    elements.events.forEach((event) => {
+                                      if (event.event === "onChange") {
+                                        const eventCode = event.eventsCode;
+                                        handleInputChange(component.id, updatedValue, eventCode, "onChange");
+                                      }
+                                    });
+                                  }
+                                  handleInputChange(component.id, updatedValue);
+                                });
                               }}
                               className="mr-2 absolute"
                               style={{
@@ -617,10 +676,23 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                         component.config.sliderConfig
                           .value
                       }
-                      onChange={(e) =>
-                        // handleInputChange(component.id, e.target.value)
-                        handleInputChange(component.id, e.target.value, component.events[0]?.eventsCode, "onChange")
-                      }
+                      // onChange={(e) =>
+                      //   // handleInputChange(component.id, e.target.value)
+                      // }
+                      onChange={(e) => {
+                        console.log("components:", components);
+                        components.forEach((elements) => {
+                          if (elements.events) {
+                            elements.events.forEach((event) => {
+                              if (event.event === "onChange") {
+                                const eventCode = event.eventsCode;
+                                handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                              }
+                            });
+                          }
+                          handleInputChange(component.id, e.target.value);
+                        });
+                      }}
                     />
                     <span className="font-semibold">
                       {data[component.id] ||
@@ -636,7 +708,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   </p>
                 </div>
               )}
-              {component.type === "walletDropdown" && (
+              {/* {component.type === "walletDropdown" && (
                 <div>
                   <Wallet
                     configurations={
@@ -656,8 +728,40 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     }
                   />
                 </div>
+              )} */}
+              {component.type === "walletDropdown" && (
+                <div>
+                  <Wallet
+                    configurations={networkDetails}
+                    onSelectAddress={(address) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, { address, balance: null }, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, { address, balance: null });
+                      });
+                    }}
+                    onUpdateBalance={(balance) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, { address: data[component.id]?.address || "", balance }, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, { address: data[component.id]?.address || "", balance });
+                      });
+                    }}
+                  />
+                </div>
               )}
-
               {component.type === "button" && component.code && (
                 <button
                   className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"

@@ -5,7 +5,7 @@ import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-// import App from "./Renderer/App";
+import App from "./Renderer/App";
 
 interface Output {
   [key: string]: any;
@@ -214,16 +214,7 @@ const UserActionPage = () => {
               </h1>
             </div>
 
-            {/* <App
-            components={components}
-            data={data}
-            setData={setData}
-            contracts={loadedData?.contract_details || []}
-            network={loadedData?.network_details || {}}
-            debug={setOutputCode}
-          /> */}
-
-          <DynamicApp
+            <App
             components={components}
             data={data}
             setData={setData}
@@ -231,6 +222,15 @@ const UserActionPage = () => {
             network={loadedData?.network_details || {}}
             debug={setOutputCode}
           />
+
+          {/* <DynamicApp
+            components={components}
+            data={data}
+            setData={setData}
+            contracts={loadedData?.contract_details || []}
+            network={loadedData?.network_details || {}}
+            debug={setOutputCode}
+          /> */}
           </div>
 
           {/* {feedback && (
