@@ -235,7 +235,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         ...prevState,
         [name]: value,
         // type: "button",
-        type: value === "action" ? "button" : "",
+        type: value === "action" ? "button" : "text",
       }));
     } else {
       setCurrentComponent((prevState) => ({
@@ -987,14 +987,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                         }}
                       >
                         {/* Options for dropdown */}
-                        {/* {component.config &&
-                          JSON.parse(
-                            component.config
-                          ).custom.optionsConfig.values.map((option, idx) => (
-                            <option key={idx} value={option.trim()}>
-                              {option.trim()}
-                            </option>
-                          ))} */}
                         {component.config && component.config.optionsConfig && component.config.optionsConfig.values.map((option, idx) => (
                           <option key={idx} value={option.trim()}>
                             {option.trim()}

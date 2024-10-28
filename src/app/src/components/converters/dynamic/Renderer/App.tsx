@@ -278,7 +278,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
   //     if (component.events) {
   //       component.events.forEach((event) => {
   //         if (event.event === "onChange") {
-  //           executeOnChangeCode(event.eventsCode);
+  //           executeOnChangeCode(event.eventsCode, data);
   //         }
   //       });
   //     }
@@ -325,16 +325,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
-  const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
+  const handleInputChange = (id: string, value: any, eventCode?: any, eventType?: string) => {
+    // console.log("handleInputChange:", id, value);
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
     
-    // Ensure eventType is checked correctly
-    if (eventType === "onChange" && eventCode) {
-      executeOnChangeCode(eventCode, { [id]: value });
-    }
+    // console.log("handleInputChange:", id, value, eventCode, eventType);
+    // // Ensure eventType is checked correctly
+    // if (eventType === "onChange" && eventCode) {
+    //   console.log("Executing onChange code:", eventCode);
+    //   executeOnChangeCode(eventCode, { [id]: value });
+    // }
   };
 
   // const handleInputChange = (id: string, value: any) => {
@@ -616,7 +619,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                       }
                       onChange={(e) =>
                         // handleInputChange(component.id, e.target.value)
-                        handleInputChange(component.id, e.target.value, component.events.eventsCode, "onChange")
+                        handleInputChange(component.id, e.target.value, component.events[0]?.eventsCode, "onChange")
                       }
                     />
                     <span className="font-semibold">
