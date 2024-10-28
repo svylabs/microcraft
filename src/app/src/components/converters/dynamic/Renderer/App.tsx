@@ -296,12 +296,16 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       let updatedData = { ...data };
 
       if (typeof result === "object") {
-        for (const key in result) {
-          updatedData[key] = result[key];
-        }
+        // for (const key in result) {
+        //   updatedData[key] = result[key];
+        // }
+        // Merge results into updatedData
+        updatedData = { ...updatedData, ...result };
+      }
+
         setData(updatedData);
         debug(updatedData);
-      }
+      // }
     } catch (error) {
       console.error("Error executing onChange code:", error);
       debug(`Error: ${error}`);
@@ -320,7 +324,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
 
     if (eventType === "onChange" && eventCode) {
       // console.log("Executing onChange code:", eventCode);
-      executeOnChangeCode(eventCode, { [id]: value });
+      // executeOnChangeCode(eventCode, { [id]: value });
+      executeOnChangeCode(eventCode, { ...data, [id]: value });
     }
   };
 
