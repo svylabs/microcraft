@@ -17,7 +17,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
   const [toAmount, setToAmount] = useState("");
   // const [gasEstimate, setGasEstimate] = useState<string>("");
   // const [isFetchingGas, setIsFetchingGas] = useState<boolean>(false);
-  // console.log(configurations);
+  console.log(configurations);
 
   const selectToken = (side: string, token: any) => {
     const updatedTrade = { ...currentTrade, [side]: token };
@@ -87,18 +87,20 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
   return (
     <div className="container mx-auto p-4">
       <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-4 lg:px-6">
-        <h4 className="text-lg font-semibold mb-4">Swap</h4>
+        {/* <h4 className="text-lg font-semibold mb-4">Swap</h4> */}
+        <h4 className="text-lg font-semibold mb-4">{configurations?.heading}</h4>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
-            <label className="block text-gray-700">From Token</label>
+            <label className="block text-gray-700">{configurations?.fromTokenLabel}</label>
             <TokensDropdown
               tokens={configurations.tokens}
               selectedToken={currentTrade.from}
               onSelect={(token) => selectToken("from", token)}
+              blurToken={currentTrade.to}
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Amount</label>
+            <label className="block text-gray-700">{configurations?.amountLabel}</label>
             <input
               type="number"
               value={fromAmount}
@@ -110,7 +112,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
         </div>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
-            <label className="block text-gray-700">To Token</label>
+            <label className="block text-gray-700">{configurations?.toTokenLabel}</label>
             <TokensDropdown
               tokens={configurations.tokens}
               selectedToken={currentTrade.to}
@@ -119,7 +121,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Estimated Amount</label>
+            <label className="block text-gray-700">{configurations?.estimatedAmountLabel}</label>
             <input
               type="text"
               value={toAmount}

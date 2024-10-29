@@ -115,6 +115,11 @@ const ConfigureInputsOutputs: React.FC = () => {
         step: 1,
       },
       swapConfig: {
+        heading: "Swap",
+        fromTokenLabel: "From Token",
+        toTokenLabel: "To Token",
+        amountLabel: "Amount",
+        estimatedAmountLabel: "Estimated Amount",
         tokens: [
           {
             chainId: 137,
