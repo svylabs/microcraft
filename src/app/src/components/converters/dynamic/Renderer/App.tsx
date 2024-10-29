@@ -293,19 +293,15 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       console.log("Executing onChange code:", code);
       const config = mcLib.web3.config;
       const result = await eval(code);
-      let updatedData = { ...data };
-
-      if (typeof result === "object") {
-        // for (const key in result) {
-        //   updatedData[key] = result[key];
-        // }
-        // Merge results into updatedData
-        updatedData = { ...updatedData, ...result };
-      }
-
-        setData(updatedData);
-        debug(updatedData);
-      // }
+      
+      // Update state with the merged result
+      setData(prevData => {
+        const updatedData = { ...prevData, ...result };
+        // console.log("updated-Data", updatedData);
+        debug(updatedData);  // Pass updatedData to debug function
+        return updatedData;
+      });
+  
     } catch (error) {
       console.error("Error executing onChange code:", error);
       debug(`Error: ${error}`);
@@ -313,6 +309,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       setLoading(false);
     }
   };
+  
 
   const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
@@ -320,11 +317,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       [id]: value,
     }));
 
-    console.log("handleInputChange Data:", id, value, eventCode, eventType);
+    // console.log("handleInputChange Data:", id, value, eventCode, eventType);
 
     if (eventType === "onChange" && eventCode) {
-      // console.log("Executing onChange code:", eventCode);
-      // executeOnChangeCode(eventCode, { [id]: value });
       executeOnChangeCode(eventCode, { ...data, [id]: value });
     }
   };
