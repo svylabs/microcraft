@@ -37,10 +37,18 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
 
   useEffect(() => {
     const swapData = { from: currentTrade.from, to: currentTrade.to, fromAmount, toAmount };
+
+    // Access swapConfig values using user-defined labels as IDs
+    // const swapData = {
+    //   [configurations?.fromTokenLabel]: currentTrade.from,
+    //   [configurations?.toTokenLabel]: currentTrade.to,
+    //   [configurations?.amountLabel]: fromAmount,
+    //   [configurations?.estimatedAmountLabel]: toAmount,
+    // };
     onSwapChange(swapData);
   }, [currentTrade.from, currentTrade.to, fromAmount, toAmount]);
-  
-  
+
+
 
   // const getPrice = async () => {
   //   console.log("Getting Price");
