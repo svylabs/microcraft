@@ -259,7 +259,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     components.forEach((component) => {
       if (component.events) {
         component.events.forEach((event) => {
-          if (event.eventsCode) {
+          if (event.event === "onLoad" && event.eventsCode) {
             executeOnLoadCode(event.eventsCode);
           }
         });
@@ -284,11 +284,41 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
-  const handleInputChange = (id: string, value: any) => {
+  const executeOnChangeCode = async (code, data) => {
+    try {
+      setLoading(true);
+      console.log("Executing onChange code:", code);
+      const config = mcLib.web3.config;
+      const result = await eval(code);
+      
+      // Update state with the merged result
+      setData(prevData => {
+        const updatedData = { ...prevData, ...result };
+        // console.log("updated-Data", updatedData);
+        debug(updatedData);  // Pass updatedData to debug function
+        return updatedData;
+      });
+  
+    } catch (error) {
+      console.error("Error executing onChange code:", error);
+      debug(`Error: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+  const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
       [id]: value,
     }));
+
+    // console.log("handleInputChange Data:", id, value, eventCode, eventType);
+
+    if (eventType === "onChange" && eventCode) {
+      executeOnChangeCode(eventCode, { ...data, [id]: value });
+    }
   };
 
   const handleRun = async (code: string, data: { [key: string]: string }) => {
@@ -297,16 +327,14 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       const config = mcLib.web3.config;
       console.log(config);
       const result = await eval(code);
-      let vals = data;
-      if (typeof result === "object") {
-        for (const key in result) {
-          vals[key] = result[key];
-        }
-        setData(vals);
-      }
-      console.log(vals);
-      console.log(result);
-      debug(vals);
+      
+      // Update state with the merged result
+      setData(prevData => {
+        // const updatedData = { ...prevData, ...result };
+        const updatedData = { ...data, ...prevData, ...result };
+        debug(updatedData);
+        return updatedData;
+      });
     } catch (error) {
       console.log(`Error: ${error}`);
       debug(`Error: ${error}`);
@@ -388,9 +416,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     type={component.type}
                     id={component.id}
                     value={data[component.id] || ""}
-                    onChange={(e) =>
-                      handleInputChange(component.id, e.target.value)
-                    }
+                    onChange={(e) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, e.target.value);
+                      });
+                    }}
                   />
                 )}
               {component.placement === "input" &&
@@ -405,7 +443,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   >
                     <JsonViewer
                       jsonData={data[component.id]}
-                      setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
+                      setJsonData={(updatedData) => {
+                        components.forEach((elements) => {
+                          if (elements.events) {
+                            elements.events.forEach((event) => {
+                              if (event.event === "onChange") {
+                                const eventCode = event.eventsCode;
+                                handleInputChange(component.id, updatedData, eventCode, "onChange");
+                              }
+                            });
+                          } 
+                          handleInputChange(component.id, updatedData);
+                        });
+                      }}
                     />
                   </div>
                 )}
@@ -418,12 +468,20 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   }}
                 >
                   <Swap
-                    configurations={
-                      component.config.swapConfig
-                    }
-                    onSwapChange={(swapData) =>
-                      handleInputChange(component.id, swapData)
-                    }
+                    configurations={component.config.swapConfig}
+                    onSwapChange={(swapData) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, swapData, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, swapData);
+                      });
+                    }}
                   />
                 </div>
               )}
@@ -432,9 +490,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                   id={component.id}
                   value={data[component.id]}
-                  onChange={(e) =>
-                    handleInputChange(component.id, e.target.value)
-                  }
+                  onChange={(e) => {
+                    components.forEach((elements) => {
+                      if (elements.events) {
+                        elements.events.forEach((event) => {
+                          if (event.event === "onChange") {
+                            const eventCode = event.eventsCode;
+                            handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                          }
+                        });
+                      }
+                      handleInputChange(component.id, e.target.value);
+                    });
+                  }}
                   style={{
                     ...(component.config && typeof component.config.styles === 'object'
                       ? component.config.styles
@@ -467,9 +535,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                               name={component.id}
                               value={option.trim()}
                               checked={data[component.id] === option}
-                              onChange={(e) =>
-                                handleInputChange(component.id, e.target.value)
-                              }
+                              onChange={(e) => {
+                                components.forEach((elements) => {
+                                  if (elements.events) {
+                                    elements.events.forEach((event) => {
+                                      if (event.event === "onChange") {
+                                        const eventCode = event.eventsCode;
+                                        handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                                      }
+                                    });
+                                  }
+                                  handleInputChange(component.id, e.target.value);
+                                });
+                              }}
                               className="mr-2 absolute"
                               style={{
                                 top: "50%",
@@ -516,7 +594,17 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                                   : currentValue.filter(
                                     (item) => item !== option
                                   );
-                                handleInputChange(component.id, updatedValue);
+                                components.forEach((elements) => {
+                                  if (elements.events) {
+                                    elements.events.forEach((event) => {
+                                      if (event.event === "onChange") {
+                                        const eventCode = event.eventsCode;
+                                        handleInputChange(component.id, updatedValue, eventCode, "onChange");
+                                      }
+                                    });
+                                  }
+                                  handleInputChange(component.id, updatedValue);
+                                });
                               }}
                               className="mr-2 absolute"
                               style={{
@@ -561,9 +649,20 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                         component.config.sliderConfig
                           .value
                       }
-                      onChange={(e) =>
-                        handleInputChange(component.id, e.target.value)
-                      }
+                      onChange={(e) => {
+                        console.log("components:", components);
+                        components.forEach((elements) => {
+                          if (elements.events) {
+                            elements.events.forEach((event) => {
+                              if (event.event === "onChange") {
+                                const eventCode = event.eventsCode;
+                                handleInputChange(component.id, e.target.value, eventCode, "onChange");
+                              }
+                            });
+                          }
+                          handleInputChange(component.id, e.target.value);
+                        });
+                      }}
                     />
                     <span className="font-semibold">
                       {data[component.id] ||
@@ -571,36 +670,47 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                           .value}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 flex items-center">
+                  {/* <p className="text-sm text-gray-500 flex items-center">
                     <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
                     </svg>
                     <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
-                  </p>
+                  </p> */}
                 </div>
               )}
               {component.type === "walletDropdown" && (
                 <div>
                   <Wallet
-                    configurations={
-                      networkDetails
-                    }
-                    onSelectAddress={(address) =>
-                      handleInputChange(component.id, {
-                        address,
-                        balance: null,
-                      })
-                    }
-                    onUpdateBalance={(balance) =>
-                      handleInputChange(component.id, {
-                        address: data[component.id]?.address || "",
-                        balance,
-                      })
-                    }
+                    configurations={networkDetails}
+                    onSelectAddress={(address) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, { address, balance: null }, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, { address, balance: null });
+                      });
+                    }}
+                    onUpdateBalance={(balance) => {
+                      components.forEach((elements) => {
+                        if (elements.events) {
+                          elements.events.forEach((event) => {
+                            if (event.event === "onChange") {
+                              const eventCode = event.eventsCode;
+                              handleInputChange(component.id, { address: data[component.id]?.address || "", balance }, eventCode, "onChange");
+                            }
+                          });
+                        }
+                        handleInputChange(component.id, { address: data[component.id]?.address || "", balance });
+                      });
+                    }}
                   />
                 </div>
               )}
-
               {component.type === "button" && component.code && (
                 <button
                   className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"

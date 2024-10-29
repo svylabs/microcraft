@@ -315,7 +315,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setLocalConfig(JSON.stringify(initialConfig, null, 2));
 
     // Refresh the page
-    // window.location.reload();
+    window.location.reload();
   };
 
   const handlePreview = async () => {
@@ -1186,12 +1186,12 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 .value}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-500 flex items-center">
+                        {/* <p className="text-sm text-gray-500 flex items-center">
                           <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
                           </svg>
                           <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   )}

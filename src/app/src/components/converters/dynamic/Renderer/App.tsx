@@ -259,9 +259,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     components.forEach((component) => {
       if (component.events) {
         component.events.forEach((event) => {
-          // if (event.type === "onLoad" && event.eventsCode) {
-          //   executeOnLoadCode(event.eventsCode);
-          // }
           if (event.event === "onLoad" && event.eventsCode) {
             executeOnLoadCode(event.eventsCode);
           }
@@ -330,16 +327,14 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       const config = mcLib.web3.config;
       console.log(config);
       const result = await eval(code);
-      let vals = data;
-      if (typeof result === "object") {
-        for (const key in result) {
-          vals[key] = result[key];
-        }
-        setData(vals);
-      }
-      console.log(vals);
-      console.log(result);
-      debug(vals);
+      
+      // Update state with the merged result
+      setData(prevData => {
+        // const updatedData = { ...prevData, ...result };
+        const updatedData = { ...data, ...prevData, ...result };
+        debug(updatedData);
+        return updatedData;
+      });
     } catch (error) {
       console.log(`Error: ${error}`);
       debug(`Error: ${error}`);
@@ -421,9 +416,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     type={component.type}
                     id={component.id}
                     value={data[component.id] || ""}
-                    // onChange={(e) =>
-                    //   handleInputChange(component.id, e.target.value)
-                    // }
                     onChange={(e) => {
                       components.forEach((elements) => {
                         if (elements.events) {
@@ -449,10 +441,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     }}
                     id={component.id}
                   >
-                    {/* <JsonViewer
-                      jsonData={data[component.id]}
-                      setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
-                    /> */}
                     <JsonViewer
                       jsonData={data[component.id]}
                       setJsonData={(updatedData) => {
@@ -479,14 +467,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                       : {}),
                   }}
                 >
-                  {/* <Swap
-                    configurations={
-                      component.config.swapConfig
-                    }
-                    onSwapChange={(swapData) =>
-                      handleInputChange(component.id, swapData)
-                    }
-                  /> */}
                   <Swap
                     configurations={component.config.swapConfig}
                     onSwapChange={(swapData) => {
@@ -510,9 +490,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                   id={component.id}
                   value={data[component.id]}
-                  // onChange={(e) =>
-                  //   handleInputChange(component.id, e.target.value)
-                  // }
                   onChange={(e) => {
                     components.forEach((elements) => {
                       if (elements.events) {
@@ -558,9 +535,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                               name={component.id}
                               value={option.trim()}
                               checked={data[component.id] === option}
-                              // onChange={(e) =>
-                              //   handleInputChange(component.id, e.target.value)
-                              // }
                               onChange={(e) => {
                                 components.forEach((elements) => {
                                   if (elements.events) {
@@ -620,7 +594,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                                   : currentValue.filter(
                                     (item) => item !== option
                                   );
-                                // handleInputChange(component.id, updatedValue);
                                 components.forEach((elements) => {
                                   if (elements.events) {
                                     elements.events.forEach((event) => {
@@ -676,9 +649,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                         component.config.sliderConfig
                           .value
                       }
-                      // onChange={(e) =>
-                      //   // handleInputChange(component.id, e.target.value)
-                      // }
                       onChange={(e) => {
                         console.log("components:", components);
                         components.forEach((elements) => {
@@ -700,35 +670,14 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                           .value}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 flex items-center">
+                  {/* <p className="text-sm text-gray-500 flex items-center">
                     <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
                     </svg>
                     <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
-                  </p>
+                  </p> */}
                 </div>
               )}
-              {/* {component.type === "walletDropdown" && (
-                <div>
-                  <Wallet
-                    configurations={
-                      networkDetails
-                    }
-                    onSelectAddress={(address) =>
-                      handleInputChange(component.id, {
-                        address,
-                        balance: null,
-                      })
-                    }
-                    onUpdateBalance={(balance) =>
-                      handleInputChange(component.id, {
-                        address: data[component.id]?.address || "",
-                        balance,
-                      })
-                    }
-                  />
-                </div>
-              )} */}
               {component.type === "walletDropdown" && (
                 <div>
                   <Wallet
