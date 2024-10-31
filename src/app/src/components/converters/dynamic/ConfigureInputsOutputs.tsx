@@ -955,6 +955,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                           onSwapChange={(swapData) =>
                             handleInputChange(component.id, swapData)
                           }
+                          data={null} //data={undefined}
                         />
                       </div>
                     </div>

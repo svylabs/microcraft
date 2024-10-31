@@ -343,6 +343,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
+  // console.log("data", data);
+
   return (
     <>
       <div>
@@ -482,6 +484,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                         handleInputChange(component.id, swapData);
                       });
                     }}
+                    data={data}
                   />
                 </div>
               )}
