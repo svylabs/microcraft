@@ -15,17 +15,24 @@ interface Props {
 const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   const [currentTrade, setCurrentTrade] = useState({ from: null, to: null });
   const [fromAmount, setFromAmount] = useState("");
-  const [toAmount, setToAmount] = useState(data?.toAmount || "");
+  // const [toAmount, setToAmount] = useState(data?.toAmount || "");
+  const [toAmount, setToAmount] = useState("");
 
   // console.log("configurations", configurations);
-  console.log("WALLET-SWAP-data", data);
+  // console.log("WALLET-SWAP-data", data);
+  // console.log("configurations?.estimatedAmountLabel", configurations?.estimatedAmountLabel);
 
   useEffect(() => {
     // Update toAmount based on data prop changes
-    if (data?.toAmount) {
-      setToAmount(data.toAmount);
+    // if (data?.toAmount) {
+    //   setToAmount(data.toAmount);
+    // }
+
+    const estimatedAmountKey = configurations?.estimatedAmountLabel;
+    if (estimatedAmountKey && data && data[estimatedAmountKey]) {
+      setToAmount(data[estimatedAmountKey]);
     }
-  }, [data]);
+  }, [configurations, data]);
 
   const selectToken = (side: string, token: any) => {
     const updatedTrade = { ...currentTrade, [side]: token };
@@ -35,15 +42,15 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   };
 
   useEffect(() => {
-    const swapData = { from: currentTrade.from, to: currentTrade.to, fromAmount, toAmount };
+    // const swapData = { from: currentTrade.from, to: currentTrade.to, fromAmount, toAmount };
 
     // Access swapConfig values using user-defined labels as IDs
-    // const swapData = {
-    //   [configurations?.fromTokenLabel]: currentTrade.from,
-    //   [configurations?.toTokenLabel]: currentTrade.to,
-    //   [configurations?.amountLabel]: fromAmount,
-    //   [configurations?.estimatedAmountLabel]: toAmount,
-    // };
+    const swapData = {
+      [configurations?.fromTokenLabel]: currentTrade.from,
+      [configurations?.toTokenLabel]: currentTrade.to,
+      [configurations?.amountLabel]: fromAmount,
+      [configurations?.estimatedAmountLabel]: toAmount,
+    };
     onSwapChange(swapData);
   }, [currentTrade.from, currentTrade.to, fromAmount, toAmount]);
 
