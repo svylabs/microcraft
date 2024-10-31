@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 // import Web3 from "web3";
 import qs from "qs";
 import TokensDropdown from "./TokensDropdown";
-
+import { FiArrowDownCircle } from "react-icons/fi";
 // const web3 = new Web3(Web3.givenProvider);
 
 interface Props {
@@ -94,12 +94,11 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-md p-4 lg:px-6">
-        {/* <h4 className="text-lg font-semibold mb-4">Swap</h4> */}
-        <h4 className="text-lg font-semibold mb-4">{configurations?.heading}</h4>
+      <div className="max-w-lg mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
+        <h4 className="text-lg lg:text-xl font-semibold mb-4 text-white text-center">{configurations?.heading}</h4>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
-            <label className="block text-gray-700">{configurations?.fromTokenLabel}</label>
+            <label className="block text-gray-100">{configurations?.fromTokenLabel}</label>
             <TokensDropdown
               tokens={configurations.tokens}
               selectedToken={currentTrade.from}
@@ -108,7 +107,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">{configurations?.amountLabel}</label>
+            <label className="block text-gray-100">{configurations?.amountLabel}</label>
             <input
               type="number"
               value={fromAmount}
@@ -118,9 +117,12 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
             />
           </div>
         </div>
+        <div className="flex justify-center my-2 text-white">
+          <FiArrowDownCircle size={30} className="animate-bounce" />
+        </div>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
-            <label className="block text-gray-700">{configurations?.toTokenLabel}</label>
+            <label className="block text-gray-100">{configurations?.toTokenLabel}</label>
             <TokensDropdown
               tokens={configurations.tokens}
               selectedToken={currentTrade.to}
@@ -129,12 +131,13 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange }) => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">{configurations?.estimatedAmountLabel}</label>
+            <label className="block text-gray-100">{configurations?.estimatedAmountLabel}</label>
             <input
               type="text"
               value={toAmount}
               readOnly
-              className="block w-full mt-1 border rounded py-2 px-3"
+              className="block w-full mt-1 border rounded py-2 px-3 bg-gray-100 text-indigo-700 cursor-not-allowed"
+              placeholder="Estimated amount"
             />
           </div>
         </div>
