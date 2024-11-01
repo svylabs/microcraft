@@ -13,18 +13,25 @@ interface Props {
 }
 
 const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
-  const [currentTrade, setCurrentTrade] = useState({ from: null, to: null });
-  const [fromAmount, setFromAmount] = useState("");
-  // const [toAmount, setToAmount] = useState(data?.toAmount || "");
-  const [toAmount, setToAmount] = useState("");
-
+  // Set default tokens
   const fromTokens = configurations.tokens.filter(token => 
     token.listType === "from" || token.listType === "both"
   );
-
   const toTokens = configurations.tokens.filter(token => 
     token.listType === "to" || token.listType === "both"
   );
+
+  const defaultFromToken = fromTokens[0] || null; // Set to the first token in fromTokens as default
+  const defaultToToken = toTokens[0] || null; // Set to the first token in toTokens as default
+
+  const [currentTrade, setCurrentTrade] = useState({
+    from: defaultFromToken,
+    to: defaultToToken
+  });
+  // const [currentTrade, setCurrentTrade] = useState({ from: null, to: null });
+  const [fromAmount, setFromAmount] = useState("");
+  // const [toAmount, setToAmount] = useState(data?.toAmount || "");
+  const [toAmount, setToAmount] = useState("");
 
   useEffect(() => {
     // Update toAmount based on data prop changes
@@ -38,7 +45,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
     }
   }, [configurations, data]);
 
-  const selectToken = (side: string, token: any) => {
+  const selectToken = (side, token) => {
     const updatedTrade = { ...currentTrade, [side]: token };
     setCurrentTrade(updatedTrade);
     if (side === "from") setFromAmount("");
