@@ -18,9 +18,13 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   // const [toAmount, setToAmount] = useState(data?.toAmount || "");
   const [toAmount, setToAmount] = useState("");
 
-  // console.log("configurations", configurations);
-  // console.log("WALLET-SWAP-data", data);
-  // console.log("configurations?.estimatedAmountLabel", configurations?.estimatedAmountLabel);
+  const fromTokens = configurations.tokens.filter(token => 
+    token.listType === "from" || token.listType === "both"
+  );
+
+  const toTokens = configurations.tokens.filter(token => 
+    token.listType === "to" || token.listType === "both"
+  );
 
   useEffect(() => {
     // Update toAmount based on data prop changes
@@ -72,7 +76,8 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
           <div className="mb-4">
             <label className="block text-gray-100">{configurations?.fromTokenLabel}</label>
             <TokensDropdown
-              tokens={configurations.tokens}
+              // tokens={configurations.tokens}
+              tokens={fromTokens}
               selectedToken={currentTrade.from}
               onSelect={(token) => selectToken("from", token)}
               blurToken={currentTrade.to}
@@ -96,7 +101,8 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
           <div className="mb-4">
             <label className="block text-gray-100">{configurations?.toTokenLabel}</label>
             <TokensDropdown
-              tokens={configurations.tokens}
+              // tokens={configurations.tokens}
+              tokens={toTokens}
               selectedToken={currentTrade.to}
               onSelect={(token) => selectToken("to", token)}
               blurToken={currentTrade.from}
