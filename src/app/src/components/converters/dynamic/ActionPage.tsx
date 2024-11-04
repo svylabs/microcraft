@@ -90,6 +90,23 @@ const ActionPage: React.FC = () => {
     window.location.href = "/app/new/field";
   };
 
+  const exportJson = () => {
+    const componentsData = localStorage.getItem('components');
+    if (componentsData) {
+      const jsonBlob = new Blob([componentsData], { type: 'application/json' });
+      const url = URL.createObjectURL(jsonBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'components.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      console.warn('No components data found in localStorage');
+    }
+  };
+
   // console.log(data);
   return (
     <>
@@ -175,7 +192,23 @@ const ActionPage: React.FC = () => {
             debug={setOutputCode}
           /> */}
 
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
+            <button
+              className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
+              onClick={goThumbnail}
+            >
+              Add Thumbnail
+            </button>
+          </div> */}
+
+          <div className="flex justify-between">
+            <button
+              className="p-3 px-5 font-bold text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+              onClick={exportJson}
+              title="Click to download components data as JSON"
+            >
+              Export JSON
+            </button>
             <button
               className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
               onClick={goThumbnail}
