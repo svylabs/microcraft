@@ -93,7 +93,9 @@ const ActionPage: React.FC = () => {
   const exportJson = () => {
     const componentsData = localStorage.getItem('components');
     if (componentsData) {
-      const jsonBlob = new Blob([componentsData], { type: 'application/json' });
+      // Parse and format JSON data with indentation
+      const formattedData = JSON.stringify(JSON.parse(componentsData), null, 2);
+      const jsonBlob = new Blob([formattedData], { type: 'application/json' });
       const url = URL.createObjectURL(jsonBlob);
       const link = document.createElement('a');
       link.href = url;
