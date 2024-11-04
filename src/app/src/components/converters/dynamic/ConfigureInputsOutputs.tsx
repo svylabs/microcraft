@@ -1168,7 +1168,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                           <input
                             type="range"
                             id={component.id}
-                            className="w-full md:w-[60%] h-8 cursor-pointer"
+                            className="w-full h-9 cursor-pointer" //md:w-[60%]
                             name={component.label}
                             min={
                               component.config.sliderConfig

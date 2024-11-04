@@ -347,7 +347,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
 
   return (
     <>
-      <div>
+      <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
         <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
@@ -633,7 +633,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                     <input
                       type="range"
                       id={component.id}
-                      className="w-full md:w-[60%] h-8 cursor-pointer"
+                      className="w-full h-8 cursor-pointer" //md:w-[60%]
                       name={component.label}
                       min={
                         component.config.sliderConfig
