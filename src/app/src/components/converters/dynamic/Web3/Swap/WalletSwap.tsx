@@ -191,8 +191,8 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   // console.log(fromAmount);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="max-w-lg mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
+    <div className="container mx-auto py-4">
+      <div className="max-w-xl mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
         <h4 className="text-lg lg:text-xl font-semibold mb-4 text-white text-center">{configurations?.heading}</h4>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
@@ -220,7 +220,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
             </span>
           </div>
         </div>
-        <div className="flex justify-center my-1 text-white">
+        <div className="flex justify-center text-white">
           <FiArrowDownCircle size={30} className="animate-bounce" />
         </div>
         <div className="flex flex-col md:flex-row justify-between">

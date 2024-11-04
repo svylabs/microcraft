@@ -5,6 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
@@ -203,17 +205,19 @@ const ActionPage: React.FC = () => {
             </button>
           </div> */}
 
-          <div className="flex justify-between">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between p-4">
             <button
-              className="p-3 px-5 font-bold text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+              className="flex items-center justify-center w-full md:w-auto p-3 px-5 font-semibold text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-700"
               onClick={exportJson}
               title="Click to download components data as JSON"
             >
+              <FontAwesomeIcon icon={faDownload} className="mr-2" />
               Export JSON
             </button>
             <button
-              className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
+              className="w-full md:w-auto p-3 px-5 font-semibold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-700"
               onClick={goThumbnail}
+              title="Click to add a thumbnail"
             >
               Add Thumbnail
             </button>
