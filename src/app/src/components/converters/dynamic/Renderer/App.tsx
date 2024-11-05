@@ -307,7 +307,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
   
-
   const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
