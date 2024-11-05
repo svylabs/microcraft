@@ -1,3 +1,4 @@
+import DynamicApp from '@svylabs/microcraft-lib';
 import React, { useEffect, useState, useRef } from "react";
 import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
@@ -6,7 +7,6 @@ import { toast, ToastContainer } from "react-toastify";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 // import { net } from "web3";
-import DynamicApp from '@svylabs/microcraft-lib';
 
 interface Output {
   [key: string]: any;

@@ -1,13 +1,15 @@
+import DynamicApp from '@svylabs/microcraft-lib';
 import React, { useEffect, useState } from "react";
 import "./ActionPage.scss";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import { Link } from "react-router-dom";
 import arrow from "../../photos/angle-right-solid.svg";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Table from "./outputPlacement/TableComponent";
 import Loading from "./loadingPage/Loading";
-// import App from "./Renderer/App";
-import DynamicApp from '@svylabs/microcraft-lib';
+import App from "./Renderer/App";
 
 interface Output {
   [key: string]: any;
@@ -88,6 +90,25 @@ const ActionPage: React.FC = () => {
   const goBack = () => {
     // setLoading(true);
     window.location.href = "/app/new/field";
+  };
+
+  const exportJson = () => {
+    const componentsData = localStorage.getItem('components');
+    if (componentsData) {
+      // Parse and format JSON data with indentation
+      const formattedData = JSON.stringify(JSON.parse(componentsData), null, 2);
+      const jsonBlob = new Blob([formattedData], { type: 'application/json' });
+      const url = URL.createObjectURL(jsonBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'components.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else {
+      console.warn('No components data found in localStorage');
+    }
   };
 
   // console.log(data);
@@ -175,10 +196,28 @@ const ActionPage: React.FC = () => {
             debug={setOutputCode}
           />
 
-          <div className="flex justify-end">
+          {/* <div className="flex justify-end">
             <button
               className="p-3 px-5 font-bold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:ring focus:border-green-700"
               onClick={goThumbnail}
+            >
+              Add Thumbnail
+            </button>
+          </div> */}
+
+          <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between p-4">
+            <button
+              className="flex items-center justify-center w-full md:w-auto p-3 px-5 font-semibold text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-700"
+              onClick={exportJson}
+              title="Click to download components data as JSON"
+            >
+              <FontAwesomeIcon icon={faDownload} className="mr-2" />
+              Export JSON
+            </button>
+            <button
+              className="w-full md:w-auto p-3 px-5 font-semibold text-white bg-green-500 border border-green-500 rounded-md hover:bg-green-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-700"
+              onClick={goThumbnail}
+              title="Click to add a thumbnail"
             >
               Add Thumbnail
             </button>

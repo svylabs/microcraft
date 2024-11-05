@@ -59,4 +59,11 @@ export default defineConfig({
       usePolling: true,
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ["legacy-js-api"],
+      },
+    },
+  },
 });

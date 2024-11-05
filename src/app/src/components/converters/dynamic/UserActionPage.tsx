@@ -1,11 +1,11 @@
+import DynamicApp from '@svylabs/microcraft-lib';
 import React, { useEffect, useState, useRef } from "react";
 import "./ActionPage.scss";
 import { redirect, useLocation, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
-// import App from "./Renderer/App";
-import DynamicApp from '@svylabs/microcraft-lib';
+import App from "./Renderer/App";
 
 interface Output {
   [key: string]: any;
@@ -181,7 +181,7 @@ const UserActionPage = () => {
 
   return (
     <>
-      <div className="image-pdf px-4 min-h-[88vh] flex flex-col pb-10">
+      <div className="image-pdf px-4 min-h-[89vh] flex flex-col pb-10">
         {/* <ToastContainer /> */}
         <h1 className="text-xl md:text-3xl font-bold py-2 mx-auto bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-purple-600">
           {output.title || appId}
@@ -196,8 +196,8 @@ const UserActionPage = () => {
             </div>
           )}
           <div className="px-2 md:p- text-wrap">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h1 className="font-semibold md:text-xl hidden md:block">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto mb-4">
+              <h1 className="font-semibold md:text-xl hidden md:block underline">
                 {output.title || appId}
               </h1>
               <button
