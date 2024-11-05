@@ -15,10 +15,10 @@ interface Props {
 
 const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
 
-  const fromTokens = configurations.tokens.filter(token => 
+  const fromTokens = configurations.tokens.filter(token =>
     token.listType === "from" || token.listType === "both"
   );
-  const toTokens = configurations.tokens.filter(token => 
+  const toTokens = configurations.tokens.filter(token =>
     token.listType === "to" || token.listType === "both"
   );
 
@@ -38,102 +38,56 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   // Initialize Web3 instance
   const web3 = new Web3(Web3.givenProvider);
 
-  useEffect(() => {
-    // const fetchBalance = async () => {
-    //   try {
-    //     if (!currentTrade.from || !currentTrade.from.address) return;
+  // Fetch user address and balance
+  const fetchUserAddressAndBalance = async () => {
+    try {
+      let address = "";
+      let balance = "0";
 
-    //     const accounts = await web3.eth.getAccounts();
-    //     if (accounts.length === 0) {
-    //       console.warn("No user account found.");
-    //       return;
-    //     }
-    //     const userAddress = accounts[0];
-
-    //     let balance;
-
-    //     if (currentTrade.from.isNative) {
-    //       // Fetch balance for native token (e.g., ETH)
-    //       balance = await web3.eth.getBalance(userAddress);
-    //     } else {
-    //       // Fetch balance for ERC20 token
-    //       const tokenContract = new web3.eth.Contract(
-    //         [
-    //           {
-    //             constant: true,
-    //             inputs: [{ name: "_owner", type: "address" }],
-    //             name: "balanceOf",
-    //             outputs: [{ name: "balance", type: "uint256" }],
-    //             type: "function",
-    //           },
-    //         ],
-    //         currentTrade.from.address
-    //       );
-
-    //       // Validate that the address exists and fetch balance
-    //       if (userAddress) {
-    //         balance = await tokenContract.methods.balanceOf(userAddress).call();
-    //       } else {
-    //         console.warn("User address is undefined or invalid.");
-    //         return;
-    //       }
-    //     }
-
-    //     // Convert balance to a human-readable format
-    //     setMaxAmount(web3.utils.fromWei(balance, "ether"));
-    //   } catch (error) {
-    //     console.error("Error fetching balance:", error);
-    //     setMaxAmount("0");
-    //   }
-    // };
-
-
-
-    const fetchBalance = async () => {
-      try {
-        // Ensure `from` token and address exist
-        if (!currentTrade.from || !currentTrade.from.address) return;
-    
-        const accounts = await web3.eth.getAccounts();
-        if (accounts.length === 0) {
-          console.warn("No user account found.");
-          return;
-        }
-        const userAddress = accounts[0];
-    
-        let balance;
-    
-        if (currentTrade.from.isNative) {
-          // Fetch balance for native token (e.g., ETH or BNB)
-          balance = await web3.eth.getBalance(userAddress);
-        } else {
-          // Fetch balance for ERC20 token from token's contract
-          const tokenContract = new web3.eth.Contract(
-            [
-              {
-                constant: true,
-                inputs: [{ name: "_owner", type: "address" }],
-                name: "balanceOf",
-                outputs: [{ name: "balance", type: "uint256" }],
-                type: "function",
-              },
-            ],
-            currentTrade.from.address
-          );
-    
-          balance = await tokenContract.methods.balanceOf(userAddress).call();
-        }
-    
-        // Convert balance to readable format
-        setMaxAmount(web3.utils.fromWei(balance, "ether"));
-      } catch (error) {
-        console.error("Error fetching balance:", error);
-        setMaxAmount("0");
+      if (window.ethereum) {
+        // Ethereum wallet
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        const accounts = await window.ethereum.request({ method: "eth_accounts" });
+        address = accounts[0];
+        console.log("ETHEREUM address:- ", address);
+        const rawBalance = await web3.eth.getBalance(address);
+        balance = web3.utils.fromWei(rawBalance.toString(), "ether"); // Convert to Ether and ensure it's a string
+      } else if (window.mina) {
+        // Mina wallet
+        const accounts = await window.mina.requestAccounts();
+        address = accounts[0];
+        console.log("Mina address:- ", address);
+      } else if (window.keplr) {
+        // Keplr wallet (Cosmos-based)
+        const chainId = "cosmoshub-4";
+        await window.keplr.enable(chainId);
+        const offlineSigner = window.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+        address = accounts[0].address;
+        console.log("KEPLR address:- ", address);
+        // Fetch Cosmos balance (e.g., ATOM)
+        const client = await window.getOfflineSigner(chainId);
+        const balances = await client.getBalance(address, "uatom");
+        balance = (balances?.amount / 1e6).toString();
+      } else {
+        console.warn("No supported wallet found.");
+        return;
       }
-    };
-    
 
-    fetchBalance();
+      setMaxAmount(balance.toString());
+      console.log("maxAmount", maxAmount);
+    } catch (error) {
+      console.error("Error fetching user address or balance:", error);
+      setMaxAmount("null");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserAddressAndBalance(); // Fetch once on component mount
+  }, []);
+
+  useEffect(() => {
+    fetchUserAddressAndBalance(); // Fetch again when currentTrade.from changes
   }, [currentTrade.from]);
 
   useEffect(() => {
