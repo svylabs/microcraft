@@ -65,7 +65,6 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
         const accounts = await offlineSigner.getAccounts();
         address = accounts[0].address;
         console.log("KEPLR address:- ", address);
-        // Fetch Cosmos balance (e.g., ATOM)
         const client = await window.getOfflineSigner(chainId);
         const balances = await client.getBalance(address, "uatom");
         balance = (balances?.amount / 1e6).toString();
