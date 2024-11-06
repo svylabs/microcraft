@@ -178,23 +178,23 @@ const ActionPage: React.FC = () => {
             </button>
           </div>
 
-          {/* <App
+          <App
             components={components}
             data={data}
             setData={setData}
             contracts={loadedData.contractDetails}
             network={loadedData.networkDetails}
             debug={setOutputCode}
-          /> */}
+          />
 
-          <DynamicApp
+          {/* <DynamicApp
             components={components}
             data={data}
             setData={setData}
             contracts={loadedData?.contractDetails || []}
             network={loadedData?.networkDetails || {}}
             debug={setOutputCode}
-          />
+          /> */}
 
           {/* <div className="flex justify-end">
             <button

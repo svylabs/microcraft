@@ -83,9 +83,6 @@ const ConfigureBasicDetails: React.FC = () => {
           setFileUploaded(true); // Update state to indicate successful upload
           toast.success("JSON file uploaded successfully!");
 
-          // // Redirect to preview page after uploading
-          // window.location.href = "/app/new/field";
-
         } catch (error) {
           console.error("Error parsing JSON file:", error);
           toast.error("Invalid JSON file format.");

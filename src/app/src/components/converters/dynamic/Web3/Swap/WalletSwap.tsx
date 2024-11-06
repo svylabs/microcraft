@@ -75,6 +75,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
       }
 
       setMaxAmount(balance.toString());
+      // setMaxAmount("30");
       console.log("maxAmount", maxAmount);
     } catch (error) {
       console.error("Error fetching user address or balance:", error);
@@ -128,6 +129,12 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
 
   const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputAmount = e.target.value;
+
+    // If the input is empty, just set the fromAmount to an empty string
+    if (inputAmount === "") {
+      setFromAmount("");
+      return;
+    }
 
     // Prevent the user from entering an amount greater than the max balance
     if (new BigNumber(inputAmount).isLessThanOrEqualTo(new BigNumber(maxAmount))) {
