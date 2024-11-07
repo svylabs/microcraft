@@ -7,6 +7,7 @@ import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
 import DescriptionComponent from '../outputPlacement/DescriptionComponent';
+import TransactionLink from '../outputPlacement/TransactionLink';
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
@@ -407,7 +408,17 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   {(() => {
                     switch (component.type) {
                       case "text":
-                        return <TextOutput data={data[component.id]} />;
+                        // return <TextOutput data={data[component.id]} />;
+                        <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                           <TextOutput data={data[component.id]} />
+                          </div>
                       case "json":
                         return (
                           <pre
@@ -424,10 +435,27 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                           </pre>
                         );
                       case "table":
-                        return <Table data={data[component.id]} />;
+                        // return <Table data={data[component.id]} />;
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <Table data={data[component.id]} />
+                          </div>
+                        );
                       case "graph":
                         return (
-                          <div>
+                          <div style={{
+                            ...(component.config && typeof component.config.styles === 'object'
+                              ? component.config.styles
+                              : {}),
+                          }}
+                          >
                             <Graph
                               key={`graph-${component.id}`}
                               output={data[component.id]}
@@ -438,19 +466,32 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                             />
                           </div>
                         );
-                        case "description":
-                          return (
-                            <div
-                              className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
-                              style={{
-                                ...(component.config && typeof component.config.styles === 'object'
-                                  ? component.config.styles
-                                  : {}),
-                              }}
-                            >
-                                <DescriptionComponent data={data[component.id]} />
-                            </div>
-                          );
+                      case "description":
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <DescriptionComponent data={data[component.id]} />
+                          </div>
+                        );
+                        case "transactionLink":
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <TransactionLink data={data[component.id]} />
+                          </div>
+                        );
                       default:
                         return null;
                     }
@@ -517,7 +558,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                 )}
               {component.type === "swap" && (
                 <div
-                className="mt-2"
+                  className="mt-2"
                   style={{
                     ...(component.config && typeof component.config.styles === 'object'
                       ? component.config.styles

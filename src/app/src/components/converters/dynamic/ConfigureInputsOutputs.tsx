@@ -443,6 +443,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         case 'walletDropdown':
         case 'button':
         case 'table':
+        case 'transactionLink':
         case 'description':
           initialConfig = { styles: { ...config.styles } };
           break;
@@ -638,6 +639,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <option value="table">Table</option>
                   <option value="graph">Graph</option>
                   <option value="description">Description Field</option>
+                  <option value="transactionLink">Transaction Link</option>
                 </select>
               </label>
               {renderConfig()}
@@ -839,6 +841,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                     component.type === "file" ||
                     component.type === "table" ||
                     component.type === "description" ||
+                    component.type === "transactionLink" ||
                     component.type === "graph") && (
                       <div>
                         <div className="flex justify-between">

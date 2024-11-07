@@ -1,15 +1,17 @@
 import React from 'react';
 
 interface TransactionLinkProps {
-  txHash: string;
+  data: any;
 }
 
-const TransactionLink: React.FC<TransactionLinkProps> = ({ txHash }) => {
-  const etherscanUrl = `https://etherscan.io/tx/${txHash}`;
+const TransactionLink: React.FC<TransactionLinkProps> = ({ data }) => {
+  const txHash = data || '';
+
+  const etherscanUrl = txHash ? `https://etherscan.io/tx/${txHash}` : '#';
 
   return (
     <a href={etherscanUrl} target="_blank" rel="noopener noreferrer">
-      {txHash.slice(0, 10)}...
+      {txHash ? `${txHash.slice(0, 10)}...` : 'Transaction not available'}
     </a>
   );
 };
