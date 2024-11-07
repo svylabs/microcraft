@@ -517,6 +517,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                 )}
               {component.type === "swap" && (
                 <div
+                className="mt-2"
                   style={{
                     ...(component.config && typeof component.config.styles === 'object'
                       ? component.config.styles
