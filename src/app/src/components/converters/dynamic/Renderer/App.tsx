@@ -215,7 +215,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     if (rpcUrls) {
       try {
         if (!window.keplr) {
-          alert("hi")
           throw new Error("Keplr extension is not installed");
         }
 
