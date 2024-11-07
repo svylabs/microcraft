@@ -6,6 +6,7 @@ import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
+import DescriptionComponent from '../outputPlacement/DescriptionComponent';
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
@@ -437,6 +438,19 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                             />
                           </div>
                         );
+                        case "description":
+                          return (
+                            <div
+                              className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                              style={{
+                                ...(component.config && typeof component.config.styles === 'object'
+                                  ? component.config.styles
+                                  : {}),
+                              }}
+                            >
+                                <DescriptionComponent data={data[component.id]} />
+                            </div>
+                          );
                       default:
                         return null;
                     }

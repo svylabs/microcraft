@@ -74,7 +74,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
       }
 
       setMaxAmount(balance.toString());
-      // setMaxAmount("30");
+      setMaxAmount("30");
       console.log("maxAmount", maxAmount);
     } catch (error) {
       console.error("Error fetching user address or balance:", error);
@@ -152,7 +152,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
 
   return (
     <div className="container mx-auto py-4">
-      <div className="max-w-xl mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
+      <div className=" mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
         <h4 className="text-lg lg:text-xl font-semibold mb-4 text-white text-center">{configurations?.heading}</h4>
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-4">
