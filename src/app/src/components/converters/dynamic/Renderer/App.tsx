@@ -378,9 +378,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
         <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
-          <h2 className="text-2xl font-semibold text-gray-800 flex items-center space-x-3">
+          <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
             <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" />
-            <span>Dashboard</span>
+            <span>Create & Innovate</span>
           </h2>
           <button
             onClick={handleConnectWallet}
