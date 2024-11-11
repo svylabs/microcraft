@@ -206,7 +206,7 @@ const ExternalAppPage = () => {
             </div>
           )}
           <div className="px-2 text-wrap">
-            <div className="flex flex-col md:flex-row md:justify-between mb-4">
+            <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
               <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
               <h3 className="text-sm md:text-base lg:text-lg">{appDescription}</h3>
             </div>
