@@ -301,6 +301,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     try {
       setLoading(true);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       console.log(config);
       const result = await eval(code);
       if (typeof result === "object") {
@@ -319,6 +320,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       setLoading(true);
       console.log("Executing onChange code:", code);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       const result = await eval(code);
 
       // Update state with the merged result
@@ -354,6 +356,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     try {
       setLoading(true);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       console.log(config);
       const result = await eval(code);
 
