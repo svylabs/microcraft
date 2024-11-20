@@ -120,6 +120,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         toTokenLabel: "To Token",
         amountLabel: "Amount",
         estimatedAmountLabel: "Estimated Amount",
+        maxEstimationBorrowLabel: "Max Borrow Amount",
         tokens: [
           {
             chainId: 137,
