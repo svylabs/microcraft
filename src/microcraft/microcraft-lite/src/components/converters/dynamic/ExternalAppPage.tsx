@@ -189,10 +189,10 @@ const ExternalAppPage = () => {
             id="output"
           />
           <div className="mx-auto">
-          <button
-            className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-            onClick={() => loadApp()}
-          >Load App</button>
+            <button
+              className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
+              onClick={() => loadApp()}
+            >Load App</button>
           </div>
         </div>
 
@@ -205,19 +205,11 @@ const ExternalAppPage = () => {
               </p>
             </div>
           )}
-          <div className="px-2 md:p- text-wrap">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h1 className="font-semibold md:text-xl">
-                {appName}
-              </h1>
+          <div className="px-2 text-wrap">
+            <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
+              <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
+              <h3 className="text-sm md:text-base lg:text-lg">{appDescription}</h3>
             </div>
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h3 className="">
-                {appDescription}
-              </h3>
-            </div>
-
-
             {(components.length > 0) && (
               // <App
               //   components={components}

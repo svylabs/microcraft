@@ -33,6 +33,7 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   const [fromAmount, setFromAmount] = useState("");
   // const [toAmount, setToAmount] = useState(data?.toAmount || "");
   const [toAmount, setToAmount] = useState("");
+  const [maxBorrowAmount, setMaxBorrowAmount] = useState("");
   const [maxAmount, setMaxAmount] = useState("");
 
   // Initialize Web3 instance
@@ -65,7 +66,6 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
         const accounts = await offlineSigner.getAccounts();
         address = accounts[0].address;
         console.log("KEPLR address:- ", address);
-        // Fetch Cosmos balance (e.g., ATOM)
         const client = await window.getOfflineSigner(chainId);
         const balances = await client.getBalance(address, "uatom");
         balance = (balances?.amount / 1e6).toString();
@@ -74,7 +74,8 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
         return;
       }
 
-      setMaxAmount(balance.toString());
+      // setMaxAmount(balance.toString());
+      setMaxAmount("30");
       console.log("maxAmount", maxAmount);
     } catch (error) {
       console.error("Error fetching user address or balance:", error);
@@ -97,8 +98,16 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
     // }
 
     const estimatedAmountKey = configurations?.estimatedAmountLabel;
+    const borrowAmountKey = configurations?.maxEstimationBorrowLabel;
+
+    // Update `toAmount` based on `estimatedAmountLabel` and `data`
     if (estimatedAmountKey && data && data[estimatedAmountKey]) {
       setToAmount(data[estimatedAmountKey]);
+    }
+
+    // Update `maxBorrowAmount` dynamically based on `maxEstimationBorrowLabel` and `data`
+    if (borrowAmountKey && data && data[borrowAmountKey]) {
+      setMaxBorrowAmount(data[borrowAmountKey]);
     }
   }, [configurations, data]);
 
@@ -118,9 +127,10 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
       [configurations?.toTokenLabel]: currentTrade.to,
       [configurations?.amountLabel]: fromAmount,
       [configurations?.estimatedAmountLabel]: toAmount,
+      [configurations?.maxEstimationBorrowLabel]: maxBorrowAmount,
     };
     onSwapChange(swapData);
-  }, [currentTrade.from, currentTrade.to, fromAmount, toAmount]);
+  }, [currentTrade.from, currentTrade.to, fromAmount, toAmount, maxBorrowAmount]);
 
   // const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   //   setFromAmount(e.target.value);
@@ -128,6 +138,12 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
 
   const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputAmount = e.target.value;
+
+    // If the input is empty, just set the fromAmount to an empty string
+    if (inputAmount === "") {
+      setFromAmount("");
+      return;
+    }
 
     // Prevent the user from entering an amount greater than the max balance
     if (new BigNumber(inputAmount).isLessThanOrEqualTo(new BigNumber(maxAmount))) {
@@ -145,61 +161,64 @@ const Swap: React.FC<Props> = ({ configurations, onSwapChange, data }) => {
   // console.log(fromAmount);
 
   return (
-    <div className="container mx-auto py-4">
-      <div className="max-w-xl mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6">
-        <h4 className="text-lg lg:text-xl font-semibold mb-4 text-white text-center">{configurations?.heading}</h4>
-        <div className="flex flex-col md:flex-row justify-between">
-          <div className="mb-4">
-            <label className="block text-gray-100">{configurations?.fromTokenLabel}</label>
-            <TokensDropdown
-              // tokens={configurations.tokens}
-              tokens={fromTokens}
-              selectedToken={currentTrade.from}
-              onSelect={(token) => selectToken("from", token)}
-              blurToken={currentTrade.to}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-100">{configurations?.amountLabel}</label>
-            <input
-              type="number"
-              value={fromAmount}
-              onChange={handleFromAmountChange}
-              className="block w-full mt-1 border rounded py-2 px-3"
-              placeholder="Enter amount"
-              max={maxAmount}
-            />
-            <span className="text-gray-400 text-sm mt-1 block">
-              Max amount: {maxAmount}
-            </span>
-          </div>
+    <div className="container mx-auto p-6 border rounded shadow-sm">
+      {/* <div className="mx-auto bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg shadow-lg p-6"> */}
+      <h4 className="text-lg lg:text-xl font-semibold mb-4 text-center">{configurations?.heading}</h4>
+      <div className="flex flex-col md:flex-row justify-between">
+        <div className="mb-4 w-full md:w-1/2">
+          <label className="block ">{configurations?.fromTokenLabel}</label>
+          <TokensDropdown
+            tokens={fromTokens}
+            selectedToken={currentTrade.from}
+            onSelect={(token) => selectToken("from", token)}
+            blurToken={currentTrade.to}
+          />
         </div>
-        <div className="flex justify-center text-white">
-          <FiArrowDownCircle size={30} className="animate-bounce" />
-        </div>
-        <div className="flex flex-col md:flex-row justify-between">
-          <div className="mb-4">
-            <label className="block text-gray-100">{configurations?.toTokenLabel}</label>
-            <TokensDropdown
-              // tokens={configurations.tokens}
-              tokens={toTokens}
-              selectedToken={currentTrade.to}
-              onSelect={(token) => selectToken("to", token)}
-              blurToken={currentTrade.from}
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-100">{configurations?.estimatedAmountLabel}</label>
-            <input
-              type="text"
-              value={toAmount}
-              readOnly
-              className="block w-full mt-1 border rounded py-2 px-3 bg-gray-100 text-indigo-700 cursor-not-allowed"
-              placeholder="Estimated amount"
-            />
-          </div>
+        <div className="mb-4 w-full md:w-1/2">
+          <label className="block ">{configurations?.amountLabel}</label>
+          <input
+            type="number"
+            value={fromAmount}
+            onChange={handleFromAmountChange}
+            className="block w-full mt-1 border rounded py-2 px-3"
+            placeholder="Enter amount"
+            max={maxAmount}
+          />
+          <span className="text-sm mt-1 block">
+            Max amount: {maxAmount}
+          </span>
         </div>
       </div>
+      <div className="flex justify-center">
+        <FiArrowDownCircle size={30} className="animate-bounce" />
+      </div>
+      <div className="flex flex-col md:flex-row justify-between">
+        <div className="mb-4 w-full md:w-1/2">
+          <label className="block ">{configurations?.toTokenLabel}</label>
+          <TokensDropdown
+            tokens={toTokens}
+            selectedToken={currentTrade.to}
+            onSelect={(token) => selectToken("to", token)}
+            blurToken={currentTrade.from}
+          />
+        </div>
+        <div className="mb-4 w-full md:w-1/2">
+          <label className="block ">{configurations?.estimatedAmountLabel}</label>
+          <input
+            type="text"
+            value={toAmount}
+            onChange={(e) => setToAmount(e.target.value)}
+            // readOnly
+            // className="block w-full mt-1 border rounded py-2 px-3 bg-gray-100 text-indigo-700 cursor-not-allowed"
+            className="block w-full mt-1 border rounded py-2 px-3"
+            placeholder="Estimated amount"
+          />
+          <span className="text-sm mt-1 block">
+            {configurations?.maxEstimationBorrowLabel}: {maxBorrowAmount || "N/A"}
+          </span>
+        </div>
+      </div>
+      {/* </div> */}
     </div>
   );
 };

@@ -6,6 +6,8 @@ import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
 import Table from "../outputPlacement/TableComponent";
 import TextOutput from "../outputPlacement/TextOutput";
+import DescriptionComponent from '../outputPlacement/DescriptionComponent';
+import TransactionLink from '../outputPlacement/TransactionLink';
 import Loading from "../loadingPage/Loading";
 import Swap from "../Web3/Swap/WalletSwap";
 import JsonViewer from './JsonViewer';
@@ -13,6 +15,8 @@ import Alert from "./Alert";
 import { ERC20_ABI } from './ABI/ERC20_ABI';
 import { ERC721_ABI } from './ABI/ERC721_ABI';
 import { ERC1155_ABI } from './ABI/ERC1155_ABI';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTachometerAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   components: any[];
@@ -187,11 +191,29 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     }
   };
 
-  const initializeCosmosClient = async () => {
+  // const initializeCosmosClient = async () => {
+  //   if (rpcUrls) {
+  //     try {
+  //       const chainId = chainIds || "cosmoshub-4";
+
+  //       if (!window.keplr) {
+  //         throw new Error("Keplr extension is not installed");
+  //       }
+
+  //       await window.keplr.enable(chainId);
+  //       const offlineSigner = window.getOfflineSigner(chainId);
+  //       const client = await SigningStargateClient.connectWithSigner(rpcUrls, offlineSigner);
+
+  //       setCosmosClient(client);
+  //     } catch (error) {
+  //       console.error("Error initializing Cosmos client:", error);
+  //     }
+  //   }
+  // };
+
+  const initializeCosmosClient = async (chainId: string) => {
     if (rpcUrls) {
       try {
-        const chainId = chainIds || "cosmoshub-4";
-
         if (!window.keplr) {
           throw new Error("Keplr extension is not installed");
         }
@@ -204,12 +226,20 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       } catch (error) {
         console.error("Error initializing Cosmos client:", error);
       }
+    } else {
+      alert("No RPC URL found. Please check your network configuration.");
     }
+  };
+
+  // Function to handle wallet connection
+  const handleConnectWallet = async () => {
+    const chainId = chainIds || "cosmoshub-4";
+    await initializeCosmosClient(chainId);
   };
 
   useEffect(() => {
     addNetwork();
-    initializeCosmosClient();
+    // initializeCosmosClient();
   }, [networkDetails]);
 
   const web3 = new Web3(window.ethereum);
@@ -271,6 +301,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     try {
       setLoading(true);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       console.log(config);
       const result = await eval(code);
       if (typeof result === "object") {
@@ -289,8 +320,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       setLoading(true);
       console.log("Executing onChange code:", code);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       const result = await eval(code);
-      
+
       // Update state with the merged result
       setData(prevData => {
         const updatedData = { ...prevData, ...result };
@@ -298,7 +330,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         debug(updatedData);  // Pass updatedData to debug function
         return updatedData;
       });
-  
+
     } catch (error) {
       console.error("Error executing onChange code:", error);
       debug(`Error: ${error}`);
@@ -306,7 +338,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       setLoading(false);
     }
   };
-  
+
   const handleInputChange = (id: string, value: any, eventCode?: string, eventType?: string) => {
     setData((prevInputValues) => ({
       ...prevInputValues,
@@ -324,9 +356,10 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
     try {
       setLoading(true);
       const config = mcLib.web3.config;
+      const ethers = mcLib.web3;
       console.log(config);
       const result = await eval(code);
-      
+
       // Update state with the merged result
       setData(prevData => {
         // const updatedData = { ...prevData, ...result };
@@ -347,6 +380,18 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
   return (
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
+        <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
+          <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
+            <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" />
+            <span>Create & Innovate</span>
+          </h2>
+          <button
+            onClick={handleConnectWallet}
+            className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg transform transition duration-200 ease-in-out hover:scale-105 hover:shadow-xl"
+          >
+            Connect Wallet
+          </button>
+        </div>
         <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
@@ -365,7 +410,17 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                   {(() => {
                     switch (component.type) {
                       case "text":
-                        return <TextOutput data={data[component.id]} />;
+                        // return <TextOutput data={data[component.id]} />;
+                        <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                           <TextOutput data={data[component.id]} />
+                          </div>
                       case "json":
                         return (
                           <pre
@@ -382,10 +437,27 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                           </pre>
                         );
                       case "table":
-                        return <Table data={data[component.id]} />;
+                        // return <Table data={data[component.id]} />;
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <Table data={data[component.id]} />
+                          </div>
+                        );
                       case "graph":
                         return (
-                          <div>
+                          <div style={{
+                            ...(component.config && typeof component.config.styles === 'object'
+                              ? component.config.styles
+                              : {}),
+                          }}
+                          >
                             <Graph
                               key={`graph-${component.id}`}
                               output={data[component.id]}
@@ -394,6 +466,32 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                               }
                               graphId={`graph-container-${component.id}`}
                             />
+                          </div>
+                        );
+                      case "description":
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <DescriptionComponent data={data[component.id]} />
+                          </div>
+                        );
+                        case "transactionLink":
+                        return (
+                          <div
+                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                            style={{
+                              ...(component.config && typeof component.config.styles === 'object'
+                                ? component.config.styles
+                                : {}),
+                            }}
+                          >
+                            <TransactionLink data={data[component.id]} />
                           </div>
                         );
                       default:
@@ -453,7 +551,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                                 handleInputChange(component.id, updatedData, eventCode, "onChange");
                               }
                             });
-                          } 
+                          }
                           handleInputChange(component.id, updatedData);
                         });
                       }}
@@ -462,6 +560,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                 )}
               {component.type === "swap" && (
                 <div
+                  className="mt-2"
                   style={{
                     ...(component.config && typeof component.config.styles === 'object'
                       ? component.config.styles

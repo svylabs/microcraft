@@ -93,22 +93,43 @@ const ActionPage: React.FC = () => {
   };
 
   const exportJson = () => {
-    const componentsData = localStorage.getItem('components');
-    if (componentsData) {
-      // Parse and format JSON data with indentation
-      const formattedData = JSON.stringify(JSON.parse(componentsData), null, 2);
-      const jsonBlob = new Blob([formattedData], { type: 'application/json' });
-      const url = URL.createObjectURL(jsonBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'components.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } else {
-      console.warn('No components data found in localStorage');
-    }
+    const savedFormDataString = localStorage.getItem("formData");
+    const savedFormData = savedFormDataString
+      ? JSON.parse(savedFormDataString)
+      : {};
+
+    const savedComponentsString = localStorage.getItem("components");
+    const savedComponentsData = savedComponentsString
+      ? JSON.parse(savedComponentsString)
+      : [];
+
+    // Combine formData and components into a single object
+    const exportData = {
+      name: savedFormData.title || "",
+      description: savedFormData.description || "",
+      components: savedComponentsData,
+      contracts: savedFormData.contractDetails || [],
+      network: {
+        type: savedFormData.networkType || "ethereum",
+        config: {
+          rpcUrl: savedFormData.rpcUrl || "",
+          chainId: savedFormData.chainId || "",
+          exploreUrl: savedFormData.exploreUrl || ""
+        }
+      }
+    };
+
+    // Convert to JSON and trigger download
+    const formattedData = JSON.stringify(exportData, null, 2);
+    const jsonBlob = new Blob([formattedData], { type: 'application/json' });
+    const url = URL.createObjectURL(jsonBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'exported_data.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // console.log(data);
