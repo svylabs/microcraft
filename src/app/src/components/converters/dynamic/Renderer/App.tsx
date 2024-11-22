@@ -59,6 +59,13 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
   const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
   const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
 
+  const handleNetworkChange = async (selectedNetwork) => {
+    // Logic to switch to the selected network
+    // This is a placeholder; you may want to implement the actual network switching logic
+    console.log("Switching to network:", selectedNetwork);
+    setNetworkStatus(`Connected to ${selectedNetwork}`);
+  };
+
   const addNetwork = async () => {
     const { ethereum } = window;
     if (ethereum) {
@@ -380,7 +387,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
   return (
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
+        {/* <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
           <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
             <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" />
             <span>Create & Innovate</span>
@@ -391,6 +398,28 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
           >
             Connect Wallet
           </button>
+        </div> */}
+        <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
+          <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
+            {/* <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" /> */}
+            <span>"Not connected"</span>
+          </h2>
+          <select
+            className="px-4 py-2 border rounded"
+            onChange={(e) => handleNetworkChange(e.target.value)}
+          >
+            <option value="">Select Network</option>
+            {/* {networkDetails.map((network) => (
+              <option key={network.type} value={network.type}>
+                {network.type} 
+              </option>
+            ))} */}
+            {networkDetails && (
+              <option value={networkDetails.type}>
+                {networkDetails.type}
+              </option>
+            )}
+          </select>
         </div>
         <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
