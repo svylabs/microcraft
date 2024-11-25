@@ -19,15 +19,23 @@ interface ContractGroup {
   id: string;
 }
 
+// interface ContractInstance {
+//   network: {
+//     type: "",
+//     config: {
+//       rpcUrl: "",
+//       chainId: "",
+//       exploreUrl: "(optional)",
+//     },
+//   };
+//   contracts: {
+//     name: any;
+//     address: any;
+//   }[];
+// }
+
 interface ContractInstance {
-  network: {
-    type: "",
-    config: {
-      rpcUrl: "",
-      chainId: "",
-      exploreUrl: "(optional)",
-    },
-  };
+  networks: NetworkDetails[];
   contracts: {
     name: any;
     address: any;
@@ -59,14 +67,16 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [contractGroupsData, setContractGroupsData] = useState<any[]>([]);
   const [instances, setInstances] = useState<ContractInstance[]>([]);
   const [contractDetails, setContractDetails] = useState<{ name: string, address: string, abi: any[] }[]>([]);
-  const [networkDetails, setNetworkDetails] = useState<NetworkDetails>({
-    type: "ethereum",
-    config: {
-      rpcUrl: "",
-      chainId: "",
-      exploreUrl: "",
+  const [networkDetails, setNetworkDetails] = useState<NetworkDetails[]>([
+    {
+      type: "ethereum",
+      config: {
+        rpcUrl: "",
+        chainId: "",
+        exploreUrl: "",
+      },
     },
-  });
+  ]);
 
   const [localConfig, setLocalConfig] = useState("");
   const debouncedConfig = useDebounce(localConfig, 2000);
@@ -258,12 +268,37 @@ const ConfigureVisibilitySelector: React.FC = () => {
     }));
   };
 
+  // const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   const { value } = e.target;
+  //   // Add new network to the array and keep the existing ones
+  //   setNetworkDetails((prevDetails) => [
+  //     ...prevDetails,
+  //     {
+  //       type: value,
+  //       config: {
+  //         rpcUrl: "",
+  //         chainId: "",
+  //         exploreUrl: "",
+  //       },
+  //     },
+  //   ]);
+  // };
+
   const handleNetworkTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = e.target;
-    setNetworkDetails((prevDetails) => ({
-      ...prevDetails,
+  
+    // Create a new network configuration based on the selected type
+    const newNetworkConfig: NetworkDetails = {
       type: value,
-    }));
+      config: {
+        rpcUrl: "",
+        chainId: "",
+        exploreUrl: "",
+      },
+    };
+  
+    // Update the state to replace the existing networks with the new one
+    setNetworkDetails([newNetworkConfig]);
   };
 
   const handleNetworkChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -601,7 +636,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
                   <select
                     id="networkType"
                     className="flex-grow p-2 border border-gray-300 rounded"
-                    value={networkDetails.type}
+                    // value={networkDetails.type}
                     onChange={handleNetworkTypeChange}
                   >
                     <option value="ethereum">Ethereum</option>
