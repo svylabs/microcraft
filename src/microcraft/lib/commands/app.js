@@ -11,7 +11,7 @@ const createApp = async (name, description) => {
             console.error(`Directory ${name} already exists.`);
             return;
         }
-        
+
         // Create a new app json locally
         const app = {
             name,
@@ -38,14 +38,24 @@ const createApp = async (name, description) => {
                     abi: []
                 }
             ],
-            network: {
-                type: "ethereum",
-                config: {
-                    rpcUrl: "your_rpc_url",
-                    chainId: "your_chain_id",
-                    exploreUrl: "your_explore_url"
+            networks: [
+                {
+                    type: "ethereum",
+                    config: {
+                        rpcUrl: "your_rpc_url",
+                        chainId: "your_chain_id",
+                        exploreUrl: "your_explore_url"
+                    }
                 }
-            }
+            ]
+            // network: {
+            //     type: "ethereum",
+            //     config: {
+            //         rpcUrl: "your_rpc_url",
+            //         chainId: "your_chain_id",
+            //         exploreUrl: "your_explore_url"
+            //     }
+            // }
         };
 
         // Store app.json in the newly created directory
@@ -114,7 +124,7 @@ const buildApp = async (appDirectory) => {
         appData.components = await Promise.all(appData.components.map(async (component) => {
             // Check for both `coderef` and `codeRef`
             const codeReference = component.coderef || component.codeRef;
-            
+
             if (codeReference) {
                 const codePath = path.join(appDirectory, codeReference);  // Holds the path to JS file
                 if (fs.existsSync(codePath)) {

@@ -18,7 +18,7 @@ const ExternalAppPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState([]);
   const [contracts, setContracts] = useState([]);
-  const [network, setNetwork] = useState({});
+  const [networks, setNetworks] = useState([]);
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [loading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ const ExternalAppPage = () => {
       const appDescription = data.description;
       const components = data.components;
       const contractDetails = data.contracts || [];
-      const networkDetails = data.network;
+      const networkDetails = data.networks || [];
 
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
@@ -101,7 +101,7 @@ const ExternalAppPage = () => {
       setAppName(appName);
       setComponents(components);
       setContracts(contractDetails);
-      setNetwork(networkDetails);
+      setNetworks(networkDetails);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -141,7 +141,7 @@ const ExternalAppPage = () => {
       const appDescription = data.description;
       const components = data.components;
       const contractDetails = data.contracts || [];
-      const networkDetails = data.network;
+      const networkDetails = data.networks || [];
 
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
@@ -160,7 +160,7 @@ const ExternalAppPage = () => {
       setAppName(appName);
       setComponents(components);
       setContracts(contractDetails);
-      setNetwork(networkDetails);
+      setNetworks(networkDetails);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -216,7 +216,7 @@ const ExternalAppPage = () => {
               //   data={data}
               //   setData={setData}
               //   contracts={contracts || []}
-              //   network={network || {}}
+              //   networks={networks || []}
               //   debug={setOutputCode}
               // />
               <DynamicApp
@@ -224,7 +224,7 @@ const ExternalAppPage = () => {
                 data={data}
                 setData={setData}
                 contracts={contracts || []}
-                network={network || {}}
+                networks={networks || []}
                 debug={setOutputCode}
               />
             )}
