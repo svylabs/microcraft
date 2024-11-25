@@ -33,7 +33,7 @@ interface ContractDetailsProps {
     onClose: () => void;
 }
 
-const ContractDetails: React.FC<ContractDetailsProps> = ({ onClose }) => {
+const OverviewModal: React.FC<ContractDetailsProps> = ({ onClose }) => {
     const [formData, setFormData] = useState<FormData>({
         selectedContracts: [],
         contractDetails: [],
@@ -142,4 +142,4 @@ const ContractDetails: React.FC<ContractDetailsProps> = ({ onClose }) => {
     );
 };
 
-export default ContractDetails;
+export default OverviewModal;

@@ -8,7 +8,7 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
-import ContractDetails from "./Renderer/ContractDetails";
+import OverviewModal from "./Renderer/OverviewModal";
 import JsonViewer from './Renderer/JsonViewer';
 import useDebounce from './Renderer/useDebounce';
 
@@ -1309,7 +1309,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         </div>
         {/* <ToastContainer /> */}
-        {showContractDetails && <ContractDetails onClose={() => setShowContractDetails(false)} />}
+        {showContractDetails && <OverviewModal onClose={() => setShowContractDetails(false)} />}
       </div>
     </>
   );
