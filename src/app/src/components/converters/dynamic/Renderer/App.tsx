@@ -39,7 +39,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
   const [networkStatus, setNetworkStatus] = useState<string>('');
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
 
-  console.log("app.TSX-loadedData networks: ", networks);
   useEffect(() => {
     // Update networks details if available
     if (networks) {
@@ -62,12 +61,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
   const rpcUrls = supportedNetworks.length > 0 ? supportedNetworks[0]?.config?.rpcUrl : undefined;
   const chainIds = supportedNetworks.length > 0 ? supportedNetworks[0]?.config?.chainId : undefined;
 
-  // const handleNetworkChange = (networkType: string) => {
-  //   setSelectedNetwork(networkType);
-  //   // setNetworkStatus(`Connected to ${selectedNetwork}`);
-  //   setIsConnected(true);
-  // };
-
   const handleNetworkChange = (networkType: string) => {
     if (networkType === "") {
       // If the user selects the default option, reset the connection
@@ -80,7 +73,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
       setIsConnected(true);
     }
   };
-
 
   const addNetwork = async () => {
     const { ethereum } = window;
