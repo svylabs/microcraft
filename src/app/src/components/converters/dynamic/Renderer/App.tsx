@@ -20,51 +20,67 @@ import { faTachometerAlt } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   components: any[];
-  network?: any;
+  networks?: any;
   contracts?: any;
   data: { [key: string]: any };
   setData: React.Dispatch<React.SetStateAction<{ [key: string]: any }>>;
   debug: React.Dispatch<React.SetStateAction<any>>;
 }
 
-const App: React.FC<Props> = ({ components, data, setData, debug, network, contracts }) => {
+const App: React.FC<Props> = ({ components, data, setData, debug, networks, contracts }) => {
   const [loading, setLoading] = useState(false);
-  const [networkDetails, setNetworkDetails] = useState<any>(null);
+  const [networkDetails, setNetworkDetails] = useState<any[]>([]);
   const [contractDetails, setContractDetails] = useState<any[]>([]);
+  const [selectedNetwork, setSelectedNetwork] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [networkName, setNetworkName] = useState('');
   const [chainId, setChainId] = useState('');
   const [networkStatus, setNetworkStatus] = useState<string>('');
   const [cosmosClient, setCosmosClient] = useState<SigningStargateClient | null>(null);
 
+  console.log("app.TSX-loadedData networks: ", networks);
   useEffect(() => {
-    // Update network details if available
-    if (network) {
-      setNetworkDetails(network);
+    // Update networks details if available
+    if (networks) {
+      setNetworkDetails(networks);
     }
 
     // Update contract details if available
     if (contracts) {
       setContractDetails(contracts);
     }
-  }, [network, contracts]);
+  }, [networks, contracts]);
 
-  console.log("app.TSX-loadedData: ", networkDetails);
+  console.log("app.TSX-loadedData networkDetails: ", networkDetails);
   console.log("typeof app.TSX-loadedData: ", typeof networkDetails);
   console.log("app.TSX-loadedData: ", contractDetails);
   console.log("typeof app.TSX-loadedData: ", typeof contractDetails);
 
   const supportedNetworks = networkDetails || [];
-  const networkType = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.type : supportedNetworks.type;
-  const rpcUrls = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.rpcUrl : supportedNetworks.config?.rpcUrl;
-  const chainIds = Array.isArray(supportedNetworks) ? supportedNetworks[0]?.config?.chainId : supportedNetworks.config?.chainId;
+  const networkType = supportedNetworks.length > 0 ? supportedNetworks[0]?.type : undefined;
+  const rpcUrls = supportedNetworks.length > 0 ? supportedNetworks[0]?.config?.rpcUrl : undefined;
+  const chainIds = supportedNetworks.length > 0 ? supportedNetworks[0]?.config?.chainId : undefined;
 
-  const handleNetworkChange = async (selectedNetwork) => {
-    // Logic to switch to the selected network
-    // This is a placeholder; you may want to implement the actual network switching logic
-    console.log("Switching to network:", selectedNetwork);
-    setNetworkStatus(`Connected to ${selectedNetwork}`);
+  // const handleNetworkChange = (networkType: string) => {
+  //   setSelectedNetwork(networkType);
+  //   // setNetworkStatus(`Connected to ${selectedNetwork}`);
+  //   setIsConnected(true);
+  // };
+
+  const handleNetworkChange = (networkType: string) => {
+    if (networkType === "") {
+      // If the user selects the default option, reset the connection
+      setSelectedNetwork(null);
+      setIsConnected(false);
+    } else {
+      // Set the selected network and mark as connected
+      setSelectedNetwork(networkType);
+      // setNetworkStatus(`Connected to ${selectedNetwork}`);
+      setIsConnected(true);
+    }
   };
+
 
   const addNetwork = async () => {
     const { ethereum } = window;
@@ -72,46 +88,47 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       try {
         const provider = new ethers.BrowserProvider(ethereum);
         await ethereum.send("eth_requestAccounts", []);
-        const network = await provider.getNetwork();
-        console.log("Network:", network);
+        const networks = await provider.getNetwork();
+        console.log("networks:", networks);
 
-        if (network && network.chainId && network.name) {
-          setNetworkName(network.name);
-          setChainId(network.chainId.toString());
+        if (networks && networks.chainId && networks.name) {
+          setNetworkName(networks.name);
+          setChainId(networks.chainId.toString());
 
           let isSupported = false;
 
           if (Array.isArray(supportedNetworks)) {
             for (const supportedNetwork of supportedNetworks) {
-              if (supportedNetwork.config.chainId === network.chainId.toString()) {
+              if (supportedNetwork.config.chainId === networks.chainId.toString()) {
                 isSupported = true;
                 break;
               }
             }
           } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
-            if (supportedNetworks.config.chainId === network.chainId.toString()) {
+            // if (supportedNetworks.config.chainId === networks.chainId.toString()) {
+              if (chainIds === networks.chainId.toString()) {
               isSupported = true;
             }
           }
 
           if (isSupported) {
-            setNetworkStatus(`Connected to ${network.name}`);
+            setNetworkStatus(`Connected to ${networks.name}`);
           } else {
-            setNetworkStatus(`Connected to unsupported network: ${network.name}. Please connect to a supported network.`);
+            setNetworkStatus(`Connected to unsupported networks: ${networks.name}. Please connect to a supported networks.`);
             setAlertOpen(true);
           }
         } else {
-          console.error("Invalid network object:", network);
-          setNetworkStatus('Error getting network. Please check your connection and try again.');
+          console.error("Invalid networks object:", networks);
+          setNetworkStatus('Error getting networks. Please check your connection and try again.');
           setAlertOpen(true);
         }
       } catch (error) {
-        console.error('Error getting network:', error);
-        setNetworkStatus('Error getting network. Please check your connection and try again.');
+        console.error('Error getting networks:', error);
+        setNetworkStatus('Error getting networks. Please check your connection and try again.');
         setAlertOpen(true);
       }
     } else {
-      setNetworkStatus('Not connected to any network. Please connect your wallet.');
+      setNetworkStatus('Not connected to any networks. Please connect your wallet.');
       setAlertOpen(true);
     }
   };
@@ -126,14 +143,14 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       return chainId;
     };
 
-    const validateNetworkParams = (network) => {
-      return network.config.chainId && network.config.rpcUrl && network.config.rpcUrl.length > 0;
+    const validateNetworkParams = (networks) => {
+      return networks.config.chainId && networks.config.rpcUrl && networks.config.rpcUrl.length > 0;
     };
 
     const addAndSwitchNetwork = async (supportedNetwork) => {
       if (!validateNetworkParams(supportedNetwork)) {
-        console.error('Missing required network parameters:', supportedNetwork);
-        setNetworkStatus('Failed to add network. Missing required parameters.');
+        console.error('Missing required networks parameters:', supportedNetwork);
+        setNetworkStatus('Failed to add networks. Missing required parameters.');
         setAlertOpen(true);
         return;
       }
@@ -152,16 +169,16 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         setAlertOpen(false);
         setNetworkStatus(`Connected to ${supportedNetwork.type}`);
       } catch (addError: any) {
-        console.error('Error adding network:', addError);
-        setNetworkStatus(`Failed to add network: ${addError.message}`);
+        console.error('Error adding networks:', addError);
+        setNetworkStatus(`Failed to add networks: ${addError.message}`);
         setAlertOpen(true);
       }
     };
 
     const switchNetwork = async (supportedNetwork) => {
       if (!supportedNetwork.config.chainId) {
-        console.error('Missing required network parameter: chainId', supportedNetwork);
-        setNetworkStatus('Failed to switch network. Missing chainId.');
+        console.error('Missing required networks parameter: chainId', supportedNetwork);
+        setNetworkStatus('Failed to switch networks. Missing chainId.');
         setAlertOpen(true);
         return;
       }
@@ -175,11 +192,11 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         setAlertOpen(false);
         setNetworkStatus(`Connected to ${supportedNetwork.type}`);
       } catch (switchError: any) {
-        console.error('Error switching network:', switchError);
+        console.error('Error switching networks:', switchError);
         if (switchError.code === 4902) {
           await addAndSwitchNetwork(supportedNetwork);
         } else {
-          setNetworkStatus(`Failed to switch network: ${switchError.message}`);
+          setNetworkStatus(`Failed to switch networks: ${switchError.message}`);
           setAlertOpen(true);
         }
       }
@@ -193,7 +210,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
       await switchNetwork(supportedNetworks);
     } else {
       console.error('No supported networks available.');
-      setNetworkStatus('No supported networks available. Please add a supported network.');
+      setNetworkStatus('No supported networks available. Please add a supported networks.');
       setAlertOpen(true);
     }
   };
@@ -234,7 +251,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
         console.error("Error initializing Cosmos client:", error);
       }
     } else {
-      alert("No RPC URL found. Please check your network configuration.");
+      alert("No RPC URL found. Please check your networks configuration.");
     }
   };
 
@@ -387,40 +404,24 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
   return (
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-        {/* <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
-          <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
-            <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" />
-            <span>Create & Innovate</span>
-          </h2>
-          <button
-            onClick={handleConnectWallet}
-            className="px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-lg transform transition duration-200 ease-in-out hover:scale-105 hover:shadow-xl"
-          >
-            Connect Wallet
-          </button>
-        </div> */}
         <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
           <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
-            {/* <FontAwesomeIcon icon={faTachometerAlt} className="text-blue-500" /> */}
-            <span>"Not connected"</span>
+            <span>{isConnected ? `Connected to ${selectedNetwork}` : "Not connected"}</span>
           </h2>
           <select
             className="px-4 py-2 border rounded"
             onChange={(e) => handleNetworkChange(e.target.value)}
+            value={selectedNetwork || ''} // Controlled component
           >
-            <option value="">Select Network</option>
-            {/* {networkDetails.map((network) => (
+            <option value="">Select network</option>
+            {networkDetails.map((network) => (
               <option key={network.type} value={network.type}>
-                {network.type} 
+                {network.type}
               </option>
-            ))} */}
-            {networkDetails && (
-              <option value={networkDetails.type}>
-                {networkDetails.type}
-              </option>
-            )}
+            ))}
           </select>
         </div>
+
         <ul className="whitespace-normal break-words lg:text-lg">
           {components.map((component, index) => (
             <li key={index} className="mb-4">
@@ -441,15 +442,15 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                       case "text":
                         // return <TextOutput data={data[component.id]} />;
                         <div
-                            className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
-                            style={{
-                              ...(component.config && typeof component.config.styles === 'object'
-                                ? component.config.styles
-                                : {}),
-                            }}
-                          >
-                           <TextOutput data={data[component.id]} />
-                          </div>
+                          className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
+                          style={{
+                            ...(component.config && typeof component.config.styles === 'object'
+                              ? component.config.styles
+                              : {}),
+                          }}
+                        >
+                          <TextOutput data={data[component.id]} />
+                        </div>
                       case "json":
                         return (
                           <pre
@@ -510,7 +511,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, network, contr
                             <DescriptionComponent data={data[component.id]} />
                           </div>
                         );
-                        case "transactionLink":
+                      case "transactionLink":
                         return (
                           <div
                             className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"

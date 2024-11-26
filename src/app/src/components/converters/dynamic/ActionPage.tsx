@@ -34,6 +34,7 @@ const ActionPage: React.FC = () => {
   const [components, setComponents] = useState(savedComponentsData);
   // console.log(components);
   // console.log("loadedData-> ", loadedData);
+  // console.log("loadedData?.networkDetails-> ", loadedData?.networkDetails);
 
   const setSelectedApp = (appId: string) => {
     fetch(`${BASE_API_URL}/appdata/set-selected-app`, {
@@ -109,14 +110,7 @@ const ActionPage: React.FC = () => {
       description: savedFormData.description || "",
       components: savedComponentsData,
       contracts: savedFormData.contractDetails || [],
-      network: {
-        type: savedFormData.networkType || "ethereum",
-        config: {
-          rpcUrl: savedFormData.rpcUrl || "",
-          chainId: savedFormData.chainId || "",
-          exploreUrl: savedFormData.exploreUrl || ""
-        }
-      }
+      networks: savedFormData.networkDetails || [],
     };
 
     // Convert to JSON and trigger download
@@ -203,8 +197,9 @@ const ActionPage: React.FC = () => {
             components={components}
             data={data}
             setData={setData}
-            contracts={loadedData.contractDetails}
-            network={loadedData.networkDetails}
+            contracts={loadedData?.contractDetails || []}
+            networks={loadedData?.networkDetails || []}
+            // network={loadedData.networkDetails}
             debug={setOutputCode}
           />
 
@@ -213,7 +208,7 @@ const ActionPage: React.FC = () => {
             data={data}
             setData={setData}
             contracts={loadedData?.contractDetails || []}
-            network={loadedData?.networkDetails || {}}
+            networks={loadedData?.networkDetails || []}
             debug={setOutputCode}
           /> */}
 
