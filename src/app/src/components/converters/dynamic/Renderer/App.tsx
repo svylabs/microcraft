@@ -69,8 +69,9 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
     } else {
       // Set the selected network and mark as connected
       setSelectedNetwork(networkType);
-      // setNetworkStatus(`Connected to ${selectedNetwork}`);
       setIsConnected(true);
+      setNetworkStatus(`Connected to ${networkType}`);
+      setAlertOpen(true);
     }
   };
 
