@@ -67,147 +67,16 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
       // If the user selects the default option, reset the connection
       setSelectedNetwork(null);
       setIsConnected(false);
+      setNetworkStatus('');
     } else {
       // Set the selected network and mark as connected
       setSelectedNetwork(networkType);
-      setIsConnected(true);
-      setNetworkStatus(`Connected to ${networkType}`);
+      setNetworkStatus(
+        `The application requires access to the <span class="font-bold text-blue-700">${networkType}</span> network. To proceed, please click the <span class="font-bold text-green-800">Switch Network</span> button.`
+      );
       setAlertOpen(true);
     }
   };
-
-  // const addNetwork = async () => {
-  //   const { ethereum } = window;
-  //   if (ethereum) {
-  //     try {
-  //       const provider = new ethers.BrowserProvider(ethereum);
-  //       await ethereum.send("eth_requestAccounts", []);
-  //       const networks = await provider.getNetwork();
-  //       console.log("networks:", networks);
-
-  //       if (networks && networks.chainId && networks.name) {
-  //         setNetworkName(networks.name);
-  //         setChainId(networks.chainId.toString());
-
-  //         let isSupported = false;
-
-  //         if (Array.isArray(supportedNetworks)) {
-  //           for (const supportedNetwork of supportedNetworks) {
-  //             if (supportedNetwork.config.chainId === networks.chainId.toString()) {
-  //               isSupported = true;
-  //               break;
-  //             }
-  //           }
-  //         } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
-  //           // if (supportedNetworks.config.chainId === networks.chainId.toString()) {
-  //             if (chainIds === networks.chainId.toString()) {
-  //             isSupported = true;
-  //           }
-  //         }
-
-  //         if (isSupported) {
-  //           setNetworkStatus(`Connected to ${networks.name}`);
-  //         } else {
-  //           setNetworkStatus(`Connected to unsupported networks: ${networks.name}. Please connect to a supported networks.`);
-  //           setAlertOpen(true);
-  //         }
-  //       } else {
-  //         console.error("Invalid networks object:", networks);
-  //         setNetworkStatus('Error getting networks. Please check your connection and try again.');
-  //         setAlertOpen(true);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error getting networks:', error);
-  //       setNetworkStatus('Error getting networks. Please check your connection and try again.');
-  //       setAlertOpen(true);
-  //     }
-  //   } else {
-  //     setNetworkStatus('Not connected to any networks. Please connect your wallet.');
-  //     setAlertOpen(true);
-  //   }
-  // };
-
-  // const switchToSupportedNetwork = async () => {
-  //   const formatChainId = (chainId) => {
-  //     if (typeof chainId === 'number') {
-  //       return `0x${chainId.toString(16)}`;
-  //     } else if (typeof chainId === 'string' && !chainId.startsWith('0x')) {
-  //       return `0x${parseInt(chainId, 10).toString(16)}`;
-  //     }
-  //     return chainId;
-  //   };
-
-  //   const validateNetworkParams = (networks) => {
-  //     return networks.config.chainId && networks.config.rpcUrl && networks.config.rpcUrl.length > 0;
-  //   };
-
-  //   const addAndSwitchNetwork = async (supportedNetwork) => {
-  //     if (!validateNetworkParams(supportedNetwork)) {
-  //       console.error('Missing required networks parameters:', supportedNetwork);
-  //       setNetworkStatus('Failed to add networks. Missing required parameters.');
-  //       setAlertOpen(true);
-  //       return;
-  //     }
-
-  //     const chainId = formatChainId(supportedNetwork.config.chainId);
-  //     try {
-  //       await window.ethereum.request({
-  //         method: 'wallet_addEthereumChain',
-  //         params: [{
-  //           chainId,
-  //           chainName: supportedNetwork.type,
-  //           rpcUrls: [supportedNetwork.config.rpcUrl],
-  //           blockExplorerUrls: [supportedNetwork.config.exploreUrl],
-  //         }],
-  //       });
-  //       setAlertOpen(false);
-  //       setNetworkStatus(`Connected to ${supportedNetwork.type}`);
-  //     } catch (addError: any) {
-  //       console.error('Error adding networks:', addError);
-  //       setNetworkStatus(`Failed to add networks: ${addError.message}`);
-  //       setAlertOpen(true);
-  //     }
-  //   };
-
-  //   const switchNetwork = async (supportedNetwork) => {
-  //     if (!supportedNetwork.config.chainId) {
-  //       console.error('Missing required networks parameter: chainId', supportedNetwork);
-  //       setNetworkStatus('Failed to switch networks. Missing chainId.');
-  //       setAlertOpen(true);
-  //       return;
-  //     }
-
-  //     const chainId = formatChainId(supportedNetwork.config.chainId);
-  //     try {
-  //       await window.ethereum.request({
-  //         method: 'wallet_switchEthereumChain',
-  //         params: [{ chainId }],
-  //       });
-  //       setAlertOpen(false);
-  //       setNetworkStatus(`Connected to ${supportedNetwork.type}`);
-  //     } catch (switchError: any) {
-  //       console.error('Error switching networks:', switchError);
-  //       if (switchError.code === 4902) {
-  //         await addAndSwitchNetwork(supportedNetwork);
-  //       } else {
-  //         setNetworkStatus(`Failed to switch networks: ${switchError.message}`);
-  //         setAlertOpen(true);
-  //       }
-  //     }
-  //   };
-
-  //   if (Array.isArray(supportedNetworks) && supportedNetworks.length > 0) {
-  //     await addNetwork();
-  //     await switchNetwork(supportedNetworks[0]);
-  //   } else if (typeof supportedNetworks === 'object' && supportedNetworks !== null) {
-  //     await addNetwork();
-  //     await switchNetwork(supportedNetworks);
-  //   } else {
-  //     console.error('No supported networks available.');
-  //     setNetworkStatus('No supported networks available. Please add a supported networks.');
-  //     setAlertOpen(true);
-  //   }
-  // };
 
   const switchToSupportedNetwork = async () => {
     const formatChainId = (chainId) => {
@@ -268,7 +137,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
 
       // If successful, update the state
       setNetworkStatus(`Connected to ${selectedNetworkConfig.type}`);
-      toast.success(`Connected to ${selectedNetworkConfig.type}`);
+      setIsConnected(true);
+      toast.success(`Successfully connected to ${selectedNetworkConfig.type}`);
       setAlertOpen(false);
 
     } catch (switchError: any) {
@@ -290,6 +160,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
           });
 
           setNetworkStatus(`Connected to ${selectedNetworkConfig.type}`);
+          setIsConnected(true);
           setAlertOpen(false);
         } catch (addError: any) {
           console.error('Error adding network:', addError);
@@ -299,6 +170,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
       } else {
         // Handle other errors
         setNetworkStatus(`This app needs to connect to ${chainId}. Please configure it manually in your wallet.`);
+        setIsConnected(false);
         setAlertOpen(true);
       }
     }
@@ -344,14 +216,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
     }
   };
 
-  // Function to handle wallet connection
-  const handleConnectWallet = async () => {
-    const chainId = chainIds || "cosmoshub-4";
-    await initializeCosmosClient(chainId);
-  };
-
   // useEffect(() => {
-  //   addNetwork();
   //   // initializeCosmosClient();
   // }, [networkDetails]);
 
@@ -954,7 +819,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
         <Alert
           isOpen={alertOpen}
           onClose={() => setAlertOpen(false)}
-          networkStatus={networkStatus}
+          // networkStatus={networkStatus}
+          networkStatus={<span dangerouslySetInnerHTML={{ __html: networkStatus }} />}
           onSwitchNetwork={switchToSupportedNetwork}
         />
       )}
