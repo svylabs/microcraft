@@ -220,30 +220,35 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
     };
 
     const selectedNetworkConfig = supportedNetworks.find(network => network.type === selectedNetwork);
-  
+
     if (!selectedNetworkConfig) {
       setNetworkStatus('No network selected.');
       setAlertOpen(true);
       return;
     }
-  
+
     const { chainId, rpcUrl, exploreUrl } = selectedNetworkConfig.config;
-  
+    // Define native currency for each network
+    const nativeCurrency = {
+      symbol: 'ETH',
+      decimals: 18,
+    };
+
     try {
       // Attempt to switch to the selected network
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: formatChainId(chainId) }],
       });
-  
+
       // If successful, update the state
       setNetworkStatus(`Connected to ${selectedNetworkConfig.type}`);
       toast.success(`Connected to ${selectedNetworkConfig.type}`);
       setAlertOpen(false);
-  
+
     } catch (switchError: any) {
       console.error('Error switching networks:', switchError);
-  
+
       // If the error is due to the network not being added yet
       if (switchError.code === 4902) {
         try {
@@ -255,9 +260,10 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
               chainName: selectedNetworkConfig.type,
               rpcUrls: [rpcUrl],
               blockExplorerUrls: [exploreUrl],
+              nativeCurrency: nativeCurrency,
             }],
           });
-  
+
           setNetworkStatus(`Connected to ${selectedNetworkConfig.type}`);
           setAlertOpen(false);
         } catch (addError: any) {
