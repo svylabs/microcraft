@@ -3,7 +3,6 @@ import React from "react";
 interface AlertProps {
   isOpen: boolean;
   onClose: () => void;
-  // networkStatus: string;
   networkStatus: React.ReactNode;
   onSwitchNetwork: () => void;
 }

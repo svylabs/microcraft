@@ -165,6 +165,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
         } catch (addError: any) {
           console.error('Error adding network:', addError);
           setNetworkStatus(`Failed to add network: ${addError.message}`);
+          setIsConnected(false); 
           setAlertOpen(true);
         }
       } else {
@@ -819,7 +820,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
         <Alert
           isOpen={alertOpen}
           onClose={() => setAlertOpen(false)}
-          // networkStatus={networkStatus}
           networkStatus={<span dangerouslySetInnerHTML={{ __html: networkStatus }} />}
           onSwitchNetwork={switchToSupportedNetwork}
         />
