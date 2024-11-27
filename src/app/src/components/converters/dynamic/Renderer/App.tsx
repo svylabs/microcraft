@@ -228,9 +228,34 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
     }
 
     const { chainId, rpcUrl, exploreUrl } = selectedNetworkConfig.config;
-    // Define native currency for each network
-    const nativeCurrency = {
-      symbol: 'ETH',
+
+    // Define a mapping for native currency based on network type
+    const nativeCurrencyMapping = {
+      ethereum: {
+        symbol: 'ETH',
+        decimals: 18,
+      },
+      polygon: {
+        symbol: 'MATIC',
+        decimals: 18,
+      },
+      'binance-smart-chain': {
+        symbol: 'BNB',
+        decimals: 18,
+      },
+      'citrea-bitcoin': {
+        symbol: 'BTC',
+        decimals: 18,
+      },
+      'citrus-bitcoin': {
+        symbol: 'CBTC',
+        decimals: 8,
+      },
+    };
+
+    // Retrieve the native currency based on the selected network type
+    const nativeCurrency = nativeCurrencyMapping[selectedNetworkConfig.type] || {
+      symbol: 'ETH', // Default to ETH if not found
       decimals: 18,
     };
 
