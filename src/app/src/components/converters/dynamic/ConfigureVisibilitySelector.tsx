@@ -640,7 +640,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
                     onChange={handleNetworkTypeChange}
                   >
                     <option value="ethereum">Ethereum</option>
-                    <option value="mina">Mina</option>
+                    {/* <option value="mina">Mina</option> */}
                     <option value="keplr">Keplr</option>
                     <option value="cosmoshub-4">Cosmoshub-4</option>
                   </select>
