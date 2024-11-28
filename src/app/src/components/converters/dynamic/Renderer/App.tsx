@@ -165,7 +165,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
         } catch (addError: any) {
           console.error('Error adding network:', addError);
           setNetworkStatus(`Failed to add network: ${addError.message}`);
-          setIsConnected(false); 
+          setIsConnected(false);
           setAlertOpen(true);
         }
       } else {
@@ -359,7 +359,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
   return (
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-        <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
+        {/* <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
           <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
             <span>{isConnected ? `Connected to ${selectedNetwork}` : "Not connected"}</span>
           </h2>
@@ -371,6 +371,62 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
             <option value="">Select network</option>
             {networkDetails.map((network) => (
               <option key={network.type} value={network.type}>
+                {network.type}
+              </option>
+            ))}
+          </select>
+        </div> */}
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 px-4 py-3 shadow-md rounded-lg bg-white dark:bg-gray-800">
+          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center space-x-2 mb-3 sm:mb-0">
+            {isConnected ? (
+              <span className="flex items-center text-green-600 dark:text-green-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+                Connected to {selectedNetwork}
+              </span>
+            ) : (
+              <span className="flex items-center text-red-600 dark:text-red-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+                Not connected
+              </span>
+            )}
+          </h2>
+          <select
+            className="w-full sm:w-auto px-4 py-2 border rounded-lg text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => handleNetworkChange(e.target.value)}
+            value={selectedNetwork || ""}
+            title="Select Network"
+          >
+            <option value="" className="text-gray-400">
+              Select network
+            </option>
+            {networkDetails.map((network) => (
+              <option key={network.type} value={network.type} className="text-gray-800">
                 {network.type}
               </option>
             ))}
