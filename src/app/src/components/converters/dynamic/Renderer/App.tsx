@@ -15,8 +15,6 @@ import Alert from "./Alert";
 import { ERC20_ABI } from './ABI/ERC20_ABI';
 import { ERC721_ABI } from './ABI/ERC721_ABI';
 import { ERC1155_ABI } from './ABI/ERC1155_ABI';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTachometerAlt } from '@fortawesome/free-solid-svg-icons';
 import { toast } from "react-toastify";
 
 interface Props {
@@ -359,23 +357,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
   return (
     <>
       <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-        {/* <div className="flex justify-between items-center mb-6 px-4 py-2 shadow-sm rounded-lg">
-          <h2 className="lg:text-xl font-semibold text-gray-800 flex items-center space-x-3">
-            <span>{isConnected ? `Connected to ${selectedNetwork}` : "Not connected"}</span>
-          </h2>
-          <select
-            className="px-4 py-2 border rounded"
-            onChange={(e) => handleNetworkChange(e.target.value)}
-            value={selectedNetwork || ''} // Controlled component
-          >
-            <option value="">Select network</option>
-            {networkDetails.map((network) => (
-              <option key={network.type} value={network.type}>
-                {network.type}
-              </option>
-            ))}
-          </select>
-        </div> */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 px-4 py-3 shadow-md rounded-lg bg-white dark:bg-gray-800">
           <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center space-x-2 mb-3 sm:mb-0">
             {isConnected ? (

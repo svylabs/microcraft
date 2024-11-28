@@ -19,21 +19,6 @@ interface ContractGroup {
   id: string;
 }
 
-// interface ContractInstance {
-//   network: {
-//     type: "",
-//     config: {
-//       rpcUrl: "",
-//       chainId: "",
-//       exploreUrl: "(optional)",
-//     },
-//   };
-//   contracts: {
-//     name: any;
-//     address: any;
-//   }[];
-// }
-
 interface ContractInstance {
   networks: NetworkDetails[];
   contracts: {
