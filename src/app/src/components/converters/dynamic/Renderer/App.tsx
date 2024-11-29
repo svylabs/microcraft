@@ -491,6 +491,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                           </div>
                         );
                       case "description":
+                        console.log("Component:", component);
+                        console.log("Component Data:", data[component.id]);
                         return (
                           <div
                             className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
@@ -504,6 +506,14 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                           </div>
                         );
                       case "transactionLink":
+                        // console.log("Component:", component);
+                        // console.log("Component.config:", component.config.transactionConfig);
+                        // console.log("Component.config:", component.config.transactionConfig.type);
+                        const preparedData = {
+                          type: component.config.transactionConfig.type || "",
+                          value: component.config.transactionConfig.value || "", 
+                          baseUrl: component.config.transactionConfig.baseUrl || "https://etherscan.io",
+                        };
                         return (
                           <div
                             className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
@@ -513,7 +523,8 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                                 : {}),
                             }}
                           >
-                            <TransactionLink data={data[component.id]} />
+                            {/* {console.log(component)}; */}
+                            <TransactionLink data={preparedData} />
                           </div>
                         );
                       default:
