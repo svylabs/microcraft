@@ -491,8 +491,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                           </div>
                         );
                       case "description":
-                        console.log("Component:", component);
-                        console.log("Component Data:", data[component.id]);
                         return (
                           <div
                             className="overflow-auto w-full bg-gray-100 overflow-x-auto rounded-lg"
@@ -523,7 +521,6 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                                 : {}),
                             }}
                           >
-                            {/* {console.log(component)}; */}
                             <TransactionLink data={preparedData} />
                           </div>
                         );
