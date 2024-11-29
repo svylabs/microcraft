@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from 'ethers';
 import Web3 from "web3";
+import { toast } from "react-toastify";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import Wallet from "../Web3/DropdownConnectedWallet";
 import Graph from "../outputPlacement/GraphComponent";
@@ -15,7 +16,6 @@ import Alert from "./Alert";
 import { ERC20_ABI } from './ABI/ERC20_ABI';
 import { ERC721_ABI } from './ABI/ERC721_ABI';
 import { ERC1155_ABI } from './ABI/ERC1155_ABI';
-import { toast } from "react-toastify";
 
 interface Props {
   components: any[];
