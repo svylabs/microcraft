@@ -406,11 +406,15 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
             <option value="" className="text-gray-400">
               Select network
             </option>
-            {networkDetails.map((network) => (
-              <option key={network.type} value={network.type} className="text-gray-800">
-                {network.type}
-              </option>
-            ))}
+            {networkDetails && networkDetails.length > 0 ? (
+              networkDetails.map((network: any) => (
+                <option key={network.type} value={network.type} className="text-gray-800">
+                  {network.type}
+                </option>
+              ))
+            ) : (
+              <option className="text-gray-400">No networks available</option>
+            )}
           </select>
         </div>
 
@@ -509,7 +513,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                         // console.log("Component.config:", component.config.transactionConfig.type);
                         const preparedData = {
                           type: component.config.transactionConfig.type || "",
-                          value: component.config.transactionConfig.value || "", 
+                          value: component.config.transactionConfig.value || "",
                           baseUrl: component.config.transactionConfig.baseUrl || "https://etherscan.io",
                         };
                         return (

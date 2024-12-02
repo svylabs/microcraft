@@ -48,14 +48,6 @@ const createApp = async (name, description) => {
                     }
                 }
             ]
-            // network: {
-            //     type: "ethereum",
-            //     config: {
-            //         rpcUrl: "your_rpc_url",
-            //         chainId: "your_chain_id",
-            //         exploreUrl: "your_explore_url"
-            //     }
-            // }
         };
 
         // Store app.json in the newly created directory

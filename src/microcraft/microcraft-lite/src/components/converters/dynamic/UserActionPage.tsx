@@ -219,7 +219,7 @@ const UserActionPage = () => {
             data={data}
             setData={setData}
             contracts={loadedData?.contract_details || []}
-            network={loadedData?.network_details || {}}
+            networks={loadedData?.network_details || []}
             debug={setOutputCode}
           /> */}
 
@@ -228,7 +228,7 @@ const UserActionPage = () => {
               data={data}
               setData={setData}
               contracts={loadedData?.contract_details || []}
-              network={loadedData?.network_details || {}}
+              networks={loadedData?.network_details || []}
               debug={setOutputCode}
             />
           </div>
