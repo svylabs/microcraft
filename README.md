@@ -41,6 +41,13 @@ The following will list pending components
   docker run -it -v <fullpath-to-local-handycraft-repo>:/app/microcraft -p 8081:8081 -p 8080:8080 -p 5173:5173  microcraft-dev-img
 ```
 
+To run the application with specific local repositories:
+
+```
+    docker run -it -v /Users/rohitbharti/Desktop/MICROCRAFT-LIB/microcraft-lib:/app/microcraft-lib -v /Users/rohitbharti/Desktop/handycraft-main/handycraft:/app/microcraft -p 8081:8081 -p 8080:8080 microcraft-dev-img
+```
+Note: If needed to run locally without Docker, include the -p 5173:5173 flag.
+
 This will run the docker image and also run the datastore by default
 
 ## Terminal 1: Run server
