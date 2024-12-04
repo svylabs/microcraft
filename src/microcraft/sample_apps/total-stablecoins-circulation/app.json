@@ -90,12 +90,46 @@
       "abi": []
     }
   ],
-  "network": {
-    "type": "ethereum",
-    "config": {
-      "rpcUrl": "your_rpc_url",
-      "chainId": "your_chain_id",
-      "exploreUrl": "your_explore_url"
+  "networks": [
+    {
+      "type": "ethereum",
+      "config": {
+        "rpcUrl": "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+        "chainId": "1",
+        "exploreUrl": "https://etherscan.io"
+      }
+    },
+    {
+      "type": "polygon",
+      "config": {
+        "rpcUrl": "https://polygon-rpc.com",
+        "chainId": "137",
+        "exploreUrl": "https://polygonscan.com"
+      }
+    },
+    {
+      "type": "binance-smart-chain",
+      "config": {
+        "rpcUrl": "https://bsc-dataseed.binance.org",
+        "chainId": "56",
+        "exploreUrl": "https://bscscan.com"
+      }
+    },
+    {
+      "type": "citrea-bitcoin",
+      "config": {
+        "rpcUrl": "https://citrea-rpc-url.example",
+        "chainId": "10001",
+        "exploreUrl": "https://citrea-block-explorer.example"
+      }
+    },
+    {
+      "type": "citrus-bitcoin",
+      "config": {
+        "rpcUrl": "https://citrus-rpc-url.example",
+        "chainId": "10002",
+        "exploreUrl": "https://citrus-block-explorer.example"
+      }
     }
-  }
+  ]
 }
