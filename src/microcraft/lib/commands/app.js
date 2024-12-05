@@ -146,9 +146,9 @@ const buildApp = async (appDirectory) => {
             }
             return component;
         }));
-
+        fs.mkdirSync(path.join(appDirectory, "dist"));
         // Write the new app.json file with merged code
-        const outputPath = path.join(appDirectory, 'app.build.json');
+        const outputPath = path.join(appDirectory, "dist", 'app.json');
         fs.writeFileSync(outputPath, JSON.stringify(appData, null, 2));
 
         console.log(`App has been built successfully! Merged app.json saved as app.build.json in the ${appDirectory} directory.`);
