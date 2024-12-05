@@ -161,8 +161,8 @@ const ActionPage: React.FC = () => {
             components={components}
             data={data}
             setData={setData}
-            contracts={loadedData.contractDetails}
-            network={loadedData.networkDetails}
+            contracts={loadedData?.contractDetails || []}
+            networks={loadedData?.networkDetails || []}
             debug={setOutputCode}
           /> */}
 
@@ -171,7 +171,7 @@ const ActionPage: React.FC = () => {
             data={data}
             setData={setData}
             contracts={loadedData?.contractDetails || []}
-            network={loadedData?.networkDetails || {}}
+            networks={loadedData?.networkDetails || []}
             debug={setOutputCode}
           />
 

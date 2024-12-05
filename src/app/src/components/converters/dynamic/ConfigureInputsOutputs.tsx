@@ -8,7 +8,7 @@ import preview from "../../photos/eye-regular.svg";
 import edit from "../../photos/pen-to-square-solid.svg";
 import Wallet from "./Web3/DropdownConnectedWallet";
 import Swap from "./Web3/Swap/WalletSwap";
-import ContractDetails from "./Renderer/ContractDetails";
+import OverviewModal from "./Renderer/OverviewModal";
 import JsonViewer from './Renderer/JsonViewer';
 import useDebounce from './Renderer/useDebounce';
 
@@ -113,6 +113,12 @@ const ConfigureInputsOutputs: React.FC = () => {
         },
         value: 50,
         step: 1,
+      },
+      transactionConfig: {
+        message: "For 'transaction' or 'address', provide 'value' with optional 'baseUrl'. For other types or no type, 'value' is treated as the full link.",
+        type: 'transaction | address | null',
+        value: '',
+        baseUrl: '',
       },
       swapConfig: {
         heading: "Swap",
@@ -444,7 +450,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         case 'walletDropdown':
         case 'button':
         case 'table':
-        case 'transactionLink':
+        // case 'transactionLink':
         case 'description':
           initialConfig = { styles: { ...config.styles } };
           break;
@@ -461,6 +467,9 @@ const ConfigureInputsOutputs: React.FC = () => {
           break;
         case 'graph':
           initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
+          break;
+        case 'transactionLink':
+          initialConfig = { styles: { ...config.styles }, transactionConfig: { ...config.custom.transactionConfig } };
           break;
         default:
           initialConfig = {};
@@ -1309,7 +1318,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
         </div>
         {/* <ToastContainer /> */}
-        {showContractDetails && <ContractDetails onClose={() => setShowContractDetails(false)} />}
+        {showContractDetails && <OverviewModal onClose={() => setShowContractDetails(false)} />}
       </div>
     </>
   );

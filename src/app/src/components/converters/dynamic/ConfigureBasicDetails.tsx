@@ -58,20 +58,20 @@ const ConfigureBasicDetails: React.FC = () => {
       if (e.target && typeof e.target.result === 'string') {
         try {
           const jsonData = JSON.parse(e.target.result);
-          const { name, description, components, contracts, network } = jsonData;
+          const { name, description, components, contracts, networks } = jsonData;
 
           // Get existing formData from localStorage
           const existingFormData = localStorage.getItem("formData");
           const existingData = existingFormData ? JSON.parse(existingFormData) : {};
 
-          // Set title, description, contracts, and network details in formData
+          // Set title, description, contracts, and networks details in formData
           const updatedFormData = {
             ...existingData,
             title: name,
             description: description,
             privacy: "public",
             contractDetails: contracts,
-            networkDetails: network,
+            networkDetails: networks,
           };
 
           // Update local storage with the new formData

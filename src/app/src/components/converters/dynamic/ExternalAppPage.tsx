@@ -220,7 +220,7 @@ const ExternalAppPage = () => {
               //   data={data}
               //   setData={setData}
               //   contracts={""}
-              //   network={""}
+              //   networks={""}
               //   debug={setOutputCode}
               // />
               <DynamicApp
@@ -228,7 +228,7 @@ const ExternalAppPage = () => {
                 data={data}
                 setData={setData}
                 contracts={""}
-                network={""}
+                networks={""}
                 debug={setOutputCode}
               />
             )}

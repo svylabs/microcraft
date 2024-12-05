@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import ConnectToWallet from "./ConnectToWallet";
+import microcraftLogo from "./photos/microcraft.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -33,7 +34,7 @@ const Header: React.FC = () => {
       <header className="sticky top-0 bg-white z-auto flex justify-between">
         <div className="flex gap-1 md:gap-3 lg:gap-5 items-center">
           <img
-            src="/microcraft.png"
+            src={microcraftLogo}
             alt="Microcraft"
             className="w-10 h-10 lg:w-16 lg:h-16"
           />

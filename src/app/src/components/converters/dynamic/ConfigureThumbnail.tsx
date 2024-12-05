@@ -112,7 +112,7 @@ const ConfigureThumbnail: React.FC<FrontendProps> = ({ lastPrompt }) => {
         privacy: loadedData.privacy || "",
         teamId: loadedData.privacy === "private" ? loadedData.teamId : null,
         selected_contracts: loadedData.selectedContracts || [],
-        network_details: loadedData.networkDetails || {},
+        network_details: loadedData.networkDetails || [],
         contract_details: loadedData.contractDetails || [],
       };
 

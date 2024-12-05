@@ -68,12 +68,14 @@
       "abi": []
     }
   ],
-  "network": {
-    "type": "ethereum",
-    "config": {
-      "rpcUrl": "your_rpc_url",
-      "chainId": "your_chain_id",
-      "exploreUrl": "your_explore_url"
+  "networks": [
+    {
+      "type": "ethereum",
+      "config": {
+        "rpcUrl": "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+        "chainId": "1",
+        "exploreUrl": "https://etherscan.io"
+      }
     }
-  }
+  ]
 }
