@@ -1435,6 +1435,52 @@ const ConfigureInputsOutputs: React.FC = () => {
 
         <div className="w-3/4 p-4">
           <DroppableArea onDrop={handleDropComponent} />
+          {currentComponent && (
+            <div className="mt-4 p-4 border bg-gray-100">
+              <h3>Edit Component</h3>
+              <div>
+                <label>ID:</label>
+                <input
+                  type="text"
+                  className="border p-1 w-full"
+                />
+              </div>
+              <div>
+                <label>Label:</label>
+                <input
+                  type="text"
+                  className="border p-1 w-full"
+                />
+              </div>
+              <div>
+                <label>Code:</label>
+                <textarea
+                  className="border p-1 w-full"
+                />
+              </div>
+              <div>
+                <label>Config:</label>
+                <textarea
+                  value={config}
+                  onChange={(e) => setConfig(e.target.value)}
+                  className="border p-1 w-full"
+                />
+              </div>
+              <div>
+                <label>Events:</label>
+                <textarea
+                  className="border p-1 w-full"
+                />
+              </div>
+              <button
+                onClick={handleAddComponent}
+                className="mt-2 bg-blue-500 text-white p-2"
+              >
+                Add Component
+              </button>
+            </div>
+          )}
+          <div>Copy the UL</div>
           <div className="mt-4">
             {components.map((component) => (
               <div key={component.id} className="flex justify-between items-center p-2 border mb-2 bg-white shadow">
