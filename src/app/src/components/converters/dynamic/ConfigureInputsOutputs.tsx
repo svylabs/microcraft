@@ -15,7 +15,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 // Define your available components
-const availableComponents = [
+const availableFormElements = [
   { value: "text", Type: "Text", Placement: "input" },
   { value: "number", Type: "Number", Placement: "input" },
   { value: "json", Type: "JSON", Placement: "textarea" },
@@ -1428,7 +1428,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       <div className="flex">
         <div className="w-1/4 p-4 border-r">
           <h2>Available Components</h2>
-          {availableComponents.map((component) => (
+          {availableFormElements.map((component) => (
             <DraggableComponent key={component.value} component={component} />
           ))}
         </div>
