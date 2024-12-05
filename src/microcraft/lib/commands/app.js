@@ -146,6 +146,21 @@ const buildApp = async (appDirectory) => {
             }
             return component;
         }));
+        if (appData.contracts && appData.contracts.length > 0) {
+            for (let contract of appData.contracts) {
+                const abiRef = contract.abiRef || contract.abiref;
+                if (abiRef) {
+                    const codePath = path.join(appDirectory, abiRef);
+                    if (fs.existsSync(codePath)) {
+                        const codeContent = fs.readFileSync(codePath, 'utf-8');
+                        contract.code = codeContent;
+                        delete contract.abiref;
+                        delete contract.abiref;
+                    } else {
+                        console.error(`Code file not found: ${codePath}`);
+                    }
+                }
+        }
         fs.mkdirSync(path.join(appDirectory, "dist"));
         // Write the new app.json file with merged code
         const outputPath = path.join(appDirectory, "dist", 'app.json');
