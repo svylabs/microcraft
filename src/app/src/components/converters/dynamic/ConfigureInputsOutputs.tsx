@@ -32,8 +32,8 @@ interface CustomComponent {
 }
 
 interface Event {
-  event: string;
-  eventsCode: string;
+  type: string;
+  code: string;
 }
 
 const ConfigureInputsOutputs: React.FC = () => {
@@ -338,7 +338,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const handlePreview = async () => {
     if (components.length > 0) {
       console.log(components);
-      window.location.href = "/app/new/preview";
+      window.location.href = "/app/preview";
     } else {
       toast.error("Oops! Your component list is empty. Add fields to preview.");
     }
@@ -409,13 +409,13 @@ const ConfigureInputsOutputs: React.FC = () => {
       if (editIndex !== -1) {
         const updatedEvents = [...events];
         updatedEvents[editIndex] = {
-          event: currentEvent,
-          eventsCode: eventCode,
+          type: currentEvent,
+          code: eventCode,
         };
         setEvents(updatedEvents);
         setEditIndex(-1);
       } else {
-        setEvents([...events, { event: currentEvent, eventsCode: eventCode }]);
+        setEvents([...events, { type: currentEvent, code: eventCode }]);
       }
       setCurrentEvent("");
       setEventCode("");
@@ -425,8 +425,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleEditEvent = (index: number) => {
-    setCurrentEvent(events[index].event);
-    setEventCode(events[index].eventsCode);
+    setCurrentEvent(events[index].type);
+    setEventCode(events[index].code);
     setEditIndex(index);
   };
 
@@ -543,12 +543,12 @@ const ConfigureInputsOutputs: React.FC = () => {
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] lg:w-[9rem] xl:w-[12.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <Link to="/app/new/contract" className="group">
+            <Link to="/app/configure/contracts" className="group">
               <p className="flex gap-2 items-center text-[#414A53]">
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
                   2
                 </span>
-                Configure Visibility
+                Configure Contracts
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
@@ -747,7 +747,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {events.map((event, index) => (
                   <div key={index} className="mt-3">
                     <div className="flex justify-between">
-                      <p className="text-lg font-semibold">{event.event}:</p>
+                      <p className="text-lg font-semibold">{event.type}:</p>
                       <div className="flex gap-3 md:gap-5">
                         <button
                           className="text-blue-600 font-semibold hover:text-blue-700"
@@ -766,7 +766,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                       </div>
                     </div>
                     <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
-                      {event.eventsCode}
+                      {event.code}
                     </pre>
                   </div>
                 ))}
@@ -838,10 +838,10 @@ const ConfigureInputsOutputs: React.FC = () => {
                     component.events.map((eventObj, index) => (
                       <div key={index} className="mt-3">
                         <p className="text-lg font-semibold">
-                          {eventObj.event}:
+                          {eventObj.type}:
                         </p>
                         <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
-                          {eventObj.eventsCode}
+                          {eventObj.code}
                         </pre>
                       </div>
                     ))}

@@ -40,10 +40,10 @@ const AppContent: React.FC = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/app/inbuilt/:id" element={<Converter />} />
-          <Route path="/app/new/contract" element={<ConfigureVisibilitySelector />} />
-          <Route path="/app/new/field" element={<ConfigureInputsOutputs />} />
-          <Route path="/app/new/preview" element={<Action />} />
-          <Route path="/app/new/thumbnail" element={<ConfigureThumbnail />} />
+          <Route path="/app/configure/contracts" element={<ConfigureVisibilitySelector />} />
+          <Route path="/app/configure/layout" element={<ConfigureInputsOutputs />} />
+          <Route path="/app/preview" element={<Action />} />
+          <Route path="/app/configure/thumbnail" element={<ConfigureThumbnail />} />
           <Route path="/app/published/:appId" element={<UserActionPage />} />
           <Route path="/app/view/:appId/:title" element={<UserActionPage />} />
           <Route path="/app/external" element={<ExternalAppPage />} />

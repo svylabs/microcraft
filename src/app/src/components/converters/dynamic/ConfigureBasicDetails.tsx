@@ -35,7 +35,7 @@ const ConfigureBasicDetails: React.FC = () => {
       localStorage.removeItem("formData");
       const data = { title, description };
       localStorage.setItem("formData", JSON.stringify(data));
-      window.location.href = "/app/new/contract";
+      window.location.href = "/app/configure/contracts";
     }
   };
 
@@ -98,7 +98,7 @@ const ConfigureBasicDetails: React.FC = () => {
     if (!fileUploaded) {
       toast.error("Please upload a JSON file before previewing.");
     } else {
-      window.location.href = "/app/new/field";
+      window.location.href = "/app/configure/layout";
     }
   };
 
