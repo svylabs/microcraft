@@ -11,62 +11,6 @@ import Swap from "./Web3/Swap/WalletSwap";
 import OverviewModal from "./Renderer/OverviewModal";
 import JsonViewer from './Renderer/JsonViewer';
 import useDebounce from './Renderer/useDebounce';
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-
-// Define your available components
-const availableComponents = [
-  { id: "text", label: "Text", type: "text" },
-  { id: "number", label: "Number", type: "number" },
-  { id: "json", label: "JSON", type: "json" },
-  { id: "file", label: "File", type: "file" },
-  { id: "dropdown", label: "Dropdown", type: "dropdown" },
-  { id: "radio", label: "Radio", type: "radio" },
-  { id: "checkbox", label: "Checkbox", type: "checkbox" },
-  { id: "slider", label: "Slider", type: "slider" },
-  { id: "walletDropdown", label: "Connected Wallet", type: "walletDropdown" },
-  { id: "swap", label: "Swap", type: "swap" },
-];
-
-// Draggable Component
-const DraggableComponent = ({ component }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: "COMPONENT",
-    item: component,
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  }));
-
-  return (
-    <div
-      ref={drag}
-      className={`p-2 border mb-2 bg-gray-200 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
-    >
-      {component.label}
-    </div>
-  );
-};
-
-// Droppable Area
-const DroppableArea = ({ onDrop }) => {
-  const [{ isOver }, drop] = useDrop(() => ({
-    accept: "COMPONENT",
-    drop: (item) => onDrop(item),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-    }),
-  }));
-
-  return (
-    <div
-      ref={drop}
-      className={`p-4 border ${isOver ? "bg-gray-300" : "bg-white"}`}
-    >
-      <h2>Configured Components</h2>
-    </div>
-  );
-};
 
 const saveDataToLocalStorage = (key, data) => {
   localStorage.setItem(key, JSON.stringify(data));
@@ -583,12 +527,6 @@ const ConfigureInputsOutputs: React.FC = () => {
       </div>
     );
   };
-
-  const handleDropComponent = (component) => {
-    setComponents((prev) => [...prev, component]);
-    toast.success(`${component.label} added!`);
-  };
-
 
   return (
     <>
@@ -1382,32 +1320,6 @@ const ConfigureInputsOutputs: React.FC = () => {
         {/* <ToastContainer /> */}
         {showContractDetails && <OverviewModal onClose={() => setShowContractDetails(false)} />}
       </div>
-
-      <DndProvider backend={HTML5Backend}>
-      <div className="flex">
-        <div className="w-1/4 p-4 border-r">
-          <h2>Available Components</h2>
-          {availableComponents.map((component) => (
-            <DraggableComponent key={component.id} component={component} />
-          ))}
-        </div>
-
-        <div className="w-3/4 p-4">
-          <DroppableArea onDrop={handleDropComponent} />
-          <div>
-            {components.map((component) => (
-              <div key={component.id} className="flex justify-between items-center p-2 border mb-2 bg-white shadow">
-                <span>{component.label}</span>
-                <button onClick={() => handleDeleteComponent(component.id)}>
-                  <img src={trash} alt="Delete" />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      <ToastContainer />
-    </DndProvider>
     </>
   );
 };
