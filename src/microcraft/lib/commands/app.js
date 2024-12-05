@@ -160,6 +160,7 @@ const buildApp = async (appDirectory) => {
                         console.error(`Code file not found: ${codePath}`);
                     }
                 }
+            }
         }
         fs.mkdirSync(path.join(appDirectory, "dist"));
         // Write the new app.json file with merged code
