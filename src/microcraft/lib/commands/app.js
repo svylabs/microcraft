@@ -128,6 +128,22 @@ const buildApp = async (appDirectory) => {
                     console.error(`Code file not found: ${codePath}`);
                 }
             }
+            if (component.events && component.events.length > 0) {
+                for (let event of component.events) {
+                    const codeReference = event.coderef || event.codeRef;
+                    if (codeReference) {
+                        const codePath = path.join(appDirectory, codeReference);
+                        if (fs.existsSync(codePath)) {
+                            const codeContent = fs.readFileSync(codePath, 'utf-8');
+                            event.code = codeContent;
+                            delete event.coderef;
+                            delete event.codeRef;
+                        } else {
+                            console.error(`Code file not found: ${codePath}`);
+                        }
+                    }
+                }
+            }
             return component;
         }));
 
