@@ -16,16 +16,23 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 
 // Define your available components
 const availableComponents = [
-  { id: "text", label: "Text", type: "text" },
-  { id: "number", label: "Number", type: "number" },
-  { id: "json", label: "JSON", type: "json" },
-  { id: "file", label: "File", type: "file" },
-  { id: "dropdown", label: "Dropdown", type: "dropdown" },
-  { id: "radio", label: "Radio", type: "radio" },
-  { id: "checkbox", label: "Checkbox", type: "checkbox" },
-  { id: "slider", label: "Slider", type: "slider" },
-  { id: "walletDropdown", label: "Connected Wallet", type: "walletDropdown" },
-  { id: "swap", label: "Swap", type: "swap" },
+  { value: "text", Type: "Text", Placement: "input" },
+  { value: "number", Type: "Number", Placement: "input" },
+  { value: "json", Type: "JSON", Placement: "textarea" },
+  { value: "file", Type: "File", Placement: "input" },
+  { value: "dropdown", Type: "Dropdown", Placement: "select" },
+  { value: "radio", Type: "Radio", Placement: "input" },
+  { value: "checkbox", Type: "Checkbox", Placement: "input" },
+  { value: "slider", Type: "Slider", Placement: "input" },
+  { value: "walletDropdown", Type: "Connected Wallet", Placement: "select" },
+  { value: "swap", Type: "Swap", Placement: "input" },
+  { value: "button", Type: "Button", Placement: "action" },
+  { value: "text", Type: "Text", Placement: "output" },
+  { value: "json", Type: "JSON", Placement: "output" },
+  { value: "table", Type: "Table", Placement: "output" },
+  { value: "graph", Type: "Graph", Placement: "output" },
+  { value: "description", Type: "Description Field", Placement: "output" },
+  { value: "transactionLink", Type: "Transaction Link", Placement: "output" },
 ];
 
 // Draggable Component
@@ -43,7 +50,7 @@ const DraggableComponent = ({ component }) => {
       ref={drag}
       className={`p-2 border mb-2 bg-gray-200 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
     >
-      {component.label}
+      {component.Type}
     </div>
   );
 };
@@ -589,6 +596,40 @@ const ConfigureInputsOutputs: React.FC = () => {
     toast.success(`${component.label} added!`);
   };
 
+  // const handleDropComponent = (component) => {
+  //   setCurrentComponent(component);
+  //   setId(component.value); // Set default ID to the component value
+  //   setLabel(component.Type); // Set default label to the component type
+  // };
+
+  // const handleAddComponent = () => {
+  //   if (!currentComponent) return;
+
+  //   const newComponent = {
+  //     ...currentComponent,
+  //     id: id || currentComponent.value,
+  //     label: label || currentComponent.Type,
+  //     code,
+  //     config,
+  //     events,
+  //   };
+
+  //   setComponents((prev) => [...prev, newComponent]);
+  //   toast.success(`${newComponent.label} added!`);
+
+  //   // Reset the form
+  //   setCurrentComponent(null);
+  //   setId("");
+  //   setLabel("");
+  //   setCode("");
+  //   setConfig("");
+  //   setEvents("");
+  // };
+
+  // const handleDeleteComponent = (id) => {
+  //   setComponents((prev) => prev.filter((component) => component.id !== id));
+  //   toast.success(`Component deleted!`);
+  // };
 
   return (
     <>
@@ -1388,13 +1429,13 @@ const ConfigureInputsOutputs: React.FC = () => {
         <div className="w-1/4 p-4 border-r">
           <h2>Available Components</h2>
           {availableComponents.map((component) => (
-            <DraggableComponent key={component.id} component={component} />
+            <DraggableComponent key={component.value} component={component} />
           ))}
         </div>
 
         <div className="w-3/4 p-4">
           <DroppableArea onDrop={handleDropComponent} />
-          <div>
+          <div className="mt-4">
             {components.map((component) => (
               <div key={component.id} className="flex justify-between items-center p-2 border mb-2 bg-white shadow">
                 <span>{component.label}</span>
