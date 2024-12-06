@@ -153,7 +153,7 @@ const buildApp = async (appDirectory) => {
                     const codePath = path.join(appDirectory, abiRef);
                     if (fs.existsSync(codePath)) {
                         const codeContent = fs.readFileSync(codePath, 'utf-8');
-                        contract.code = codeContent;
+                        contract.abi = JSON.parse(codeContent);
                         delete contract.abiref;
                         delete contract.abiref;
                     } else {
@@ -167,7 +167,7 @@ const buildApp = async (appDirectory) => {
         const outputPath = path.join(appDirectory, "dist", 'app.json');
         fs.writeFileSync(outputPath, JSON.stringify(appData, null, 2));
 
-        console.log(`App has been built successfully! Merged app.json saved as app.build.json in the ${appDirectory} directory.`);
+        console.log(`App has been built successfully! Merged app.json saved as app.json in the ${appDirectory}/dist directory.`);
     } catch (error) {
         console.error('Error building the app:', error.message);
     }
