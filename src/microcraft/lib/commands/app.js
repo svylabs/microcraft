@@ -155,7 +155,7 @@ const buildApp = async (appDirectory) => {
                         const codeContent = fs.readFileSync(codePath, 'utf-8');
                         contract.abi = JSON.parse(codeContent);
                         delete contract.abiref;
-                        delete contract.abiref;
+                        delete contract.abiRef;
                     } else {
                         console.error(`Code file not found: ${codePath}`);
                     }
