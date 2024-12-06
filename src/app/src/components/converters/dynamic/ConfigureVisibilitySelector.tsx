@@ -243,7 +243,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
       ),
     };
     localStorage.setItem("formData", JSON.stringify(newData));
-    window.location.href = "/app/new/field";
+    window.location.href = "/app/configure/layout";
   };
 
   const handleContractSelection = (idName: string) => {
