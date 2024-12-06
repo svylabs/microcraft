@@ -592,9 +592,36 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleDropComponent = (component) => {
-    setComponents((prev) => [...prev, component]);
-    toast.success(`${component.label} added!`);
+    // setCurrentComponent(component);
+    // setLocalConfig(JSON.stringify(component.config || {}, null, 2));
+    // setEvents(component.events || []);
   };
+
+  // const handleChange = (
+  //   e: React.ChangeEvent<
+  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  //   >
+  // ) => {
+  //   const { name, value } = e.target;
+
+  //   if (
+  //     name === "placement" &&
+  //     (value === "action" || value === "output") &&
+  //     currentComponent.type === "text"
+  //   ) {
+  //     setCurrentComponent((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //       // type: "button",
+  //       type: value === "action" ? "button" : "text",
+  //     }));
+  //   } else {
+  //     setCurrentComponent((prevState) => ({
+  //       ...prevState,
+  //       [name]: value,
+  //     }));
+  //   }
+  // };
 
   return (
     <>
@@ -747,8 +774,8 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
 
           <div className="w-3/4 p-4">
-            {/* <DroppableArea onDrop={handleDropComponent} /> */}
-            <DroppableArea onDrop={handleChange} />
+            <DroppableArea onDrop={handleDropComponent} />
+            {/* <DroppableArea onDrop={handleChange} /> */}
             {renderConfig()}
             <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
               Label:
