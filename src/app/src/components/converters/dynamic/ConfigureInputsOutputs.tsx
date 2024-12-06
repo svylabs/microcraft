@@ -596,41 +596,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     toast.success(`${component.label} added!`);
   };
 
-  // const handleDropComponent = (component) => {
-  //   setCurrentComponent(component);
-  //   setId(component.value); // Set default ID to the component value
-  //   setLabel(component.Type); // Set default label to the component type
-  // };
-
-  // const handleAddComponent = () => {
-  //   if (!currentComponent) return;
-
-  //   const newComponent = {
-  //     ...currentComponent,
-  //     id: id || currentComponent.value,
-  //     label: label || currentComponent.Type,
-  //     code,
-  //     config,
-  //     events,
-  //   };
-
-  //   setComponents((prev) => [...prev, newComponent]);
-  //   toast.success(`${newComponent.label} added!`);
-
-  //   // Reset the form
-  //   setCurrentComponent(null);
-  //   setId("");
-  //   setLabel("");
-  //   setCode("");
-  //   setConfig("");
-  //   setEvents("");
-  // };
-
-  // const handleDeleteComponent = (id) => {
-  //   setComponents((prev) => prev.filter((component) => component.id !== id));
-  //   toast.success(`Component deleted!`);
-  // };
-
   return (
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
@@ -782,7 +747,8 @@ const ConfigureInputsOutputs: React.FC = () => {
           </div>
 
           <div className="w-3/4 p-4">
-            <DroppableArea onDrop={handleDropComponent} />
+            {/* <DroppableArea onDrop={handleDropComponent} /> */}
+            <DroppableArea onDrop={handleChange} />
             {renderConfig()}
             <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
               Label:
