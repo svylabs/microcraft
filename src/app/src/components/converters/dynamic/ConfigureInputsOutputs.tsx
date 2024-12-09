@@ -16,23 +16,23 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 
 // Define availableFormElements
 const availableFormElements = [
-  { value: "text", Type: "Text", Placement: "input" },
-  { value: "number", Type: "Number", Placement: "input" },
-  { value: "json", Type: "JSON", Placement: "textarea" },
-  { value: "file", Type: "File", Placement: "input" },
-  { value: "dropdown", Type: "Dropdown", Placement: "select" },
-  { value: "radio", Type: "Radio", Placement: "input" },
-  { value: "checkbox", Type: "Checkbox", Placement: "input" },
-  { value: "slider", Type: "Slider", Placement: "input" },
-  { value: "walletDropdown", Type: "Connected Wallet", Placement: "select" },
-  { value: "swap", Type: "Swap", Placement: "input" },
-  { value: "button", Type: "Button", Placement: "action" },
-  { value: "text", Type: "Text", Placement: "output" },
-  { value: "json", Type: "JSON", Placement: "output" },
-  { value: "table", Type: "Table", Placement: "output" },
-  { value: "graph", Type: "Graph", Placement: "output" },
-  { value: "description", Type: "Description Field", Placement: "output" },
-  { value: "transactionLink", Type: "Transaction Link", Placement: "output" },
+  { value: "text", elementType: "Text", placement: "input" },
+  { value: "number", elementType: "Number", placement: "input" },
+  { value: "json", elementType: "JSON", placement: "input" },
+  { value: "file", elementType: "File", placement: "input" },
+  { value: "dropdown", elementType: "Dropdown", placement: "input" },
+  { value: "radio", elementType: "Radio", placement: "input" },
+  { value: "checkbox", elementType: "Checkbox", placement: "input" },
+  { value: "slider", elementType: "Slider", placement: "input" },
+  { value: "walletDropdown", elementType: "Connected Wallet", placement: "input" },
+  { value: "swap", elementType: "Swap", placement: "input" },
+  { value: "button", elementType: "Button", placement: "action" },
+  { value: "text", elementType: "Text", placement: "output" },
+  { value: "json", elementType: "JSON", placement: "output" },
+  { value: "table", elementType: "Table", placement: "output" },
+  { value: "graph", elementType: "Graph", placement: "output" },
+  { value: "description", elementType: "Description Field", placement: "output" },
+  { value: "transactionLink", elementType: "Transaction Link", placement: "output" },
 ];
 
 // Draggable Component
@@ -50,7 +50,7 @@ const DraggableComponent = ({ component }) => {
       ref={drag}
       className={`p-2 border mb-2 bg-gray-200 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
     >
-      {component.Type}
+      {component.elementType}
     </div>
   );
 };
@@ -597,11 +597,11 @@ const ConfigureInputsOutputs: React.FC = () => {
     console.log("typeof-component", typeof component);
     const updatedComponent = {
       ...component,
-      placement: component.Placement, 
-      type: component.value, 
+      // placement: component.Placement, 
+      type: component.value,
     };
     console.log("updatedComponent", updatedComponent);
-  
+
     setCurrentComponent(updatedComponent);
   };
 
@@ -611,7 +611,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   //   >
   // ) => {
   //   const { name, value } = e.target;
-  
+
   //   setCurrentComponent((prevState) => {
   //     if (
   //       name === "placement" &&
@@ -624,14 +624,14 @@ const ConfigureInputsOutputs: React.FC = () => {
   //         type: value === "action" ? "button" : "text",
   //       };
   //     }
-  
+
   //     return {
   //       ...prevState,
   //       [name]: value,
   //     };
   //   });
   // };
-  
+
 
   return (
     <>
@@ -680,88 +680,6 @@ const ConfigureInputsOutputs: React.FC = () => {
               Publish the app
             </p>
           </div>
-
-          {/* <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-            Placement:
-            <select
-              className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-              name="placement"
-              value={currentComponent.placement}
-              onChange={handleChange}
-            >
-              <option value="input">Input</option>
-              <option value="action">Action</option>
-              <option value="output">Output</option>
-            </select>
-          </label> */}
-
-          {/* {currentComponent.placement === "input" && (
-            <>
-              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                Type:
-                <select
-                  className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                  name="type"
-                  value={currentComponent.type}
-                  onChange={handleChange}
-                >
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="json">JSON</option>
-                  <option value="file">File</option>
-                  <option value="dropdown">Dropdown</option>
-                  <option value="radio">Radio</option>
-                  <option value="checkbox">Checkbox</option>
-                  <option value="slider">Slider</option>
-                  <option value="walletDropdown">Connected Wallet</option>
-                  <option value="swap">Swap</option>
-                </select>
-              </label>
-              {renderConfig()}
-            </>
-          )} */}
-
-          {/* {currentComponent.placement === "action" && (
-            <div>
-              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                Type:
-                <select
-                  className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                  name="type"
-                  value={currentComponent.type}
-                  onChange={handleChange}
-                >
-                  <option value="button">Button</option>
-                </select>
-              </label>
-              {renderConfig()}
-            </div>
-          )} */}
-
-          {/* {currentComponent.placement === "output" && (
-            <div>
-              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                Type:
-                <select
-                  className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                  name="type"
-                  value={currentComponent.type}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Type</option>
-                  <option value="text">Text</option>
-                  <option value="json">JSON</option>
-                  <option value="table">Table</option>
-                  <option value="graph">Graph</option>
-                  <option value="description">Description Field</option>
-                  <option value="transactionLink">Transaction Link</option>
-                </select>
-              </label>
-              {renderConfig()}
-            </div>
-          )} */}
-
-
 
           <button
             className="block justify-end mt-4 bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2  px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
