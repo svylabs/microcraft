@@ -544,6 +544,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     useEffect(() => {
       updateInitialConfig();
     }, [currentComponent.type]);
+    console.log("currentComponent.type", currentComponent.type);
 
     useEffect(() => {
       updateInitialConfig();
@@ -592,36 +593,45 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleDropComponent = (component) => {
-    // setCurrentComponent(component);
-    // setLocalConfig(JSON.stringify(component.config || {}, null, 2));
-    // setEvents(component.events || []);
+    console.log("component", component);
+    console.log("typeof-component", typeof component);
+    const updatedComponent = {
+      ...component,
+      placement: component.Placement, 
+      type: component.value, 
+    };
+    console.log("updatedComponent", updatedComponent);
+  
+    setCurrentComponent(updatedComponent);
   };
 
-  // const handleChange = (
+  // const handleDropComponent = (
   //   e: React.ChangeEvent<
   //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
   //   >
   // ) => {
   //   const { name, value } = e.target;
-
-  //   if (
-  //     name === "placement" &&
-  //     (value === "action" || value === "output") &&
-  //     currentComponent.type === "text"
-  //   ) {
-  //     setCurrentComponent((prevState) => ({
+  
+  //   setCurrentComponent((prevState) => {
+  //     if (
+  //       name === "placement" &&
+  //       (value === "action" || value === "output") &&
+  //       prevState.type === "text"
+  //     ) {
+  //       return {
+  //         ...prevState,
+  //         [name]: value,
+  //         type: value === "action" ? "button" : "text",
+  //       };
+  //     }
+  
+  //     return {
   //       ...prevState,
   //       [name]: value,
-  //       // type: "button",
-  //       type: value === "action" ? "button" : "text",
-  //     }));
-  //   } else {
-  //     setCurrentComponent((prevState) => ({
-  //       ...prevState,
-  //       [name]: value,
-  //     }));
-  //   }
+  //     };
+  //   });
   // };
+  
 
   return (
     <>
