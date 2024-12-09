@@ -70,7 +70,7 @@ const DroppableArea = ({ onDrop }) => {
       ref={drop}
       className={`p-4 border ${isOver ? "bg-gray-300" : "bg-white"}`}
     >
-      <h2>Configured Components</h2>
+      <h2>Configured Layout</h2>
     </div>
   );
 };
@@ -505,6 +505,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     const updateInitialConfig = () => {
       // let initialConfig = {};
 
+console.log("renderConfig-currentComponent.type", currentComponent.type)
       switch (currentComponent.type) {
         case 'text':
         case 'number':
@@ -513,7 +514,6 @@ const ConfigureInputsOutputs: React.FC = () => {
         case 'walletDropdown':
         case 'button':
         case 'table':
-        // case 'transactionLink':
         case 'description':
           initialConfig = { styles: { ...config.styles } };
           break;
@@ -544,7 +544,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     useEffect(() => {
       updateInitialConfig();
     }, [currentComponent.type]);
-    console.log("currentComponent.type", currentComponent.type);
 
     useEffect(() => {
       updateInitialConfig();
@@ -599,10 +598,12 @@ const ConfigureInputsOutputs: React.FC = () => {
       ...component,
       // placement: component.Placement, 
       type: component.value,
+      config: localConfig,
     };
     console.log("updatedComponent", updatedComponent);
 
     setCurrentComponent(updatedComponent);
+    toast.success(`${component.elementType} added!`);
   };
 
   // const handleDropComponent = (
@@ -867,9 +868,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                         onDragEnter={() => handleDragEnter(index)}
                         onDragOver={(e) => e.preventDefault()}
                       >
-                        ID: {component.id}, Label: {component.label}, Type:{" "}
+                        {/* ID: {component.id}, Label: {component.label}, Type:{" "}
                         {component.type}, Placement: {component.placement}
-                        {/* {component.config && `, Configuration : ${component.config}`} */}
                         {component.config && `, Configuration : ${JSON.stringify(component.config)}`}
                         {component.code && `, Code: ${component.code}`}
                         {component.events &&
@@ -882,7 +882,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 {eventObj.eventsCode}
                               </pre>
                             </div>
-                          ))}
+                          ))} */}
                         <br />
                         {(component.type === "text" ||
                           component.type === "number" ||
@@ -934,7 +934,8 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                 type={component.type}
                                 id={component.id}
-                                value={data[component.id]}
+                                // value={data[component.id]}
+                                value={data[component.id] || ""}
                                 onChange={(e) =>
                                   handleInputChange(component.id, e.target.value)
                                 }
@@ -1356,7 +1357,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                 </div>
               </div>
             </div>
-            <ToastContainer />
           </DndProvider>
         </div>
         {/* <ToastContainer /> */}
