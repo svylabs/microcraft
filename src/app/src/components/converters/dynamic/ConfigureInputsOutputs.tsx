@@ -602,34 +602,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     toast.success(`${component.elementType} added!`);
   };
 
-  // const handleDropComponent = (
-  //   e: React.ChangeEvent<
-  //     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  //   >
-  // ) => {
-  //   const { name, value } = e.target;
-
-  //   setCurrentComponent((prevState) => {
-  //     if (
-  //       name === "placement" &&
-  //       (value === "action" || value === "output") &&
-  //       prevState.type === "text"
-  //     ) {
-  //       return {
-  //         ...prevState,
-  //         [name]: value,
-  //         type: value === "action" ? "button" : "text",
-  //       };
-  //     }
-
-  //     return {
-  //       ...prevState,
-  //       [name]: value,
-  //     };
-  //   });
-  // };
-
-
   return (
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
