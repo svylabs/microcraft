@@ -363,7 +363,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         currentComponent.placement === "input" ||
           currentComponent.placement === "action" ||
           currentComponent.placement === "output"
-          ? currentComponent.config || JSON.stringify(config, null, 2)
+          // ? currentComponent.config || JSON.stringify(config, null, 2)
+          ? currentComponent.config || JSON.parse(localConfig)
           : "",
       events: [...events],
     };
@@ -505,7 +506,6 @@ const ConfigureInputsOutputs: React.FC = () => {
     const updateInitialConfig = () => {
       // let initialConfig = {};
 
-console.log("renderConfig-currentComponent.type", currentComponent.type)
       switch (currentComponent.type) {
         case 'text':
         case 'number':
@@ -592,15 +592,11 @@ console.log("renderConfig-currentComponent.type", currentComponent.type)
   };
 
   const handleDropComponent = (component) => {
-    console.log("component", component);
-    console.log("typeof-component", typeof component);
     const updatedComponent = {
       ...component,
       // placement: component.Placement, 
       type: component.value,
-      config: localConfig,
     };
-    console.log("updatedComponent", updatedComponent);
 
     setCurrentComponent(updatedComponent);
     toast.success(`${component.elementType} added!`);
@@ -868,7 +864,7 @@ console.log("renderConfig-currentComponent.type", currentComponent.type)
                         onDragEnter={() => handleDragEnter(index)}
                         onDragOver={(e) => e.preventDefault()}
                       >
-                        {/* ID: {component.id}, Label: {component.label}, Type:{" "}
+                        ID: {component.id}, Label: {component.label}, Type:{" "}
                         {component.type}, Placement: {component.placement}
                         {component.config && `, Configuration : ${JSON.stringify(component.config)}`}
                         {component.code && `, Code: ${component.code}`}
@@ -882,7 +878,7 @@ console.log("renderConfig-currentComponent.type", currentComponent.type)
                                 {eventObj.eventsCode}
                               </pre>
                             </div>
-                          ))} */}
+                          ))}
                         <br />
                         {(component.type === "text" ||
                           component.type === "number" ||
