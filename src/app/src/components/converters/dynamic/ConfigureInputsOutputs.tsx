@@ -665,41 +665,41 @@ const ConfigureInputsOutputs: React.FC = () => {
           >
             Contract Details
           </button>
+          <div className="flex gap-10 text-lg justify-end">
+            <button
+              onClick={() => setActiveTab("edit")}
+              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
+                ? "bg-blue-800 text-white border-2 border-blue-400 shadow-lg"
+                : "bg-blue-500 text-white hover:bg-blue-600"
+                }`}
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => setActiveTab("view")}
+              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
+                ? "bg-green-800 text-white border-2 border-green-400 shadow-lg"
+                : "bg-green-500 text-white hover:bg-green-600"
+                }`}
+            >
+              View
+            </button>
+          </div>
 
           <DndProvider backend={HTML5Backend}>
             <div className="flex">
               <div className="w-1/4 p-4 border-r">
-                <h2>Available Elements</h2>
+                <h2 className="flex justify-center md:text-lg font-semibold">Available Elements</h2>
                 {availableFormElements.map((component, index) => (
                   <DraggableComponent key={`${component.value}-${index}`} component={component} />
                 ))}
               </div>
 
               <div className="w-3/4 p-4">
-                <div className="flex gap-10 text-lg mb-2 justify-end">
-                  <button
-                    onClick={() => setActiveTab("edit")}
-                    className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
-                        ? "bg-blue-800 text-white border-2 border-blue-400 shadow-lg"
-                        : "bg-blue-500 text-white hover:bg-blue-600"
-                      }`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("view")}
-                    className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
-                        ? "bg-green-800 text-white border-2 border-green-400 shadow-lg"
-                        : "bg-green-500 text-white hover:bg-green-600"
-                      }`}
-                  >
-                    View
-                  </button>
-                </div>
-                {/* <DroppableArea onDrop={handleDropComponent} /> */}
                 {activeTab === "edit" && (
                   <div>
                     <DroppableArea onDrop={handleDropComponent} />
+
                     {renderConfig()}
                     <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
                       Label:
