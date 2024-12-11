@@ -676,11 +676,26 @@ const ConfigureInputsOutputs: React.FC = () => {
               </div>
 
               <div className="w-3/4 p-4">
-                <div className="flex gap-10 text-lg">
-                  <button onClick={() => setActiveTab("edit")}>Edit</button>
-                  <button onClick={() => setActiveTab("view")}>View</button>
+                <div className="flex gap-10 text-lg mb-2 justify-end">
+                  <button
+                    onClick={() => setActiveTab("edit")}
+                    className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
+                        ? "bg-blue-800 text-white border-2 border-blue-400 shadow-lg"
+                        : "bg-blue-500 text-white hover:bg-blue-600"
+                      }`}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("view")}
+                    className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
+                        ? "bg-green-800 text-white border-2 border-green-400 shadow-lg"
+                        : "bg-green-500 text-white hover:bg-green-600"
+                      }`}
+                  >
+                    View
+                  </button>
                 </div>
-
                 {/* <DroppableArea onDrop={handleDropComponent} /> */}
                 {activeTab === "edit" && (
                   <div>
@@ -1334,16 +1349,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     </div>
                   </div>
                 )}
-
-                {/* <div className="flex mt-5 justify-end">
-                  <button
-                    className="preview text-[#21262C] flex gap-3 bg-[#DBE3ED] rounded xl:text-xl p-3 px-4"
-                    onClick={handlePreview}
-                  >
-                    <img src={preview} alt="preview" className="self-center"></img>
-                    Preview
-                  </button>
-                </div> */}
               </div>
             </div>
           </DndProvider>
