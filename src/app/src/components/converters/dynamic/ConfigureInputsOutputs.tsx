@@ -503,72 +503,164 @@ const ConfigureInputsOutputs: React.FC = () => {
 
   // console.log(currentComponent);
 
+  // const renderConfig = () => {
+  //   const updateInitialConfig = () => {
+  //     // let initialConfig = {};
+
+  //     switch (currentComponent.type) {
+  //       case 'text':
+  //       case 'number':
+  //       case 'file':
+  //       case 'json':
+  //       case 'walletDropdown':
+  //       case 'button':
+  //       case 'table':
+  //       case 'description':
+  //         initialConfig = { styles: { ...config.styles } };
+  //         break;
+  //       case 'dropdown':
+  //       case 'radio':
+  //       case 'checkbox':
+  //         initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
+  //         break;
+  //       case 'slider':
+  //         initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
+  //         break;
+  //       case 'swap':
+  //         initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
+  //         break;
+  //       case 'graph':
+  //         initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
+  //         break;
+  //       case 'transactionLink':
+  //         initialConfig = { styles: { ...config.styles }, transactionConfig: { ...config.custom.transactionConfig } };
+  //         break;
+  //       default:
+  //         initialConfig = {};
+  //     }
+
+  //     setLocalConfig(JSON.stringify(initialConfig, null, 2));
+  //   };
+
+  //   useEffect(() => {
+  //     updateInitialConfig();
+  //   }, [currentComponent.type]);
+
+  //   useEffect(() => {
+  //     updateInitialConfig();
+  //   }, []);
+
+  //   useEffect(() => {
+  //     if (debouncedConfig) {
+  //       try {
+  //         const parsedConfig = JSON.parse(debouncedConfig);
+  //         setCurrentComponent((prevState) => ({
+  //           ...prevState,
+  //           config: parsedConfig,
+  //         }));
+  //       } catch (error) {
+  //         toast.error("Invalid JSON format. Please provide valid JSON.");
+  //       }
+  //     }
+  //   }, [debouncedConfig]);
+
+  //   const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //     const { value } = e.target;
+  //     setLocalConfig(value);
+  //   };
+
+  //   return (
+  //     <div>
+  //       <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+  //         Configuration:
+  //       </label>
+  //       <div className="flex bg-gray-900 rounded-md p-2">
+  //         <div
+  //           className="px-2 text-gray-500"
+  //           ref={numbersRef}
+  //           style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+  //         ></div>
+  //         <textarea
+  //           ref={textareaRef}
+  //           className="flex-1 bg-gray-900 text-white outline-none"
+  //           style={{ overflowY: "hidden" }}
+  //           value={localConfig}
+  //           onChange={handleConfigChange}
+  //         ></textarea>
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  // Function to update initial config based on current component type
+  const updateInitialConfig = () => {
+    let initialConfig = {};
+
+    switch (currentComponent.type) {
+      case 'text':
+      case 'number':
+      case 'file':
+      case 'json':
+      case 'walletDropdown':
+      case 'button':
+      case 'table':
+      case 'description':
+        initialConfig = { styles: { ...config.styles } };
+        break;
+      case 'dropdown':
+      case 'radio':
+      case 'checkbox':
+        initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
+        break;
+      case 'slider':
+        initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
+        break;
+      case 'swap':
+        initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
+        break;
+      case 'graph':
+        initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
+        break;
+      case 'transactionLink':
+        initialConfig = { styles: { ...config.styles }, transactionConfig: { ...config.custom.transactionConfig } };
+        break;
+      default:
+        initialConfig = {};
+    }
+
+    setLocalConfig(JSON.stringify(initialConfig, null, 2));
+  };
+
+  // Call updateInitialConfig whenever currentComponent.type changes
+  useEffect(() => {
+    updateInitialConfig();
+  }, [currentComponent.type]);
+
+  useEffect(() => {
+    updateInitialConfig();
+  }, []);
+
+  // Handle debounced config changes
+  useEffect(() => {
+    if (debouncedConfig) {
+      try {
+        const parsedConfig = JSON.parse(debouncedConfig);
+        setCurrentComponent((prevState) => ({
+          ...prevState,
+          config: parsedConfig,
+        }));
+      } catch (error) {
+        toast.error("Invalid JSON format. Please provide valid JSON.");
+      }
+    }
+  }, [debouncedConfig]);
+
+  const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const { value } = e.target;
+    setLocalConfig(value);
+  };
+
   const renderConfig = () => {
-    const updateInitialConfig = () => {
-      // let initialConfig = {};
-
-      switch (currentComponent.type) {
-        case 'text':
-        case 'number':
-        case 'file':
-        case 'json':
-        case 'walletDropdown':
-        case 'button':
-        case 'table':
-        case 'description':
-          initialConfig = { styles: { ...config.styles } };
-          break;
-        case 'dropdown':
-        case 'radio':
-        case 'checkbox':
-          initialConfig = { styles: { ...config.styles }, optionsConfig: { ...config.custom.optionsConfig } };
-          break;
-        case 'slider':
-          initialConfig = { styles: { ...config.styles }, sliderConfig: { ...config.custom.sliderConfig } };
-          break;
-        case 'swap':
-          initialConfig = { styles: { ...config.styles }, swapConfig: { ...config.custom.swapConfig } };
-          break;
-        case 'graph':
-          initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
-          break;
-        case 'transactionLink':
-          initialConfig = { styles: { ...config.styles }, transactionConfig: { ...config.custom.transactionConfig } };
-          break;
-        default:
-          initialConfig = {};
-      }
-
-      setLocalConfig(JSON.stringify(initialConfig, null, 2));
-    };
-
-    useEffect(() => {
-      updateInitialConfig();
-    }, [currentComponent.type]);
-
-    useEffect(() => {
-      updateInitialConfig();
-    }, []);
-
-    useEffect(() => {
-      if (debouncedConfig) {
-        try {
-          const parsedConfig = JSON.parse(debouncedConfig);
-          setCurrentComponent((prevState) => ({
-            ...prevState,
-            config: parsedConfig,
-          }));
-        } catch (error) {
-          toast.error("Invalid JSON format. Please provide valid JSON.");
-        }
-      }
-    }, [debouncedConfig]);
-
-    const handleConfigChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const { value } = e.target;
-      setLocalConfig(value);
-    };
-
     return (
       <div>
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -678,8 +770,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {activeTab === "edit" && (
                   <div>
                     <DroppableArea onDrop={handleDropComponent} />
-                    {/* here is the problem */}
-                    {renderConfig()} 
+                    {renderConfig()}
                     <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
                       Label:
                       <input
@@ -825,7 +916,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                     )}
 
                     <button
-                      className="block w-full md:w-60 font-bold mx-auto p-3 mt-4 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+                      className="block w-full md:w-60 font-bold mx-auto p-3 mt-5 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
                       onClick={handleAddComponent}
                     >
                       Add Field
