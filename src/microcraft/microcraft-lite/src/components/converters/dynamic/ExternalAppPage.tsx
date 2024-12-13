@@ -96,6 +96,30 @@ const ExternalAppPage = () => {
             component.code = data;
           }
         }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+              const data = await (await fetch(codeUrl)).text();
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+          const data = await (await fetch(codeUrl)).json();
+          contract.abi = data;
+        }
       }
       setAppDescription(appDescription);
       setAppName(appName);
@@ -154,6 +178,30 @@ const ExternalAppPage = () => {
             const data = await fetchGithubContent(codeUrl, branch, "str");
             component.code = data;
           }
+        }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+              const data = await fetchGithubContent(codeUrl, branch, "str");
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+          const data = await fetchGithubContent(codeUrl, branch, "json");
+          contract.abi = data;
         }
       }
       setAppDescription(appDescription);
