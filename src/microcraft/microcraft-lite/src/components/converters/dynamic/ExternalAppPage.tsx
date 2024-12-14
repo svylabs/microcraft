@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 // import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+import { randomUUID } from 'crypto';
 // import { net } from "web3";
 
 interface Output {
@@ -25,6 +26,7 @@ const ExternalAppPage = () => {
   const [externalAppUrl, setExternalAppUrl] = useState("");
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
+  const [runId, setRunId] = useState("");
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -71,6 +73,7 @@ const ExternalAppPage = () => {
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
+    setData({});
     try {
       if (!localPath) {
         setLoading(false);
@@ -131,11 +134,13 @@ const ExternalAppPage = () => {
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
 
   const loadApp = async () => {
     setLoading(true);
+    setData({});
     try {
       if (!externalAppUrl) {
         setLoading(false);
@@ -214,8 +219,12 @@ const ExternalAppPage = () => {
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
+
+  useEffect(() => {
+  }, [runId]);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -268,9 +277,9 @@ const ExternalAppPage = () => {
               //   debug={setOutputCode}
               // />
               <DynamicApp
+                runId={runId}
                 components={components}
-                data={data}
-                setData={setData}
+                updateData={setData}
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}

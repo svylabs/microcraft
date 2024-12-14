@@ -11,6 +11,13 @@ interface Output {
   [key: string]: any;
 }
 
+interface App {
+  name: string;
+  description: string;
+  components: any[];
+  contracts: any[];
+  networks: any[];
+}
 
 const ExternalAppPage = () => {
   const location = useLocation();
@@ -19,12 +26,14 @@ const ExternalAppPage = () => {
   const [components, setComponents] = useState([]);
   const [contracts, setContracts] = useState([]);
   const [networks, setNetworks] = useState([]);
+  const [app, setApp] = useState<any>({});
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [loading, setLoading] = useState(false);
   const [externalAppUrl, setExternalAppUrl] = useState("");
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
+  const [runId, setRunId] = useState<string>(crypto.randomUUID());
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -71,6 +80,7 @@ const ExternalAppPage = () => {
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
+    setData({});
     try {
       if (!localPath) {
         setLoading(false);
@@ -126,16 +136,25 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
+      setApp({
+        name: appName,
+        description: appDescription,
+        components: components,
+        contracts: contractDetails,
+        networks: networkDetails
+      });
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
 
   const loadApp = async () => {
     setLoading(true);
+    setData({});
     try {
       if (!externalAppUrl) {
         setLoading(false);
@@ -209,6 +228,13 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
+      setApp({
+        name: appName,
+        description: appDescription,
+        components: components,
+        contracts: contractDetails,
+        networks: networkDetails
+      });
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -216,6 +242,10 @@ const ExternalAppPage = () => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    setRunId(crypto.randomUUID());
+  }, [appName, appDescription, app]);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -268,9 +298,9 @@ const ExternalAppPage = () => {
               //   debug={setOutputCode}
               // />
               <DynamicApp
+                runId={runId}
                 components={components}
-                data={data}
-                setData={setData}
+                updateData={setData}
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
