@@ -246,7 +246,7 @@ const ActionPage: React.FC = () => {
               outputFormat === "json" ? (
                 <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                   {outputCode
-                    ? JSON.stringify(outputCode, (k, v) => { if (typeof (v) === "bigint") { return v.toString()} else return v }, 2)
+                    ? JSON.stringify(outputCode, (k, v) => { if (typeof v === "bigint") { return v.toString()} else return v }, 2)
                     : "Execution log not available yet"}
                 </pre>
               ) : outputFormat === "table" ? (
