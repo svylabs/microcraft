@@ -304,6 +304,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent(componentToEdit);
     setLocalConfig(componentToEdit.config ? JSON.stringify(componentToEdit.config, null, 2) : JSON.stringify(initialConfig, null, 2));
     setEvents(componentToEdit.events || []);
+    setActiveTab("edit");
   };
 
   const handleChange = (
@@ -333,8 +334,14 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const handleAddComponent = () => {
-    // Check for both ID and Label fields
-    if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+    // Check for type when no type is selected (for a more general case)
+    if (!currentComponent.type) {
+      toast.error("Please drag and drop an element to select a type.");
+      return;
+    }
+
+    // Check for both ID and Label fields with a fallback for undefined values
+    if (!(currentComponent.id && currentComponent.id.trim()) || !(currentComponent.label && currentComponent.label.trim())) {
       toast.error("Please provide both ID and Label.");
       return;
     }
@@ -342,7 +349,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     // Check for type when placement is "output"
     if (
       currentComponent.placement === "output" &&
-      !currentComponent.type?.trim()
+      !(currentComponent.type && currentComponent.type.trim())
     ) {
       toast.error("Please select a type for output placement.");
       return;
@@ -351,7 +358,7 @@ const ConfigureInputsOutputs: React.FC = () => {
     // Check for code when placement is "action"
     if (
       currentComponent.placement === "action" &&
-      !currentComponent.code?.trim()
+      !(currentComponent.code && currentComponent.code.trim())
     ) {
       toast.error("Please provide code for action placement.");
       return;
@@ -666,32 +673,36 @@ const ConfigureInputsOutputs: React.FC = () => {
             </p>
           </div>
 
-          <button
-            className="block justify-end mt-4 bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2  px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
-            onClick={() => setShowContractDetails(!showContractDetails)}
-            title="Click to View Contract Information"
-          >
-            Contract Details
-          </button>
-          <div className="flex gap-10 text-lg justify-end">
-            <button
-              onClick={() => setActiveTab("view")}
-              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
-                ? "bg-green-800 text-white border-b-4 border-green-400 shadow-lg"
-                : "bg-green-400 text-gray-200 hover:bg-green-600"
-                }`}
-            >
-              View
-            </button>
-            <button
-              onClick={() => setActiveTab("edit")}
-              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
-                ? "bg-blue-800 text-white border-b-4 border-blue-400 shadow-lg"
-                : "bg-blue-400 text-gray-100 hover:bg-blue-600"
-                }`}
-            >
-              Edit
-            </button>
+          <div className="flex justify-between items-center my-4">
+            <div className="flex justify-center items-center">
+              <button
+                className="bg-gradient-to-r from-slate-400 to-slate-500 text-white rounded-md text-lg p-2 px-4 font-medium shadow-md transition duration-300 ease-in-out transform hover:scale-105"
+                onClick={() => setShowContractDetails(!showContractDetails)}
+                title="Click to View Contract Information"
+              >
+                Contract Details
+              </button>
+            </div>
+            <div className="flex gap-10 text-lg justify-end">
+              <button
+                onClick={() => setActiveTab("view")}
+                className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
+                  ? "bg-green-800 text-white border-b-4 border-green-400 shadow-lg"
+                  : "bg-green-400 text-gray-200 hover:bg-green-600"
+                  }`}
+              >
+                View
+              </button>
+              <button
+                onClick={() => setActiveTab("edit")}
+                className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
+                  ? "bg-blue-800 text-white border-b-4 border-blue-400 shadow-lg"
+                  : "bg-blue-400 text-gray-100 hover:bg-blue-600"
+                  }`}
+              >
+                Edit
+              </button>
+            </div>
           </div>
 
           <DndProvider backend={HTML5Backend}>
@@ -704,6 +715,502 @@ const ConfigureInputsOutputs: React.FC = () => {
               </div>
 
               <div className="w-3/4 p-4">
+                {activeTab === "view" && (
+                  <div>
+                    <hr className="my-6" />
+                    <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
+                      <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
+                      {components.length === 0 ? (
+                        <p className="text-center text-lg text-gray-600 mt-4">
+                          No components added yet. Please drag and drop an element from the left panel to start.
+                          <br />
+                          Click on the "Edit" tab to add fields.
+                        </p>
+                      ) : (
+                        <ul className="whitespace-normal break-words">
+                          {components.map((component, index) => (
+                            <li
+                              key={index}
+                              className="mb-4"
+                              draggable
+                              onDragStart={() => handleDragStart(index)}
+                              onDragEnter={() => handleDragEnter(index)}
+                              onDragOver={(e) => e.preventDefault()}
+                            >
+                              ID: {component.id}, Label: {component.label}, Type:{" "}
+                              {component.type}, Placement: {component.placement}
+                              {component.config && `, Configuration : ${JSON.stringify(component.config)}`}
+                              {component.code && `, Code: ${component.code}`}
+                              {component.events &&
+                                component.events.map((eventObj, index) => (
+                                  <div key={index} className="mt-3">
+                                    <p className="text-lg font-semibold">
+                                      {eventObj.event}:
+                                    </p>
+                                    <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
+                                      {eventObj.eventsCode}
+                                    </pre>
+                                  </div>
+                                ))}
+                              <br />
+                              {(component.type === "text" ||
+                                component.type === "number" ||
+                                component.type === "file" ||
+                                component.type === "table" ||
+                                component.type === "description" ||
+                                component.type === "transactionLink" ||
+                                component.type === "graph") && (
+                                  <div>
+                                    <div className="flex justify-between">
+                                      <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                        {component.label}:
+                                      </label>
+                                      <div className="flex gap-3 md:gap-5">
+                                        <button
+                                          onClick={() => handleEditComponent(index)}
+                                          title="Edit"
+                                        >
+                                          <img src={edit} alt="edit"></img>
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteComponent(component.id)}
+                                          title="Delete"
+                                        >
+                                          <img src={trash} alt="trash"></img>
+                                        </button>
+                                      </div>
+                                    </div>
+                                    <input
+                                      className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                      // style={{
+                                      //   ...(component.config &&
+                                      //     typeof component.config === "string"
+                                      //     ? JSON.parse(component.config).styles
+                                      //     : {}),
+                                      // }}
+                                      style={{
+                                        ...(component.config && typeof component.config.styles === 'object'
+                                          ? component.config.styles
+                                          : {}),
+                                      }}
+                                      onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                      type={component.type}
+                                      id={component.id}
+                                      // value={data[component.id]}
+                                      value={data[component.id] || ""}
+                                      onChange={(e) =>
+                                        handleInputChange(component.id, e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                )}
+                              {(component.type === "json") && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div
+                                    style={{
+                                      ...(component.config && typeof component.config.styles === 'object'
+                                        ? component.config.styles
+                                        : {}),
+                                    }}
+                                    id={component.id}
+                                  >
+                                    <JsonViewer
+                                      jsonData={data[component.id]}
+                                      setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {component.type === "swap" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div
+                                    style={{
+                                      ...(component.config && typeof component.config.styles === 'object'
+                                        ? component.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    <Swap
+                                      configurations={
+                                        // JSON.parse(component.config).custom.swapConfig
+                                        component.config.swapConfig
+                                      }
+                                      onSwapChange={(swapData) =>
+                                        handleInputChange(component.id, swapData)
+                                      }
+                                      data={null} //data={undefined}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {component.type === "dropdown" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <select
+                                    className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                    id={component.id}
+                                    value={data[component.id]}
+                                    onChange={(e) =>
+                                      handleInputChange(component.id, e.target.value)
+                                    }
+                                    style={{
+                                      ...(component.config && typeof component.config.styles === 'object'
+                                        ? component.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    {/* Options for dropdown */}
+                                    {component.config && component.config.optionsConfig && component.config.optionsConfig.values.map((option, idx) => (
+                                      <option key={idx} value={option.trim()}>
+                                        {option.trim()}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                              {component.type === "radio" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {/* Options for radio */}
+                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                    {component.config && component.config.optionsConfig &&
+                                      component.config
+                                        .optionsConfig.values.map((option, idx) => {
+                                          const optionWidth = option.trim().length * 8 + 48;
+
+                                          return (
+                                            <div
+                                              key={idx}
+                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                                ? "overflow-x-auto md:h-8"
+                                                : ""
+                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                            >
+                                              <input
+                                                type="radio"
+                                                id={`${component.id}_${idx}`}
+                                                name={component.id}
+                                                value={option.trim()}
+                                                checked={data[component.id] === option}
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    component.id,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="mr-2 absolute"
+                                                style={{
+                                                  top: "50%",
+                                                  transform: "translateY(-50%)",
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`${component.id}_${idx}`}
+                                                className="whitespace-nowrap"
+                                                style={{ marginLeft: "1.5rem" }}
+                                              >
+                                                {option.trim()}
+                                              </label>
+                                            </div>
+                                          );
+                                        })}
+                                  </div>
+                                </div>
+                              )}
+                              {component.type === "checkbox" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  {/* Options for checkbox */}
+                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                    {component.config && component.config.optionsConfig &&
+                                      component.config
+                                        .optionsConfig.values.map((option, idx) => {
+                                          const optionWidth = option.trim().length * 8 + 48;
+
+                                          return (
+                                            <div
+                                              key={idx}
+                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                                ? "overflow-x-auto md:h-8"
+                                                : ""
+                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                id={`${component.id}_${idx}`}
+                                                name={component.id}
+                                                value={option.trim()}
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    component.id,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="mr-2 absolute"
+                                                style={{
+                                                  top: "50%",
+                                                  transform: "translateY(-50%)",
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`${component.id}_${idx}`}
+                                                className="whitespace-nowrap"
+                                                style={{ marginLeft: "1.5rem" }}
+                                              >
+                                                {option.trim()}
+                                              </label>
+                                            </div>
+                                          );
+                                        })}
+                                  </div>
+                                </div>
+                              )}
+                              {component.type === "slider" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="range"
+                                        id={component.id}
+                                        className="w-full h-9 cursor-pointer" //md:w-[60%]
+                                        name={component.label}
+                                        min={
+                                          component.config.sliderConfig
+                                            .interval.min
+                                        }
+                                        max={
+                                          component.config.sliderConfig
+                                            .interval.max
+                                        }
+                                        step={
+                                          component.config.sliderConfig
+                                            .step
+                                        }
+                                        value={
+                                          data[component.id] ||
+                                          component.config.sliderConfig
+                                            .value
+                                        }
+                                        onChange={(e) =>
+                                          handleInputChange(component.id, e.target.value)
+                                        }
+                                      />
+                                      <span className="font-semibold">
+                                        {data[component.id] ||
+                                          component.config.sliderConfig
+                                            .value}
+                                      </span>
+                                    </div>
+                                    {/* <p className="text-sm text-gray-500 flex items-center">
+                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
+                            </svg>
+                            <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
+                          </p> */}
+                                  </div>
+                                </div>
+                              )}
+                              {component.type === "walletDropdown" && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  {/* <Wallet
+                          configurations={JSON.parse(component.config).custom.walletConfig}
+                          onSelectAddress={(address) =>
+                            handleInputChange(component.id, address)
+                          }
+                        /> */}
+                                  <Wallet
+                                    configurations={
+                                      // JSON.parse(component.config).custom.walletConfig
+                                      loadedData.networkDetails || loadedData.network_details
+                                    }
+                                    onSelectAddress={(address) =>
+                                      handleInputChange(component.id, {
+                                        address,
+                                        balance: null,
+                                      })
+                                    }
+                                    onUpdateBalance={(balance) =>
+                                      handleInputChange(component.id, {
+                                        address: data[component.id]?.address || "",
+                                        balance,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              )}
+                              {component.type === "button" && component.code && (
+                                <div>
+                                  <div className="flex justify-between">
+                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
+                                      {component.label}:
+                                    </label>
+                                    <div className="flex gap-3 md:gap-5">
+                                      <button
+                                        onClick={() => handleEditComponent(index)}
+                                        title="Edit"
+                                      >
+                                        <img src={edit} alt="edit"></img>
+                                      </button>
+                                      <button
+                                        onClick={() => handleDeleteComponent(component.id)}
+                                        title="Delete"
+                                      >
+                                        <img src={trash} alt="trash"></img>
+                                      </button>
+                                    </div>
+                                  </div>
+                                  <button
+                                    className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                                    id={component.id}
+                                    style={{
+                                      ...(component.config && typeof component.config.styles === 'object'
+                                        ? component.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    {component.label}
+                                  </button>
+                                </div>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {activeTab === "edit" && (
                   <div>
                     <DroppableArea onDrop={handleDropComponent} />
@@ -760,7 +1267,244 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 />
                               </div>
                             )}
-                          {/* {renderConfig()} */}
+                            {(currentComponent.type === "json") && (
+                                <div>
+                                  <div
+                                    style={{
+                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                        ? currentComponent.config.styles
+                                        : {}),
+                                    }}
+                                    id={currentComponent.id}
+                                  >
+                                    <JsonViewer
+                                      jsonData={data[currentComponent.id]}
+                                      setJsonData={(updatedData) => handleInputChange(currentComponent.id, updatedData)}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                              {currentComponent.type === "swap" && (
+                                  <div
+                                    style={{
+                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                        ? currentComponent.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    <Swap
+                                      configurations={
+                                        // JSON.parse(currentComponent.config).custom.swapConfig
+                                        currentComponent.config.swapConfig
+                                      }
+                                      onSwapChange={(swapData) =>
+                                        handleInputChange(currentComponent.id, swapData)
+                                      }
+                                      data={null} //data={undefined}
+                                    />
+                                  </div>
+                              )}
+                              {currentComponent.type === "dropdown" && (
+                                <div>
+                                  <select
+                                    className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                    id={currentComponent.id}
+                                    value={data[currentComponent.id]}
+                                    onChange={(e) =>
+                                      handleInputChange(currentComponent.id, e.target.value)
+                                    }
+                                    style={{
+                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                        ? currentComponent.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    {/* Options for dropdown */}
+                                    {currentComponent.config && currentComponent.config.optionsConfig && currentComponent.config.optionsConfig.values.map((option, idx) => (
+                                      <option key={idx} value={option.trim()}>
+                                        {option.trim()}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              )}
+                              {currentComponent.type === "radio" && (
+                                <div>
+                                  {/* Options for radio */}
+                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                    {currentComponent.config && currentComponent.config.optionsConfig &&
+                                      currentComponent.config
+                                        .optionsConfig.values.map((option, idx) => {
+                                          const optionWidth = option.trim().length * 8 + 48;
+
+                                          return (
+                                            <div
+                                              key={idx}
+                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                                ? "overflow-x-auto md:h-8"
+                                                : ""
+                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                            >
+                                              <input
+                                                type="radio"
+                                                id={`${currentComponent.id}_${idx}`}
+                                                name={currentComponent.id}
+                                                value={option.trim()}
+                                                checked={data[currentComponent.id] === option}
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    currentComponent.id,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="mr-2 absolute"
+                                                style={{
+                                                  top: "50%",
+                                                  transform: "translateY(-50%)",
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`${currentComponent.id}_${idx}`}
+                                                className="whitespace-nowrap"
+                                                style={{ marginLeft: "1.5rem" }}
+                                              >
+                                                {option.trim()}
+                                              </label>
+                                            </div>
+                                          );
+                                        })}
+                                  </div>
+                                </div>
+                              )}
+                              {currentComponent.type === "checkbox" && (
+                                <div>
+                                  {/* Options for checkbox */}
+                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                    {currentComponent.config && currentComponent.config.optionsConfig &&
+                                      currentComponent.config
+                                        .optionsConfig.values.map((option, idx) => {
+                                          const optionWidth = option.trim().length * 8 + 48;
+
+                                          return (
+                                            <div
+                                              key={idx}
+                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                                ? "overflow-x-auto md:h-8"
+                                                : ""
+                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                            >
+                                              <input
+                                                type="checkbox"
+                                                id={`${currentComponent.id}_${idx}`}
+                                                name={currentComponent.id}
+                                                value={option.trim()}
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    currentComponent.id,
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="mr-2 absolute"
+                                                style={{
+                                                  top: "50%",
+                                                  transform: "translateY(-50%)",
+                                                }}
+                                              />
+                                              <label
+                                                htmlFor={`${currentComponent.id}_${idx}`}
+                                                className="whitespace-nowrap"
+                                                style={{ marginLeft: "1.5rem" }}
+                                              >
+                                                {option.trim()}
+                                              </label>
+                                            </div>
+                                          );
+                                        })}
+                                  </div>
+                                </div>
+                              )}
+                              {currentComponent.type === "slider" && (
+                                <div>
+                                  <div className="flex flex-col">
+                                    <div className="flex items-center gap-3">
+                                      <input
+                                        type="range"
+                                        id={currentComponent.id}
+                                        className="w-full h-9 cursor-pointer" //md:w-[60%]
+                                        name={currentComponent.label}
+                                        min={
+                                          currentComponent.config.sliderConfig
+                                            .interval.min
+                                        }
+                                        max={
+                                          currentComponent.config.sliderConfig
+                                            .interval.max
+                                        }
+                                        step={
+                                          currentComponent.config.sliderConfig
+                                            .step
+                                        }
+                                        value={
+                                          data[currentComponent.id] ||
+                                          currentComponent.config.sliderConfig
+                                            .value
+                                        }
+                                        onChange={(e) =>
+                                          handleInputChange(currentComponent.id, e.target.value)
+                                        }
+                                      />
+                                      <span className="font-semibold">
+                                        {data[currentComponent.id] ||
+                                          currentComponent.config.sliderConfig
+                                            .value}
+                                      </span>
+                                    </div>
+                                    {/* <p className="text-sm text-gray-500 flex items-center">
+                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
+                            </svg>
+                            <span>Recommended: <strong className="text-blue-600">{currentComponent.config.sliderConfig.value}</strong></span>
+                          </p> */}
+                                  </div>
+                                </div>
+                              )}
+                              {currentComponent.type === "walletDropdown" && (
+                                <div>
+                                  <Wallet
+                                    configurations={
+                                      // JSON.parse(currentComponent.config).custom.walletConfig
+                                      loadedData.networkDetails || loadedData.network_details
+                                    }
+                                    onSelectAddress={(address) =>
+                                      handleInputChange(currentComponent.id, {
+                                        address,
+                                        balance: null,
+                                      })
+                                    }
+                                    onUpdateBalance={(balance) =>
+                                      handleInputChange(currentComponent.id, {
+                                        address: data[currentComponent.id]?.address || "",
+                                        balance,
+                                      })
+                                    }
+                                  />
+                                </div>
+                              )}
+                              {currentComponent.type === "button" && currentComponent.code && (
+                                <div>
+                                  <button
+                                    className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                                    id={currentComponent.id}
+                                    style={{
+                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                        ? currentComponent.config.styles
+                                        : {}),
+                                    }}
+                                  >
+                                    {currentComponent.label}
+                                  </button>
+                                </div>
+                              )}
                         </div>
                       )}
                     </div>
@@ -916,503 +1660,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                     >
                       Add Field
                     </button>
-                  </div>
-                )}
-
-                {activeTab === "view" && (
-                  <div>
-                    <hr className="my-6" />
-                    <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
-                      <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
-                      {components.length === 0 ? (
-                      <p className="text-center text-lg text-gray-600 mt-4">
-                        No components added yet. Please drag and drop an element from the left panel to start.
-                        <br />
-                        Click on the "Edit" tab to add fields.
-                      </p>
-                    ) : (
-                      <ul className="whitespace-normal break-words">
-                        {components.map((component, index) => (
-                          <li
-                            key={index}
-                            className="mb-4"
-                            draggable
-                            onDragStart={() => handleDragStart(index)}
-                            onDragEnter={() => handleDragEnter(index)}
-                            onDragOver={(e) => e.preventDefault()}
-                          >
-                            ID: {component.id}, Label: {component.label}, Type:{" "}
-                            {component.type}, Placement: {component.placement}
-                            {component.config && `, Configuration : ${JSON.stringify(component.config)}`}
-                            {component.code && `, Code: ${component.code}`}
-                            {component.events &&
-                              component.events.map((eventObj, index) => (
-                                <div key={index} className="mt-3">
-                                  <p className="text-lg font-semibold">
-                                    {eventObj.event}:
-                                  </p>
-                                  <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
-                                    {eventObj.eventsCode}
-                                  </pre>
-                                </div>
-                              ))}
-                            <br />
-                            {(component.type === "text" ||
-                              component.type === "number" ||
-                              component.type === "file" ||
-                              component.type === "table" ||
-                              component.type === "description" ||
-                              component.type === "transactionLink" ||
-                              component.type === "graph") && (
-                                <div>
-                                  <div className="flex justify-between">
-                                    <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                      {component.label}:
-                                    </label>
-                                    <div className="flex gap-3 md:gap-5">
-                                      <button
-                                        onClick={() => handleEditComponent(index)}
-                                        title="Edit"
-                                      >
-                                        <img src={edit} alt="edit"></img>
-                                      </button>
-                                      <button
-                                        onClick={() => handleDeleteComponent(component.id)}
-                                        title="Delete"
-                                      >
-                                        <img src={trash} alt="trash"></img>
-                                      </button>
-                                    </div>
-                                  </div>
-                                  <input
-                                    className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                                    // style={{
-                                    //   ...(component.config &&
-                                    //     typeof component.config === "string"
-                                    //     ? JSON.parse(component.config).styles
-                                    //     : {}),
-                                    // }}
-                                    style={{
-                                      ...(component.config && typeof component.config.styles === 'object'
-                                        ? component.config.styles
-                                        : {}),
-                                    }}
-                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                    type={component.type}
-                                    id={component.id}
-                                    // value={data[component.id]}
-                                    value={data[component.id] || ""}
-                                    onChange={(e) =>
-                                      handleInputChange(component.id, e.target.value)
-                                    }
-                                  />
-                                </div>
-                              )}
-                            {(component.type === "json") && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div
-                                  style={{
-                                    ...(component.config && typeof component.config.styles === 'object'
-                                      ? component.config.styles
-                                      : {}),
-                                  }}
-                                  id={component.id}
-                                >
-                                  <JsonViewer
-                                    jsonData={data[component.id]}
-                                    setJsonData={(updatedData) => handleInputChange(component.id, updatedData)}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                            {component.type === "swap" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div
-                                  style={{
-                                    ...(component.config && typeof component.config.styles === 'object'
-                                      ? component.config.styles
-                                      : {}),
-                                  }}
-                                >
-                                  <Swap
-                                    configurations={
-                                      // JSON.parse(component.config).custom.swapConfig
-                                      component.config.swapConfig
-                                    }
-                                    onSwapChange={(swapData) =>
-                                      handleInputChange(component.id, swapData)
-                                    }
-                                    data={null} //data={undefined}
-                                  />
-                                </div>
-                              </div>
-                            )}
-                            {component.type === "dropdown" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <select
-                                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                                  id={component.id}
-                                  value={data[component.id]}
-                                  onChange={(e) =>
-                                    handleInputChange(component.id, e.target.value)
-                                  }
-                                  style={{
-                                    ...(component.config && typeof component.config.styles === 'object'
-                                      ? component.config.styles
-                                      : {}),
-                                  }}
-                                >
-                                  {/* Options for dropdown */}
-                                  {component.config && component.config.optionsConfig && component.config.optionsConfig.values.map((option, idx) => (
-                                    <option key={idx} value={option.trim()}>
-                                      {option.trim()}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            )}
-                            {component.type === "radio" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                {/* Options for radio */}
-                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                  {component.config && component.config.optionsConfig &&
-                                    component.config
-                                      .optionsConfig.values.map((option, idx) => {
-                                        const optionWidth = option.trim().length * 8 + 48;
-
-                                        return (
-                                          <div
-                                            key={idx}
-                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                              ? "overflow-x-auto md:h-8"
-                                              : ""
-                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                                          >
-                                            <input
-                                              type="radio"
-                                              id={`${component.id}_${idx}`}
-                                              name={component.id}
-                                              value={option.trim()}
-                                              checked={data[component.id] === option}
-                                              onChange={(e) =>
-                                                handleInputChange(
-                                                  component.id,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="mr-2 absolute"
-                                              style={{
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                              }}
-                                            />
-                                            <label
-                                              htmlFor={`${component.id}_${idx}`}
-                                              className="whitespace-nowrap"
-                                              style={{ marginLeft: "1.5rem" }}
-                                            >
-                                              {option.trim()}
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
-                                </div>
-                              </div>
-                            )}
-                            {component.type === "checkbox" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                {/* Options for checkbox */}
-                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                  {component.config && component.config.optionsConfig &&
-                                    component.config
-                                      .optionsConfig.values.map((option, idx) => {
-                                        const optionWidth = option.trim().length * 8 + 48;
-
-                                        return (
-                                          <div
-                                            key={idx}
-                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                              ? "overflow-x-auto md:h-8"
-                                              : ""
-                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                                          >
-                                            <input
-                                              type="checkbox"
-                                              id={`${component.id}_${idx}`}
-                                              name={component.id}
-                                              value={option.trim()}
-                                              onChange={(e) =>
-                                                handleInputChange(
-                                                  component.id,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="mr-2 absolute"
-                                              style={{
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                              }}
-                                            />
-                                            <label
-                                              htmlFor={`${component.id}_${idx}`}
-                                              className="whitespace-nowrap"
-                                              style={{ marginLeft: "1.5rem" }}
-                                            >
-                                              {option.trim()}
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
-                                </div>
-                              </div>
-                            )}
-                            {component.type === "slider" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div className="flex flex-col">
-                                  <div className="flex items-center gap-3">
-                                    <input
-                                      type="range"
-                                      id={component.id}
-                                      className="w-full h-9 cursor-pointer" //md:w-[60%]
-                                      name={component.label}
-                                      min={
-                                        component.config.sliderConfig
-                                          .interval.min
-                                      }
-                                      max={
-                                        component.config.sliderConfig
-                                          .interval.max
-                                      }
-                                      step={
-                                        component.config.sliderConfig
-                                          .step
-                                      }
-                                      value={
-                                        data[component.id] ||
-                                        component.config.sliderConfig
-                                          .value
-                                      }
-                                      onChange={(e) =>
-                                        handleInputChange(component.id, e.target.value)
-                                      }
-                                    />
-                                    <span className="font-semibold">
-                                      {data[component.id] ||
-                                        component.config.sliderConfig
-                                          .value}
-                                    </span>
-                                  </div>
-                                  {/* <p className="text-sm text-gray-500 flex items-center">
-                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
-                            </svg>
-                            <span>Recommended: <strong className="text-blue-600">{component.config.sliderConfig.value}</strong></span>
-                          </p> */}
-                                </div>
-                              </div>
-                            )}
-                            {component.type === "walletDropdown" && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-
-                                {/* <Wallet
-                          configurations={JSON.parse(component.config).custom.walletConfig}
-                          onSelectAddress={(address) =>
-                            handleInputChange(component.id, address)
-                          }
-                        /> */}
-                                <Wallet
-                                  configurations={
-                                    // JSON.parse(component.config).custom.walletConfig
-                                    loadedData.networkDetails || loadedData.network_details
-                                  }
-                                  onSelectAddress={(address) =>
-                                    handleInputChange(component.id, {
-                                      address,
-                                      balance: null,
-                                    })
-                                  }
-                                  onUpdateBalance={(balance) =>
-                                    handleInputChange(component.id, {
-                                      address: data[component.id]?.address || "",
-                                      balance,
-                                    })
-                                  }
-                                />
-                              </div>
-                            )}
-                            {component.type === "button" && component.code && (
-                              <div>
-                                <div className="flex justify-between">
-                                  <label className="text-slate-500 font-semibold text-lg xl:text-xl">
-                                    {component.label}:
-                                  </label>
-                                  <div className="flex gap-3 md:gap-5">
-                                    <button
-                                      onClick={() => handleEditComponent(index)}
-                                      title="Edit"
-                                    >
-                                      <img src={edit} alt="edit"></img>
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteComponent(component.id)}
-                                      title="Delete"
-                                    >
-                                      <img src={trash} alt="trash"></img>
-                                    </button>
-                                  </div>
-                                </div>
-                                <button
-                                  className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
-                                  id={component.id}
-                                  style={{
-                                    ...(component.config && typeof component.config.styles === 'object'
-                                      ? component.config.styles
-                                      : {}),
-                                  }}
-                                >
-                                  {component.label}
-                                </button>
-                              </div>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    </div>
                   </div>
                 )}
               </div>
