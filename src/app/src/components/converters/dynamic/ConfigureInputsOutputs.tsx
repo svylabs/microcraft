@@ -68,9 +68,15 @@ const DroppableArea = ({ onDrop }) => {
   return (
     <div
       ref={drop}
-      className={`p-4 border ${isOver ? "bg-gray-300" : "bg-white"}`}
+      className={`p-6 py-12 border-2 rounded-lg transition-all ${
+        isOver
+          ? "bg-gradient-to-r from-blue-400 to-blue-600 border-blue-800 shadow-lg scale-105 text-white"
+          : "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-300 shadow-md text-gray-800"
+      }`}
     >
-      <h2>Configured Layout</h2>
+      <h2 className="text-center text-xl font-bold">
+        {isOver ? "Release to Place Element" : "Drag and Drop Your Element"}
+      </h2>
     </div>
   );
 };
