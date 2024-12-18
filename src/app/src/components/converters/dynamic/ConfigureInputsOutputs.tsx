@@ -27,8 +27,8 @@ const availableFormElements = [
   { value: "walletDropdown", elementType: "Connected Wallet", placement: "input" },
   { value: "swap", elementType: "Swap", placement: "input" },
   { value: "button", elementType: "Button", placement: "action" },
-  { value: "text", elementType: "Text", placement: "output" },
-  { value: "json", elementType: "JSON", placement: "output" },
+  { value: "text", elementType: "Text Display", placement: "output" },
+  { value: "json", elementType: "JSON Viewer", placement: "output" },
   { value: "table", elementType: "Table", placement: "output" },
   { value: "graph", elementType: "Graph", placement: "output" },
   { value: "description", elementType: "Description Field", placement: "output" },
@@ -710,7 +710,27 @@ const ConfigureInputsOutputs: React.FC = () => {
                     <div>
                       {currentComponent && (
                         <div>
-                          <h3>{currentComponent.type}</h3>
+                          {/* <h3>{currentComponent.type}</h3> */}
+                          <h3>
+                            {({
+                              text: "Text Field",
+                              number: "Number Input",
+                              json: "JSON Field",
+                              file: "File Uploader",
+                              dropdown: "Dropdown Menu",
+                              radio: "Radio Button Group",
+                              checkbox: "Checkbox Option",
+                              slider: "Slider Control",
+                              walletDropdown: "Connected Wallet",
+                              swap: "Swap Widget",
+                              button: "Action Button",
+                              table: "Table Display",
+                              graph: "Graph Visualization",
+                              description: "Description Field",
+                              transactionLink: "Transaction Link Viewer",
+                            }[currentComponent.type])}
+                          </h3>
+
                           {(currentComponent.type === "text" ||
                             currentComponent.type === "number" ||
                             currentComponent.type === "file" ||
