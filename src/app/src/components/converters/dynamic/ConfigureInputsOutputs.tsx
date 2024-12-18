@@ -68,11 +68,10 @@ const DroppableArea = ({ onDrop }) => {
   return (
     <div
       ref={drop}
-      className={`p-6 py-12 border-2 rounded-lg transition-all ${
-        isOver
-          ? "bg-gradient-to-r from-blue-400 to-blue-600 border-blue-800 shadow-lg scale-105 text-white"
-          : "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-300 shadow-md text-gray-800"
-      }`}
+      className={`p-6 py-12 border-2 rounded-lg transition-all ${isOver
+        ? "bg-gradient-to-r from-blue-400 to-blue-600 border-blue-800 shadow-lg scale-105 text-white"
+        : "bg-gradient-to-r from-gray-100 to-gray-200 border-gray-300 shadow-md text-gray-800"
+        }`}
     >
       <h2 className="text-center text-xl font-bold">
         {isOver ? "Release to Place Element" : "Drag and Drop Your Element"}
@@ -109,7 +108,8 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
     label: "",
-    type: "text",
+    // type: "text",
+    type: "",
     placement: "input",
     code: "",
     config: "",
@@ -398,7 +398,8 @@ const ConfigureInputsOutputs: React.FC = () => {
     setCurrentComponent({
       id: "",
       label: "",
-      type: "text",
+      // type: "text",
+      type: "",
       placement: "input",
       code: "",
       config: "",
@@ -582,6 +583,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   };
 
   const renderConfig = () => {
+    if (currentComponent.type === "") return null;
     return (
       <div>
         <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -695,7 +697,7 @@ const ConfigureInputsOutputs: React.FC = () => {
           <DndProvider backend={HTML5Backend}>
             <div className="flex">
               <div className="w-1/4 p-4 border-r">
-                <h2 className="flex justify-center md:text-lg font-semibold">Available Elements</h2>
+                <h2 className="flex justify-center md:text-xl font-semibold">Available Elements</h2>
                 {availableFormElements.map((component, index) => (
                   <DraggableComponent key={`${component.value}-${index}`} component={component} />
                 ))}
@@ -705,6 +707,38 @@ const ConfigureInputsOutputs: React.FC = () => {
                 {activeTab === "edit" && (
                   <div>
                     <DroppableArea onDrop={handleDropComponent} />
+                    <div>
+                      {currentComponent && (
+                        <div>
+                          <h3>{currentComponent.type}</h3>
+                          {(currentComponent.type === "text" ||
+                            currentComponent.type === "number" ||
+                            currentComponent.type === "file" ||
+                            currentComponent.type === "table" ||
+                            currentComponent.type === "description" ||
+                            currentComponent.type === "transactionLink" ||
+                            currentComponent.type === "graph") && (
+                              <div>
+                                <input
+                                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                  style={{
+                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                      ? currentComponent.config.styles
+                                      : {}),
+                                  }}
+                                  onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                  type={currentComponent.type}
+                                  id={currentComponent.id}
+                                  value={data[currentComponent.id] || ""}
+                                  onChange={(e) =>
+                                    handleInputChange(currentComponent.id, e.target.value)
+                                  }
+                                />
+                              </div>
+                            )}
+                        </div>
+                      )}
+                    </div>
 
                     {renderConfig()}
                     <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
@@ -918,13 +952,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                                       </button>
                                     </div>
                                   </div>
-                                  {/* {console.log(component)}
-                        {console.log(typeof component)}
-                        {console.log(component.config)}
-                        {console.log(typeof component.config)} */}
-                                  {/* {console.log(JSON.parse(component.config).styles)} */}
-                                  {/* JSON.parse(component.sliderConfig).interval.min */}
-                                  {/* {console.log(component.config)} */}
                                   <input
                                     className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
                                     // style={{
