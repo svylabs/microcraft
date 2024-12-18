@@ -127,7 +127,7 @@ const ConfigureInputsOutputs: React.FC = () => {
   const [showContractDetails, setShowContractDetails] = useState(false);
   const [loadedData, setLoadedData] = useState<any>({});
   const [localConfig, setLocalConfig] = useState("");
-  const [activeTab, setActiveTab] = useState("edit");
+  const [activeTab, setActiveTab] = useState("view");
   const debouncedConfig = useDebounce(localConfig, 2000);
 
   const [config, setConfig] = useState<any>({
@@ -675,22 +675,22 @@ const ConfigureInputsOutputs: React.FC = () => {
           </button>
           <div className="flex gap-10 text-lg justify-end">
             <button
-              onClick={() => setActiveTab("edit")}
-              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
-                ? "bg-blue-800 text-white border-2 border-blue-400 shadow-lg"
-                : "bg-blue-500 text-white hover:bg-blue-600"
-                }`}
-            >
-              Edit
-            </button>
-            <button
               onClick={() => setActiveTab("view")}
               className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "view"
-                ? "bg-green-800 text-white border-2 border-green-400 shadow-lg"
-                : "bg-green-500 text-white hover:bg-green-600"
+                ? "bg-green-800 text-white border-b-4 border-green-400 shadow-lg"
+                : "bg-green-400 text-gray-200 hover:bg-green-600"
                 }`}
             >
               View
+            </button>
+            <button
+              onClick={() => setActiveTab("edit")}
+              className={`px-4 lg:px-10 py-2 rounded-md transition duration-300 ${activeTab === "edit"
+                ? "bg-blue-800 text-white border-b-4 border-blue-400 shadow-lg"
+                : "bg-blue-400 text-gray-100 hover:bg-blue-600"
+                }`}
+            >
+              Edit
             </button>
           </div>
 
@@ -708,10 +708,14 @@ const ConfigureInputsOutputs: React.FC = () => {
                   <div>
                     <DroppableArea onDrop={handleDropComponent} />
                     <div>
-                      {currentComponent && (
+                      {currentComponent && currentComponent.type && (
                         <div>
+                          <h2 className="text-center">
+                            Expected Field Layout with Configuration
+                          </h2>
+
                           {/* <h3>{currentComponent.type}</h3> */}
-                          <h3>
+                          <h3 className="text-xl font-semibold text-gray-800 mt-2">
                             {({
                               text: "Text Field",
                               number: "Number Input",
@@ -756,6 +760,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 />
                               </div>
                             )}
+                          {/* {renderConfig()} */}
                         </div>
                       )}
                     </div>
@@ -919,6 +924,13 @@ const ConfigureInputsOutputs: React.FC = () => {
                     <hr className="my-6" />
                     <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
                       <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
+                      {components.length === 0 ? (
+                      <p className="text-center text-lg text-gray-600 mt-4">
+                        No components added yet. Please drag and drop an element from the left panel to start.
+                        <br />
+                        Click on the "Edit" tab to add fields.
+                      </p>
+                    ) : (
                       <ul className="whitespace-normal break-words">
                         {components.map((component, index) => (
                           <li
@@ -1399,6 +1411,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                           </li>
                         ))}
                       </ul>
+                    )}
                     </div>
                   </div>
                 )}
