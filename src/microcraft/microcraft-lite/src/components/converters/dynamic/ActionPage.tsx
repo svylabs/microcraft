@@ -19,6 +19,7 @@ const ActionPage: React.FC = () => {
   const [graphType, setGraphType] = useState<string>("bar");
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [loading, setLoading] = useState(false);
+  const [runId, setRunId] = useState<string>(crypto.randomUUID());
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -167,9 +168,9 @@ const ActionPage: React.FC = () => {
           /> */}
 
           <DynamicApp
+            runId={runId}
             components={components}
-            data={data}
-            setData={setData}
+            updateData={setData}
             contracts={loadedData?.contractDetails || []}
             networks={loadedData?.networkDetails || []}
             debug={setOutputCode}

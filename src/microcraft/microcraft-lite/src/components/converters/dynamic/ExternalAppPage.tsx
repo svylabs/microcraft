@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 // import { BASE_API_URL } from "~/components/constants";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
+import { randomUUID } from 'crypto';
 // import { net } from "web3";
 
 interface Output {
@@ -25,6 +26,7 @@ const ExternalAppPage = () => {
   const [externalAppUrl, setExternalAppUrl] = useState("");
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
+  const [runId, setRunId] = useState("");
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -71,6 +73,7 @@ const ExternalAppPage = () => {
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
+    setData({});
     try {
       if (!localPath) {
         setLoading(false);
@@ -96,6 +99,30 @@ const ExternalAppPage = () => {
             component.code = data;
           }
         }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+              const data = await (await fetch(codeUrl)).text();
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+          const data = await (await fetch(codeUrl)).json();
+          contract.abi = data;
+        }
       }
       setAppDescription(appDescription);
       setAppName(appName);
@@ -107,11 +134,13 @@ const ExternalAppPage = () => {
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
 
   const loadApp = async () => {
     setLoading(true);
+    setData({});
     try {
       if (!externalAppUrl) {
         setLoading(false);
@@ -155,6 +184,30 @@ const ExternalAppPage = () => {
             component.code = data;
           }
         }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+              const data = await fetchGithubContent(codeUrl, branch, "str");
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+          const data = await fetchGithubContent(codeUrl, branch, "json");
+          contract.abi = data;
+        }
       }
       setAppDescription(appDescription);
       setAppName(appName);
@@ -166,8 +219,12 @@ const ExternalAppPage = () => {
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
+
+  useEffect(() => {
+  }, [runId]);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -220,9 +277,9 @@ const ExternalAppPage = () => {
               //   debug={setOutputCode}
               // />
               <DynamicApp
+                runId={runId}
                 components={components}
-                data={data}
-                setData={setData}
+                updateData={setData}
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}

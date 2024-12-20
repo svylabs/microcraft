@@ -11,17 +11,29 @@ interface Output {
   [key: string]: any;
 }
 
+interface App {
+  name: string;
+  description: string;
+  components: any[];
+  contracts: any[];
+  networks: any[];
+}
+
 const ExternalAppPage = () => {
   const location = useLocation();
   const [output, setOutput] = useState<any>(location?.state?.output || {});
   const queryParams = new URLSearchParams(location.search);
   const [components, setComponents] = useState([]);
+  const [contracts, setContracts] = useState([]);
+  const [networks, setNetworks] = useState([]);
+  const [app, setApp] = useState<any>({});
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [outputCode, setOutputCode] = useState<Output | string>();
   const [loading, setLoading] = useState(false);
   const [externalAppUrl, setExternalAppUrl] = useState("");
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
+  const [runId, setRunId] = useState<string>(crypto.randomUUID());
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -68,6 +80,7 @@ const ExternalAppPage = () => {
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
+    setData({});
     try {
       if (!localPath) {
         setLoading(false);
@@ -78,6 +91,9 @@ const ExternalAppPage = () => {
       const appName = data.name;
       const appDescription = data.description;
       const components = data.components;
+      const contractDetails = data.contracts || [];
+      const networkDetails = data.networks || [];
+
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
         if (component.type === "button") {
@@ -90,19 +106,55 @@ const ExternalAppPage = () => {
             component.code = data;
           }
         }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+              const data = await (await fetch(codeUrl)).text();
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+          const data = await (await fetch(codeUrl)).json();
+          contract.abi = data;
+        }
       }
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
-      setLoading(false);
+      setContracts(contractDetails);
+      setNetworks(networkDetails);
+      setApp({
+        name: appName,
+        description: appDescription,
+        components: components,
+        contracts: contractDetails,
+        networks: networkDetails
+      });
     } catch (error) {
+      console.error("Error loading external app: ", error);
+      toast.error("Error loading external app. Please try again.");
+    } finally {
       setLoading(false);
-      console.log("Error loading external app: ", error);
+      setRunId(crypto.randomUUID());
     }
   }
 
   const loadApp = async () => {
     setLoading(true);
+    setData({});
     try {
       if (!externalAppUrl) {
         setLoading(false);
@@ -131,6 +183,9 @@ const ExternalAppPage = () => {
       const appName = data.name;
       const appDescription = data.description;
       const components = data.components;
+      const contractDetails = data.contracts || [];
+      const networkDetails = data.networks || [];
+
       for (let i = 0; i < components.length; i++) {
         const component = components[i];
         if (component.type === "button") {
@@ -143,21 +198,54 @@ const ExternalAppPage = () => {
             component.code = data;
           }
         }
+        if (component.events && component.events.length > 0) {
+          for (let j=0; j<component.events.length; j++) {
+            const event = component.events[j];
+            if (event.codeRef !== undefined) {
+              const codeRefParts = event.codeRef.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+              const data = await fetchGithubContent(codeUrl, branch, "str");
+              event.code = data;
+            }
+          }
+        }
+      }
+      for (let i = 0; i < contractDetails.length; i++) {
+        const contract = contractDetails[i];
+        if (contract.abiRef !== undefined) {
+          const codeRefParts = contract.abiRef.split("#");
+          const relPath = codeRefParts[0];
+          //const entryPoint = codeRefParts[1];
+          let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+          const data = await fetchGithubContent(codeUrl, branch, "json");
+          contract.abi = data;
+        }
       }
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
-      setLoading(false);
+      setContracts(contractDetails);
+      setNetworks(networkDetails);
+      setApp({
+        name: appName,
+        description: appDescription,
+        components: components,
+        contracts: contractDetails,
+        networks: networkDetails
+      });
     } catch (error) {
+      console.error("Error loading external app: ", error);
+      toast.error("Error loading external app. Please try again.");
+    } finally {
       setLoading(false);
-      console.log("Error loading external app: ", error);
     }
   }
 
-  const goBack = () => {
-    // setFeedback(true);
-    window.location.href = "/";
-  };
+  useEffect(() => {
+    setRunId(crypto.randomUUID());
+  }, [appName, appDescription, app]);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -168,7 +256,7 @@ const ExternalAppPage = () => {
     <>
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
-        <div className="text-s md:text-xs font-bold py-2 mx-auto">
+        <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
           <input
             className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
             type="text"
@@ -178,12 +266,14 @@ const ExternalAppPage = () => {
             onChange={(e) => setExternalAppUrl(e.target.value)}
             id="output"
           />
-          <button
-            className="px-4 py-2 bg-blue-500 rounded"
-            style={{ margin: "20px" }}
-            onClick={() => loadApp()}
-          >Load App</button>
+          <div className="mx-auto">
+            <button
+              className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
+              onClick={() => loadApp()}
+            >Load App</button>
+          </div>
         </div>
+
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
             <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
@@ -193,42 +283,26 @@ const ExternalAppPage = () => {
               </p>
             </div>
           )}
-          <div className="px-2 md:p- text-wrap">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h1 className="font-semibold md:text-xl hidden md:block">
-                {appName}
-              </h1>
-              <button
-                className="common-button px-4 py-2 text-white font-semibold bg-blue-500 rounded-md focus:bg-blue-600 focus:outline-none hover:bg-blue-600 hover:shadow-lg transition duration-300 self-end md:self-auto"
-                onClick={goBack}
-              >
-                <span className="absolute text-hover text-white font-medium mt-10 -ml-14 px-2 md:-ml-11 bg-slate-500 p-1 rounded-md z-50">
-                  Back To Home
-                </span>
-                Back
-              </button>
+          <div className="px-2 text-wrap">
+            <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
+              <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
+              <h3 className="text-sm md:text-base lg:text-lg">{appDescription}</h3>
             </div>
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-              <h3 className="md:text-l hidden md:block">
-                {appDescription}
-              </h3>
-            </div>
-
             {(components.length > 0) && (
               // <App
               //   components={components}
               //   data={data}
               //   setData={setData}
-              //   contracts={""}
-              //   networks={""}
+              //   contracts={contracts || []}
+              //   networks={networks || []}
               //   debug={setOutputCode}
               // />
               <DynamicApp
+                runId={runId}
                 components={components}
-                data={data}
-                setData={setData}
-                contracts={""}
-                networks={""}
+                updateData={setData}
+                contracts={contracts || []}
+                networks={networks || []}
                 debug={setOutputCode}
               />
             )}

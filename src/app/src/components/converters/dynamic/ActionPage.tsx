@@ -21,6 +21,7 @@ const ActionPage: React.FC = () => {
   const [graphType, setGraphType] = useState<string>("bar");
   const [data, setData] = useState<{ [key: string]: any }>({});
   const [loading, setLoading] = useState(false);
+  const [runId, setRunId] = useState<string>(crypto.randomUUID());
 
   const savedFormDataString = localStorage.getItem("formData");
   const savedFormData = savedFormDataString
@@ -85,12 +86,12 @@ const ActionPage: React.FC = () => {
 
   const goThumbnail = () => {
     // setLoading(true);
-    window.location.href = "/app/new/thumbnail";
+    window.location.href = "/app/configure/thumbnail";
   };
 
   const goBack = () => {
     // setLoading(true);
-    window.location.href = "/app/new/field";
+    window.location.href = "/app/configure/layout";
   };
 
   const exportJson = () => {
@@ -143,17 +144,17 @@ const ActionPage: React.FC = () => {
                 <span className="absolute bottom-0 ml-1 h-[2px] w-[7rem] lg:w-[9rem] xl:w-[12.5rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <Link to="/app/new/contract" className="group">
+            <Link to="/app/configure/contracts" className="group">
               <p className="flex gap-2 items-center text-[#414A53]">
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
                   2
                 </span>
-                Configure Visibility
+                Configure Contracts
                 <img className="w-5 h-5" src={arrow} alt="arrow"></img>
                 <span className="absolute bottom-0 h-[2px] w-[8rem] lg:w-[8rem] xl:w-[11rem] bg-[#31A05D] opacity-0 group-hover:opacity-55 transition-opacity"></span>
               </p>
             </Link>
-            <Link to="/app/new/field" className="group">
+            <Link to="/app/configure/layout" className="group">
               <p className="flex gap-2 items-center text-[#414A53]">
                 <span className="bg-[#31A05D] text-white  p-1 px-3 md:px-3 rounded-full font-bold">
                   3
@@ -204,9 +205,9 @@ const ActionPage: React.FC = () => {
           /> */}
 
           <DynamicApp
+            runId={runId}
             components={components}
-            data={data}
-            setData={setData}
+            updateData={setData}
             contracts={loadedData?.contractDetails || []}
             networks={loadedData?.networkDetails || []}
             debug={setOutputCode}
@@ -245,7 +246,7 @@ const ActionPage: React.FC = () => {
               outputFormat === "json" ? (
                 <pre className="overflow-auto w-full mt-2 px-4 py-2 bg-gray-100 overflow-x-auto  border border-gray-300 rounded-lg">
                   {outputCode
-                    ? JSON.stringify(outputCode, null, 2)
+                    ? JSON.stringify(outputCode, (k, v) => { if (typeof v === "bigint") { return v.toString()} else return v }, 2)
                     : "Execution log not available yet"}
                 </pre>
               ) : outputFormat === "table" ? (

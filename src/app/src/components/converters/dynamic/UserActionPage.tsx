@@ -32,6 +32,7 @@ const UserActionPage = () => {
   const [loading, setLoading] = useState(false);
   // const [feedback, setFeedback] = useState(false);
   const [loadedData, setLoadedData] = useState<LoadedData | null>(null);
+  const [runId, setRunId] = useState<string>(crypto.randomUUID());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -224,9 +225,9 @@ const UserActionPage = () => {
           /> */}
 
           <DynamicApp
+            runId={runId}
             components={components}
-            data={data}
-            setData={setData}
+            updateData={setData}
             contracts={loadedData?.contract_details || []}
             networks={loadedData?.network_details || {}}
             debug={setOutputCode}

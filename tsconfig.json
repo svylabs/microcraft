@@ -18,6 +18,8 @@
   "exclude": [
     "node_modules",
     "dist",
-    "src/app"
+    "src/app",
+    "src/microcraft/microcraft-lite"
+
   ]
 }

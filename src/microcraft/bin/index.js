@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 const { Command } = require('commander');
+const packageJson = require('../package.json');
 const { new_command, open_command, build_command } = require('../lib/commands/app');
 
 
 const program = new Command();
-program.version('0.0.1');
+program.version(packageJson.version);
 const app = program.command('app');
 
 app.command('new <name> <description>')
