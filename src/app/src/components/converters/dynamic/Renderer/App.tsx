@@ -507,7 +507,7 @@ const App: React.FC<Props> = ({ components, data, setData, debug, networks, cont
                             <DescriptionComponent data={data[component.id]} />
                           </div>
                         );
-                      case "transactionLink":
+                      case "entityLink":
                         // console.log("Component:", component);
                         // console.log("Component.config:", component.config.transactionConfig);
                         // console.log("Component.config:", component.config.transactionConfig.type);

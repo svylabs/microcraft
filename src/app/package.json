@@ -37,6 +37,7 @@
     "@types/react-speech-recognition": "^3.9.5",
     "@types/react-toastify": "^4.1.0",
     "axios": "^1.7.2",
+    "bignumber.js": "^9.1.2",
     "body-parser": "^1.20.2",
     "buffer": "^6.0.3",
     "buffer-esm": "^1.2.0",
