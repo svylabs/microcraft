@@ -283,6 +283,7 @@ const ExternalAppPage = () => {
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
+                whitelistedJSElements={{fetch: fetch.bind(globalThis), alert: alert.bind(globalThis)}}
               />
             )}
           </div>
