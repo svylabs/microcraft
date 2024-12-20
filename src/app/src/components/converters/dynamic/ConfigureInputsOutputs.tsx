@@ -717,6 +717,455 @@ const ConfigureInputsOutputs: React.FC = () => {
               <div className="w-3/4 p-4">
                 {activeTab === "view" && (
                   <div>
+                    <div>
+                      <DroppableArea onDrop={handleDropComponent} />
+                      <div>
+                        {currentComponent && currentComponent.type && (
+                          <div className="mt-2">
+                            <h2 className="text-center">
+                              Expected Field Layout with Configuration
+                            </h2>
+
+                            {/* <h3>{currentComponent.type}</h3> */}
+                            <h3 className="text-xl font-semibold text-gray-800 mt-2">
+                              {({
+                                text: "Text Field",
+                                number: "Number Input",
+                                json: "JSON Field",
+                                file: "File Uploader",
+                                dropdown: "Dropdown Menu",
+                                radio: "Radio Button Group",
+                                checkbox: "Checkbox Option",
+                                slider: "Slider Control",
+                                walletDropdown: "Connected Wallet",
+                                swap: "Swap Widget",
+                                button: "Action Button",
+                                table: "Table Display",
+                                graph: "Graph Visualization",
+                                description: "Description Field",
+                                transactionLink: "Transaction Link Viewer",
+                              }[currentComponent.type])}
+                            </h3>
+
+                            {(currentComponent.type === "text" ||
+                              currentComponent.type === "number" ||
+                              currentComponent.type === "file" ||
+                              currentComponent.type === "table" ||
+                              currentComponent.type === "description" ||
+                              currentComponent.type === "transactionLink" ||
+                              currentComponent.type === "graph") && (
+                                <div>
+                                  <input
+                                    className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                    style={{
+                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                        ? currentComponent.config.styles
+                                        : {}),
+                                    }}
+                                    onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                    type={currentComponent.type}
+                                    id={currentComponent.id}
+                                    value={data[currentComponent.id] || ""}
+                                    onChange={(e) =>
+                                      handleInputChange(currentComponent.id, e.target.value)
+                                    }
+                                  />
+                                </div>
+                              )}
+                            {(currentComponent.type === "json") && (
+                              <div>
+                                <div
+                                  style={{
+                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                      ? currentComponent.config.styles
+                                      : {}),
+                                  }}
+                                  id={currentComponent.id}
+                                >
+                                  <JsonViewer
+                                    jsonData={data[currentComponent.id]}
+                                    setJsonData={(updatedData) => handleInputChange(currentComponent.id, updatedData)}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {currentComponent.type === "swap" && (
+                              <div
+                                style={{
+                                  ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                    ? currentComponent.config.styles
+                                    : {}),
+                                }}
+                              >
+                                <Swap
+                                  configurations={
+                                    // JSON.parse(currentComponent.config).custom.swapConfig
+                                    currentComponent.config.swapConfig
+                                  }
+                                  onSwapChange={(swapData) =>
+                                    handleInputChange(currentComponent.id, swapData)
+                                  }
+                                  data={null} //data={undefined}
+                                />
+                              </div>
+                            )}
+                            {currentComponent.type === "dropdown" && (
+                              <div>
+                                <select
+                                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
+                                  id={currentComponent.id}
+                                  value={data[currentComponent.id]}
+                                  onChange={(e) =>
+                                    handleInputChange(currentComponent.id, e.target.value)
+                                  }
+                                  style={{
+                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                      ? currentComponent.config.styles
+                                      : {}),
+                                  }}
+                                >
+                                  {/* Options for dropdown */}
+                                  {currentComponent.config && currentComponent.config.optionsConfig && currentComponent.config.optionsConfig.values.map((option, idx) => (
+                                    <option key={idx} value={option.trim()}>
+                                      {option.trim()}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            )}
+                            {currentComponent.type === "radio" && (
+                              <div>
+                                {/* Options for radio */}
+                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                  {currentComponent.config && currentComponent.config.optionsConfig &&
+                                    currentComponent.config
+                                      .optionsConfig.values.map((option, idx) => {
+                                        const optionWidth = option.trim().length * 8 + 48;
+
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                              ? "overflow-x-auto md:h-8"
+                                              : ""
+                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                          >
+                                            <input
+                                              type="radio"
+                                              id={`${currentComponent.id}_${idx}`}
+                                              name={currentComponent.id}
+                                              value={option.trim()}
+                                              checked={data[currentComponent.id] === option}
+                                              onChange={(e) =>
+                                                handleInputChange(
+                                                  currentComponent.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="mr-2 absolute"
+                                              style={{
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                              }}
+                                            />
+                                            <label
+                                              htmlFor={`${currentComponent.id}_${idx}`}
+                                              className="whitespace-nowrap"
+                                              style={{ marginLeft: "1.5rem" }}
+                                            >
+                                              {option.trim()}
+                                            </label>
+                                          </div>
+                                        );
+                                      })}
+                                </div>
+                              </div>
+                            )}
+                            {currentComponent.type === "checkbox" && (
+                              <div>
+                                {/* Options for checkbox */}
+                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                  {currentComponent.config && currentComponent.config.optionsConfig &&
+                                    currentComponent.config
+                                      .optionsConfig.values.map((option, idx) => {
+                                        const optionWidth = option.trim().length * 8 + 48;
+
+                                        return (
+                                          <div
+                                            key={idx}
+                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                              ? "overflow-x-auto md:h-8"
+                                              : ""
+                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                          >
+                                            <input
+                                              type="checkbox"
+                                              id={`${currentComponent.id}_${idx}`}
+                                              name={currentComponent.id}
+                                              value={option.trim()}
+                                              onChange={(e) =>
+                                                handleInputChange(
+                                                  currentComponent.id,
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="mr-2 absolute"
+                                              style={{
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                              }}
+                                            />
+                                            <label
+                                              htmlFor={`${currentComponent.id}_${idx}`}
+                                              className="whitespace-nowrap"
+                                              style={{ marginLeft: "1.5rem" }}
+                                            >
+                                              {option.trim()}
+                                            </label>
+                                          </div>
+                                        );
+                                      })}
+                                </div>
+                              </div>
+                            )}
+                            {currentComponent.type === "slider" && (
+                              <div>
+                                <div className="flex flex-col">
+                                  <div className="flex items-center gap-3">
+                                    <input
+                                      type="range"
+                                      id={currentComponent.id}
+                                      className="w-full h-9 cursor-pointer"
+                                      name={currentComponent.label}
+                                      min={
+                                        currentComponent.config.sliderConfig
+                                          .interval.min
+                                      }
+                                      max={
+                                        currentComponent.config.sliderConfig
+                                          .interval.max
+                                      }
+                                      step={
+                                        currentComponent.config.sliderConfig
+                                          .step
+                                      }
+                                      value={
+                                        data[currentComponent.id] ||
+                                        currentComponent.config.sliderConfig
+                                          .value
+                                      }
+                                      onChange={(e) =>
+                                        handleInputChange(currentComponent.id, e.target.value)
+                                      }
+                                    />
+                                    <span className="font-semibold">
+                                      {data[currentComponent.id] ||
+                                        currentComponent.config.sliderConfig
+                                          .value}
+                                    </span>
+                                  </div>
+                                  {/* <p className="text-sm text-gray-500 flex items-center">
+                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
+                            </svg>
+                            <span>Recommended: <strong className="text-blue-600">{currentComponent.config.sliderConfig.value}</strong></span>
+                          </p> */}
+                                </div>
+                              </div>
+                            )}
+                            {currentComponent.type === "walletDropdown" && (
+                              <div>
+                                <Wallet
+                                  configurations={
+                                    // JSON.parse(currentComponent.config).custom.walletConfig
+                                    loadedData.networkDetails || loadedData.network_details
+                                  }
+                                  onSelectAddress={(address) =>
+                                    handleInputChange(currentComponent.id, {
+                                      address,
+                                      balance: null,
+                                    })
+                                  }
+                                  onUpdateBalance={(balance) =>
+                                    handleInputChange(currentComponent.id, {
+                                      address: data[currentComponent.id]?.address || "",
+                                      balance,
+                                    })
+                                  }
+                                />
+                              </div>
+                            )}
+                            {currentComponent.type === "button" && currentComponent.code && (
+                              <div>
+                                <button
+                                  className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                                  id={currentComponent.id}
+                                  style={{
+                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                      ? currentComponent.config.styles
+                                      : {}),
+                                  }}
+                                >
+                                  {currentComponent.label}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      {renderConfig()}
+                      <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
+                        Label:
+                        <input
+                          className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
+                          type="text"
+                          name="label"
+                          value={currentComponent.label}
+                          onChange={handleChange}
+                          placeholder="Type label here.."
+                        />
+                      </label>
+
+                      <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+                        ID:
+                        <input
+                          className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
+                          type="text"
+                          name="id"
+                          value={currentComponent.id}
+                          onChange={handleChange}
+                          placeholder="Type ID here.."
+                        />
+                      </label>
+
+                      {/* {currentComponent.placement === "input" && ( */}
+                      {(currentComponent.placement === "input" || currentComponent.placement === "output") && (
+                        <>
+                          <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                            Events:
+                            <select
+                              className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
+                              value={currentEvent}
+                              onChange={(e) => setCurrentEvent(e.target.value)}
+                            >
+                              <option value="">Select Event</option>
+                              <option value="onLoad">onLoad</option>
+                              <option value="onChange">onChange</option>
+                            </select>
+                          </label>
+
+                          {currentEvent && (
+                            <div>
+                              <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
+                                Event Code:
+                              </label>
+                              <div className="flex bg-gray-900 rounded-md p-2">
+                                <div
+                                  className="px-2 text-gray-500"
+                                  ref={numbersRef}
+                                  style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                                ></div>
+                                <textarea
+                                  ref={textareaRef}
+                                  className="flex-1 bg-gray-900 text-white outline-none"
+                                  style={{ overflowY: "hidden" }}
+                                  placeholder="Enter event code here..."
+                                  cols={30}
+                                  rows={10}
+                                  name="eventCode"
+                                  value={eventCode}
+                                  onChange={(e) => setEventCode(e.target.value)}
+                                ></textarea>
+                              </div>
+                            </div>
+                          )}
+
+                          {currentEvent && (
+                            <button
+                              className="w-10 h-10 mx-auto mt-2 rounded-full bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
+                              title="Add Event"
+                              onClick={handleAddEvent}
+                            >
+                              {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                className="w-6 h-6 text-white font-bold"
+                              >
+                                <path
+                                  fill="currentColor"
+                                  d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                                />
+                              </svg>
+                            </button>
+                          )}
+
+                          {/* Display added events */}
+                          <div>
+                            {events.map((event, index) => (
+                              <div key={index} className="mt-3">
+                                <div className="flex justify-between">
+                                  <p className="text-lg font-semibold">{event.event}:</p>
+                                  <div className="flex gap-3 md:gap-5">
+                                    <button
+                                      className="text-blue-600 font-semibold hover:text-blue-700"
+                                      onClick={() => handleEditEvent(index)}
+                                      title="Edit"
+                                    >
+                                      <img src={edit} alt="edit"></img>
+                                    </button>
+                                    <button
+                                      className="text-red-600 font-semibold hover:text-red-700"
+                                      onClick={() => handleDeleteEvent(index)}
+                                      title="Delete"
+                                    >
+                                      <img src={trash} alt="trash"></img>
+                                    </button>
+                                  </div>
+                                </div>
+                                <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
+                                  {event.eventsCode}
+                                </pre>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {currentComponent.placement === "action" && (
+                        <div>
+                          <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
+                            Code:
+                          </label>
+                          <div className="flex bg-gray-900 rounded-md p-2">
+                            <div
+                              className="px-2 text-gray-500"
+                              ref={numbersRef}
+                              style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
+                            ></div>
+                            <textarea
+                              ref={textareaRef}
+                              className="flex-1 bg-gray-900 text-white outline-none"
+                              style={{ overflowY: "hidden" }}
+                              placeholder="Enter your JavaScript code here"
+                              cols={30}
+                              rows={10}
+                              name="code"
+                              value={currentComponent.code}
+                              onChange={handleChange}
+                            ></textarea>
+                          </div>
+                        </div>
+                      )}
+
+                      <button
+                        className="block w-full md:w-60 font-bold mx-auto p-3 mt-5 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
+                        onClick={handleAddComponent}
+                      >
+                        Add Field
+                      </button>
+                    </div>
                     <hr className="my-6" />
                     <div className="md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
                       <h2 className="mt-6 text-2xl font-bold">Added Fields:</h2>
@@ -1213,453 +1662,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                 )}
                 {activeTab === "edit" && (
                   <div>
-                    <DroppableArea onDrop={handleDropComponent} />
-                    <div>
-                      {currentComponent && currentComponent.type && (
-                        <div>
-                          <h2 className="text-center">
-                            Expected Field Layout with Configuration
-                          </h2>
-
-                          {/* <h3>{currentComponent.type}</h3> */}
-                          <h3 className="text-xl font-semibold text-gray-800 mt-2">
-                            {({
-                              text: "Text Field",
-                              number: "Number Input",
-                              json: "JSON Field",
-                              file: "File Uploader",
-                              dropdown: "Dropdown Menu",
-                              radio: "Radio Button Group",
-                              checkbox: "Checkbox Option",
-                              slider: "Slider Control",
-                              walletDropdown: "Connected Wallet",
-                              swap: "Swap Widget",
-                              button: "Action Button",
-                              table: "Table Display",
-                              graph: "Graph Visualization",
-                              description: "Description Field",
-                              transactionLink: "Transaction Link Viewer",
-                            }[currentComponent.type])}
-                          </h3>
-
-                          {(currentComponent.type === "text" ||
-                            currentComponent.type === "number" ||
-                            currentComponent.type === "file" ||
-                            currentComponent.type === "table" ||
-                            currentComponent.type === "description" ||
-                            currentComponent.type === "transactionLink" ||
-                            currentComponent.type === "graph") && (
-                              <div>
-                                <input
-                                  className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                                  style={{
-                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                      ? currentComponent.config.styles
-                                      : {}),
-                                  }}
-                                  onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                  type={currentComponent.type}
-                                  id={currentComponent.id}
-                                  value={data[currentComponent.id] || ""}
-                                  onChange={(e) =>
-                                    handleInputChange(currentComponent.id, e.target.value)
-                                  }
-                                />
-                              </div>
-                            )}
-                            {(currentComponent.type === "json") && (
-                                <div>
-                                  <div
-                                    style={{
-                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                        ? currentComponent.config.styles
-                                        : {}),
-                                    }}
-                                    id={currentComponent.id}
-                                  >
-                                    <JsonViewer
-                                      jsonData={data[currentComponent.id]}
-                                      setJsonData={(updatedData) => handleInputChange(currentComponent.id, updatedData)}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                              {currentComponent.type === "swap" && (
-                                  <div
-                                    style={{
-                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                        ? currentComponent.config.styles
-                                        : {}),
-                                    }}
-                                  >
-                                    <Swap
-                                      configurations={
-                                        // JSON.parse(currentComponent.config).custom.swapConfig
-                                        currentComponent.config.swapConfig
-                                      }
-                                      onSwapChange={(swapData) =>
-                                        handleInputChange(currentComponent.id, swapData)
-                                      }
-                                      data={null} //data={undefined}
-                                    />
-                                  </div>
-                              )}
-                              {currentComponent.type === "dropdown" && (
-                                <div>
-                                  <select
-                                    className="block w-full p-2 mt-1 border bg-slate-200 border-gray-300 rounded-md focus:outline-none"
-                                    id={currentComponent.id}
-                                    value={data[currentComponent.id]}
-                                    onChange={(e) =>
-                                      handleInputChange(currentComponent.id, e.target.value)
-                                    }
-                                    style={{
-                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                        ? currentComponent.config.styles
-                                        : {}),
-                                    }}
-                                  >
-                                    {/* Options for dropdown */}
-                                    {currentComponent.config && currentComponent.config.optionsConfig && currentComponent.config.optionsConfig.values.map((option, idx) => (
-                                      <option key={idx} value={option.trim()}>
-                                        {option.trim()}
-                                      </option>
-                                    ))}
-                                  </select>
-                                </div>
-                              )}
-                              {currentComponent.type === "radio" && (
-                                <div>
-                                  {/* Options for radio */}
-                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                    {currentComponent.config && currentComponent.config.optionsConfig &&
-                                      currentComponent.config
-                                        .optionsConfig.values.map((option, idx) => {
-                                          const optionWidth = option.trim().length * 8 + 48;
-
-                                          return (
-                                            <div
-                                              key={idx}
-                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                                ? "overflow-x-auto md:h-8"
-                                                : ""
-                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                                            >
-                                              <input
-                                                type="radio"
-                                                id={`${currentComponent.id}_${idx}`}
-                                                name={currentComponent.id}
-                                                value={option.trim()}
-                                                checked={data[currentComponent.id] === option}
-                                                onChange={(e) =>
-                                                  handleInputChange(
-                                                    currentComponent.id,
-                                                    e.target.value
-                                                  )
-                                                }
-                                                className="mr-2 absolute"
-                                                style={{
-                                                  top: "50%",
-                                                  transform: "translateY(-50%)",
-                                                }}
-                                              />
-                                              <label
-                                                htmlFor={`${currentComponent.id}_${idx}`}
-                                                className="whitespace-nowrap"
-                                                style={{ marginLeft: "1.5rem" }}
-                                              >
-                                                {option.trim()}
-                                              </label>
-                                            </div>
-                                          );
-                                        })}
-                                  </div>
-                                </div>
-                              )}
-                              {currentComponent.type === "checkbox" && (
-                                <div>
-                                  {/* Options for checkbox */}
-                                  <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                    {currentComponent.config && currentComponent.config.optionsConfig &&
-                                      currentComponent.config
-                                        .optionsConfig.values.map((option, idx) => {
-                                          const optionWidth = option.trim().length * 8 + 48;
-
-                                          return (
-                                            <div
-                                              key={idx}
-                                              className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                                ? "overflow-x-auto md:h-8"
-                                                : ""
-                                                } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
-                                            >
-                                              <input
-                                                type="checkbox"
-                                                id={`${currentComponent.id}_${idx}`}
-                                                name={currentComponent.id}
-                                                value={option.trim()}
-                                                onChange={(e) =>
-                                                  handleInputChange(
-                                                    currentComponent.id,
-                                                    e.target.value
-                                                  )
-                                                }
-                                                className="mr-2 absolute"
-                                                style={{
-                                                  top: "50%",
-                                                  transform: "translateY(-50%)",
-                                                }}
-                                              />
-                                              <label
-                                                htmlFor={`${currentComponent.id}_${idx}`}
-                                                className="whitespace-nowrap"
-                                                style={{ marginLeft: "1.5rem" }}
-                                              >
-                                                {option.trim()}
-                                              </label>
-                                            </div>
-                                          );
-                                        })}
-                                  </div>
-                                </div>
-                              )}
-                              {currentComponent.type === "slider" && (
-                                <div>
-                                  <div className="flex flex-col">
-                                    <div className="flex items-center gap-3">
-                                      <input
-                                        type="range"
-                                        id={currentComponent.id}
-                                        className="w-full h-9 cursor-pointer" //md:w-[60%]
-                                        name={currentComponent.label}
-                                        min={
-                                          currentComponent.config.sliderConfig
-                                            .interval.min
-                                        }
-                                        max={
-                                          currentComponent.config.sliderConfig
-                                            .interval.max
-                                        }
-                                        step={
-                                          currentComponent.config.sliderConfig
-                                            .step
-                                        }
-                                        value={
-                                          data[currentComponent.id] ||
-                                          currentComponent.config.sliderConfig
-                                            .value
-                                        }
-                                        onChange={(e) =>
-                                          handleInputChange(currentComponent.id, e.target.value)
-                                        }
-                                      />
-                                      <span className="font-semibold">
-                                        {data[currentComponent.id] ||
-                                          currentComponent.config.sliderConfig
-                                            .value}
-                                      </span>
-                                    </div>
-                                    {/* <p className="text-sm text-gray-500 flex items-center">
-                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
-                            </svg>
-                            <span>Recommended: <strong className="text-blue-600">{currentComponent.config.sliderConfig.value}</strong></span>
-                          </p> */}
-                                  </div>
-                                </div>
-                              )}
-                              {currentComponent.type === "walletDropdown" && (
-                                <div>
-                                  <Wallet
-                                    configurations={
-                                      // JSON.parse(currentComponent.config).custom.walletConfig
-                                      loadedData.networkDetails || loadedData.network_details
-                                    }
-                                    onSelectAddress={(address) =>
-                                      handleInputChange(currentComponent.id, {
-                                        address,
-                                        balance: null,
-                                      })
-                                    }
-                                    onUpdateBalance={(balance) =>
-                                      handleInputChange(currentComponent.id, {
-                                        address: data[currentComponent.id]?.address || "",
-                                        balance,
-                                      })
-                                    }
-                                  />
-                                </div>
-                              )}
-                              {currentComponent.type === "button" && currentComponent.code && (
-                                <div>
-                                  <button
-                                    className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
-                                    id={currentComponent.id}
-                                    style={{
-                                      ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                        ? currentComponent.config.styles
-                                        : {}),
-                                    }}
-                                  >
-                                    {currentComponent.label}
-                                  </button>
-                                </div>
-                              )}
-                        </div>
-                      )}
-                    </div>
-
-                    {renderConfig()}
-                    <label className="block my-2 text-[#727679] font-semibold text-lg xl:text-xl">
-                      Label:
-                      <input
-                        className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
-                        type="text"
-                        name="label"
-                        value={currentComponent.label}
-                        onChange={handleChange}
-                        placeholder="Type label here.."
-                      />
-                    </label>
-
-                    <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-                      ID:
-                      <input
-                        className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none placeholder:italic placeholder:font-normal"
-                        type="text"
-                        name="id"
-                        value={currentComponent.id}
-                        onChange={handleChange}
-                        placeholder="Type ID here.."
-                      />
-                    </label>
-
-                    {/* {currentComponent.placement === "input" && ( */}
-                    {(currentComponent.placement === "input" || currentComponent.placement === "output") && (
-                      <>
-                        <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                          Events:
-                          <select
-                            className="block w-full p-2 mt-1 bg-white border border-gray-300 rounded-md focus:outline-none"
-                            value={currentEvent}
-                            onChange={(e) => setCurrentEvent(e.target.value)}
-                          >
-                            <option value="">Select Event</option>
-                            <option value="onLoad">onLoad</option>
-                            <option value="onChange">onChange</option>
-                          </select>
-                        </label>
-
-                        {currentEvent && (
-                          <div>
-                            <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
-                              Event Code:
-                            </label>
-                            <div className="flex bg-gray-900 rounded-md p-2">
-                              <div
-                                className="px-2 text-gray-500"
-                                ref={numbersRef}
-                                style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                              ></div>
-                              <textarea
-                                ref={textareaRef}
-                                className="flex-1 bg-gray-900 text-white outline-none"
-                                style={{ overflowY: "hidden" }}
-                                placeholder="Enter event code here..."
-                                cols={30}
-                                rows={10}
-                                name="eventCode"
-                                value={eventCode}
-                                onChange={(e) => setEventCode(e.target.value)}
-                              ></textarea>
-                            </div>
-                          </div>
-                        )}
-
-                        {currentEvent && (
-                          <button
-                            className="w-10 h-10 mx-auto mt-2 rounded-full bg-green-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50"
-                            title="Add Event"
-                            onClick={handleAddEvent}
-                          >
-                            {/* {editIndex !== null ? "Add Event" : "Edit Event"} */}
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 448 512"
-                              className="w-6 h-6 text-white font-bold"
-                            >
-                              <path
-                                fill="currentColor"
-                                d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                              />
-                            </svg>
-                          </button>
-                        )}
-
-                        {/* Display added events */}
-                        <div>
-                          {events.map((event, index) => (
-                            <div key={index} className="mt-3">
-                              <div className="flex justify-between">
-                                <p className="text-lg font-semibold">{event.event}:</p>
-                                <div className="flex gap-3 md:gap-5">
-                                  <button
-                                    className="text-blue-600 font-semibold hover:text-blue-700"
-                                    onClick={() => handleEditEvent(index)}
-                                    title="Edit"
-                                  >
-                                    <img src={edit} alt="edit"></img>
-                                  </button>
-                                  <button
-                                    className="text-red-600 font-semibold hover:text-red-700"
-                                    onClick={() => handleDeleteEvent(index)}
-                                    title="Delete"
-                                  >
-                                    <img src={trash} alt="trash"></img>
-                                  </button>
-                                </div>
-                              </div>
-                              <pre className="p-2 bg-gray-200 rounded-md whitespace-normal break-words md:whitespace-pre-line">
-                                {event.eventsCode}
-                              </pre>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-
-                    {currentComponent.placement === "action" && (
-                      <div>
-                        <label className="block mb-2 text-[#727679] font-semibold text-lg xl:text-xl">
-                          Code:
-                        </label>
-                        <div className="flex bg-gray-900 rounded-md p-2">
-                          <div
-                            className="px-2 text-gray-500"
-                            ref={numbersRef}
-                            style={{ whiteSpace: "pre-line", overflowY: "hidden" }}
-                          ></div>
-                          <textarea
-                            ref={textareaRef}
-                            className="flex-1 bg-gray-900 text-white outline-none"
-                            style={{ overflowY: "hidden" }}
-                            placeholder="Enter your JavaScript code here"
-                            cols={30}
-                            rows={10}
-                            name="code"
-                            value={currentComponent.code}
-                            onChange={handleChange}
-                          ></textarea>
-                        </div>
-                      </div>
-                    )}
-
-                    <button
-                      className="block w-full md:w-60 font-bold mx-auto p-3 mt-5 text-white bg-blue-500 border border-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-700"
-                      onClick={handleAddComponent}
-                    >
-                      Add Field
-                    </button>
+                    
                   </div>
                 )}
               </div>
