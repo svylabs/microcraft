@@ -115,7 +115,7 @@ const Header: React.FC = () => {
               </a>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
-            ({/*
+            {/*
             <li className="group relative">
               <a
                 href="#"
@@ -124,7 +124,7 @@ const Header: React.FC = () => {
                 Pricing
               </a>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
-            </li>*/})
+            </li>*/}
             <li className="group relative">
               <a
                 href="#"
