@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 import { randomUUID } from 'crypto';
+import AppCarousel from './Carousel';
 // import { net } from "web3";
 
 interface Output {
@@ -28,6 +29,39 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
   // const [feedback, setFeedback] = useState(false);
+
+  const apps = [
+    {
+        "name": "User Balances",
+        "description": "Check the current status of the connected address in the protocol",
+        "path": "https://github.com/svylabs/stablebase/tree/main/frontends/user-balances"
+    },
+    {
+        "name": "Borrow",
+        "description": "Borrow $DFID on StableBase",
+        "path": "borrow"
+    },
+    {
+        "name": "Stake DFID",
+        "description": "Stake $DFID to earn protocol rewards",
+        "path": "stakeDFID"
+    },
+    {
+        "name": "Unstake DFID",
+        "description": "Unstake $DFID from the protocol",
+        "path": "unstakeDFID"
+    },
+    {
+        "name": "Repay $DFID",
+        "description": "Repay borrowed $DFID",
+        "path": "repay"
+    },
+    {
+        "name": "Close Safe",
+        "description": "Close the safe and withdraw collateral",
+        "path": "closeSafe"
+    }
+];
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -70,6 +104,16 @@ const ExternalAppPage = () => {
       loadAppFromLocal(urlPath);
     }
   }, []);
+
+  const onAppSelected = async (index: number) => {
+    const app = apps[index];
+    if (app.path.startsWith("https://")) {
+      setExternalAppUrl(app.path);
+      loadApp();
+    } else {
+      alert("" + index);
+    }
+  }
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
@@ -252,6 +296,10 @@ const ExternalAppPage = () => {
             >Load App</button>
           </div>
         </div>
+
+        {(apps.length > 0) && (
+          <AppCarousel apps={apps} onAppSelected={onAppSelected} />
+        )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
