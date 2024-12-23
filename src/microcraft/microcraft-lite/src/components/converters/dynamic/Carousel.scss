@@ -1,16 +1,23 @@
-
 .swiper-container {
   width: 100%;
   max-width: 1200px; /* Prevent the carousel from being too wide on large screens */
   margin: 0 auto;
+  height: 200px;
 }
 
 .swiper-slide {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
 }
 
 .swiper-slide img {
   object-fit: cover;
 }
+
+// .line-clamp-2 {
+//   display: -webkit-box;
+//   -webkit-box-orient: vertical;
+//   overflow: hidden;
+// }

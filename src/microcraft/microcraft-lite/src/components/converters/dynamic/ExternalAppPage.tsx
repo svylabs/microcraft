@@ -33,12 +33,12 @@ const ExternalAppPage = () => {
   const apps = [
     {
         "name": "User Balances",
-        "description": "Check the current status of the connected address in the protocol",
+        "description": "Check the current status of the connected address in the protocol---- Check the current status of the connected address in the protocol Check the current status of the connected address in the protocol",
         "path": "https://github.com/svylabs/stablebase/tree/main/frontends/user-balances"
     },
     {
         "name": "Borrow",
-        "description": "Borrow $DFID on StableBase",
+        "description": "Borrow $DFID on StableBase Check the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocol",
         "path": "borrow/dist",
     },
     {
