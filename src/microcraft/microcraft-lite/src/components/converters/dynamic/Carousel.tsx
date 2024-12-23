@@ -14,11 +14,13 @@ interface App {
 }
 
 interface Props {
+  name: string;
+  description: string;
   apps: App[];
   onAppSelected: (index: number) => void;
 }
 
-const AppCarousel = ({ apps, onAppSelected }: Props) => {
+const AppCarousel = ({ name, description, apps, onAppSelected }: Props) => {
   const [swiperIndex, setSwiperIndex] = useState(0);
 
   // Function to handle swiper index change
@@ -27,6 +29,11 @@ const AppCarousel = ({ apps, onAppSelected }: Props) => {
   };
 
   return (
+    <div className="items-center">
+      <div className="text-center">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">{name}</h2>
+        <p className="text-gray-600 mb-4">{description}</p>
+      </div>
     <div className="relative">
       <Swiper
         modules={[Pagination, Navigation]}
@@ -87,6 +94,7 @@ const AppCarousel = ({ apps, onAppSelected }: Props) => {
       >
         &#8594;
       </div>
+    </div>
     </div>
   );
 };

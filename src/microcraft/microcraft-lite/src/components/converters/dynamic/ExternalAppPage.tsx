@@ -43,7 +43,7 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
-  const [appList, setAppList] = useState<App[]>([]);
+  const [appList, setAppList] = useState<any>({});
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -96,10 +96,10 @@ const ExternalAppPage = () => {
   }, []);
 
   const onAppSelected = async (index: number) => {
-    if (index >= appList.length) {
+    if (index >= appList.apps?.length) {
       return;
     }
-    const app = appList[index];
+    const app = appList.apps[index];
     if (app.path.startsWith("https://")) {
       //setExternalAppUrl(app.path);
       console.log("On app selected: loading: ", app.path);
@@ -182,7 +182,7 @@ const ExternalAppPage = () => {
 
   const loadAppList = async(data: any) => {
     if (data.type === 'list') {
-       setAppList(data.apps)
+       setAppList(data);
     }
   }
 
@@ -293,7 +293,7 @@ const ExternalAppPage = () => {
   }, [runId]);
 
   useEffect(() => {
-    if (appList.length > 0) {
+    if (appList.apps?.length > 0) {
       onAppSelected(0);
     }
   }, [appList]);
@@ -360,7 +360,7 @@ const ExternalAppPage = () => {
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-              onClick={() => { setRunId(crypto.randomUUID()); setAppList([]); loadApp()} }
+              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp()} }
             >
               Load App
             </button>
@@ -368,8 +368,8 @@ const ExternalAppPage = () => {
         </div>
 
 
-        {(appList.length > 0) && (
-          <AppCarousel apps={appList} onAppSelected={onAppSelected} />
+        {(appList.apps?.length > 0) && (
+          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
         )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
