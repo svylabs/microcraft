@@ -32,7 +32,7 @@ const availableFormElements = [
   { value: "table", elementType: "Table", placement: "output" },
   { value: "graph", elementType: "Graph", placement: "output" },
   { value: "description", elementType: "Description Field", placement: "output" },
-  { value: "entityLink", elementType: "Entity Link", placement: "output" },
+  { value: "link", elementType: "Entity Link", placement: "output" },
 ];
 
 // Draggable Component
@@ -550,7 +550,7 @@ const ConfigureInputsOutputs: React.FC = () => {
       case 'graph':
         initialConfig = { styles: { ...config.styles }, graphConfig: { ...config.custom.graphConfig } };
         break;
-      case 'entityLink':
+      case 'link':
         initialConfig = { styles: { ...config.styles }, transactionConfig: { ...config.custom.transactionConfig } };
         break;
       default:
@@ -743,7 +743,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 table: "Table Display",
                                 graph: "Graph Visualization",
                                 description: "Description Field",
-                                entityLink: "Entity Link Viewer",
+                                link: "Entity Link Viewer",
                               }[currentComponent.type])}
                             </h3>
 
@@ -752,7 +752,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                               currentComponent.type === "file" ||
                               currentComponent.type === "table" ||
                               currentComponent.type === "description" ||
-                              currentComponent.type === "entityLink" ||
+                              currentComponent.type === "link" ||
                               currentComponent.type === "graph") && (
                                 <div>
                                   <input
@@ -1232,7 +1232,7 @@ const ConfigureInputsOutputs: React.FC = () => {
                               component.type === "file" ||
                               component.type === "table" ||
                               component.type === "description" ||
-                              component.type === "entityLink" ||
+                              component.type === "link" ||
                               component.type === "graph") && (
                                 <div>
                                   <div className="flex justify-between">

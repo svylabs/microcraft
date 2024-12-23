@@ -211,6 +211,7 @@ const ActionPage: React.FC = () => {
             contracts={loadedData?.contractDetails || []}
             networks={loadedData?.networkDetails || []}
             debug={setOutputCode}
+            // whitelistedJSElements={{fetch: fetch.bind(globalThis), alert: alert.bind(globalThis)}}
           />
 
           {/* <div className="flex justify-end">
