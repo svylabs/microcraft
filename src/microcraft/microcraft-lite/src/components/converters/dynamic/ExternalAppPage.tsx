@@ -7,7 +7,22 @@ import { toast, ToastContainer } from "react-toastify";
 import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 import { randomUUID } from 'crypto';
+import AppCarousel from './Carousel';
+import { FaChevronDown } from 'react-icons/fa';
 // import { net } from "web3";
+
+interface RecentApp {
+  name: string;
+  description: string;
+  path: string;
+  lastUsed: Date;
+}
+
+interface App {
+  name: string;
+  description: string;
+  path: string;
+}
 
 interface Output {
   [key: string]: any;
@@ -27,6 +42,8 @@ const ExternalAppPage = () => {
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
+  const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
+  const [appList, setAppList] = useState<any>({});
   // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
@@ -64,12 +81,34 @@ const ExternalAppPage = () => {
     console.log(source, urlPath);
     if (source === "github" && urlPath !== undefined) {
       setExternalAppUrl(urlPath);
-      loadApp();
+      loadApp(urlPath);
     }
     if (source === "local") {
       loadAppFromLocal(urlPath);
     }
   }, []);
+
+  // Load recent apps from local storage on component mount
+  useEffect(() => {
+    const storedApps = localStorage.getItem("recentApps");
+    const parsedApps: RecentApp[] = storedApps ? JSON.parse(storedApps) : [];
+    setRecentApps(parsedApps);
+  }, []);
+
+  const onAppSelected = async (index: number) => {
+    if (index >= appList.apps?.length) {
+      return;
+    }
+    const app = appList.apps[index];
+    if (app.path.startsWith("https://")) {
+      //setExternalAppUrl(app.path);
+      console.log("On app selected: loading: ", app.path);
+      loadApp(app.path);
+    } else {
+      const slash = externalAppUrl.endsWith("/") ? "" : "/";
+      loadApp(externalAppUrl + slash + app.path);
+    }
+  }
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
@@ -100,7 +139,7 @@ const ExternalAppPage = () => {
           }
         }
         if (component.events && component.events.length > 0) {
-          for (let j=0; j<component.events.length; j++) {
+          for (let j = 0; j < component.events.length; j++) {
             const event = component.events[j];
             if (event.codeRef !== undefined) {
               const codeRefParts = event.codeRef.split("#");
@@ -129,6 +168,9 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
+
+      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath, lastUsed: new Date() };
+      updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -138,25 +180,40 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadApp = async () => {
+  const loadAppList = async(data: any) => {
+    if (data.type === 'list') {
+       setAppList(data);
+    }
+  }
+
+  const isEmpty = (str: string | null | undefined) => {
+    if (str === undefined || str === null || str === "") {
+      return true;
+    }
+    return false;
+  }
+
+  const loadApp = async (appPath?: string) => {
     setLoading(true);
     setData({});
+    const path = appPath || externalAppUrl;
     try {
-      if (!externalAppUrl) {
+      if (!path) {
         setLoading(false);
         return;
       }
-      if (externalAppUrl.indexOf("github.com/") === -1) {
+      if (path.indexOf("github.com/") === -1) {
         toast.error("Please enter a valid github url");
         setLoading(false);
         return;
       }
-      const parts = externalAppUrl.split("github.com/");
+      const parts = path.split("github.com/");
       const repoParts = parts[1].split("/");
       const repoOwner = repoParts[0];
       const repoName = repoParts[1];
       let appPath = "";
       let branch = "";
+      //console.log("Loading ", path, "Repo parts", repoParts);
       if (repoParts.length >= 4) {
         if (repoParts.length > 4) {
           appPath = repoParts.slice(4).join("/");
@@ -165,66 +222,113 @@ const ExternalAppPage = () => {
         branch = repoParts[3];
       }
       let url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + "app.json";
+      //console.log("Loading....", url);
       const data = await fetchGithubContent(url, branch);
-      const appName = data.name;
-      const appDescription = data.description;
-      const components = data.components;
-      const contractDetails = data.contracts || [];
-      const networkDetails = data.networks || [];
+      if (data.type === 'list') {
+         loadAppList(data);
+         //onAppSelected(0);
+      } else {
+        const appName = data.name;
+        const appDescription = data.description;
+        const components = data.components;
+        const contractDetails = data.contracts || [];
+        const networkDetails = data.networks || [];
 
-      for (let i = 0; i < components.length; i++) {
-        const component = components[i];
-        if (component.type === "button") {
-          if (component.codeRef !== undefined) {
-            const codeRefParts = component.codeRef.split("#");
-            const relPath = codeRefParts[0];
-            //const entryPoint = codeRefParts[1];
-            let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
-            const data = await fetchGithubContent(codeUrl, branch, "str");
-            component.code = data;
-          }
-        }
-        if (component.events && component.events.length > 0) {
-          for (let j=0; j<component.events.length; j++) {
-            const event = component.events[j];
-            if (event.codeRef !== undefined) {
-              const codeRefParts = event.codeRef.split("#");
+        for (let i = 0; i < components.length; i++) {
+          const component = components[i];
+          if (component.type === "button") {
+            if (component.codeRef !== undefined && isEmpty(component.code)) {
+              const codeRefParts = component.codeRef.split("#");
               const relPath = codeRefParts[0];
               //const entryPoint = codeRefParts[1];
               let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
               const data = await fetchGithubContent(codeUrl, branch, "str");
-              event.code = data;
+              component.code = data;
+            }
+          }
+          if (component.events && component.events.length > 0) {
+            for (let j = 0; j < component.events.length; j++) {
+              const event = component.events[j];
+              if (event.codeRef !== undefined && isEmpty(event.code)) {
+                const codeRefParts = event.codeRef.split("#");
+                const relPath = codeRefParts[0];
+                //const entryPoint = codeRefParts[1];
+                let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+                const data = await fetchGithubContent(codeUrl, branch, "str");
+                event.code = data;
+              }
             }
           }
         }
-      }
-      for (let i = 0; i < contractDetails.length; i++) {
-        const contract = contractDetails[i];
-        if (contract.abiRef !== undefined) {
-          const codeRefParts = contract.abiRef.split("#");
-          const relPath = codeRefParts[0];
-          //const entryPoint = codeRefParts[1];
-          let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
-          const data = await fetchGithubContent(codeUrl, branch, "json");
-          contract.abi = data;
+        for (let i = 0; i < contractDetails.length; i++) {
+          const contract = contractDetails[i];
+          if (contract.abiRef !== undefined && isEmpty(contract.abi)) {
+            const codeRefParts = contract.abiRef.split("#");
+            const relPath = codeRefParts[0];
+            //const entryPoint = codeRefParts[1];
+            let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+            const data = await fetchGithubContent(codeUrl, branch, "json");
+            contract.abi = data;
+          }
         }
+        setAppDescription(appDescription);
+        setAppName(appName);
+        setComponents(components);
+        setContracts(contractDetails);
+        setNetworks(networkDetails);
       }
-      setAppDescription(appDescription);
-      setAppName(appName);
-      setComponents(components);
-      setContracts(contractDetails);
-      setNetworks(networkDetails);
+
+      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath, lastUsed: new Date() };
+      updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
-      setRunId(crypto.randomUUID());
     }
   }
+  
+  useEffect(() => {
+
+  }, [runId]);
 
   useEffect(() => {
-  }, [runId]);
+    if (appList.apps?.length > 0) {
+      onAppSelected(0);
+    }
+  }, [appList]);
+
+  // Function to update recent apps in local storage
+  const updateRecentApps = (newApp: RecentApp) => {
+    const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
+    if (updatedApps.length > 10) {
+      updatedApps.pop(); // Remove the oldest app if more than 5
+    }
+    setRecentApps(updatedApps);
+    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
+  };
+
+  // Function to display recent apps
+  const displayRecentApps = () => {
+    console.log(recentApps);
+    recentApps.map((app, index) => {
+      console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
+    });
+    return (
+      <div className="recent-apps">
+        <h3>Recently Opened Apps</h3>
+        <ul>
+          {recentApps.map((app, index) => (
+            <li key={index}>
+              <a href={app.path} target="_blank" rel="noopener noreferrer">
+                {app.name} - {app.description}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -236,22 +340,37 @@ const ExternalAppPage = () => {
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
         <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
-          <input
-            className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
-            type="text"
-            size={80}
-            placeholder="Enter github url of the app here"
-            value={externalAppUrl}
-            onChange={(e) => setExternalAppUrl(e.target.value)}
-            id="output"
-          />
+          <div className="relative flex">
+            <input
+              className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
+              type="text"
+              size={80}
+              placeholder="Enter github url of the app here"
+              value={externalAppUrl}
+              onChange={(e) => setExternalAppUrl(e.target.value)}
+              id="output"
+            />
+            <button
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
+              onClick={displayRecentApps}
+            >
+              <FaChevronDown className="text-slate-700" />
+            </button>
+          </div>
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-              onClick={() => loadApp()}
-            >Load App</button>
+              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp()} }
+            >
+              Load App
+            </button>
           </div>
         </div>
+
+
+        {(appList.apps?.length > 0) && (
+          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
+        )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
           {(output.approval_status || "pending") === "pending" && (
@@ -283,44 +402,10 @@ const ExternalAppPage = () => {
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
-                whitelistedJSElements={{fetch: fetch.bind(globalThis), alert: alert.bind(globalThis)}}
+                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis) }}
               />
             )}
           </div>
-
-          {/* {feedback && (
-            // <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
-            <div className="flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
-              <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
-                <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
-                  What is your level of satisfaction with this tool app?
-                </h2>
-                <p className="text-[#85909B] xl:text-xl text-center">
-                  This will help us improve your experience.
-                </p>
-                <label className="flex gap-5 md:mt-1 text-4xl md:text-5xl lg:text-6xl lg:gap-6 text-[#85909B] mx-5 xl:mx-10">
-                  <button onClick={submitFeedback}>
-                    &#128545;
-                    <span className="text-lg md:text-xl xl:text-2xl text-red-600">
-                      Unhappy
-                    </span>
-                  </button>
-                  <button onClick={submitFeedback}>
-                    &#128528;
-                    <span className="text-lg md:text-xl xl:text-2xl text-yellow-500">
-                      Neutral
-                    </span>
-                  </button>
-                  <button onClick={submitFeedback}>
-                    &#128525;
-                    <span className="text-lg md:text-xl xl:text-2xl text-green-600">
-                      Satisfied
-                    </span>
-                  </button>
-                </label>
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
       {loading && <Loading />}
