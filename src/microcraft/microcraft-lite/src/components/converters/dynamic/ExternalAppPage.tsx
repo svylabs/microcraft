@@ -123,6 +123,9 @@ const ExternalAppPage = () => {
   }, []);
 
   const onAppSelected = async (index: number) => {
+    if (index >= appList.length) {
+      return;
+    }
     const app = apps[index];
     if (app.path.startsWith("https://")) {
       //setExternalAppUrl(app.path);
@@ -205,7 +208,7 @@ const ExternalAppPage = () => {
 
   const loadAppList = async(data: any) => {
     if (data.type === 'list') {
-       setAppList(data.apps);
+       setAppList(data.apps)
     }
   }
 
@@ -240,6 +243,7 @@ const ExternalAppPage = () => {
       const data = await fetchGithubContent(url, branch);
       if (data.type === 'list') {
          loadAppList(data);
+         //onAppSelected(0);
       } else {
         const appName = data.name;
         const appDescription = data.description;
@@ -300,9 +304,16 @@ const ExternalAppPage = () => {
       setLoading(false);
     }
   }
+  
+  useEffect(() => {
+
+  }, [runId]);
 
   useEffect(() => {
-  }, [runId]);
+    if (appList.length > 0) {
+      onAppSelected(0);
+    }
+  }, [appList]);
 
   // Function to update recent apps in local storage
   const updateRecentApps = (newApp: RecentApp) => {
