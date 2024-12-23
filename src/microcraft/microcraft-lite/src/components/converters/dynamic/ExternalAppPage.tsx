@@ -8,7 +8,14 @@ import Loading from "./loadingPage/Loading";
 import App from "./Renderer/App";
 import { randomUUID } from 'crypto';
 import AppCarousel from './Carousel';
+import { FaChevronDown } from 'react-icons/fa';
 // import { net } from "web3";
+
+interface RecentApp {
+  name: string;
+  description: string;
+  path: string;
+}
 
 interface Output {
   [key: string]: any;
@@ -28,40 +35,41 @@ const ExternalAppPage = () => {
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
+  const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
   // const [feedback, setFeedback] = useState(false);
 
   const apps = [
     {
-        "name": "User Balances",
-        "description": "Check the current status of the connected address in the protocol---- Check the current status of the connected address in the protocol Check the current status of the connected address in the protocol",
-        "path": "https://github.com/svylabs/stablebase/tree/main/frontends/user-balances"
+      "name": "User Balances",
+      "description": "Check the current status of the connected address in the protocol---- Check the current status of the connected address in the protocol Check the current status of the connected address in the protocol",
+      "path": "https://github.com/svylabs/stablebase/tree/main/frontends/user-balances"
     },
     {
-        "name": "Borrow",
-        "description": "Borrow $DFID on StableBase Check the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocol",
-        "path": "borrow/dist",
+      "name": "Borrow",
+      "description": "Borrow $DFID on StableBase Check the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocol",
+      "path": "borrow/dist",
     },
     {
-        "name": "Stake DFID",
-        "description": "Stake $DFID to earn protocol rewards",
-        "path": "stakeDFID/dist"
+      "name": "Stake DFID",
+      "description": "Stake $DFID to earn protocol rewards",
+      "path": "stakeDFID/dist"
     },
     {
-        "name": "Unstake DFID",
-        "description": "Unstake $DFID from the protocol",
-        "path": "unstakeDFID/dist"
+      "name": "Unstake DFID",
+      "description": "Unstake $DFID from the protocol",
+      "path": "unstakeDFID/dist"
     },
     {
-        "name": "Repay $DFID",
-        "description": "Repay borrowed $DFID",
-        "path": "repay/dist"
+      "name": "Repay $DFID",
+      "description": "Repay borrowed $DFID",
+      "path": "repay/dist"
     },
     {
-        "name": "Close Safe",
-        "description": "Close the safe and withdraw collateral",
-        "path": "closeSafe"
+      "name": "Close Safe",
+      "description": "Close the safe and withdraw collateral",
+      "path": "closeSafe"
     }
-];
+  ];
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -105,6 +113,13 @@ const ExternalAppPage = () => {
     }
   }, []);
 
+  // Load recent apps from local storage on component mount
+  useEffect(() => {
+    const storedApps = localStorage.getItem("recentApps");
+    const parsedApps: RecentApp[] = storedApps ? JSON.parse(storedApps) : [];
+    setRecentApps(parsedApps);
+  }, []);
+
   const onAppSelected = async (index: number) => {
     const app = apps[index];
     if (app.path.startsWith("https://")) {
@@ -144,7 +159,7 @@ const ExternalAppPage = () => {
           }
         }
         if (component.events && component.events.length > 0) {
-          for (let j=0; j<component.events.length; j++) {
+          for (let j = 0; j < component.events.length; j++) {
             const event = component.events[j];
             if (event.codeRef !== undefined) {
               const codeRefParts = event.codeRef.split("#");
@@ -173,6 +188,9 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
+
+      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath };
+      updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -230,7 +248,7 @@ const ExternalAppPage = () => {
           }
         }
         if (component.events && component.events.length > 0) {
-          for (let j=0; j<component.events.length; j++) {
+          for (let j = 0; j < component.events.length; j++) {
             const event = component.events[j];
             if (event.codeRef !== undefined) {
               const codeRefParts = event.codeRef.split("#");
@@ -259,6 +277,9 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
+
+      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath };
+      updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -271,6 +292,38 @@ const ExternalAppPage = () => {
   useEffect(() => {
   }, [runId]);
 
+  // Function to update recent apps in local storage
+  const updateRecentApps = (newApp: RecentApp) => {
+    const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
+    if (updatedApps.length > 5) {
+      updatedApps.pop(); // Remove the oldest app if more than 5
+    }
+    setRecentApps(updatedApps);
+    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
+  };
+
+  // Function to display recent apps
+  const displayRecentApps = () => {
+    console.log(recentApps);
+    recentApps.map((app, index) => {
+      console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
+    });
+    return (
+      <div className="recent-apps">
+        <h3>Recently Opened Apps</h3>
+        <ul>
+          {recentApps.map((app, index) => (
+            <li key={index}>
+              <a href={app.path} target="_blank" rel="noopener noreferrer">
+                {app.name} - {app.description}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   // function submitFeedback() {
   //   setFeedback(false);
   //   window.location.href = "/";
@@ -281,22 +334,33 @@ const ExternalAppPage = () => {
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
         <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
-          <input
-            className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500"
-            type="text"
-            size={80}
-            placeholder="Enter github url of the app here"
-            value={externalAppUrl}
-            onChange={(e) => setExternalAppUrl(e.target.value)}
-            id="output"
-          />
+          <div className="relative flex">
+            <input
+              className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
+              type="text"
+              size={80}
+              placeholder="Enter github url of the app here"
+              value={externalAppUrl}
+              onChange={(e) => setExternalAppUrl(e.target.value)}
+              id="output"
+            />
+            <button
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
+              onClick={displayRecentApps}
+            >
+              <FaChevronDown className="text-slate-700" />
+            </button>
+          </div>
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
               onClick={() => loadApp()}
-            >Load App</button>
+            >
+              Load App
+            </button>
           </div>
         </div>
+
 
         {(apps.length > 0) && (
           <AppCarousel apps={apps} onAppSelected={onAppSelected} />
@@ -332,7 +396,7 @@ const ExternalAppPage = () => {
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
-                whitelistedJSElements={{fetch: fetch.bind(globalThis), alert: alert.bind(globalThis)}}
+                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis) }}
               />
             )}
           </div>
