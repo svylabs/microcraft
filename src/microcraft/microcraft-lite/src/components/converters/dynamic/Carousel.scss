@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1200px; /* Prevent the carousel from being too wide on large screens */
   margin: 0 auto;
-  height: 200px;
+  max-height: 200px;
 }
 
 .swiper-slide {
@@ -10,6 +10,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  margin-bottom: 30px;
 }
 
 .swiper-slide img {

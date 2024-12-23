@@ -15,6 +15,7 @@ interface RecentApp {
   name: string;
   description: string;
   path: string;
+  lastUsed: Date;
 }
 
 interface Output {
@@ -36,6 +37,7 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
+  const [appList, setAppList] = useState([]);
   // const [feedback, setFeedback] = useState(false);
 
   const apps = [
@@ -126,7 +128,8 @@ const ExternalAppPage = () => {
       //setExternalAppUrl(app.path);
       loadApp(app.path);
     } else {
-      loadApp(externalAppUrl + app.path);
+      const slash = externalAppUrl.endsWith("/") ? "" : "/";
+      loadApp(externalAppUrl + slash + app.path);
     }
   }
 
@@ -189,7 +192,7 @@ const ExternalAppPage = () => {
       setContracts(contractDetails);
       setNetworks(networkDetails);
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath };
+      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath, lastUsed: new Date() };
       updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
@@ -197,6 +200,12 @@ const ExternalAppPage = () => {
     } finally {
       setLoading(false);
       setRunId(crypto.randomUUID());
+    }
+  }
+
+  const loadAppList = async(data: any) => {
+    if (data.type === 'list') {
+       setAppList(data.apps);
     }
   }
 
@@ -229,63 +238,66 @@ const ExternalAppPage = () => {
       }
       let url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + "app.json";
       const data = await fetchGithubContent(url, branch);
-      const appName = data.name;
-      const appDescription = data.description;
-      const components = data.components;
-      const contractDetails = data.contracts || [];
-      const networkDetails = data.networks || [];
+      if (data.type === 'list') {
+         loadAppList(data);
+      } else {
+        const appName = data.name;
+        const appDescription = data.description;
+        const components = data.components;
+        const contractDetails = data.contracts || [];
+        const networkDetails = data.networks || [];
 
-      for (let i = 0; i < components.length; i++) {
-        const component = components[i];
-        if (component.type === "button") {
-          if (component.codeRef !== undefined) {
-            const codeRefParts = component.codeRef.split("#");
-            const relPath = codeRefParts[0];
-            //const entryPoint = codeRefParts[1];
-            let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
-            const data = await fetchGithubContent(codeUrl, branch, "str");
-            component.code = data;
-          }
-        }
-        if (component.events && component.events.length > 0) {
-          for (let j = 0; j < component.events.length; j++) {
-            const event = component.events[j];
-            if (event.codeRef !== undefined) {
-              const codeRefParts = event.codeRef.split("#");
+        for (let i = 0; i < components.length; i++) {
+          const component = components[i];
+          if (component.type === "button") {
+            if (component.codeRef !== undefined) {
+              const codeRefParts = component.codeRef.split("#");
               const relPath = codeRefParts[0];
               //const entryPoint = codeRefParts[1];
               let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
               const data = await fetchGithubContent(codeUrl, branch, "str");
-              event.code = data;
+              component.code = data;
+            }
+          }
+          if (component.events && component.events.length > 0) {
+            for (let j = 0; j < component.events.length; j++) {
+              const event = component.events[j];
+              if (event.codeRef !== undefined) {
+                const codeRefParts = event.codeRef.split("#");
+                const relPath = codeRefParts[0];
+                //const entryPoint = codeRefParts[1];
+                let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+                const data = await fetchGithubContent(codeUrl, branch, "str");
+                event.code = data;
+              }
             }
           }
         }
-      }
-      for (let i = 0; i < contractDetails.length; i++) {
-        const contract = contractDetails[i];
-        if (contract.abiRef !== undefined) {
-          const codeRefParts = contract.abiRef.split("#");
-          const relPath = codeRefParts[0];
-          //const entryPoint = codeRefParts[1];
-          let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
-          const data = await fetchGithubContent(codeUrl, branch, "json");
-          contract.abi = data;
+        for (let i = 0; i < contractDetails.length; i++) {
+          const contract = contractDetails[i];
+          if (contract.abiRef !== undefined) {
+            const codeRefParts = contract.abiRef.split("#");
+            const relPath = codeRefParts[0];
+            //const entryPoint = codeRefParts[1];
+            let codeUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+            const data = await fetchGithubContent(codeUrl, branch, "json");
+            contract.abi = data;
+          }
         }
+        setAppDescription(appDescription);
+        setAppName(appName);
+        setComponents(components);
+        setContracts(contractDetails);
+        setNetworks(networkDetails);
       }
-      setAppDescription(appDescription);
-      setAppName(appName);
-      setComponents(components);
-      setContracts(contractDetails);
-      setNetworks(networkDetails);
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath };
+      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath, lastUsed: new Date() };
       updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
-      setRunId(crypto.randomUUID());
     }
   }
 
@@ -295,7 +307,7 @@ const ExternalAppPage = () => {
   // Function to update recent apps in local storage
   const updateRecentApps = (newApp: RecentApp) => {
     const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
-    if (updatedApps.length > 5) {
+    if (updatedApps.length > 10) {
       updatedApps.pop(); // Remove the oldest app if more than 5
     }
     setRecentApps(updatedApps);
@@ -354,7 +366,7 @@ const ExternalAppPage = () => {
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-              onClick={() => loadApp()}
+              onClick={() => { setRunId(crypto.randomUUID()); setAppList([]); loadApp()} }
             >
               Load App
             </button>
@@ -363,7 +375,7 @@ const ExternalAppPage = () => {
 
 
         {(apps.length > 0) && (
-          <AppCarousel apps={apps} onAppSelected={onAppSelected} />
+          <AppCarousel apps={appList} onAppSelected={onAppSelected} />
         )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
