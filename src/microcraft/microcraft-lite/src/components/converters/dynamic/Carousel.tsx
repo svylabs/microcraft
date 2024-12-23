@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -19,6 +19,13 @@ interface Props {
 }
 
 const AppCarousel = ({ apps, onAppSelected }: Props) => {
+  const [swiperIndex, setSwiperIndex] = useState(0);
+
+  // Function to handle swiper index change
+  const handleSlideChange = (swiper: any) => {
+    setSwiperIndex(swiper.realIndex);
+  };
+
   return (
     <div className="relative">
       <Swiper
@@ -45,6 +52,7 @@ const AppCarousel = ({ apps, onAppSelected }: Props) => {
           nextEl: ".swiper-butt-next",
           prevEl: ".swiper-butt-prev",
         }}
+        onSlideChange={handleSlideChange}
         className="swiper-container"
       >
         {apps.map((app, index) => (
@@ -65,10 +73,18 @@ const AppCarousel = ({ apps, onAppSelected }: Props) => {
       </div>
       <div className="swiper-button-next absolute top-1/2 right-4 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 p-7 rounded-full text-white z-10 cursor-pointer transition-transform transform hover:scale-110 shadow-lg">
       </div> */}
-      <div className="swiper-butt-prev absolute top-1/2 left-4 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 p-2 px-3 rounded-full text-white z-10 cursor-pointer transition-transform transform hover:scale-110 shadow-lg">
+      <div
+        className={`swiper-butt-prev absolute top-1/2 left-4 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 p-2 px-3 rounded-full text-white z-10 cursor-pointer transition-transform transform hover:scale-110 shadow-lg ${
+          swiperIndex === 0 ? "blur-sm" : ""
+        }`}
+      >
         &#8592;
       </div>
-      <div className="swiper-butt-next absolute top-1/2 right-4 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 p-2 px-3 rounded-full text-white z-10 cursor-pointer transition-transform transform hover:scale-110 shadow-lg">
+      <div
+        className={`swiper-butt-next absolute top-1/2 right-4 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-blue-500 p-2 px-3 rounded-full text-white z-10 cursor-pointer transition-transform transform hover:scale-110 shadow-lg ${
+          swiperIndex === apps.length - 1 ? "blur-sm" : ""
+        }`}
+      >
         &#8594;
       </div>
     </div>
