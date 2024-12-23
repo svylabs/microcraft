@@ -1,6 +1,6 @@
 {
   "name": "@svylabs/microcraft",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "CLI to develop and test decentralized frontends",
   "main": "index.js",
   "bin": {
