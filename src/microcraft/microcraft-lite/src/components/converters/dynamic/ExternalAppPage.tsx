@@ -39,22 +39,22 @@ const ExternalAppPage = () => {
     {
         "name": "Borrow",
         "description": "Borrow $DFID on StableBase",
-        "path": "borrow"
+        "path": "borrow/dist",
     },
     {
         "name": "Stake DFID",
         "description": "Stake $DFID to earn protocol rewards",
-        "path": "stakeDFID"
+        "path": "stakeDFID/dist"
     },
     {
         "name": "Unstake DFID",
         "description": "Unstake $DFID from the protocol",
-        "path": "unstakeDFID"
+        "path": "unstakeDFID/dist"
     },
     {
         "name": "Repay $DFID",
         "description": "Repay borrowed $DFID",
-        "path": "repay"
+        "path": "repay/dist"
     },
     {
         "name": "Close Safe",
@@ -98,7 +98,7 @@ const ExternalAppPage = () => {
     console.log(source, urlPath);
     if (source === "github" && urlPath !== undefined) {
       setExternalAppUrl(urlPath);
-      loadApp();
+      loadApp(urlPath);
     }
     if (source === "local") {
       loadAppFromLocal(urlPath);
@@ -108,10 +108,10 @@ const ExternalAppPage = () => {
   const onAppSelected = async (index: number) => {
     const app = apps[index];
     if (app.path.startsWith("https://")) {
-      setExternalAppUrl(app.path);
-      loadApp();
+      //setExternalAppUrl(app.path);
+      loadApp(app.path);
     } else {
-      alert("" + index);
+      loadApp(externalAppUrl + app.path);
     }
   }
 
@@ -182,20 +182,21 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadApp = async () => {
+  const loadApp = async (appPath?: string) => {
     setLoading(true);
     setData({});
+    const path = appPath || externalAppUrl;
     try {
-      if (!externalAppUrl) {
+      if (!path) {
         setLoading(false);
         return;
       }
-      if (externalAppUrl.indexOf("github.com/") === -1) {
+      if (path.indexOf("github.com/") === -1) {
         toast.error("Please enter a valid github url");
         setLoading(false);
         return;
       }
-      const parts = externalAppUrl.split("github.com/");
+      const parts = path.split("github.com/");
       const repoParts = parts[1].split("/");
       const repoOwner = repoParts[0];
       const repoName = repoParts[1];
