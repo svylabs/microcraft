@@ -21,6 +21,16 @@ export default defineConfig({
   optimizeDeps: {
     include: ['buffer'],
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'], // Example for React
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1500, // Optional: Adjust the warning threshold
+  },
   server: {
     host: "0.0.0.0",
     hmr: {
