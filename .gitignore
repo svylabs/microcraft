@@ -1,0 +1,10 @@
+node_modules/
+**/*.js
+.env
+**/node_modules/
+**/dist/
+datastore/
+public/
+samplecontracts
+.vscode
+**/hello-world/
