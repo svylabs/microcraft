@@ -336,40 +336,6 @@ const ExternalAppPage = () => {
               />
             )}
           </div>
-
-          {/* {feedback && (
-            // <div className="flex flex-col justify-center items-center -ml-[1rem] md:-ml-[2.5rem] lg:-ml-[6.5rem] xl:-ml-[11.5rem] fixed bg-[#000000b3] top-0 w-[100vw] h-[100vh]">
-            <div className="flex flex-col justify-center items-center fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50">
-              <div className="bg-white rounded-md font-serif p-1 py-8 md:p-2 xl:p-4 flex flex-col justify-center items-center w-[20rem] md:w-[25rem] md:h-[20rem] lg:w-[30rem] lg:p-6 xl:w-[36rem] gap-3">
-                <h2 className="text-xl md:text-2xl xl:text-3xl text-[#589c36] text-center">
-                  What is your level of satisfaction with this tool app?
-                </h2>
-                <p className="text-[#85909B] xl:text-xl text-center">
-                  This will help us improve your experience.
-                </p>
-                <label className="flex gap-5 md:mt-1 text-4xl md:text-5xl lg:text-6xl lg:gap-6 text-[#85909B] mx-5 xl:mx-10">
-                  <button onClick={submitFeedback}>
-                    &#128545;
-                    <span className="text-lg md:text-xl xl:text-2xl text-red-600">
-                      Unhappy
-                    </span>
-                  </button>
-                  <button onClick={submitFeedback}>
-                    &#128528;
-                    <span className="text-lg md:text-xl xl:text-2xl text-yellow-500">
-                      Neutral
-                    </span>
-                  </button>
-                  <button onClick={submitFeedback}>
-                    &#128525;
-                    <span className="text-lg md:text-xl xl:text-2xl text-green-600">
-                      Satisfied
-                    </span>
-                  </button>
-                </label>
-              </div>
-            </div>
-          )} */}
         </div>
       </div>
       {loading && <Loading />}

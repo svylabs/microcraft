@@ -1,25 +1,35 @@
 import React from "react";
 
-const AppCard = ({ index, title, description, icon, onSelected }: { index: number, title: string; description: string; icon?: string, onSelected: (index: number) => void }) => {
+const AppCard = ({
+  index,
+  title,
+  description,
+  icon,
+  onSelected,
+}: {
+  index: number;
+  title: string;
+  description: string;
+  icon?: string;
+  onSelected: (index: number) => void;
+}) => {
   return (
     <div
-      className={`common-button justify-center items-center rounded-lg p-4 shadow-md m-2}`}
-                    onClick={() => onSelected(index)}
-                  >
-                    <div className="home-image">
-                      {icon && (
-                        <img
-                          className="w-full rounded container h-40 object-cover mb-2"
-                          src={icon}
-                          alt="image-thumbnail"
-                        />
-                      )}
-                      <div className="description text-center h-40 rounded justify-center items-center p-2">
-                        <span>{description}</span>
-                      </div>
-                    </div>
-                    <p className="block text-lg font-bold mb-1 text-center">{title}</p>
-        </div>
+      className="bg-white p-4 rounded-lg shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+      onClick={() => onSelected(index)}
+    >
+      <div className="flex flex-col items-center">
+        {icon && (
+          <img
+            className="w-32 h-32 object-contain rounded-full mb-4"
+            src={icon}
+            alt={`${title} Icon`}
+          />
+        )}
+        <h3 className="text-xl font-semibold text-center text-gray-800 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 text-center">{description}</p>
+      </div>
+    </div>
   );
 };
 
