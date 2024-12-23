@@ -18,6 +18,12 @@ interface RecentApp {
   lastUsed: Date;
 }
 
+interface App {
+  name: string;
+  description: string;
+  path: string;
+}
+
 interface Output {
   [key: string]: any;
 }
@@ -37,41 +43,8 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
-  const [appList, setAppList] = useState([]);
+  const [appList, setAppList] = useState<App[]>([]);
   // const [feedback, setFeedback] = useState(false);
-
-  const apps = [
-    {
-      "name": "User Balances",
-      "description": "Check the current status of the connected address in the protocol---- Check the current status of the connected address in the protocol Check the current status of the connected address in the protocol",
-      "path": "https://github.com/svylabs/stablebase/tree/main/frontends/user-balances"
-    },
-    {
-      "name": "Borrow",
-      "description": "Borrow $DFID on StableBase Check the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocolCheck the current status of the connected address in the protocol",
-      "path": "borrow/dist",
-    },
-    {
-      "name": "Stake DFID",
-      "description": "Stake $DFID to earn protocol rewards",
-      "path": "stakeDFID/dist"
-    },
-    {
-      "name": "Unstake DFID",
-      "description": "Unstake $DFID from the protocol",
-      "path": "unstakeDFID/dist"
-    },
-    {
-      "name": "Repay $DFID",
-      "description": "Repay borrowed $DFID",
-      "path": "repay/dist"
-    },
-    {
-      "name": "Close Safe",
-      "description": "Close the safe and withdraw collateral",
-      "path": "closeSafe"
-    }
-  ];
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -126,9 +99,10 @@ const ExternalAppPage = () => {
     if (index >= appList.length) {
       return;
     }
-    const app = apps[index];
+    const app = appList[index];
     if (app.path.startsWith("https://")) {
       //setExternalAppUrl(app.path);
+      console.log("On app selected: loading: ", app.path);
       loadApp(app.path);
     } else {
       const slash = externalAppUrl.endsWith("/") ? "" : "/";
@@ -212,6 +186,13 @@ const ExternalAppPage = () => {
     }
   }
 
+  const isEmpty = (str: string | null | undefined) => {
+    if (str === undefined || str === null || str === "") {
+      return true;
+    }
+    return false;
+  }
+
   const loadApp = async (appPath?: string) => {
     setLoading(true);
     setData({});
@@ -232,6 +213,7 @@ const ExternalAppPage = () => {
       const repoName = repoParts[1];
       let appPath = "";
       let branch = "";
+      //console.log("Loading ", path, "Repo parts", repoParts);
       if (repoParts.length >= 4) {
         if (repoParts.length > 4) {
           appPath = repoParts.slice(4).join("/");
@@ -240,6 +222,7 @@ const ExternalAppPage = () => {
         branch = repoParts[3];
       }
       let url = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + "app.json";
+      //console.log("Loading....", url);
       const data = await fetchGithubContent(url, branch);
       if (data.type === 'list') {
          loadAppList(data);
@@ -254,7 +237,7 @@ const ExternalAppPage = () => {
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
           if (component.type === "button") {
-            if (component.codeRef !== undefined) {
+            if (component.codeRef !== undefined && isEmpty(component.code)) {
               const codeRefParts = component.codeRef.split("#");
               const relPath = codeRefParts[0];
               //const entryPoint = codeRefParts[1];
@@ -266,7 +249,7 @@ const ExternalAppPage = () => {
           if (component.events && component.events.length > 0) {
             for (let j = 0; j < component.events.length; j++) {
               const event = component.events[j];
-              if (event.codeRef !== undefined) {
+              if (event.codeRef !== undefined && isEmpty(event.code)) {
                 const codeRefParts = event.codeRef.split("#");
                 const relPath = codeRefParts[0];
                 //const entryPoint = codeRefParts[1];
@@ -279,7 +262,7 @@ const ExternalAppPage = () => {
         }
         for (let i = 0; i < contractDetails.length; i++) {
           const contract = contractDetails[i];
-          if (contract.abiRef !== undefined) {
+          if (contract.abiRef !== undefined && isEmpty(contract.abi)) {
             const codeRefParts = contract.abiRef.split("#");
             const relPath = codeRefParts[0];
             //const entryPoint = codeRefParts[1];
@@ -385,7 +368,7 @@ const ExternalAppPage = () => {
         </div>
 
 
-        {(apps.length > 0) && (
+        {(appList.length > 0) && (
           <AppCarousel apps={appList} onAppSelected={onAppSelected} />
         )}
 
