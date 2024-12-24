@@ -43,6 +43,7 @@ const ExternalAppPage = () => {
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
+  const [showRecentApps, setShowRecentApps] = useState(false);
   const [appList, setAppList] = useState<any>({});
   // const [feedback, setFeedback] = useState(false);
 
@@ -94,6 +95,11 @@ const ExternalAppPage = () => {
     const parsedApps: RecentApp[] = storedApps ? JSON.parse(storedApps) : [];
     setRecentApps(parsedApps);
   }, []);
+
+  // Function to toggle recent apps visibility
+  const toggleRecentApps = () => {
+    setShowRecentApps(!showRecentApps);
+  };
 
   const onAppSelected = async (index: number) => {
     if (index >= appList.apps?.length) {
@@ -180,9 +186,9 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadAppList = async(data: any) => {
+  const loadAppList = async (data: any) => {
     if (data.type === 'list') {
-       setAppList(data);
+      setAppList(data);
     }
   }
 
@@ -225,8 +231,8 @@ const ExternalAppPage = () => {
       //console.log("Loading....", url);
       const data = await fetchGithubContent(url, branch);
       if (data.type === 'list') {
-         loadAppList(data);
-         //onAppSelected(0);
+        loadAppList(data);
+        //onAppSelected(0);
       } else {
         const appName = data.name;
         const appDescription = data.description;
@@ -287,7 +293,7 @@ const ExternalAppPage = () => {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
 
   }, [runId]);
@@ -302,33 +308,33 @@ const ExternalAppPage = () => {
   const updateRecentApps = (newApp: RecentApp) => {
     const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
     if (updatedApps.length > 10) {
-      updatedApps.pop(); // Remove the oldest app if more than 5
+      updatedApps.pop(); // Remove the oldest app if more than 10
     }
     setRecentApps(updatedApps);
     localStorage.setItem("recentApps", JSON.stringify(updatedApps));
   };
 
-  // Function to display recent apps
-  const displayRecentApps = () => {
-    console.log(recentApps);
-    recentApps.map((app, index) => {
-      console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
-    });
-    return (
-      <div className="recent-apps">
-        <h3>Recently Opened Apps</h3>
-        <ul>
-          {recentApps.map((app, index) => (
-            <li key={index}>
-              <a href={app.path} target="_blank" rel="noopener noreferrer">
-                {app.name} - {app.description}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
+  // // Function to display recent apps
+  // const displayRecentApps = () => {
+  //   console.log(recentApps);
+  //   recentApps.map((app, index) => {
+  //     console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
+  //   });
+  //   return (
+  //     <div className="recent-apps">
+  //       <h3>Recently Opened Apps</h3>
+  //       <ul>
+  //         {recentApps.map((app, index) => (
+  //           <li key={index}>
+  //             <a href={app.path} target="_blank" rel="noopener noreferrer">
+  //               {app.name} - {app.description}
+  //             </a>
+  //           </li>
+  //         ))}
+  //       </ul>
+  //     </div>
+  //   );
+  // };
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -352,7 +358,8 @@ const ExternalAppPage = () => {
             />
             <button
               className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
-              onClick={displayRecentApps}
+              // onClick={displayRecentApps}
+              onClick={toggleRecentApps}
             >
               <FaChevronDown className="text-slate-700" />
             </button>
@@ -360,13 +367,28 @@ const ExternalAppPage = () => {
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp()} }
+              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp() }}
             >
               Load App
             </button>
           </div>
         </div>
 
+        {/* Conditionally render recent apps */}
+        {showRecentApps && (
+          <div className="recent-apps">
+            <h3>Recently Opened Apps</h3>
+            <ul>
+              {recentApps.map((app, index) => (
+                <li key={index}>
+                  <a href={app.path} target="_blank" rel="noopener noreferrer">
+                    {app.name} - {app.description}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {(appList.apps?.length > 0) && (
           <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
