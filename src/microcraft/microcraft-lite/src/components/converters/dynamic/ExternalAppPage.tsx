@@ -16,6 +16,7 @@ interface RecentApp {
   description: string;
   path: string;
   lastUsed: Date;
+  type: 'app' | 'list';
 }
 
 interface App {
@@ -114,7 +115,57 @@ const ExternalAppPage = () => {
       const slash = externalAppUrl.endsWith("/") ? "" : "/";
       loadApp(externalAppUrl + slash + app.path);
     }
+    // Update recent apps logic
+    const newApp: RecentApp = { 
+      name: app.name, 
+      description: app.description, 
+      path: app.path, 
+      lastUsed: new Date(), 
+      type: 'app' 
+    };
+    updateRecentApps(newApp);
   }
+
+  const loadAppList = async (data: any) => {
+    if (data.type === 'list') {
+      setAppList(data);
+      // Update the last used time for the list
+      const newList: RecentApp = { 
+        name: data.name, 
+        description: data.description, 
+        path: data.path, 
+        lastUsed: new Date(), 
+        type: 'list' 
+      };
+      updateRecentApps(newList);
+    }
+  };
+
+  const updateRecentApps = (newApp: RecentApp) => {
+    const updatedApps = recentApps.filter(app => app.name !== newApp.name); // Remove existing app with the same name
+    updatedApps.unshift(newApp); // Add the new app to the front
+    if (updatedApps.length > 10) {
+      updatedApps.pop(); // Keep only the latest 10
+    }
+    setRecentApps(updatedApps);
+    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
+  };
+
+  const timeSinceLastUsed = (lastUsed: Date) => {
+    const now = new Date();
+    const diff = Math.abs(now.getTime() - new Date(lastUsed).getTime());
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (hours < 24) {
+      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else {
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
+    }
+  };
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
@@ -175,7 +226,7 @@ const ExternalAppPage = () => {
       setContracts(contractDetails);
       setNetworks(networkDetails);
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath, lastUsed: new Date() };
+      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath, lastUsed: new Date(), type: 'app' };
       updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
@@ -186,11 +237,11 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadAppList = async (data: any) => {
-    if (data.type === 'list') {
-      setAppList(data);
-    }
-  }
+  // const loadAppList = async (data: any) => {
+  //   if (data.type === 'list') {
+  //     setAppList(data);
+  //   }
+  // }
 
   const isEmpty = (str: string | null | undefined) => {
     if (str === undefined || str === null || str === "") {
@@ -284,7 +335,7 @@ const ExternalAppPage = () => {
         setNetworks(networkDetails);
       }
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath, lastUsed: new Date() };
+      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath, lastUsed: new Date(), type: 'app' };
       updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
@@ -303,38 +354,6 @@ const ExternalAppPage = () => {
       onAppSelected(0);
     }
   }, [appList]);
-
-  // Function to update recent apps in local storage
-  const updateRecentApps = (newApp: RecentApp) => {
-    const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
-    if (updatedApps.length > 10) {
-      updatedApps.pop(); // Remove the oldest app if more than 10
-    }
-    setRecentApps(updatedApps);
-    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
-  };
-
-  // // Function to display recent apps
-  // const displayRecentApps = () => {
-  //   console.log(recentApps);
-  //   recentApps.map((app, index) => {
-  //     console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
-  //   });
-  //   return (
-  //     <div className="recent-apps">
-  //       <h3>Recently Opened Apps</h3>
-  //       <ul>
-  //         {recentApps.map((app, index) => (
-  //           <li key={index}>
-  //             <a href={app.path} target="_blank" rel="noopener noreferrer">
-  //               {app.name} - {app.description}
-  //             </a>
-  //           </li>
-  //         ))}
-  //       </ul>
-  //     </div>
-  //   );
-  // };
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -358,7 +377,6 @@ const ExternalAppPage = () => {
             />
             <button
               className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
-              // onClick={displayRecentApps}
               onClick={toggleRecentApps}
             >
               <FaChevronDown className="text-slate-700" />
@@ -382,7 +400,17 @@ const ExternalAppPage = () => {
               {recentApps.map((app, index) => (
                 <li key={index}>
                   <a href={app.path} target="_blank" rel="noopener noreferrer">
-                    {app.name} - {app.description}
+                    <p className='flex items-center gap-2'>
+                      <p className='flex flex-col'>
+                        <span className="">{app.name}</span>
+                        <span className="text-xs text-gray-500">{app.description}</span>
+                      </p>
+                      {app.lastUsed && (
+                        <span className="text-xs text-gray-500">
+                          - {timeSinceLastUsed(app.lastUsed)}
+                        </span>
+                      )}
+                    </p>
                   </a>
                 </li>
               ))}
