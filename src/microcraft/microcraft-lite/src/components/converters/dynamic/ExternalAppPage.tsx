@@ -238,13 +238,6 @@ const ExternalAppPage = () => {
           contract.abi = data;
         }
       }
-
-      // Construct the complete path
-      // const completePath = localPath.startsWith("http") ? localPath : `${window.location.origin}${localPath}`;
-
-      // const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
-      // updateRecentApps(newApp);
-
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
@@ -350,13 +343,6 @@ const ExternalAppPage = () => {
             contract.abi = data;
           }
         }
-
-        // Construct the complete path
-        // const completePath = appPath.startsWith("http") ? appPath : `${externalAppUrl}/${appPath}`;
-
-        // const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
-        // updateRecentApps(newApp);
-
         setAppDescription(appDescription);
         setAppName(appName);
         setComponents(components);
