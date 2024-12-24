@@ -46,7 +46,6 @@ const ExternalAppPage = () => {
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
   const [showRecentApps, setShowRecentApps] = useState(false);
   const [appList, setAppList] = useState<any>({});
-  // const [feedback, setFeedback] = useState(false);
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -128,12 +127,6 @@ const ExternalAppPage = () => {
 
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
-      // console.log("Loading app list data: ", data);
-      // console.log("Loading app list data-apps: ", data.apps);
-      // console.log("Loading app list data 0 : ", data.apps[0]);
-      // console.log("Loading app list data 0 name: ", data.apps[0].name);
-      // console.log("Loading app list data 0 des: ", data.apps[0].description);
-      // console.log("Loading app list data 0 path: ", data.apps[0].path);
       setAppList(data);
       // // Update the last used time for the list
       // const newList: RecentApp = {
@@ -247,10 +240,10 @@ const ExternalAppPage = () => {
       }
 
       // Construct the complete path
-      const completePath = localPath.startsWith("http") ? localPath : `${window.location.origin}${localPath}`;
+      // const completePath = localPath.startsWith("http") ? localPath : `${window.location.origin}${localPath}`;
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
-      updateRecentApps(newApp);
+      // const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
+      // updateRecentApps(newApp);
 
       setAppDescription(appDescription);
       setAppName(appName);
@@ -359,10 +352,10 @@ const ExternalAppPage = () => {
         }
 
         // Construct the complete path
-        const completePath = appPath.startsWith("http") ? appPath : `${externalAppUrl}/${appPath}`;
+        // const completePath = appPath.startsWith("http") ? appPath : `${externalAppUrl}/${appPath}`;
 
-        const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
-        updateRecentApps(newApp);
+        // const newApp: RecentApp = { name: appName, description: appDescription, path: completePath, lastUsed: new Date(), type: 'app' };
+        // updateRecentApps(newApp);
 
         setAppDescription(appDescription);
         setAppName(appName);
