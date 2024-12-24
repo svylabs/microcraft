@@ -339,10 +339,10 @@ const ExternalAppPage = () => {
     <>
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
-        <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
           <div className="relative flex">
             <input
-              className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
+              className="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
               type="text"
               size={80}
               placeholder="Enter github url of the app here"
