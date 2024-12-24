@@ -128,12 +128,25 @@ const ExternalAppPage = () => {
 
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
+      // console.log("Loading app list data: ", data);
+      // console.log("Loading app list data-apps: ", data.apps);
+      // console.log("Loading app list data 0 : ", data.apps[0]);
+      // console.log("Loading app list data 0 name: ", data.apps[0].name);
+      // console.log("Loading app list data 0 des: ", data.apps[0].description);
+      // console.log("Loading app list data 0 path: ", data.apps[0].path);
       setAppList(data);
       // Update the last used time for the list
+      // const newList: RecentApp = { 
+      //   name: data.name, 
+      //   description: data.description, 
+      //   path: data.path, 
+      //   lastUsed: new Date(), 
+      //   type: 'list' 
+      // };
       const newList: RecentApp = { 
-        name: data.name, 
-        description: data.description, 
-        path: data.path, 
+        name: data.apps[0].name, 
+        description: data.apps[0].description, 
+        path: data.apps[0].path, 
         lastUsed: new Date(), 
         type: 'list' 
       };
@@ -144,8 +157,8 @@ const ExternalAppPage = () => {
   const updateRecentApps = (newApp: RecentApp) => {
     const updatedApps = recentApps.filter(app => app.name !== newApp.name); // Remove existing app with the same name
     updatedApps.unshift(newApp); // Add the new app to the front
-    if (updatedApps.length > 10) {
-      updatedApps.pop(); // Keep only the latest 10
+    if (updatedApps.length > 5) {
+      updatedApps.splice(5); // Keep only the latest 5
     }
     setRecentApps(updatedApps);
     localStorage.setItem("recentApps", JSON.stringify(updatedApps));
@@ -407,7 +420,7 @@ const ExternalAppPage = () => {
                       </p>
                       {app.lastUsed && (
                         <span className="text-xs text-gray-500">
-                          - {timeSinceLastUsed(app.lastUsed)}
+                          {timeSinceLastUsed(app.lastUsed)}
                         </span>
                       )}
                     </p>
