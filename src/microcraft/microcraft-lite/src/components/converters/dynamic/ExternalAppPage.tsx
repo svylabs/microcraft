@@ -153,24 +153,6 @@ const ExternalAppPage = () => {
       };
       // Update recent apps with the new list
       updateRecentApps(newList);
-
-      // if (data.apps && data.apps.length > 0) {
-      //   const firstApp = data.apps[0];
-      //   // Construct the complete path
-      //   const completePath = firstApp.path.startsWith("http") ? firstApp.path : `${externalAppUrl}/${firstApp.path}`;
-
-      //   // Create the newList object using the completePath
-      //   const newList: RecentApp = {
-      //     name: firstApp.name,
-      //     description: firstApp.description,
-      //     path: completePath,
-      //     lastUsed: new Date(),
-      //     type: 'list'
-      //   };
-
-      //   // Update recent apps with the new list
-      //   updateRecentApps(newList);
-      // }
     }
   };
 
