@@ -115,11 +115,11 @@ const ExternalAppPage = () => {
     //   const slash = externalAppUrl.endsWith("/") ? "" : "/";
     //   loadApp(externalAppUrl + slash + app.path);
     // }
-    const resolvedPath = app.path.startsWith("https://") 
-        ? app.path 
-        : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
+    const resolvedPath = app.path.startsWith("https://")
+      ? app.path
+      : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
 
-    console.log("On app selected: loading: ", resolvedPath); 
+    console.log("On app selected: loading: ", resolvedPath);
     loadApp(resolvedPath);
 
     // Update recent apps logic
@@ -137,10 +137,10 @@ const ExternalAppPage = () => {
     if (data.type === 'list') {
       console.log("Loading app list: ", data);
       setAppList(data);
-      
+
       const listPath = data.path || externalAppUrl;
-      const resolvedPath = listPath.startsWith("https://") 
-        ? listPath 
+      const resolvedPath = listPath.startsWith("https://")
+        ? listPath
         : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + listPath;
 
       // Update the last used time for the list
@@ -373,7 +373,7 @@ const ExternalAppPage = () => {
           type: 'app'
         };
         updateRecentApps(newApp);
-        
+
       }
     } catch (error) {
       console.error("Error loading external app: ", error);
@@ -448,7 +448,7 @@ const ExternalAppPage = () => {
 
               {showRecentApps && (
                 <div
-                style={{width: dropdownWidth}}
+                  style={{ width: dropdownWidth }}
                   className="absolute right-0 mt-12 bg-white rounded-lg shadow-lg overflow-y-auto max-h-64 z-[9999] transform transition-all duration-300 scale-100"
                 >
                   <div className="p-4 border-b border-gray-200">
@@ -463,15 +463,17 @@ const ExternalAppPage = () => {
                         <a
                           onClick={() => {
                             setExternalAppUrl(app.path); // Set the input field to the app.path
-                            loadApp(app.path); //// Load the app
+                            loadApp(app.path); // Load the app
                             setShowRecentApps(false);
                           }}
-                          className="block cursor-pointer" 
+                          className="block cursor-pointer"
                         >
                           <div className="flex items-center justify-between">
-                            <div>
+                            <div className="flex items-center">
                               <h4 className="text-sm font-medium text-gray-800 mb-1">{app.name}</h4>
-                              <p className="text-xs text-gray-500">{app.description}</p>
+                              <span className={`ml-2 text-xs font-semibold ${app.type === 'app' ? 'text-blue-500' : 'text-green-500'}`}>
+                                {app.type === 'app' ? 'App' : 'List'}
+                              </span>
                             </div>
                             {app.lastUsed && (
                               <span className="text-xs text-gray-400">
@@ -479,6 +481,7 @@ const ExternalAppPage = () => {
                               </span>
                             )}
                           </div>
+                          <p className="text-xs text-gray-500">{app.description}</p>
                         </a>
                       </li>
                     ))}
