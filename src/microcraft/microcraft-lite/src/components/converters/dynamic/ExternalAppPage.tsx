@@ -46,6 +46,7 @@ const ExternalAppPage = () => {
   const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
   const [showRecentApps, setShowRecentApps] = useState(false);
   const [appList, setAppList] = useState<any>({});
+  const [dropdownWidth, setDropdownWidth] = useState("18rem");
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -392,6 +393,21 @@ const ExternalAppPage = () => {
     }
   }, [appList]);
 
+  const adjustDropdownWidth = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth <= 320) setDropdownWidth("18rem");
+    else if (screenWidth <= 375) setDropdownWidth("22rem");
+    else if (screenWidth <= 425) setDropdownWidth("24.5rem");
+    else if (screenWidth <= 768) setDropdownWidth("46rem");
+    else setDropdownWidth("52rem");
+  };
+
+  useEffect(() => {
+    adjustDropdownWidth(); // Adjust on initial load
+    window.addEventListener("resize", adjustDropdownWidth); // Adjust on window resize
+    return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
+  }, []);
+
   // function submitFeedback() {
   //   setFeedback(false);
   //   window.location.href = "/";
@@ -432,7 +448,8 @@ const ExternalAppPage = () => {
 
               {showRecentApps && (
                 <div
-                  className="absolute right-0 mt-12 w-72 bg-white rounded-lg shadow-lg overflow-y-auto max-h-64 z-[9999] transform transition-all duration-300 scale-100"
+                style={{width: dropdownWidth}}
+                  className="absolute right-0 mt-12 bg-white rounded-lg shadow-lg overflow-y-auto max-h-64 z-[9999] transform transition-all duration-300 scale-100"
                 >
                   <div className="p-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-800">Recently Opened Apps</h3>
