@@ -136,11 +136,17 @@ const ExternalAppPage = () => {
     if (data.type === 'list') {
       console.log("Loading app list: ", data);
       setAppList(data);
+      
+      const listPath = data.path || externalAppUrl;
+      const resolvedPath = listPath.startsWith("https://") 
+        ? listPath 
+        : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + listPath;
+
       // Update the last used time for the list
       const newList: RecentApp = {
         name: data.name,
         description: data.description,
-        path: data.path,
+        path: resolvedPath,
         lastUsed: new Date(),
         type: 'list'
       };
@@ -170,8 +176,8 @@ const ExternalAppPage = () => {
   const updateRecentApps = (newApp: RecentApp) => {
     const updatedApps = recentApps.filter(app => app.name !== newApp.name); // Remove existing app with the same name
     updatedApps.unshift(newApp); // Add the new app to the front
-    if (updatedApps.length > 5) {
-      updatedApps.splice(5); // Keep only the latest 5
+    if (updatedApps.length > 10) {
+      updatedApps.splice(10); // Keep only the latest 10
     }
     setRecentApps(updatedApps);
     localStorage.setItem("recentApps", JSON.stringify(updatedApps));
@@ -356,6 +362,17 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
+
+        // Add the app to recent apps after loading
+        const newApp: RecentApp = {
+          name: appName,
+          description: appDescription,
+          path: path,
+          lastUsed: new Date(),
+          type: 'app'
+        };
+        updateRecentApps(newApp);
+        
       }
     } catch (error) {
       console.error("Error loading external app: ", error);
