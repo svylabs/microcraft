@@ -127,35 +127,36 @@ const ExternalAppPage = () => {
 
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
+      console.log("Loading app list: ", data);
       setAppList(data);
-      // // Update the last used time for the list
-      // const newList: RecentApp = {
-      //   name: data.name,
-      //   description: data.description,
-      //   path: data.path,
-      //   lastUsed: new Date(),
-      //   type: 'list'
-      // };
-      // // Update recent apps with the new list
-      // updateRecentApps(newList);
+      // Update the last used time for the list
+      const newList: RecentApp = {
+        name: data.name,
+        description: data.description,
+        path: data.path,
+        lastUsed: new Date(),
+        type: 'list'
+      };
+      // Update recent apps with the new list
+      updateRecentApps(newList);
 
-      if (data.apps && data.apps.length > 0) {
-        const firstApp = data.apps[0];
-        // Construct the complete path
-        const completePath = firstApp.path.startsWith("http") ? firstApp.path : `${externalAppUrl}/${firstApp.path}`;
+      // if (data.apps && data.apps.length > 0) {
+      //   const firstApp = data.apps[0];
+      //   // Construct the complete path
+      //   const completePath = firstApp.path.startsWith("http") ? firstApp.path : `${externalAppUrl}/${firstApp.path}`;
 
-        // Create the newList object using the completePath
-        const newList: RecentApp = {
-          name: firstApp.name,
-          description: firstApp.description,
-          path: completePath,
-          lastUsed: new Date(),
-          type: 'list'
-        };
+      //   // Create the newList object using the completePath
+      //   const newList: RecentApp = {
+      //     name: firstApp.name,
+      //     description: firstApp.description,
+      //     path: completePath,
+      //     lastUsed: new Date(),
+      //     type: 'list'
+      //   };
 
-        // Update recent apps with the new list
-        updateRecentApps(newList);
-      }
+      //   // Update recent apps with the new list
+      //   updateRecentApps(newList);
+      // }
     }
   };
 
@@ -387,15 +388,6 @@ const ExternalAppPage = () => {
               onChange={(e) => setExternalAppUrl(e.target.value)}
               id="output"
             />
-            {/* <button
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
-              onClick={toggleRecentApps}
-            >
-              <FaChevronDown
-                className={`text-slate-700 transition-transform ${showRecentApps ? 'rotate-180' : 'rotate-0'
-                  }`}
-              />
-            </button> */}
             <div className="relative">
               <button
                 className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
@@ -416,15 +408,40 @@ const ExternalAppPage = () => {
                   </div>
                   <ul className="space-y-4 p-4">
                     {recentApps.map((app, index) => (
+                      // <li
+                      //   key={index}
+                      //   className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
+                      // >
+                      //   <a
+                      //     href={app.path}
+                      //     target="_blank"
+                      //     rel="noopener noreferrer"
+                      //     className="block"
+                      //   >
+                      //     <div className="flex items-center justify-between">
+                      //       <div>
+                      //         <h4 className="text-sm font-medium text-gray-800 mb-1">{app.name}</h4>
+                      //         <p className="text-xs text-gray-500">{app.description}</p>
+                      //       </div>
+                      //       {app.lastUsed && (
+                      //         <span className="text-xs text-gray-400">
+                      //           {timeSinceLastUsed(app.lastUsed)}
+                      //         </span>
+                      //       )}
+                      //     </div>
+                      //   </a>
+                      // </li>
                       <li
                         key={index}
                         className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
                       >
                         <a
-                          href={app.path}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
+                          onClick={() => {
+                            setExternalAppUrl(app.path); // Set the input field to the app.path
+                            loadApp(app.path); //// Load the app
+                            setShowRecentApps(false);
+                          }}
+                          className="block cursor-pointer" 
                         >
                           <div className="flex items-center justify-between">
                             <div>
@@ -459,38 +476,6 @@ const ExternalAppPage = () => {
             </button>
           </div>
         </div>
-
-        {/* Conditionally render recent apps */}
-        {/* {showRecentApps && (
-          <div className="recent-apps bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Recently Opened Apps</h3>
-            <ul className="space-y-4">
-              {recentApps.map((app, index) => (
-                <li key={index} className="bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow">
-                  <a
-                    href={app.path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="text-sm font-medium text-gray-800 mb-1">{app.name}</h4>
-                        <p className="text-xs text-gray-500">{app.description}</p>
-                      </div>
-                      {app.lastUsed && (
-                        <span className="text-xs text-gray-400">
-                          {timeSinceLastUsed(app.lastUsed)}
-                        </span>
-                      )}
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
-
 
         {(appList.apps?.length > 0) && (
           <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
