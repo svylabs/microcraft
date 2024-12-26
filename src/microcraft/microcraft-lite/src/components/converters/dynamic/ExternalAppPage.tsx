@@ -106,19 +106,26 @@ const ExternalAppPage = () => {
       return;
     }
     const app = appList.apps[index];
-    if (app.path.startsWith("https://")) {
-      //setExternalAppUrl(app.path);
-      console.log("On app selected: loading: ", app.path);
-      loadApp(app.path);
-    } else {
-      const slash = externalAppUrl.endsWith("/") ? "" : "/";
-      loadApp(externalAppUrl + slash + app.path);
-    }
+    // if (app.path.startsWith("https://")) {
+    //   //setExternalAppUrl(app.path);
+    //   console.log("On app selected: loading: ", app.path);
+    //   loadApp(app.path);
+    // } else {
+    //   const slash = externalAppUrl.endsWith("/") ? "" : "/";
+    //   loadApp(externalAppUrl + slash + app.path);
+    // }
+    const resolvedPath = app.path.startsWith("https://") 
+        ? app.path 
+        : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
+
+    console.log("On app selected: loading: ", resolvedPath); 
+    loadApp(resolvedPath);
+
     // Update recent apps logic
     const newApp: RecentApp = {
       name: app.name,
       description: app.description,
-      path: app.path,
+      path: resolvedPath,
       lastUsed: new Date(),
       type: 'app'
     };
@@ -381,11 +388,18 @@ const ExternalAppPage = () => {
           <div className="relative flex">
             <input
               className="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
-              type="text"
+              // type="text"
+              type="url"
               size={80}
               placeholder="Enter github url of the app here"
               value={externalAppUrl}
-              onChange={(e) => setExternalAppUrl(e.target.value)}
+              // onChange={(e) => setExternalAppUrl(e.target.value)}
+              onChange={(e) => setExternalAppUrl(e.target.value.trim())}
+              onFocus={() => {
+                if (recentApps.length > 0) { // Show recent apps only if there are any
+                  toggleRecentApps();
+                }
+              }}
               id="output"
             />
             <div className="relative">
@@ -408,29 +422,6 @@ const ExternalAppPage = () => {
                   </div>
                   <ul className="space-y-4 p-4">
                     {recentApps.map((app, index) => (
-                      // <li
-                      //   key={index}
-                      //   className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
-                      // >
-                      //   <a
-                      //     href={app.path}
-                      //     target="_blank"
-                      //     rel="noopener noreferrer"
-                      //     className="block"
-                      //   >
-                      //     <div className="flex items-center justify-between">
-                      //       <div>
-                      //         <h4 className="text-sm font-medium text-gray-800 mb-1">{app.name}</h4>
-                      //         <p className="text-xs text-gray-500">{app.description}</p>
-                      //       </div>
-                      //       {app.lastUsed && (
-                      //         <span className="text-xs text-gray-400">
-                      //           {timeSinceLastUsed(app.lastUsed)}
-                      //         </span>
-                      //       )}
-                      //     </div>
-                      //   </a>
-                      // </li>
                       <li
                         key={index}
                         className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
