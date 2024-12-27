@@ -789,7 +789,9 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 </div>
                               </div>
                             )}
-                            {currentComponent.type === "swap" && (
+                            {currentComponent.type === "swap" &&
+                              currentComponent.config &&
+                              currentComponent.config.swapConfig && (
                               <div
                                 style={{
                                   ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
@@ -950,13 +952,6 @@ const ConfigureInputsOutputs: React.FC = () => {
                                       currentComponent.config.sliderConfig
                                         .value
                                     }
-                                    //min={currentComponent.config.sliderConfig.interval?.min || 0}
-                                    // max={currentComponent.config.sliderConfig.interval?.max || 100}
-                                    // step={currentComponent.config.sliderConfig.step || 1}
-                                    // value={
-                                    //   data[currentComponent.id] ||
-                                    //   currentComponent.config.sliderConfig.value || 0
-                                    // }
                                     onChange={(e) =>
                                       handleInputChange(currentComponent.id, e.target.value)
                                     }
