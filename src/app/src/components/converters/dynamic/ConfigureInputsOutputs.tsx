@@ -833,182 +833,173 @@ const ConfigureInputsOutputs: React.FC = () => {
                                 </select>
                               </div>
                             )}
+                            {/* Options for radio */}
                             {currentComponent.type === "radio" && (
-                              <div>
-                                {/* Options for radio */}
-                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                  {currentComponent.config && currentComponent.config.optionsConfig &&
-                                    currentComponent.config
-                                      .optionsConfig.values.map((option, idx) => {
-                                        const optionWidth = option.trim().length * 8 + 48;
+                              <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                {currentComponent.config && currentComponent.config.optionsConfig &&
+                                  currentComponent.config
+                                    .optionsConfig.values.map((option, idx) => {
+                                      const optionWidth = option.trim().length * 8 + 48;
 
-                                        return (
-                                          <div
-                                            key={idx}
-                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                              ? "overflow-x-auto md:h-8"
-                                              : ""
-                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                      return (
+                                        <div
+                                          key={idx}
+                                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                            ? "overflow-x-auto md:h-8"
+                                            : ""
+                                            } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                        >
+                                          <input
+                                            type="radio"
+                                            id={`${currentComponent.id}_${idx}`}
+                                            name={currentComponent.id}
+                                            value={option.trim()}
+                                            checked={data[currentComponent.id] === option}
+                                            onChange={(e) =>
+                                              handleInputChange(
+                                                currentComponent.id,
+                                                e.target.value
+                                              )
+                                            }
+                                            className="mr-2 absolute"
+                                            style={{
+                                              top: "50%",
+                                              transform: "translateY(-50%)",
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`${currentComponent.id}_${idx}`}
+                                            className="whitespace-nowrap"
+                                            style={{ marginLeft: "1.5rem" }}
                                           >
-                                            <input
-                                              type="radio"
-                                              id={`${currentComponent.id}_${idx}`}
-                                              name={currentComponent.id}
-                                              value={option.trim()}
-                                              checked={data[currentComponent.id] === option}
-                                              onChange={(e) =>
-                                                handleInputChange(
-                                                  currentComponent.id,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="mr-2 absolute"
-                                              style={{
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                              }}
-                                            />
-                                            <label
-                                              htmlFor={`${currentComponent.id}_${idx}`}
-                                              className="whitespace-nowrap"
-                                              style={{ marginLeft: "1.5rem" }}
-                                            >
-                                              {option.trim()}
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
-                                </div>
+                                            {option.trim()}
+                                          </label>
+                                        </div>
+                                      );
+                                    })}
                               </div>
                             )}
+                            {/* Options for checkbox */}
                             {currentComponent.type === "checkbox" && (
-                              <div>
-                                {/* Options for checkbox */}
-                                <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
-                                  {currentComponent.config && currentComponent.config.optionsConfig &&
-                                    currentComponent.config
-                                      .optionsConfig.values.map((option, idx) => {
-                                        const optionWidth = option.trim().length * 8 + 48;
+                              <div className="flex flex-col md:flex-row md:flex-wrap gap-2 md:gap-3">
+                                {currentComponent.config && currentComponent.config.optionsConfig &&
+                                  currentComponent.config
+                                    .optionsConfig.values.map((option, idx) => {
+                                      const optionWidth = option.trim().length * 8 + 48;
 
-                                        return (
-                                          <div
-                                            key={idx}
-                                            className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
-                                              ? "overflow-x-auto md:h-8"
-                                              : ""
-                                              } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                      return (
+                                        <div
+                                          key={idx}
+                                          className={`flex flex-shrink-0 items-center mr-2 md:mr-3 ${optionWidth > 200
+                                            ? "overflow-x-auto md:h-8"
+                                            : ""
+                                            } lg:text-lg h-7 md:w-[10.75rem] lg:w-[12.75rem] xl:w-[14.75rem] relative`}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            id={`${currentComponent.id}_${idx}`}
+                                            name={currentComponent.id}
+                                            value={option.trim()}
+                                            onChange={(e) =>
+                                              handleInputChange(
+                                                currentComponent.id,
+                                                e.target.value
+                                              )
+                                            }
+                                            className="mr-2 absolute"
+                                            style={{
+                                              top: "50%",
+                                              transform: "translateY(-50%)",
+                                            }}
+                                          />
+                                          <label
+                                            htmlFor={`${currentComponent.id}_${idx}`}
+                                            className="whitespace-nowrap"
+                                            style={{ marginLeft: "1.5rem" }}
                                           >
-                                            <input
-                                              type="checkbox"
-                                              id={`${currentComponent.id}_${idx}`}
-                                              name={currentComponent.id}
-                                              value={option.trim()}
-                                              onChange={(e) =>
-                                                handleInputChange(
-                                                  currentComponent.id,
-                                                  e.target.value
-                                                )
-                                              }
-                                              className="mr-2 absolute"
-                                              style={{
-                                                top: "50%",
-                                                transform: "translateY(-50%)",
-                                              }}
-                                            />
-                                            <label
-                                              htmlFor={`${currentComponent.id}_${idx}`}
-                                              className="whitespace-nowrap"
-                                              style={{ marginLeft: "1.5rem" }}
-                                            >
-                                              {option.trim()}
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
-                                </div>
+                                            {option.trim()}
+                                          </label>
+                                        </div>
+                                      );
+                                    })}
                               </div>
                             )}
-                            {currentComponent.type === "slider" && (
-                              <div>
-                                <div className="flex flex-col">
-                                  <div className="flex items-center gap-3">
-                                    <input
-                                      type="range"
-                                      id={currentComponent.id}
-                                      className="w-full h-9 cursor-pointer"
-                                      name={currentComponent.label}
-                                      min={
-                                        currentComponent.config.sliderConfig
-                                          .interval.min
-                                      }
-                                      max={
-                                        currentComponent.config.sliderConfig
-                                          .interval.max
-                                      }
-                                      step={
-                                        currentComponent.config.sliderConfig
-                                          .step
-                                      }
-                                      value={
-                                        data[currentComponent.id] ||
-                                        currentComponent.config.sliderConfig
-                                          .value
-                                      }
-                                      onChange={(e) =>
-                                        handleInputChange(currentComponent.id, e.target.value)
-                                      }
-                                    />
-                                    <span className="font-semibold">
-                                      {data[currentComponent.id] ||
-                                        currentComponent.config.sliderConfig
-                                          .value}
-                                    </span>
-                                  </div>
-                                  {/* <p className="text-sm text-gray-500 flex items-center">
-                            <svg className="w-6 h-6 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2l4 -4" />
-                            </svg>
-                            <span>Recommended: <strong className="text-blue-600">{currentComponent.config.sliderConfig.value}</strong></span>
-                          </p> */}
+                            {currentComponent.type === "slider" &&
+                              currentComponent.config &&
+                              currentComponent.config.sliderConfig && (
+                                <div className="flex items-center gap-3">
+                                  <input
+                                    type="range"
+                                    id={currentComponent.id}
+                                    className="w-full h-9 cursor-pointer"
+                                    name={currentComponent.label}
+                                    min={
+                                      currentComponent.config.sliderConfig
+                                        .interval.min
+                                    }
+                                    max={
+                                      currentComponent.config.sliderConfig
+                                        .interval.max
+                                    }
+                                    step={
+                                      currentComponent.config.sliderConfig
+                                        .step
+                                    }
+                                    value={
+                                      data[currentComponent.id] ||
+                                      currentComponent.config.sliderConfig
+                                        .value
+                                    }
+                                    //min={currentComponent.config.sliderConfig.interval?.min || 0}
+                                    // max={currentComponent.config.sliderConfig.interval?.max || 100}
+                                    // step={currentComponent.config.sliderConfig.step || 1}
+                                    // value={
+                                    //   data[currentComponent.id] ||
+                                    //   currentComponent.config.sliderConfig.value || 0
+                                    // }
+                                    onChange={(e) =>
+                                      handleInputChange(currentComponent.id, e.target.value)
+                                    }
+                                  />
+                                  <span className="font-semibold">
+                                    {data[currentComponent.id] ||
+                                      currentComponent.config.sliderConfig
+                                        .value}
+                                  </span>
                                 </div>
-                              </div>
-                            )}
+                              )}
                             {currentComponent.type === "walletDropdown" && (
-                              <div>
-                                <Wallet
-                                  configurations={
-                                    // JSON.parse(currentComponent.config).custom.walletConfig
-                                    loadedData.networkDetails || loadedData.network_details
-                                  }
-                                  onSelectAddress={(address) =>
-                                    handleInputChange(currentComponent.id, {
-                                      address,
-                                      balance: null,
-                                    })
-                                  }
-                                  onUpdateBalance={(balance) =>
-                                    handleInputChange(currentComponent.id, {
-                                      address: data[currentComponent.id]?.address || "",
-                                      balance,
-                                    })
-                                  }
-                                />
-                              </div>
+                              <Wallet
+                                configurations={
+                                  // JSON.parse(currentComponent.config).custom.walletConfig
+                                  loadedData.networkDetails || loadedData.network_details
+                                }
+                                onSelectAddress={(address) =>
+                                  handleInputChange(currentComponent.id, {
+                                    address,
+                                    balance: null,
+                                  })
+                                }
+                                onUpdateBalance={(balance) =>
+                                  handleInputChange(currentComponent.id, {
+                                    address: data[currentComponent.id]?.address || "",
+                                    balance,
+                                  })
+                                }
+                              />
                             )}
                             {currentComponent.type === "button" && currentComponent.code && (
-                              <div>
-                                <button
-                                  className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
-                                  id={currentComponent.id}
-                                  style={{
-                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                      ? currentComponent.config.styles
-                                      : {}),
-                                  }}
-                                >
-                                  {currentComponent.label}
-                                </button>
-                              </div>
+                              <button
+                                className="block px-4 p-2 mt-2 font-semibold text-white bg-red-500 border border-red-500 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-700"
+                                id={currentComponent.id}
+                                style={{
+                                  ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                    ? currentComponent.config.styles
+                                    : {}),
+                                }}
+                              >
+                                {currentComponent.label}
+                              </button>
                             )}
                           </div>
                         )}
