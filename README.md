@@ -1,41 +1,29 @@
 # microcraft
 
-## Create Dynamic component
+Microcraft is a project build to create and publish micro-frontend applications. The code is a monorepo containing the code for centralized `microcraft.dev` as well as `app.microcraft.dev` - which is a lite version of the microcraft, with no connections to backend and with the ability to run frontend applications configured as JSON manifest.
 
-```
-   curl -X POST -H 'Content-Type: application/json' -d '{"title": "test-component", "description": "first component", "image_url": "http://...", "code": "console.log"}' https://handycraft-415122.oa.r.appspot.com/dynamic-component/new -v
-```
+# Centralized Application
+1. `src/lib` - A backend component that is used to authenticate / store published apps.
+2. `src/app` - The frontend application used to create frontends and publish them to `microcraft.dev` 
+3. `src/microcraft-registry` - The CLI used to publish contract ABIs to the backend.
 
-## List Dynamic Components
+# Decentralized CLI / Frontend 
+5. `src/microcraft`:  This is a command line tool, that bundles a web application (microcraft-lite) hosted at `app.microcraft.dev` that could work as Decentralized Frontend. If you are interested in Decentralized frontends, you must look into this.
 
-This will list all approved components
+# Microcraft-lib
 
-```
-    curl https://handycraft-415122.oa.r.appspot.com/dynamic-component/list
-```
+Both `microcraft.dev` and `app.microcraft.dev` uses the [microcraft-lib library](https://github.com/svylabs-com/microcraft-lib) - a typescript react library [npm link: ](https://www.npmjs.com/package/@svylabs/microcraft-lib). The library exposes a component called `DynamicApp` that takes in the app manifest and renders the application UI based on the app definition.
 
-The following will list pending components
+# Developing
+## Using docker
 
-```
-    curl https://handycraft-415122.oa.r.appspot.com/dynamic-component/list?approval_status=pending
-```
-
-
-## Approve a Dynamic component
-
-```
-   curl -X POST -H 'Content-Type: application/json' -d '{"id": "test-component"}' https://handycraft-415122.oa.r.appspot.com/dynamic-component/approve -v
-```
-
-# Using docker
-
-## Building the image
+### Building the image
 
 ```
   docker build -t microcraft-dev-img .
 ```
 
-## Run the image
+### Run the image
 
 ```
   docker run -it -v <fullpath-to-local-handycraft-repo>:/app/microcraft -p 8081:8081 -p 8080:8080 -p 5173:5173  microcraft-dev-img
@@ -50,7 +38,7 @@ Note: If needed to run locally without Docker, include the -p 5173:5173 flag.
 
 This will run the docker image and also run the datastore by default
 
-## Terminal 1: Run server
+### Terminal 1: Run server
 
 ```
    docker container list
@@ -59,7 +47,7 @@ This will run the docker image and also run the datastore by default
    npm run dev
 ```
 
-## Terminal 2: Run app
+### Terminal 2: Run app
 
 ```
    docker container list
