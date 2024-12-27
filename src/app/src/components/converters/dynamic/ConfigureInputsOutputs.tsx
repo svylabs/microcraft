@@ -14,11 +14,11 @@ import useDebounce from './Renderer/useDebounce';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
-import { FaTextHeight, FaRegFile, FaSlidersH, FaWallet } from "react-icons/fa";
+import { FaTextHeight, FaSlidersH, FaWallet } from "react-icons/fa";
 import { IoIosRadioButtonOn } from "react-icons/io";
 import { MdOutlineCheckBox, MdAttachMoney, MdTableChart, MdSmartButton } from "react-icons/md";
 import { AiOutlineNumber, AiOutlineFile } from "react-icons/ai";
-import { BsFiletypeJson, BsGraphUp, BsMenuButtonFill, BsMenuButtonWideFill, BsMenuButtonWide, BsMenuButton } from "react-icons/bs";
+import { BsFiletypeJson, BsGraphUp } from "react-icons/bs";
 import { FiLink } from "react-icons/fi";
 import { BiBarChartAlt, BiCommentDetail } from "react-icons/bi";
 import { RiArrowDropDownLine } from "react-icons/ri";
