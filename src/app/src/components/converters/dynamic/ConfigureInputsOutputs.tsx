@@ -14,6 +14,15 @@ import useDebounce from './Renderer/useDebounce';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
+import { FaTextHeight, FaRegFile, FaSlidersH, FaWallet } from "react-icons/fa";
+import { IoIosRadioButtonOn } from "react-icons/io";
+import { MdOutlineCheckBox, MdAttachMoney, MdTableChart, MdSmartButton } from "react-icons/md";
+import { AiOutlineNumber, AiOutlineFile } from "react-icons/ai";
+import { BsFiletypeJson, BsGraphUp, BsMenuButtonFill, BsMenuButtonWideFill, BsMenuButtonWide, BsMenuButton } from "react-icons/bs";
+import { FiLink } from "react-icons/fi";
+import { BiBarChartAlt, BiCommentDetail } from "react-icons/bi";
+import { RiArrowDropDownLine } from "react-icons/ri";
+
 // Define availableFormElements
 const availableFormElements = [
   { value: "text", elementType: "Text", placement: "input" },
@@ -50,7 +59,11 @@ const DraggableComponent = ({ component }) => {
       ref={drag}
       className={`p-2 border mb-2 bg-gray-200 cursor-pointer ${isDragging ? "opacity-50" : ""}`}
     >
-      {component.elementType}
+      {/* {component.elementType} */}
+      <div className="flex items-center gap-2">
+        {component.icon && <div className="text-xl">{component.icon}</div>}
+        <span>{component.elementType}</span>
+      </div>
     </div>
   );
 };
@@ -625,6 +638,27 @@ const ConfigureInputsOutputs: React.FC = () => {
     toast.success(`${component.elementType} added!`);
   };
 
+  // Mapping elementType to icons
+  const iconMapping = {
+    Text: <FaTextHeight />,
+    Number: <AiOutlineNumber />,
+    JSON: <BsFiletypeJson />,
+    File: <AiOutlineFile />,
+    Dropdown: <RiArrowDropDownLine />,
+    Radio: <IoIosRadioButtonOn />,
+    Checkbox: <MdOutlineCheckBox />,
+    Slider: <FaSlidersH />,
+    "Connected Wallet": <FaWallet />,
+    Swap: <MdAttachMoney />,
+    Button: <MdSmartButton />,
+    "Text Display": <FaTextHeight />,
+    "JSON Viewer": <BsFiletypeJson />,
+    Table: <MdTableChart />,
+    Graph: <BsGraphUp />,
+    "Description Field": <BiCommentDetail />,
+    "Entity Link": <FiLink />,
+  };
+
   return (
     <>
       <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-lg rounded-md flex flex-col gap-5 p-2 m-2 mt-3 md:m-5 md:p-5 lg:p-6 lg:mx-20 md:mt-2 xl:mx-40 xl:p-12">
@@ -707,10 +741,22 @@ const ConfigureInputsOutputs: React.FC = () => {
 
           <DndProvider backend={HTML5Backend}>
             <div className="flex">
-              <div className="w-1/4 p-4 border-r">
+              {/* <div className="w-1/4 p-4 border-r h-[31.5rem] overflow-y-auto">
                 <h2 className="flex justify-center md:text-xl font-semibold">Available Elements</h2>
                 {availableFormElements.map((component, index) => (
                   <DraggableComponent key={`${component.value}-${index}`} component={component} />
+                ))}
+              </div> */}
+              <div className="w-1/4 p-4 border-r h-[31.5rem] overflow-y-auto">
+                <h2 className="flex justify-center md:text-xl font-semibold">Available Elements</h2>
+                {availableFormElements.map((component, index) => (
+                  <DraggableComponent
+                    key={`${component.value}-${index}`}
+                    component={{
+                      ...component,
+                      icon: iconMapping[component.elementType] || <BiBarChartAlt />, // Default icon
+                    }}
+                  />
                 ))}
               </div>
 
@@ -792,25 +838,25 @@ const ConfigureInputsOutputs: React.FC = () => {
                             {currentComponent.type === "swap" &&
                               currentComponent.config &&
                               currentComponent.config.swapConfig && (
-                              <div
-                                style={{
-                                  ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
-                                    ? currentComponent.config.styles
-                                    : {}),
-                                }}
-                              >
-                                <Swap
-                                  configurations={
-                                    // JSON.parse(currentComponent.config).custom.swapConfig
-                                    currentComponent.config.swapConfig
-                                  }
-                                  onSwapChange={(swapData) =>
-                                    handleInputChange(currentComponent.id, swapData)
-                                  }
-                                  data={null} //data={undefined}
-                                />
-                              </div>
-                            )}
+                                <div
+                                  style={{
+                                    ...(currentComponent.config && typeof currentComponent.config.styles === 'object'
+                                      ? currentComponent.config.styles
+                                      : {}),
+                                  }}
+                                >
+                                  <Swap
+                                    configurations={
+                                      // JSON.parse(currentComponent.config).custom.swapConfig
+                                      currentComponent.config.swapConfig
+                                    }
+                                    onSwapChange={(swapData) =>
+                                      handleInputChange(currentComponent.id, swapData)
+                                    }
+                                    data={null} //data={undefined}
+                                  />
+                                </div>
+                              )}
                             {currentComponent.type === "dropdown" && (
                               <div>
                                 <select
