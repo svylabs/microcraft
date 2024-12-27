@@ -1,6 +1,6 @@
 # microcraft
 
-Microcraft is a project build to create and publish micro-frontend applications. The code is a monorepo containing the code for centralized `microcraft.dev` as well as `app.microcraft.dev` - which is a lite version of the microcraft, with no connections to backend and with the ability to run frontend applications configured as JSON manifest.
+Microcraft is a project built to create and publish micro-frontend applications. The code is a monorepo containing the code for centralized `microcraft.dev` as well as `app.microcraft.dev` - which is a lite version of the microcraft, with no connections to backend and with the ability to run frontend applications configured as JSON manifest.
 
 # Centralized Application
 1. `src/lib` - A backend component that is used to authenticate / store published apps.
