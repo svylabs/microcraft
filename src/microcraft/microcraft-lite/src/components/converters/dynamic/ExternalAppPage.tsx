@@ -9,6 +9,7 @@ import App from "./Renderer/App";
 import { randomUUID } from 'crypto';
 import AppCarousel from './Carousel';
 import { FaChevronDown } from 'react-icons/fa';
+import { on } from 'events';
 // import { net } from "web3";
 
 interface RecentApp {
@@ -17,6 +18,7 @@ interface RecentApp {
   path: string;
   lastUsed: Date;
   type: 'app' | 'list';
+  parent?: string;
 }
 
 interface App {
@@ -43,9 +45,10 @@ const ExternalAppPage = () => {
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
-  const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
+  const [recentApps, setRecentApps] = useState<RecentApp[]>(JSON.parse(localStorage.getItem("recentApps") || "[]"));
   const [showRecentApps, setShowRecentApps] = useState(false);
   const [appList, setAppList] = useState<any>({});
+  const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
 
   const isAuthenticated = () => {
@@ -103,7 +106,7 @@ const ExternalAppPage = () => {
   };
 
   const onAppSelected = async (index: number) => {
-    if (index >= appList.apps?.length) {
+    if (index >= appList.apps?.length || index < 0) {
       return;
     }
     const app = appList.apps[index];
@@ -120,34 +123,35 @@ const ExternalAppPage = () => {
       : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
 
     console.log("On app selected: loading: ", resolvedPath);
-    loadApp(resolvedPath);
 
+    await loadApp(resolvedPath);
+    
     // Update recent apps logic
     const newApp: RecentApp = {
       name: app.name,
       description: app.description,
       path: resolvedPath,
       lastUsed: new Date(),
-      type: 'app'
+      type: 'app',
+      parent: appList.path
     };
     updateRecentApps(newApp);
+    
+
   }
 
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
       console.log("Loading app list: ", data);
+      
       setAppList(data);
 
-      const listPath = data.path || externalAppUrl;
-      const resolvedPath = listPath.startsWith("https://")
-        ? listPath
-        : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + listPath;
 
       // Update the last used time for the list
       const newList: RecentApp = {
         name: data.name,
         description: data.description,
-        path: resolvedPath,
+        path: data.path,
         lastUsed: new Date(),
         type: 'list'
       };
@@ -262,7 +266,7 @@ const ExternalAppPage = () => {
     return false;
   }
 
-  const loadApp = async (appPath?: string) => {
+  const loadApp = async (appPath?: string, subAppPath?: string) => {
     setLoading(true);
     setData({});
     const path = appPath || externalAppUrl;
@@ -294,8 +298,26 @@ const ExternalAppPage = () => {
       //console.log("Loading....", url);
       const data = await fetchGithubContent(url, branch);
       if (data.type === 'list') {
-        loadAppList(data);
-        //onAppSelected(0);
+        data.path = path;
+        await loadAppList(data);
+        if (subAppPath) {
+          console.log("Sub app path: ", subAppPath);
+          const subAppIndex = data.apps.findIndex((app: any) => {
+              if (app.path.startsWith("https://")) {
+                return app.path === subAppPath;
+              } else {
+                return subAppPath === path + (path.endsWith("/") ? "" : "/") + app.path;
+              }
+          });
+          console.log("Sub app index: ", subAppIndex);
+          if (subAppIndex != -1) {
+            setSelectedAppIndex(subAppIndex);
+          } else {
+            setSelectedAppIndex(0);
+          }
+        } else {
+          setSelectedAppIndex(0);
+        }
       } else {
         const appName = data.name;
         const appDescription = data.description;
@@ -370,10 +392,8 @@ const ExternalAppPage = () => {
   }, [runId]);
 
   useEffect(() => {
-    if (appList.apps?.length > 0) {
-      onAppSelected(0);
-    }
-  }, [appList]);
+    onAppSelected(selectedAppIndex);
+  }, [selectedAppIndex]);
 
   const adjustDropdownWidth = () => {
     const screenWidth = window.innerWidth;
@@ -443,9 +463,15 @@ const ExternalAppPage = () => {
                         className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
                       >
                         <a
-                          onClick={() => {
-                            setExternalAppUrl(app.path); // Set the input field to the app.path
-                            loadApp(app.path); // Load the app
+                          onClick={async () => {
+                            setExternalAppUrl(app.parent || app.path); // Set the input field to the app.path
+                            if (app.parent) {
+                              await loadApp(app.parent, app.path); // Load the parent list
+                            } else {
+                              setAppList({}); // Clear the app list
+                              setSelectedAppIndex(-1); // Clear the selected app index
+                              await loadApp(app.path); // Load the app
+                            }
                             setShowRecentApps(false);
                           }}
                           className="block cursor-pointer"
@@ -488,7 +514,7 @@ const ExternalAppPage = () => {
         </div>
 
         {(appList.apps?.length > 0) && (
-          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
+          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} selectedAppIndex={selectedAppIndex} />
         )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">

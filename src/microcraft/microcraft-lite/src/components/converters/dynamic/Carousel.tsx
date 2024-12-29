@@ -18,10 +18,11 @@ interface Props {
   description: string;
   apps: App[];
   onAppSelected: (index: number) => void;
+  selectedAppIndex: number;
 }
 
-const AppCarousel = ({ name, description, apps, onAppSelected }: Props) => {
-  const [swiperIndex, setSwiperIndex] = useState(0);
+const AppCarousel = ({ name, description, apps, onAppSelected, selectedAppIndex }: Props) => {
+  const [swiperIndex, setSwiperIndex] = useState(selectedAppIndex || 0);
 
   // Function to handle swiper index change
   const handleSlideChange = (swiper: any) => {
@@ -37,6 +38,7 @@ const AppCarousel = ({ name, description, apps, onAppSelected }: Props) => {
     <div className="relative">
       <Swiper
         modules={[Pagination, Navigation]}
+        initialSlide={selectedAppIndex}
         spaceBetween={20}
         slidesPerView={2}
         centeredSlides={true}
