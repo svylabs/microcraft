@@ -377,9 +377,9 @@ const ExternalAppPage = () => {
 
   const adjustDropdownWidth = () => {
     const screenWidth = window.innerWidth;
-    if (screenWidth <= 320) setDropdownWidth("18rem");
-    else if (screenWidth <= 375) setDropdownWidth("22rem");
-    else if (screenWidth <= 425) setDropdownWidth("24.5rem");
+    //if (screenWidth <= 320) setDropdownWidth("18rem");
+    if (screenWidth <= 375) setDropdownWidth("18rem");
+    else if (screenWidth <= 500) setDropdownWidth("22rem");
     else if (screenWidth <= 768) setDropdownWidth("46rem");
     else setDropdownWidth("52rem");
   };
