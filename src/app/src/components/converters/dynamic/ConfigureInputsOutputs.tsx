@@ -741,12 +741,6 @@ const ConfigureInputsOutputs: React.FC = () => {
 
           <DndProvider backend={HTML5Backend}>
             <div className="flex">
-              {/* <div className="w-1/4 p-4 border-r h-[31.5rem] overflow-y-auto">
-                <h2 className="flex justify-center md:text-xl font-semibold">Available Elements</h2>
-                {availableFormElements.map((component, index) => (
-                  <DraggableComponent key={`${component.value}-${index}`} component={component} />
-                ))}
-              </div> */}
               <div className="w-1/4 p-4 border-r h-[31.5rem] overflow-y-auto">
                 <h2 className="flex justify-center md:text-xl font-semibold">Available Elements</h2>
                 {availableFormElements.map((component, index) => (
