@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import ConnectToWallet from "./ConnectToWallet";
 import microcraftLogo from "./photos/microcraft.png";
 
@@ -48,21 +49,30 @@ const Header: React.FC = () => {
         <div className="hidden md:flex items-center">
           <ul className="flex gap-3 lg:gap-5">
             <li className="group relative">
-              <a
+              {/* <a
                 href="#"
                 className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
               >
                 Home
-              </a>
+              </a> */}
+              <Link to="/" className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
+              Home
+            </Link>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
-              <a
+            <Link to="/features" 
+            className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
+              Features
+            </Link>
+              {/* <a
                 href="#"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
               >
                 Features
-              </a>
+              </a> */}
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
