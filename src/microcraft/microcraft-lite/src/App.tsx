@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import ExternalAppPage from "./components/converters/dynamic/ExternalAppPage";
 import SharePage from "./components/share/SharePage";
+import Features from "./components/Features";
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,8 @@ const AppContent: React.FC = () => {
       </div>
         <Routes>
           <Route path="/" element={<ExternalAppPage />} />
+          <Route path="/features" element={<Features />} />
+          {/* <Route path="/resources" element={<Resources />} /> */}
         </Routes>
         <ToastContainer /> 
     </>
