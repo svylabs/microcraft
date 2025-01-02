@@ -52,12 +52,6 @@ const Header: React.FC = () => {
               <Link to="/" className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Home
               </Link>
-              {/* <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
-                Home
-              </a> */}
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
@@ -65,12 +59,6 @@ const Header: React.FC = () => {
                 className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Features
               </Link>
-              {/* <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
-                Features
-              </a> */}
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
@@ -78,12 +66,6 @@ const Header: React.FC = () => {
                 className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Resources
               </Link>
-              {/* <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
-                Resources
-              </a> */}
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
           </ul>
@@ -168,12 +150,6 @@ const Header: React.FC = () => {
                     <Link to="/" className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Home
                     </Link>
-                    {/* <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
-                      Home
-                    </a> */}
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                   <li className="group relative">
@@ -181,12 +157,6 @@ const Header: React.FC = () => {
                       className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Features
                     </Link>
-                    {/* <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
-                      Features
-                    </a> */}
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                   <li className="group relative">
@@ -194,12 +164,6 @@ const Header: React.FC = () => {
                       className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Resources
                     </Link>
-                    {/* <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
-                      Resources
-                    </a> */}
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                 </ul>

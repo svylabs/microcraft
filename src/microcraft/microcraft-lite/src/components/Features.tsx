@@ -87,7 +87,7 @@ const Features: React.FC = () => {
             >
               ✕
             </button>
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
               {selectedFeature?.title}
             </h2>
             <p className="text-gray-600 max-h-80 overflow-y-auto">
