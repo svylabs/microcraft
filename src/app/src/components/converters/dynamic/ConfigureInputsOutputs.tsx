@@ -181,6 +181,8 @@ const ConfigureInputsOutputs: React.FC = () => {
         ],
       },
     },
+    enableCopyIcon: false,
+    enableQrCode: false,
   });
 
   let initialConfig = {};
@@ -452,7 +454,7 @@ const ConfigureInputsOutputs: React.FC = () => {
         case 'table':
         // case 'transactionLink':
         case 'description':
-          initialConfig = { styles: { ...config.styles } };
+          initialConfig = { styles: { ...config.styles }, enableCopyIcon: config.enableCopyIcon, enableQrCode: config.enableQrCode };
           break;
         case 'dropdown':
         case 'radio':
