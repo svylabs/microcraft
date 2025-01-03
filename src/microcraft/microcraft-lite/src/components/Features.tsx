@@ -2,37 +2,41 @@ import React, { useState, useRef, useEffect } from 'react';
 
 const featuresList = [
   {
-    title: 'Decentralized DeFi Frontends',
+    title: 'Opinionated framework for DeFi micro-frontends',
     description:
-      'The framework enables this. Lorem ipsum dolor sit amet consectetur, adipisicing elit. In perferendis, repellendus fugiat nobis tempore beatae odit magni. Aut nesciunt ad modi quam, error tenetur laudantium cupiditate explicabo. Quas, totam fugiat? Text messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, asText messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, as',
+      'Microcraft is an opinionated framework for DeFi frontend development, providing a set of tools and conventions to make building DeFi frontends easy.',
   },
   {
-    title: 'JSON UI Definitions',
-    description: 'Users can create UIs through simple JSON-based configuration.',
+    title: 'JSON based micro-frontend definition',
+    description: 'Developers and non-technical users alike can create Micro-frontends using intuitive JSON definition',
   },
   {
-    title: 'Github / IPFS Storage',
+    title: 'Compartmentalized execution & Security',
     description:
-      'UIs can be stored as JSON files in GitHub/IPFS, and the framework renders the UI directly without any hosting.',
+      'microcraft-lib (npm: @svylabs/microcraft-lib), the library that powers Microcraft executes frontend code in a secure compartmentalized environment, ensuring that the frontend execution is secure, with no accessibility to localStorage, cookies etc.',
   },
   {
-    title: 'Inbuilt Web3/HTML Components',
-    description: 'Pre-built components for text, wallet, swap, etc.',
-  },
-  {
-    title: 'Easy Integration with Smart Contracts/Networks',
+    title: 'Render from Github / IPFS',
     description:
-      'Support for EVM-based smart contracts, with more VMs planned.',
+      'UI definitions can be stored in Github or IPFS and be rendered directly by the framework with appropriate runtime implementations',
+  },
+  {
+    title: 'Smart Contracts and Network integration',
+    description:
+      'Microcraft provides seamless integration with EVM based networks and smart contracts, with more networks coming soon',
   },
   {
     title: 'Wallet Integrations',
-    description: 'Metamask integration.Text messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, asText messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, asText messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, asText messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, asText messages are used for personal, family, business, and social purposes. Governmental and non-governmental organizations use text messaging for communication between colleagues. In the 2010s, the sending of short informal messages became an accepted part of many cultures, as',
+    description: 'Microcraft supports Metamask with more integrations coming soon.',
   },
   {
-    title: 'Account Abstraction',
-    description:
-      'Efficient and seamless account abstraction mechanisms.',
+    title: "CLI to build and test",
+    description: "The microcraft CLI (npm install -g @svylabs/microcraft) helps developers build and test the frontends locally before publishing to the internet."
   },
+  {
+    title: "Coming soon: WASM library support",
+    description: "Inject WASM libraries into microfrontends to build custom functionality"
+  }
 ];
 
 const truncateText = (text: string, maxLength: number) => {
@@ -102,7 +106,7 @@ const Features: React.FC = () => {
           Features
         </h1>
         <p className="text-center text-gray-600 mb-12">
-          Discover the unique features offered by our framework for building robust DeFi UIs.
+          Packed with features to make DeFi frontends secure and easy to build.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {featuresList.map((feature, index) => (
