@@ -9,6 +9,7 @@ import App from "./Renderer/App";
 import { randomUUID } from 'crypto';
 import AppCarousel from './Carousel';
 import { FaChevronDown } from 'react-icons/fa';
+import { on } from 'events';
 // import { net } from "web3";
 
 interface RecentApp {
@@ -16,6 +17,8 @@ interface RecentApp {
   description: string;
   path: string;
   lastUsed: Date;
+  type: 'app' | 'list';
+  parent?: string;
 }
 
 interface App {
@@ -42,9 +45,11 @@ const ExternalAppPage = () => {
   const [appName, setAppName] = useState("");
   const [appDescription, setAppDescription] = useState("");
   const [runId, setRunId] = useState("");
-  const [recentApps, setRecentApps] = useState<RecentApp[]>([]);
+  const [recentApps, setRecentApps] = useState<RecentApp[]>(JSON.parse(localStorage.getItem("recentApps") || "[]"));
+  const [showRecentApps, setShowRecentApps] = useState(false);
   const [appList, setAppList] = useState<any>({});
-  // const [feedback, setFeedback] = useState(false);
+  const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
+  const [dropdownWidth, setDropdownWidth] = useState("18rem");
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -95,20 +100,91 @@ const ExternalAppPage = () => {
     setRecentApps(parsedApps);
   }, []);
 
+  // Function to toggle recent apps visibility
+  const toggleRecentApps = () => {
+    setShowRecentApps(!showRecentApps);
+  };
+
   const onAppSelected = async (index: number) => {
-    if (index >= appList.apps?.length) {
+    if (index >= appList.apps?.length || index < 0) {
       return;
     }
     const app = appList.apps[index];
-    if (app.path.startsWith("https://")) {
-      //setExternalAppUrl(app.path);
-      console.log("On app selected: loading: ", app.path);
-      loadApp(app.path);
-    } else {
-      const slash = externalAppUrl.endsWith("/") ? "" : "/";
-      loadApp(externalAppUrl + slash + app.path);
-    }
+    // if (app.path.startsWith("https://")) {
+    //   //setExternalAppUrl(app.path);
+    //   console.log("On app selected: loading: ", app.path);
+    //   loadApp(app.path);
+    // } else {
+    //   const slash = externalAppUrl.endsWith("/") ? "" : "/";
+    //   loadApp(externalAppUrl + slash + app.path);
+    // }
+    const resolvedPath = app.path.startsWith("https://")
+      ? app.path
+      : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
+
+    console.log("On app selected: loading: ", resolvedPath);
+
+    await loadApp(resolvedPath);
+    
+    // Update recent apps logic
+    const newApp: RecentApp = {
+      name: app.name,
+      description: app.description,
+      path: resolvedPath,
+      lastUsed: new Date(),
+      type: 'app',
+      parent: appList.path
+    };
+    updateRecentApps(newApp);
+    
+
   }
+
+  const loadAppList = async (data: any) => {
+    if (data.type === 'list') {
+      console.log("Loading app list: ", data);
+      
+      setAppList(data);
+
+
+      // Update the last used time for the list
+      const newList: RecentApp = {
+        name: data.name,
+        description: data.description,
+        path: data.path,
+        lastUsed: new Date(),
+        type: 'list'
+      };
+      // Update recent apps with the new list
+      updateRecentApps(newList);
+    }
+  };
+
+  const updateRecentApps = (newApp: RecentApp) => {
+    const updatedApps = recentApps.filter(app => app.name !== newApp.name); // Remove existing app with the same name
+    updatedApps.unshift(newApp); // Add the new app to the front
+    if (updatedApps.length > 10) {
+      updatedApps.splice(10); // Keep only the latest 10
+    }
+    setRecentApps(updatedApps);
+    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
+  };
+
+  const timeSinceLastUsed = (lastUsed: Date) => {
+    const now = new Date();
+    const diff = Math.abs(now.getTime() - new Date(lastUsed).getTime());
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? 's' : ''} ago`;
+    } else if (hours < 24) {
+      return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
+    } else {
+      return `${days} day${days !== 1 ? 's' : ''} ago`;
+    }
+  };
 
   const loadAppFromLocal = async (localPath) => {
     setLoading(true);
@@ -168,9 +244,6 @@ const ExternalAppPage = () => {
       setComponents(components);
       setContracts(contractDetails);
       setNetworks(networkDetails);
-
-      const newApp: RecentApp = { name: appName, description: appDescription, path: localPath, lastUsed: new Date() };
-      updateRecentApps(newApp);
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -180,11 +253,11 @@ const ExternalAppPage = () => {
     }
   }
 
-  const loadAppList = async(data: any) => {
-    if (data.type === 'list') {
-       setAppList(data);
-    }
-  }
+  // const loadAppList = async (data: any) => {
+  //   if (data.type === 'list') {
+  //     setAppList(data);
+  //   }
+  // }
 
   const isEmpty = (str: string | null | undefined) => {
     if (str === undefined || str === null || str === "") {
@@ -193,7 +266,7 @@ const ExternalAppPage = () => {
     return false;
   }
 
-  const loadApp = async (appPath?: string) => {
+  const loadApp = async (appPath?: string, subAppPath?: string) => {
     setLoading(true);
     setData({});
     const path = appPath || externalAppUrl;
@@ -225,8 +298,26 @@ const ExternalAppPage = () => {
       //console.log("Loading....", url);
       const data = await fetchGithubContent(url, branch);
       if (data.type === 'list') {
-         loadAppList(data);
-         //onAppSelected(0);
+        data.path = path;
+        await loadAppList(data);
+        if (subAppPath) {
+          console.log("Sub app path: ", subAppPath);
+          const subAppIndex = data.apps.findIndex((app: any) => {
+              if (app.path.startsWith("https://")) {
+                return app.path === subAppPath;
+              } else {
+                return subAppPath === path + (path.endsWith("/") ? "" : "/") + app.path;
+              }
+          });
+          console.log("Sub app index: ", subAppIndex);
+          if (subAppIndex != -1) {
+            setSelectedAppIndex(subAppIndex);
+          } else {
+            setSelectedAppIndex(0);
+          }
+        } else {
+          setSelectedAppIndex(0);
+        }
       } else {
         const appName = data.name;
         const appDescription = data.description;
@@ -276,10 +367,18 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
-      }
 
-      const newApp: RecentApp = { name: appName, description: appDescription, path: appPath, lastUsed: new Date() };
-      updateRecentApps(newApp);
+        // Add the app to recent apps after loading
+        const newApp: RecentApp = {
+          name: appName,
+          description: appDescription,
+          path: path,
+          lastUsed: new Date(),
+          type: 'app'
+        };
+        updateRecentApps(newApp);
+
+      }
     } catch (error) {
       console.error("Error loading external app: ", error);
       toast.error("Error loading external app. Please try again.");
@@ -287,48 +386,29 @@ const ExternalAppPage = () => {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
 
   }, [runId]);
 
   useEffect(() => {
-    if (appList.apps?.length > 0) {
-      onAppSelected(0);
-    }
-  }, [appList]);
+    onAppSelected(selectedAppIndex);
+  }, [selectedAppIndex]);
 
-  // Function to update recent apps in local storage
-  const updateRecentApps = (newApp: RecentApp) => {
-    const updatedApps = [newApp, ...recentApps.filter(app => app.path !== newApp.path)];
-    if (updatedApps.length > 10) {
-      updatedApps.pop(); // Remove the oldest app if more than 5
-    }
-    setRecentApps(updatedApps);
-    localStorage.setItem("recentApps", JSON.stringify(updatedApps));
+  const adjustDropdownWidth = () => {
+    const screenWidth = window.innerWidth;
+    //if (screenWidth <= 320) setDropdownWidth("18rem");
+    if (screenWidth <= 375) setDropdownWidth("18rem");
+    else if (screenWidth <= 500) setDropdownWidth("22rem");
+    else if (screenWidth <= 768) setDropdownWidth("46rem");
+    else setDropdownWidth("52rem");
   };
 
-  // Function to display recent apps
-  const displayRecentApps = () => {
-    console.log(recentApps);
-    recentApps.map((app, index) => {
-      console.log("app.name:- ", app.name + "app.description:- ", app.description + "app.path:- ", app.path);
-    });
-    return (
-      <div className="recent-apps">
-        <h3>Recently Opened Apps</h3>
-        <ul>
-          {recentApps.map((app, index) => (
-            <li key={index}>
-              <a href={app.path} target="_blank" rel="noopener noreferrer">
-                {app.name} - {app.description}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  };
+  useEffect(() => {
+    adjustDropdownWidth(); // Adjust on initial load
+    window.addEventListener("resize", adjustDropdownWidth); // Adjust on window resize
+    return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
+  }, []);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -339,37 +419,102 @@ const ExternalAppPage = () => {
     <>
       <div className="image-pdf px-4 min-h-[85.6vh] flex flex-col pb-10">
         <ToastContainer />
-        <div className="flex flex-col lg:flex-row gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
+        <div className="flex flex-col gap-4 lg:flex-row lg:gap-5 text-xs md:text-base font-bold py-2 lg:mx-auto">
           <div className="relative flex">
             <input
-              className="py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
-              type="text"
+              className="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
+              // type="text"
+              type="url"
               size={80}
               placeholder="Enter github url of the app here"
               value={externalAppUrl}
-              onChange={(e) => setExternalAppUrl(e.target.value)}
+              // onChange={(e) => setExternalAppUrl(e.target.value)}
+              onChange={(e) => setExternalAppUrl(e.target.value.trim())}
+              onFocus={() => {
+                if (recentApps.length > 0) { // Show recent apps only if there are any
+                  toggleRecentApps();
+                }
+              }}
               id="output"
             />
-            <button
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
-              onClick={displayRecentApps}
-            >
-              <FaChevronDown className="text-slate-700" />
-            </button>
+            <div className="relative">
+              <button
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 rounded"
+                onClick={toggleRecentApps}
+              >
+                <FaChevronDown
+                  className={`text-slate-700 transition-transform ${showRecentApps ? 'rotate-180' : 'rotate-0'
+                    }`}
+                />
+              </button>
+
+              {showRecentApps && (
+                <div
+                  style={{ width: dropdownWidth }}
+                  className="absolute right-0 mt-12 bg-white rounded-lg shadow-lg overflow-y-auto max-h-64 z-[9999] transform transition-all duration-300 scale-100"
+                >
+                  <div className="p-4 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-800">Recently Opened Apps</h3>
+                  </div>
+                  <ul className="space-y-4 p-4">
+                    {recentApps.map((app, index) => (
+                      <li
+                        key={index}
+                        className="bg-gray-50 p-3 rounded-lg hover:bg-gray-100 hover:shadow-md transition-shadow"
+                      >
+                        <a
+                          onClick={async () => {
+                            setExternalAppUrl(app.parent || app.path); // Set the input field to the app.path
+                            if (app.parent) {
+                              await loadApp(app.parent, app.path); // Load the parent list
+                            } else {
+                              setAppList({}); // Clear the app list
+                              setSelectedAppIndex(-1); // Clear the selected app index
+                              await loadApp(app.path); // Load the app
+                            }
+                            setShowRecentApps(false);
+                          }}
+                          className="block cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <h4 className="text-sm font-medium text-gray-800 mb-1">{app.name}</h4>
+                              <span className={`ml-2 text-xs font-semibold ${app.type === 'app' ? 'text-blue-500' : 'text-green-500'}`}>
+                                {app.type === 'app' ? 'App' : 'List'}
+                              </span>
+                            </div>
+                            {app.lastUsed && (
+                              <span className="text-xs text-gray-400">
+                                {timeSinceLastUsed(app.lastUsed)}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500">{app.description}</p>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
           </div>
           <div className="mx-auto">
             <button
               className="px-4 py-2 bg-blue-500 rounded text-white hover:bg-blue-600"
-              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp()} }
+              onClick={() => { setRunId(crypto.randomUUID()); setAppList({}); loadApp() }}
+            // onClick={() => { 
+            //   setRunId(crypto.randomUUID()); 
+            //   loadApp(); // Only call loadApp without resetting appList
+            // }}
             >
               Load App
             </button>
           </div>
         </div>
 
-
         {(appList.apps?.length > 0) && (
-          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} />
+          <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} selectedAppIndex={selectedAppIndex} />
         )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">

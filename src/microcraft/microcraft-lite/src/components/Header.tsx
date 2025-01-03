@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import ConnectToWallet from "./ConnectToWallet";
 import microcraftLogo from "./photos/microcraft.png";
 
@@ -41,37 +42,30 @@ const Header: React.FC = () => {
           <h2 className="flex flex-col py-2 text-2xl md:text-3xl lg:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-pink-500 overflow-hidden">
             Microcraft
             <span className="text-xs md:text-sm lg:text-base font-light text-transparent whitespace-nowrap">
-            Decentralized Frontends for a 'De'Fi Future
+              Decentralized Frontends for a 'De'Fi Future
             </span>
           </h2>
         </div>
         <div className="hidden md:flex items-center">
           <ul className="flex gap-3 lg:gap-5">
             <li className="group relative">
-              <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
+              <Link to="/" className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Home
-              </a>
+              </Link>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
-              <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
+              <Link to="/features"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Features
-              </a>
+              </Link>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
             <li className="group relative">
-              <a
-                href="#"
-                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-              >
+              <Link to="/resources"
+                className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                 Resources
-              </a>
+              </Link>
               <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
             </li>
           </ul>
@@ -80,15 +74,15 @@ const Header: React.FC = () => {
         <div className="flex gap-5 items-center">
 
           <div className="hidden md:flex justify-center items-center gap-1 md:gap-3">
-              <div className="flex gap-3 items-center cursor-pointer">
-                <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                  <span
-                    className="text-gray-600 cursor-pointer text-[10px]"
-                  >
-                    Avatar
-                  </span>
-                </div>
+            <div className="flex gap-3 items-center cursor-pointer">
+              <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                <span
+                  className="text-gray-600 cursor-pointer text-[10px]"
+                >
+                  Avatar
+                </span>
               </div>
+            </div>
           </div>
           <button
             onClick={toggleMenu}
@@ -134,49 +128,42 @@ const Header: React.FC = () => {
           <div className="block relative">
             <div ref={modalRef} className="absolute right-1 md:right-0 bg-slate-200 p-3 md:p-2 rounded max-w-xs">
               <div className="flex flex-col gap-3">
-                  <div className="flex gap-3 items-center cursor-pointer">
-                    <div className="w-10 h-10 md:w-11 md:h-11 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
-                      <span
-                        className="text-gray-600 cursor-pointer text-[12px]"
-                      >
-                        Avatar
-                      </span>
-                    </div>
-                    <p className="flex self-center items-center text-[#092C4C] text-lg">
-                      <span className="text-base mr-2">Hello! </span>
-                      <span className="font-bold">Guest</span>
-                    </p>
+                <div className="flex gap-3 items-center cursor-pointer">
+                  <div className="w-10 h-10 md:w-11 md:h-11 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer transform hover:scale-110 shadow-lg">
+                    <span
+                      className="text-gray-600 cursor-pointer text-[12px]"
+                    >
+                      Avatar
+                    </span>
                   </div>
+                  <p className="flex self-center items-center text-[#092C4C] text-lg">
+                    <span className="text-base mr-2">Hello! </span>
+                    <span className="font-bold">Guest</span>
+                  </p>
+                </div>
                 <ConnectToWallet />
               </div>
               <hr className="md:hidden border border-t-slate-500 my-3"></hr>
               <div className="flex md:hidden items-center">
                 <ul className="flex flex-col gap-3">
                   <li className="group relative">
-                    <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
+                    <Link to="/" className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Home
-                    </a>
+                    </Link>
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                   <li className="group relative">
-                    <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
+                    <Link to="/features"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Features
-                    </a>
+                    </Link>
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                   <li className="group relative">
-                    <a
-                      href="#"
-                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300"
-                    >
+                    <Link to="/resources"
+                      className="text-gray-700 font-medium group-hover:text-blue-500 transition-colors duration-300">
                       Resources
-                    </a>
+                    </Link>
                     <span className="absolute left-0 bottom-[-2px] w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300"></span>
                   </li>
                 </ul>
