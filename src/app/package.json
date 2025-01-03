@@ -97,6 +97,7 @@
     "sass": "^1.80.4",
     "solc": "^0.8.26",
     "styled-components": "^6.1.8",
+    "swiper": "^11.2.0",
     "vite-plugin-node-stdlib-browser": "^0.2.1",
     "web3": "^4.9.0"
   },
