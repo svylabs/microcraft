@@ -163,6 +163,16 @@ const buildApp = async (appDirectory) => {
             }
         }
         fs.mkdirSync(path.join(appDirectory, "dist"));
+        if (appData.libs && appData.libs.length > 0) {
+            fs.mkdirSync(path.join(appDirectory, "dist", "lib"))
+            for (let lib of appData.libs) {
+                if (lib.url && lib.url.startsWith("lib/")) {
+                    fs.copyFileSync(path.join(appDirectory, lib.url), path.join(appDirectory, "dist", lib.url));
+                } else {
+                    console.error(`Invalid lib url: ${lib.url}`);
+                }
+            }
+        }
         // Write the new app.json file with merged code
         const outputPath = path.join(appDirectory, "dist", 'app.json');
         fs.writeFileSync(outputPath, JSON.stringify(appData, null, 2));
