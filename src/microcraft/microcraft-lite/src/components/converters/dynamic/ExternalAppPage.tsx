@@ -10,6 +10,7 @@ import { randomUUID } from 'crypto';
 import AppCarousel from './Carousel';
 import { FaChevronDown } from 'react-icons/fa';
 import { on } from 'events';
+import { WasmGlue } from './wasm/WasmGlue';
 // import { net } from "web3";
 
 interface RecentApp {
@@ -50,6 +51,7 @@ const ExternalAppPage = () => {
   const [appList, setAppList] = useState<any>({});
   const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
+  const [wasms, setWasms] = useState<{}>({});
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -58,7 +60,7 @@ const ExternalAppPage = () => {
     return false;
   };
 
-  const fetchGithubContent = async (url: string, branch: string, type: "json" | "str" = "json") => {
+  const fetchGithubContent = async (url: string, branch: string, type: "json" | "str" | "blob" = "json") => {
     //console.log(url);
     const contentUrl = url + ((branch !== undefined && branch !== "") ? "?ref=" + branch : "");
     console.log(contentUrl)
@@ -73,11 +75,11 @@ const ExternalAppPage = () => {
     console.log(appRawData);
     if (type === "str") {
       return atob(appRawData.content);
-    } else {
+    } else if (type === "json") {
       const data = JSON.parse(atob(appRawData.content));
       return data;
     }
-    return data;
+    return appRawData;
   };
 
   useEffect(() => {
@@ -239,6 +241,22 @@ const ExternalAppPage = () => {
           contract.abi = data;
         }
       }
+      const libs = data.libs || [];
+      const wasmLibs = {};
+      for (let i = 0; i < libs.length; i++) {
+        const lib = libs[i];
+        if (lib.type === "wasm") {
+          if (lib.url !== undefined) {
+            const codeRefParts = lib.url.split("#");
+            const relPath = codeRefParts[0];
+            //const entryPoint = codeRefParts[1];
+            let wasmUrl = `/applet/files?base_path=${localPath}&file_path=${relPath}`
+            wasmLibs[lib.name] = new WasmGlue();
+            await wasmLibs[lib.name].loadWasm(wasmUrl);
+          }
+        }
+      }
+      setWasms(wasmLibs);
       setAppDescription(appDescription);
       setAppName(appName);
       setComponents(components);
@@ -362,6 +380,24 @@ const ExternalAppPage = () => {
             contract.abi = data;
           }
         }
+        const libs = data.libs || [];
+        const wasmLibs = {};
+        for (let i = 0; i < libs.length; i++) {
+          const lib = libs[i];
+          if (lib.type === "wasm") {
+            if (lib.url !== undefined) {
+              const codeRefParts = lib.url.split("#");
+              const relPath = codeRefParts[0];
+              //const entryPoint = codeRefParts[1];
+              let wasmUrl = "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contents/" + appPath + relPath;
+              let wasmContent = await fetchGithubContent(wasmUrl, branch, "blob");
+              console.log(wasmContent);
+              wasmLibs[lib.name] = new WasmGlue();
+              await wasmLibs[lib.name].loadWasm(wasmContent.download_url);
+            }
+          }
+        }
+        setWasms(wasmLibs);
         setAppDescription(appDescription);
         setAppName(appName);
         setComponents(components);
@@ -547,7 +583,7 @@ const ExternalAppPage = () => {
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
-                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis) }}
+                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms}}
               />
             )}
           </div>
