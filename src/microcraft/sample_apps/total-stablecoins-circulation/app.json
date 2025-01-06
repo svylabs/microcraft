@@ -3,6 +3,12 @@
   "description": "Tracks total circulation for popular stablecoins or a user-provided ERC20 contract address.",
   "components": [
     {
+      "type": "number",
+      "label": "Trial",
+      "id": "trial",
+      "placement": "input"
+    },
+    {
       "type": "dropdown",
       "label": "Select Stablecoin (Optional)",
       "id": "stablecoinSelect",
