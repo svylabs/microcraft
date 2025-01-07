@@ -71,6 +71,7 @@
   "networks": [
     {
       "type": "ethereum",
+      "name": "Ethereum Mainnet",
       "config": {
         "rpcUrl": "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
         "chainId": "1",
