@@ -384,6 +384,7 @@ const ExternalAppPage = () => {
       toast.error("Error loading external app. Please try again.");
     } finally {
       setLoading(false);
+      setRunId(crypto.randomUUID());
     }
   }
 
