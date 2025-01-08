@@ -29,6 +29,7 @@ interface ContractInstance {
 
 interface NetworkDetails {
   type: string;
+  name: string;
   config: {
     rpcUrl: string;
     chainId: string;
@@ -55,6 +56,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
   const [networkDetails, setNetworkDetails] = useState<NetworkDetails[]>([
     {
       type: "ethereum",
+      name: "Ethereum Mainnet",
       config: {
         rpcUrl: "",
         chainId: "",
@@ -275,6 +277,7 @@ const ConfigureVisibilitySelector: React.FC = () => {
     // Create a new network configuration based on the selected type
     const newNetworkConfig: NetworkDetails = {
       type: value,
+      name: value === "ethereum" ? "Ethereum Mainnet" : value,
       config: {
         rpcUrl: "",
         chainId: "",
