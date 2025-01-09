@@ -555,7 +555,7 @@ const ExternalAppPage = () => {
         )}
 
         <div className=" bg-gray-100 shadow-lg rounded-md flex flex-col gap-5 p-2 pt-3 md:p-3 lg:pt-8 lg:p-6 lg:mx-20 xl:mx-40">
-          {(output.approval_status || "approved") === "pending" && (
+          {(output.approval_status || "pending") === "pending" && (
             <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
               <p>
                 <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
