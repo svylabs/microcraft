@@ -29,6 +29,7 @@ interface CustomComponent {
   code?: string;
   config?: any;
   events?: Event[] | undefined;
+  children?: CustomComponent[];
 }
 
 interface Event {
@@ -36,7 +37,15 @@ interface Event {
   code: string;
 }
 
+interface App {
+  id: string;
+  label: string;
+  components: CustomComponent[];
+}
+
 const ConfigureInputsOutputs: React.FC = () => {
+  const [apps, setApps] = useState<App[]>([]);
+  const [currentApp, setCurrentApp] = useState<App | null>(null);
   const [currentComponent, setCurrentComponent] = useState<CustomComponent>({
     id: "",
     label: "",
@@ -262,7 +271,23 @@ const ConfigureInputsOutputs: React.FC = () => {
     }
   };
 
+  const handleAddApp = () => {
+    const newApp: App = {
+      id: `app-${Date.now()}`,
+      label: `App ${apps.length + 1}`,
+      components: [],
+    };
+    setApps((prevApps) => [...prevApps, newApp]);
+    setCurrentApp(newApp);
+  };
+
+  const handleSelectApp = (app: App) => {
+    setCurrentApp(app);
+  };
+
   const handleAddComponent = () => {
+    if (!currentApp) return; // Ensure there is a current app selected
+
     // Check for both ID and Label fields
     if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
       toast.error("Please provide both ID and Label.");
@@ -287,40 +312,23 @@ const ConfigureInputsOutputs: React.FC = () => {
       return;
     }
 
-    const updatedComponents = [...components];
-    const existingIndex = updatedComponents.findIndex(
-      (component) =>
-        component.id.trim() === currentComponent.id.trim() &&
-        component.label.trim() === currentComponent.label.trim()
-    );
-
-    const newComponent = {
+    // Create a new component with a unique ID
+    const newComponent: CustomComponent = {
       ...currentComponent,
-      config:
-        currentComponent.placement === "input" ||
-          currentComponent.placement === "action" ||
-          currentComponent.placement === "output"
-          ? currentComponent.config || JSON.stringify(config, null, 2)
-          : "",
-      events: [...events],
+      id: `component-${Date.now()}`, // Unique ID for the component
+      children: [], // Initialize children as an empty array
     };
 
-    if (existingIndex !== -1) {
-      // Update existing field
-      updatedComponents[existingIndex] = newComponent;
-    } else {
-      // Add new field
-      updatedComponents.push(newComponent);
-    }
+    // Update the current app's components
+    setApps((prevApps) =>
+      prevApps.map((app) =>
+        app.id === currentApp.id
+          ? { ...app, components: [...app.components, newComponent] }
+          : app
+      )
+    );
 
-    setComponents(updatedComponents);
-    setData((prevInputValues) => ({
-      ...prevInputValues,
-      [currentComponent.id]: "",
-    }));
-    setEvents([]);
-    saveDataToLocalStorage("components", updatedComponents);
-
+    // Reset current component state
     setCurrentComponent({
       id: "",
       label: "",
@@ -328,11 +336,108 @@ const ConfigureInputsOutputs: React.FC = () => {
       placement: "input",
       code: "",
       config: "",
+      events: [],
     });
-    setLocalConfig(JSON.stringify(initialConfig, null, 2));
 
-    // Refresh the page
-    window.location.reload();
+    // Optionally, you can save the updated apps to local storage
+    saveDataToLocalStorage("apps", apps);
+  };
+
+  // const handleAddComponent = () => {
+  //   // Check for both ID and Label fields
+  //   if (!currentComponent.id.trim() || !currentComponent.label.trim()) {
+  //     toast.error("Please provide both ID and Label.");
+  //     return;
+  //   }
+
+  //   // Check for type when placement is "output"
+  //   if (
+  //     currentComponent.placement === "output" &&
+  //     !currentComponent.type?.trim()
+  //   ) {
+  //     toast.error("Please select a type for output placement.");
+  //     return;
+  //   }
+
+  //   // Check for code when placement is "action"
+  //   if (
+  //     currentComponent.placement === "action" &&
+  //     !currentComponent.code?.trim()
+  //   ) {
+  //     toast.error("Please provide code for action placement.");
+  //     return;
+  //   }
+
+  //   const updatedComponents = [...components];
+  //   const existingIndex = updatedComponents.findIndex(
+  //     (component) =>
+  //       component.id.trim() === currentComponent.id.trim() &&
+  //       component.label.trim() === currentComponent.label.trim()
+  //   );
+
+  //   const newComponent = {
+  //     ...currentComponent,
+  //     config:
+  //       currentComponent.placement === "input" ||
+  //         currentComponent.placement === "action" ||
+  //         currentComponent.placement === "output"
+  //         ? currentComponent.config || JSON.stringify(config, null, 2)
+  //         : "",
+  //     events: [...events],
+  //   };
+
+  //   if (existingIndex !== -1) {
+  //     // Update existing field
+  //     updatedComponents[existingIndex] = newComponent;
+  //   } else {
+  //     // Add new field
+  //     updatedComponents.push(newComponent);
+  //   }
+
+  //   setComponents(updatedComponents);
+  //   setData((prevInputValues) => ({
+  //     ...prevInputValues,
+  //     [currentComponent.id]: "",
+  //   }));
+  //   setEvents([]);
+  //   saveDataToLocalStorage("components", updatedComponents);
+
+  //   setCurrentComponent({
+  //     id: "",
+  //     label: "",
+  //     type: "text",
+  //     placement: "input",
+  //     code: "",
+  //     config: "",
+  //   });
+  //   setLocalConfig(JSON.stringify(initialConfig, null, 2));
+
+  //   // Refresh the page
+  //   window.location.reload();
+  // };
+
+  const renderApps = () => {
+    return apps.map((app) => (
+      <div key={app.id} className="app-container">
+        <h3 onClick={() => handleSelectApp(app)}>{app.label}</h3>
+        {currentApp?.id === app.id && renderComponents(app.components)}
+      </div>
+    ));
+  };
+
+  const renderComponents = (components: CustomComponent[]) => {
+    return components.map((component, index) => (
+      <div key={index} className="component-container">
+        <div>
+          ID: {component.id}, Label: {component.label}, Type: {component.type}, Placement: {component.placement}
+          <button onClick={() => handleEditComponent(index)}>Edit</button>
+          <button onClick={() => handleDeleteComponent(component.id)}>Delete</button>
+        </div>
+        {component.children && component.children.length > 0 && (
+          <div>{renderComponents(component.children)}</div>
+        )}
+      </div>
+    ));
   };
 
   const handlePreview = async () => {
@@ -575,6 +680,29 @@ const ConfigureInputsOutputs: React.FC = () => {
               Publish the app
             </p>
           </div>
+
+          <div>
+        <button onClick={handleAddApp}>Add New App</button>
+        {renderApps()}
+        {currentApp && (
+          <div>
+            <h4>Add Component to {currentApp.label}</h4>
+            <input
+              type="text"
+              placeholder="Component ID"
+              value={currentComponent.id}
+              onChange={(e) => setCurrentComponent({ ...currentComponent, id: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Component Label"
+              value={currentComponent.label}
+              onChange={(e) => setCurrentComponent({ ...currentComponent, label: e.target.value })}
+            />
+            <button onClick={handleAddComponent}>Add Component</button>
+          </div>
+        )}
+      </div>
 
           <label className="block mb-2 mt-5 text-[#727679] font-semibold text-lg xl:text-xl">
             Placement:
