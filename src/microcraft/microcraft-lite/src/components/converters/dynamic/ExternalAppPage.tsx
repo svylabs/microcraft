@@ -52,6 +52,34 @@ const ExternalAppPage = () => {
   const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
+  const [currentApp, setCurrentApp] = useState(null);
+  const [navigationPath, setNavigationPath] = useState<string[]>([]);
+
+  const fetchAppData = async (url) => {
+    setLoading(true);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setAppList(data);
+      setCurrentApp(data.apps[0]); // Open the first app by default
+      setNavigationPath([data.name]); // Set initial navigation path
+    } catch (error) {
+      toast.error("Error loading app data.");
+      console.error("Fetch error: ", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const urlPath = new URLSearchParams(location.search).get("path");
+    if (urlPath) {
+      fetchAppData(urlPath + "/app.json"); // Adjust the URL to fetch the app.json
+    }
+  }, [location]);
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -112,14 +140,6 @@ const ExternalAppPage = () => {
       return;
     }
     const app = appList.apps[index];
-    // if (app.path.startsWith("https://")) {
-    //   //setExternalAppUrl(app.path);
-    //   console.log("On app selected: loading: ", app.path);
-    //   loadApp(app.path);
-    // } else {
-    //   const slash = externalAppUrl.endsWith("/") ? "" : "/";
-    //   loadApp(externalAppUrl + slash + app.path);
-    // }
     const resolvedPath = app.path.startsWith("https://")
       ? app.path
       : externalAppUrl + (externalAppUrl.endsWith("/") ? "" : "/") + app.path;
@@ -127,6 +147,16 @@ const ExternalAppPage = () => {
     console.log("On app selected: loading: ", resolvedPath);
 
     await loadApp(resolvedPath);
+
+      if (app.type === 'list') {
+        // If the selected app is a list, load its apps
+        setCurrentApp(app);
+        setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+      } else {
+        // If it's a regular app, just set it as the current app
+        setCurrentApp(app);
+        setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+      }
     
     // Update recent apps logic
     const newApp: RecentApp = {
@@ -139,7 +169,6 @@ const ExternalAppPage = () => {
     };
     updateRecentApps(newApp);
     
-
   }
 
   const loadAppList = async (data: any) => {
@@ -550,6 +579,7 @@ const ExternalAppPage = () => {
           </div>
         </div>
 
+        {/* App List */}
         {(appList.apps?.length > 0) && (
           <AppCarousel name={appList.name} description={appList.description} apps={appList.apps} onAppSelected={onAppSelected} selectedAppIndex={selectedAppIndex} />
         )}
@@ -563,7 +593,7 @@ const ExternalAppPage = () => {
               </p>
             </div>
           )}
-          <div className="px-2 text-wrap">
+          {/* <div className="px-2 text-wrap">
             <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
               <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
               <h3 className="text-sm md:text-base lg:text-lg">{appDescription}</h3>
@@ -586,6 +616,30 @@ const ExternalAppPage = () => {
                 debug={setOutputCode}
                 whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms}}
               />
+            )}
+          </div> */}
+          <div>
+            {/* Navigation Path */}
+            <nav className="mb-4">
+              {navigationPath.map((item, index) => (
+                <span key={index} className="text-blue-600 cursor-pointer">
+                  {item}
+                  {index < navigationPath.length - 1 && <span className="mx-1"> &gt; </span>}
+                </span>
+              ))}
+            </nav>
+
+            {/* Render Current App */}
+            {currentApp && (
+              <DynamicApp
+              runId={runId}
+              components={components}
+              updateData={setData}
+              contracts={contracts || []}
+              networks={networks || []}
+              debug={setOutputCode}
+              whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms}}
+            />
             )}
           </div>
         </div>
