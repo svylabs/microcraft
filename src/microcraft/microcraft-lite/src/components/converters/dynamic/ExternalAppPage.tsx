@@ -52,7 +52,6 @@ const ExternalAppPage = () => {
   const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
-  const [currentApp, setCurrentApp] = useState(null);
   const [navigationPath, setNavigationPath] = useState<string[]>([]);
 
   const fetchAppData = async (url) => {
@@ -64,7 +63,6 @@ const ExternalAppPage = () => {
       }
       const data = await response.json();
       setAppList(data);
-      setCurrentApp(data.apps[0]); // Open the first app by default
       setNavigationPath([data.name]); // Set initial navigation path
     } catch (error) {
       toast.error("Error loading app data.");
@@ -148,16 +146,12 @@ const ExternalAppPage = () => {
 
     await loadApp(resolvedPath);
 
-      if (app.type === 'list') {
-        // If the selected app is a list, load its apps
-        setCurrentApp(app);
-        setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
-      } else {
-        // If it's a regular app, just set it as the current app
-        setCurrentApp(app);
-        setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
-      }
-    
+    if (app.type === 'list') {
+      setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+    } else {
+      setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+    }
+
     // Update recent apps logic
     const newApp: RecentApp = {
       name: app.name,
@@ -168,13 +162,13 @@ const ExternalAppPage = () => {
       parent: appList.path
     };
     updateRecentApps(newApp);
-    
+
   }
 
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
       console.log("Loading app list: ", data);
-      
+
       setAppList(data);
 
 
@@ -350,11 +344,11 @@ const ExternalAppPage = () => {
         if (subAppPath) {
           console.log("Sub app path: ", subAppPath);
           const subAppIndex = data.apps.findIndex((app: any) => {
-              if (app.path.startsWith("https://")) {
-                return app.path === subAppPath;
-              } else {
-                return subAppPath === path + (path.endsWith("/") ? "" : "/") + app.path;
-              }
+            if (app.path.startsWith("https://")) {
+              return app.path === subAppPath;
+            } else {
+              return subAppPath === path + (path.endsWith("/") ? "" : "/") + app.path;
+            }
           });
           console.log("Sub app index: ", subAppIndex);
           if (subAppIndex != -1) {
@@ -371,6 +365,8 @@ const ExternalAppPage = () => {
         const components = data.components;
         const contractDetails = data.contracts || [];
         const networkDetails = data.networks || [];
+
+        setNavigationPath((prev) => [...prev.slice(0, 1), appName]); // Update navigation path
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
@@ -630,17 +626,15 @@ const ExternalAppPage = () => {
             </nav>
 
             {/* Render Current App */}
-            {currentApp && (
               <DynamicApp
-              runId={runId}
-              components={components}
-              updateData={setData}
-              contracts={contracts || []}
-              networks={networks || []}
-              debug={setOutputCode}
-              whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms}}
-            />
-            )}
+                runId={runId}
+                components={components}
+                updateData={setData}
+                contracts={contracts || []}
+                networks={networks || []}
+                debug={setOutputCode}
+                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms }}
+              />
           </div>
         </div>
       </div>
