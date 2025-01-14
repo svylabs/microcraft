@@ -63,7 +63,7 @@ const ExternalAppPage = () => {
       }
       const data = await response.json();
       setAppList(data);
-      setNavigationPath([data.name]); // Set initial navigation path
+      setNavigationPath([data.name]);
     } catch (error) {
       toast.error("Error loading app data.");
       console.error("Fetch error: ", error);
@@ -146,10 +146,10 @@ const ExternalAppPage = () => {
 
     await loadApp(resolvedPath);
 
-    if (app.type === 'list' || app.parent) {
-      setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+    if (app.type === 'list') {
+      setNavigationPath((prev) => [appList.name, app.name]); // navigation path to include parent list and current app
     } else {
-      setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
+      setNavigationPath((prev) => [appList.name, app.name]); // navigation path to include parent list and current app
     }
 
     // Update recent apps logic
@@ -360,7 +360,7 @@ const ExternalAppPage = () => {
         const contractDetails = data.contracts || [];
         const networkDetails = data.networks || [];
 
-        setNavigationPath((prev) => [...prev.slice(0, 1), appName]); // Update navigation path
+        setNavigationPath((prev) => [...prev.slice(0, 1), appName]);
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
