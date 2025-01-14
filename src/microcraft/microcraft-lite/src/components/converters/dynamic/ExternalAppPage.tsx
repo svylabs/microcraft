@@ -467,22 +467,47 @@ const ExternalAppPage = () => {
     return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
   }, []);
 
-  const handleNavigationClick = (index: number) => {
+  const handleNavigationClick = async (index: number) => {
     console.log("Navigation path: ", navigationPath);
+  
     // If the clicked item is not the last one, we can navigate back to the previous app
     if (index < navigationPath.length - 1) {
       console.log("Navigating back to: ", navigationPath[index]);
-      console.log("applist",appList);
-      const selectedList = appList.apps.find(app => app.name === navigationPath[index]);
-      console.log("Selected list: ", selectedList);
-      if (selectedList && selectedList.type === 'list') {
-        // Load the selected list
-        loadApp(selectedList.path);
-        console.log("Loading list: ", selectedList.path);
-        setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
+      console.log("applist", appList);
+  
+      // Check if the selected item is the parent list
+      if (appList.name === navigationPath[index]) {
+        // Load the parent list
+        await loadApp(appList.path); // Load the parent list
+        console.log("Loading parent list: ", appList.path);
+  
+        // After loading, set the selected app index to the first item in the list
+        if (appList.apps && appList.apps.length > 0) {
+          setSelectedAppIndex(0); // Select the first item
+          onAppSelected(0); // Automatically open the first app
+          setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
+        }
         console.log("Navigation path after update: ", navigationPath);
       } else {
-        console.error("Selected item is not a valid list.");
+        // Try to find the selected list in appList.apps
+        const selectedList = appList.apps.find(app => app.name === navigationPath[index]);
+        console.log("Selected list: ", selectedList);
+  
+        if (selectedList && selectedList.type === 'list') {
+          // Load the selected list
+          await loadApp(selectedList.path); // Load the selected list
+          console.log("Loading list: ", selectedList.path);
+  
+          // After loading, set the selected app index to the first item in the list
+          if (selectedList.apps && selectedList.apps.length > 0) {
+            setSelectedAppIndex(0); // Select the first item
+            onAppSelected(0); // Automatically open the first app
+            setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
+          }
+          console.log("Navigation path after update: ", navigationPath);
+        } else {
+          console.error("Selected item is not a valid list.");
+        }
       }
     }
   };
