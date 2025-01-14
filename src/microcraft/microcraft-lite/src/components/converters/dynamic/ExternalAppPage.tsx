@@ -587,14 +587,23 @@ const ExternalAppPage = () => {
             {/* Conditional Navigation Path */}
             {(appList.type === 'list' || appList.parent) && (
               <nav className="mb-4">
-                {navigationPath.map((item, index) => (
-                  <span key={index} className="text-blue-600 cursor-pointer">
-                    {item}
-                    {index < navigationPath.length - 1 && <span className="mx-1"> &gt; </span>}
-                  </span>
-                ))}
+                <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
+                  {navigationPath.map((item, index) => (
+                    <div key={index} className="flex items-center">
+                      <span
+                        className="text-blue-600 cursor-pointer hover:underline transition-all duration-300 hover:text-blue-700"
+                      >
+                        {item}
+                      </span>
+                      {index < navigationPath.length - 1 && (
+                        <span className="mx-2 text-gray-500">&gt;</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </nav>
             )}
+
 
             <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
               <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
