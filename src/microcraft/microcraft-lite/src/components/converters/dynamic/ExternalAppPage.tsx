@@ -469,18 +469,18 @@ const ExternalAppPage = () => {
 
   const handleNavigationClick = async (index: number) => {
     console.log("Navigation path: ", navigationPath);
-  
+
     // If the clicked item is not the last one, we can navigate back to the previous app
     if (index < navigationPath.length - 1) {
       console.log("Navigating back to: ", navigationPath[index]);
       console.log("applist", appList);
-  
+
       // Check if the selected item is the parent list
       if (appList.name === navigationPath[index]) {
         // Load the parent list
         await loadApp(appList.path); // Load the parent list
         console.log("Loading parent list: ", appList.path);
-  
+
         // After loading, set the selected app index to the first item in the list
         if (appList.apps && appList.apps.length > 0) {
           setSelectedAppIndex(0); // Select the first item
@@ -492,12 +492,12 @@ const ExternalAppPage = () => {
         // Try to find the selected list in appList.apps
         const selectedList = appList.apps.find(app => app.name === navigationPath[index]);
         console.log("Selected list: ", selectedList);
-  
+
         if (selectedList && selectedList.type === 'list') {
           // Load the selected list
           await loadApp(selectedList.path); // Load the selected list
           console.log("Loading list: ", selectedList.path);
-  
+
           // After loading, set the selected app index to the first item in the list
           if (selectedList.apps && selectedList.apps.length > 0) {
             setSelectedAppIndex(0); // Select the first item
@@ -632,18 +632,22 @@ const ExternalAppPage = () => {
           <div className="px-2 text-wrap">
             {/* Conditional Navigation Path */}
             {(appList.type === 'list' || appList.parent) && (
-              <nav className="mb-4 bg-gray-50 p-2 rounded-md shadow-md">
-                <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
+              <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
+                <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
                   {navigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
                       <a
-                        className="text-blue-600 cursor-pointer hover:underline transition-all duration-300 hover:text-blue-700"
-                        onClick={() => handleNavigationClick(index)}
+                        className={`${index < navigationPath.length - 1
+                          ? "text-yellow-600 cursor-pointer hover:underline hover:text-yellow-700"
+                          : "text-yellow-600 cursor-default"
+                          } transition-all duration-300 font-medium`}
+                        onClick={() => index < navigationPath.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
+                        {...(index < navigationPath.length - 1 && { title: `Go to ${item}` })} // Add title only for non-last items
                       >
                         {item}
                       </a>
                       {index < navigationPath.length - 1 && (
-                        <span className="mx-2 text-gray-500">&gt;</span>
+                        <span className="mx-2 text-gray-600 font-bold">›</span>
                       )}
                     </div>
                   ))}
