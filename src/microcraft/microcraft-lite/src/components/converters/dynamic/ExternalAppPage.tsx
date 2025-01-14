@@ -302,6 +302,7 @@ const ExternalAppPage = () => {
   }
 
   const loadApp = async (appPath?: string, subAppPath?: string) => {
+    setShowRecentApps(false);
     setLoading(true);
     setData({});
     const path = appPath || externalAppUrl;
@@ -466,6 +467,26 @@ const ExternalAppPage = () => {
     return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
   }, []);
 
+  const handleNavigationClick = (index: number) => {
+    console.log("Navigation path: ", navigationPath);
+    // If the clicked item is not the last one, we can navigate back to the previous app
+    if (index < navigationPath.length - 1) {
+      console.log("Navigating back to: ", navigationPath[index]);
+      console.log("applist",appList);
+      const selectedList = appList.apps.find(app => app.name === navigationPath[index]);
+      console.log("Selected list: ", selectedList);
+      if (selectedList && selectedList.type === 'list') {
+        // Load the selected list
+        loadApp(selectedList.path);
+        console.log("Loading list: ", selectedList.path);
+        setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
+        console.log("Navigation path after update: ", navigationPath);
+      } else {
+        console.error("Selected item is not a valid list.");
+      }
+    }
+  };
+
   // function submitFeedback() {
   //   setFeedback(false);
   //   window.location.href = "/";
@@ -586,15 +607,16 @@ const ExternalAppPage = () => {
           <div className="px-2 text-wrap">
             {/* Conditional Navigation Path */}
             {(appList.type === 'list' || appList.parent) && (
-              <nav className="mb-4">
+              <nav className="mb-4 bg-gray-50 p-2 rounded-md shadow-md">
                 <div className="flex flex-wrap items-center gap-1 text-sm md:text-base">
                   {navigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
-                      <span
+                      <a
                         className="text-blue-600 cursor-pointer hover:underline transition-all duration-300 hover:text-blue-700"
+                        onClick={() => handleNavigationClick(index)}
                       >
                         {item}
-                      </span>
+                      </a>
                       {index < navigationPath.length - 1 && (
                         <span className="mx-2 text-gray-500">&gt;</span>
                       )}
@@ -603,7 +625,6 @@ const ExternalAppPage = () => {
                 </div>
               </nav>
             )}
-
 
             <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
               <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
