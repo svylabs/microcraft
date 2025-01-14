@@ -73,9 +73,9 @@ const ExternalAppPage = () => {
   };
 
   useEffect(() => {
-    const urlPath = new URLSearchParams(location.search).get("path");
+    const urlPath = queryParams.get("path");
     if (urlPath) {
-      fetchAppData(urlPath + "/app.json"); // Adjust the URL to fetch the app.json
+      fetchAppData(urlPath + "/app.json");
     }
   }, [location]);
 
@@ -146,7 +146,7 @@ const ExternalAppPage = () => {
 
     await loadApp(resolvedPath);
 
-    if (app.type === 'list') {
+    if (app.type === 'list' || app.parent) {
       setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
     } else {
       setNavigationPath((prev) => [...prev.slice(0, 1), app.name]); // Update navigation path
@@ -293,12 +293,6 @@ const ExternalAppPage = () => {
       setRunId(crypto.randomUUID());
     }
   }
-
-  // const loadAppList = async (data: any) => {
-  //   if (data.type === 'list') {
-  //     setAppList(data);
-  //   }
-  // }
 
   const isEmpty = (str: string | null | undefined) => {
     if (str === undefined || str === null || str === "") {
@@ -589,7 +583,19 @@ const ExternalAppPage = () => {
               </p>
             </div>
           )}
-          {/* <div className="px-2 text-wrap">
+          <div className="px-2 text-wrap">
+            {/* Conditional Navigation Path */}
+            {(appList.type === 'list' || appList.parent) && (
+              <nav className="mb-4">
+                {navigationPath.map((item, index) => (
+                  <span key={index} className="text-blue-600 cursor-pointer">
+                    {item}
+                    {index < navigationPath.length - 1 && <span className="mx-1"> &gt; </span>}
+                  </span>
+                ))}
+              </nav>
+            )}
+
             <div className="flex flex-col md:flex-row md:justify-between mb-4 md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-auto">
               <h1 className="font-semibold text-lg md:text-xl">{appName}</h1>
               <h3 className="text-sm md:text-base lg:text-lg">{appDescription}</h3>
@@ -610,31 +616,9 @@ const ExternalAppPage = () => {
                 contracts={contracts || []}
                 networks={networks || []}
                 debug={setOutputCode}
-                whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms}}
-              />
-            )}
-          </div> */}
-          <div>
-            {/* Navigation Path */}
-            <nav className="mb-4">
-              {navigationPath.map((item, index) => (
-                <span key={index} className="text-blue-600 cursor-pointer">
-                  {item}
-                  {index < navigationPath.length - 1 && <span className="mx-1"> &gt; </span>}
-                </span>
-              ))}
-            </nav>
-
-            {/* Render Current App */}
-              <DynamicApp
-                runId={runId}
-                components={components}
-                updateData={setData}
-                contracts={contracts || []}
-                networks={networks || []}
-                debug={setOutputCode}
                 whitelistedJSElements={{ fetch: fetch.bind(globalThis), alert: alert.bind(globalThis), ...wasms }}
               />
+            )}
           </div>
         </div>
       </div>
