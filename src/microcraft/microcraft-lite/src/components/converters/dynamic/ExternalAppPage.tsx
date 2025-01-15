@@ -131,6 +131,7 @@ const ExternalAppPage = () => {
   // Function to toggle recent apps visibility
   const toggleRecentApps = () => {
     setShowRecentApps(!showRecentApps);
+    // setShowRecentApps(prevState => !prevState);
   };
 
   const onAppSelected = async (index: number) => {
@@ -336,6 +337,7 @@ const ExternalAppPage = () => {
       if (data.type === 'list') {
         data.path = path;
         await loadAppList(data);
+        setNavigationPath((prev) => [...prev, data.name]); // Append the current list name
         if (subAppPath) {
           console.log("Sub app path: ", subAppPath);
           const subAppIndex = data.apps.findIndex((app: any) => {
@@ -361,7 +363,7 @@ const ExternalAppPage = () => {
         const contractDetails = data.contracts || [];
         const networkDetails = data.networks || [];
 
-        setNavigationPath((prev) => [...prev.slice(0, 1), appName]);
+        setNavigationPath((prev) => [...prev, appName]);
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
@@ -423,6 +425,7 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
+        setNavigationPath((prev) => [...prev, appName]);
 
         // Add the app to recent apps after loading
         const newApp: RecentApp = {
@@ -472,11 +475,12 @@ const ExternalAppPage = () => {
 
     // If the clicked item is not the last one, we can navigate back to the previous app
     if (index < navigationPath.length - 1) {
-      console.log("Navigating back to: ", navigationPath[index]);
+      const selectedName = navigationPath[index];
+      console.log("Navigating back to: ", selectedName);
       console.log("applist", appList);
 
       // Check if the selected item is the parent list
-      if (appList.name === navigationPath[index]) {
+      if (appList.name === selectedName) {
         // Load the parent list
         await loadApp(appList.path); // Load the parent list
         console.log("Loading parent list: ", appList.path);
@@ -490,7 +494,7 @@ const ExternalAppPage = () => {
         console.log("Navigation path after update: ", navigationPath);
       } else {
         // Try to find the selected list in appList.apps
-        const selectedList = appList.apps.find(app => app.name === navigationPath[index]);
+        const selectedList = appList.apps.find(app => app.name === selectedName);
         console.log("Selected list: ", selectedList);
 
         if (selectedList && selectedList.type === 'list') {
@@ -509,6 +513,8 @@ const ExternalAppPage = () => {
           console.error("Selected item is not a valid list.");
         }
       }
+      // Update the navigation path to reflect the current position
+      setNavigationPath((prev) => prev.slice(0, index + 1)); // Keep the path up to the clicked item
     }
   };
 
@@ -525,12 +531,10 @@ const ExternalAppPage = () => {
           <div className="relative flex">
             <input
               className="w-full py-2 px-4 rounded border border-gray-300 focus:outline-none focus:border-blue-500 pr-12"
-              // type="text"
               type="url"
               size={80}
               placeholder="Enter github url of the app here"
               value={externalAppUrl}
-              // onChange={(e) => setExternalAppUrl(e.target.value)}
               onChange={(e) => setExternalAppUrl(e.target.value.trim())}
               onFocus={() => {
                 if (recentApps.length > 0) { // Show recent apps only if there are any
