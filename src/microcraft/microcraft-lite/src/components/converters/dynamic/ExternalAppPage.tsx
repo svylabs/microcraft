@@ -53,6 +53,7 @@ const ExternalAppPage = () => {
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
   const [navigationPath, setNavigationPath] = useState<string[]>([]);
+  const [uniqueNavigationPath, setUniqueNavigationPath] = useState<string[]>([]);
 
   const fetchAppData = async (url) => {
     setLoading(true);
@@ -337,7 +338,7 @@ const ExternalAppPage = () => {
       if (data.type === 'list') {
         data.path = path;
         await loadAppList(data);
-        setNavigationPath((prev) => [...prev, data.name]); // Append the current list name
+        // setNavigationPath((prev) => [...prev, data.name]); // Append the current list name
         if (subAppPath) {
           console.log("Sub app path: ", subAppPath);
           const subAppIndex = data.apps.findIndex((app: any) => {
@@ -363,7 +364,7 @@ const ExternalAppPage = () => {
         const contractDetails = data.contracts || [];
         const networkDetails = data.networks || [];
 
-        setNavigationPath((prev) => [...prev, appName]);
+        // setNavigationPath((prev) => [...prev, appName]);
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
@@ -425,7 +426,8 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
-        setNavigationPath((prev) => [...prev, appName]);
+        // setNavigationPath((prev) => [...prev, appName]);
+        setNavigationPath((prev) => [...prev.slice(0, 1), appName]);
 
         // Add the app to recent apps after loading
         const newApp: RecentApp = {
@@ -514,9 +516,23 @@ const ExternalAppPage = () => {
         }
       }
       // Update the navigation path to reflect the current position
-      setNavigationPath((prev) => prev.slice(0, index + 1)); // Keep the path up to the clicked item
+      // setNavigationPath((prev) => prev.slice(0, index + 1)); // Keep the path up to the clicked item
     }
   };
+
+  const updateUniqueNavigationPath = (newPath: string[]) => {
+    if (newPath.length > 0) {
+      const lastItem = newPath[newPath.length - 1];
+      if (uniqueNavigationPath[uniqueNavigationPath.length - 1] !== lastItem) {
+        setUniqueNavigationPath(newPath);
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateUniqueNavigationPath(navigationPath);
+  }, [navigationPath]);
+  console.log("uniqueNavigationPath : ", uniqueNavigationPath);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -638,7 +654,8 @@ const ExternalAppPage = () => {
             {(appList.type === 'list' || appList.parent) && (
               <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
                 <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
-                  {navigationPath.map((item, index) => (
+                  {/* {navigationPath.map((item, index) => ( */}
+                  {uniqueNavigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
                       <a
                         className={`${index < navigationPath.length - 1
@@ -651,7 +668,7 @@ const ExternalAppPage = () => {
                         {item}
                       </a>
                       {index < navigationPath.length - 1 && (
-                        <span className="mx-2 text-gray-600 font-bold">›</span>
+                        <span className="mx-2 text-gray-600 font-bold">›</span> //&gt;
                       )}
                     </div>
                   ))}
