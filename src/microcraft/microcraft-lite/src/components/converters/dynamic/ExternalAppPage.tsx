@@ -521,35 +521,49 @@ const ExternalAppPage = () => {
   };
 
   const updateUniqueNavigationPath = (newPath: string[]) => {
-    if (newPath.length > 0) {
-      // Get the last item of the current uniqueNavigationPath
-      const lastItem = uniqueNavigationPath[uniqueNavigationPath.length - 1];
-  
-      // Check the first item of the new path to identify how the path relates
-      const firstNewItem = newPath[0];
-  
-      if (firstNewItem === lastItem) {
-        // If the first item of the new path matches the last item of the uniqueNavigationPath,
-        // extend the path by adding non-duplicate items.
-        setUniqueNavigationPath((prev) => [
-          ...prev,
-          ...newPath.filter((item) => !prev.includes(item)),
-        ]);
-      } else if (uniqueNavigationPath.includes(firstNewItem)) {
-        // If the new path starts somewhere inside the current path, continue from there
-        const index = uniqueNavigationPath.indexOf(firstNewItem);
-        setUniqueNavigationPath((prev) => prev.slice(0, index + 1).concat(newPath.slice(1)));
-      } else {
-        // If a completely different navigationPath, reset the path to the new one
-        setUniqueNavigationPath(newPath);
-      }
+    if (newPath.length === 0) return; // Early exit if the newPath is empty
+
+    // Case 1: If the new path starts from the same point as the current unique path
+    const firstNewItem = newPath[0];
+    const lastUniqueItem = uniqueNavigationPath[uniqueNavigationPath.length - 1];
+
+    if (firstNewItem === uniqueNavigationPath[0]) {
+      // If the new path starts with the first item of the current unique path, append only non-duplicates
+      const updatedPath = [...uniqueNavigationPath, ...newPath.slice(1).filter(item => !uniqueNavigationPath.includes(item))];
+      setUniqueNavigationPath(updatedPath);
+      return;
     }
+
+    // Case 2: If the new path starts anywhere inside the current unique path, continue from that point
+    const indexInCurrentPath = uniqueNavigationPath.indexOf(firstNewItem);
+
+    if (indexInCurrentPath !== -1) {
+      // If new path starts from inside, we update the unique path starting from that point
+      const updatedPath = uniqueNavigationPath.slice(0, indexInCurrentPath + 1).concat(newPath.slice(1));
+      setUniqueNavigationPath(updatedPath);
+      return;
+    }
+
+    // Case 3: If the new path shares any common items with the current unique path but not starting from the same point
+    const commonIndex = uniqueNavigationPath.findIndex(item => newPath.includes(item));
+
+    if (commonIndex !== -1) {
+      // Find common part in path, trim unique path and add new items without duplicates
+      const updatedPath = uniqueNavigationPath.slice(0, commonIndex + 1).concat(newPath.slice(newPath.indexOf(uniqueNavigationPath[commonIndex]) + 1));
+      setUniqueNavigationPath(updatedPath);
+      return;
+    }
+
+    // Case 4: When no common items exist (reset), completely reset unique navigation path to the new one
+    setUniqueNavigationPath(newPath);
   };
-  
+
+  // Call the function in useEffect when navigationPath changes
   useEffect(() => {
     updateUniqueNavigationPath(navigationPath);
   }, [navigationPath]);
-  
+
+  console.log("navigationPath : ", navigationPath);
   console.log("uniqueNavigationPath : ", uniqueNavigationPath);
 
   // function submitFeedback() {
