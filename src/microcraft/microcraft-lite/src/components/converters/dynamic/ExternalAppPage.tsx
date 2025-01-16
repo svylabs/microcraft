@@ -522,16 +522,34 @@ const ExternalAppPage = () => {
 
   const updateUniqueNavigationPath = (newPath: string[]) => {
     if (newPath.length > 0) {
-      const lastItem = newPath[newPath.length - 1];
-      if (uniqueNavigationPath[uniqueNavigationPath.length - 1] !== lastItem) {
+      // Get the last item of the current uniqueNavigationPath
+      const lastItem = uniqueNavigationPath[uniqueNavigationPath.length - 1];
+  
+      // Check the first item of the new path to identify how the path relates
+      const firstNewItem = newPath[0];
+  
+      if (firstNewItem === lastItem) {
+        // If the first item of the new path matches the last item of the uniqueNavigationPath,
+        // extend the path by adding non-duplicate items.
+        setUniqueNavigationPath((prev) => [
+          ...prev,
+          ...newPath.filter((item) => !prev.includes(item)),
+        ]);
+      } else if (uniqueNavigationPath.includes(firstNewItem)) {
+        // If the new path starts somewhere inside the current path, continue from there
+        const index = uniqueNavigationPath.indexOf(firstNewItem);
+        setUniqueNavigationPath((prev) => prev.slice(0, index + 1).concat(newPath.slice(1)));
+      } else {
+        // If a completely different navigationPath, reset the path to the new one
         setUniqueNavigationPath(newPath);
       }
     }
   };
-
+  
   useEffect(() => {
     updateUniqueNavigationPath(navigationPath);
   }, [navigationPath]);
+  
   console.log("uniqueNavigationPath : ", uniqueNavigationPath);
 
   // function submitFeedback() {
