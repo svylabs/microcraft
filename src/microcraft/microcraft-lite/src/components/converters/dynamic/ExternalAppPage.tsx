@@ -132,7 +132,6 @@ const ExternalAppPage = () => {
   // Function to toggle recent apps visibility
   const toggleRecentApps = () => {
     setShowRecentApps(!showRecentApps);
-    // setShowRecentApps(prevState => !prevState);
   };
 
   const onAppSelected = async (index: number) => {
@@ -338,7 +337,6 @@ const ExternalAppPage = () => {
       if (data.type === 'list') {
         data.path = path;
         await loadAppList(data);
-        // setNavigationPath((prev) => [...prev, data.name]); // Append the current list name
         if (subAppPath) {
           console.log("Sub app path: ", subAppPath);
           const subAppIndex = data.apps.findIndex((app: any) => {
@@ -363,8 +361,6 @@ const ExternalAppPage = () => {
         const components = data.components;
         const contractDetails = data.contracts || [];
         const networkDetails = data.networks || [];
-
-        // setNavigationPath((prev) => [...prev, appName]);
 
         for (let i = 0; i < components.length; i++) {
           const component = components[i];
@@ -426,7 +422,6 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
-        // setNavigationPath((prev) => [...prev, appName]);
         setNavigationPath((prev) => [...prev.slice(0, 1), appName]);
 
         // Add the app to recent apps after loading
@@ -515,56 +510,67 @@ const ExternalAppPage = () => {
           console.error("Selected item is not a valid list.");
         }
       }
-      // Update the navigation path to reflect the current position
-      // setNavigationPath((prev) => prev.slice(0, index + 1)); // Keep the path up to the clicked item
     }
   };
+
+  // const updateUniqueNavigationPath = (newPath: string[]) => {
+  //   if (newPath.length === 0) return; // Early exit if the newPath is empty
+  
+  //   // Case: Compare current unique path and the new path element by element.
+  //   let divergenceIndex = -1;
+  
+  //   for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
+  //     if (uniqueNavigationPath[i] !== newPath[i]) {
+  //       divergenceIndex = i;
+  //       break;
+  //     }
+  //   }
+  
+  //   // If paths diverged, or if `newPath` is shorter than `uniqueNavigationPath`, trim the `uniqueNavigationPath`.
+  //   if (divergenceIndex !== -1 || uniqueNavigationPath.length > newPath.length) {
+  //     // Truncate the path up to the divergence or reset to `newPath`.
+  //     const updatedPath = newPath;
+  //     setUniqueNavigationPath(updatedPath);
+  //     return;
+  //   }
+  
+  //   // If the new path extends the current unique path without divergence, append new elements.
+  //   if (newPath.length > uniqueNavigationPath.length) {
+  //     const updatedPath = [...uniqueNavigationPath, ...newPath.slice(uniqueNavigationPath.length)];
+  //     setUniqueNavigationPath(updatedPath);
+  //     return;
+  //   }
+  
+  //   // If the paths match or overlap entirely, no update is needed.
+  // }; 
 
   const updateUniqueNavigationPath = (newPath: string[]) => {
-    if (newPath.length === 0) return; // Early exit if the newPath is empty
-
-    // Case 1: If the new path starts from the same point as the current unique path
-    const firstNewItem = newPath[0];
-    const lastUniqueItem = uniqueNavigationPath[uniqueNavigationPath.length - 1];
-
-    if (firstNewItem === uniqueNavigationPath[0]) {
-      // If the new path starts with the first item of the current unique path, append only non-duplicates
-      const updatedPath = [...uniqueNavigationPath, ...newPath.slice(1).filter(item => !uniqueNavigationPath.includes(item))];
-      setUniqueNavigationPath(updatedPath);
-      return;
+    if (newPath.length === 0) return; // Early exit if the new path is empty
+  
+    // Initialize an empty variable for the updated unique navigation path
+    let updatedPath: string[] = [];
+  
+    for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
+      if (uniqueNavigationPath[i] !== newPath[i]) {
+        break; // Stop adding once a divergence is found
+      }
+      updatedPath.push(uniqueNavigationPath[i]);
     }
-
-    // Case 2: If the new path starts anywhere inside the current unique path, continue from that point
-    const indexInCurrentPath = uniqueNavigationPath.indexOf(firstNewItem);
-
-    if (indexInCurrentPath !== -1) {
-      // If new path starts from inside, we update the unique path starting from that point
-      const updatedPath = uniqueNavigationPath.slice(0, indexInCurrentPath + 1).concat(newPath.slice(1));
-      setUniqueNavigationPath(updatedPath);
-      return;
-    }
-
-    // Case 3: If the new path shares any common items with the current unique path but not starting from the same point
-    const commonIndex = uniqueNavigationPath.findIndex(item => newPath.includes(item));
-
-    if (commonIndex !== -1) {
-      // Find common part in path, trim unique path and add new items without duplicates
-      const updatedPath = uniqueNavigationPath.slice(0, commonIndex + 1).concat(newPath.slice(newPath.indexOf(uniqueNavigationPath[commonIndex]) + 1));
-      setUniqueNavigationPath(updatedPath);
-      return;
-    }
-
-    // Case 4: When no common items exist (reset), completely reset unique navigation path to the new one
-    setUniqueNavigationPath(newPath);
+  
+    // Replace all paths beyond the point of divergence with newPath content
+    updatedPath = [...updatedPath, ...newPath.slice(updatedPath.length)];
+  
+    setUniqueNavigationPath(updatedPath); // Update the state with the calculated new path
   };
-
+  
   // Call the function in useEffect when navigationPath changes
   useEffect(() => {
     updateUniqueNavigationPath(navigationPath);
   }, [navigationPath]);
-
-  console.log("navigationPath : ", navigationPath);
-  console.log("uniqueNavigationPath : ", uniqueNavigationPath);
+  
+  console.log("navigationPath:", navigationPath);
+  console.log("uniqueNavigationPath:", uniqueNavigationPath);
+  
 
   // function submitFeedback() {
   //   setFeedback(false);
