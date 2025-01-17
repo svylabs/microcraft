@@ -53,6 +53,7 @@ const ExternalAppPage = () => {
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
   const [navigationPath, setNavigationPath] = useState<string[]>([]);
+  const [uniqueNavigationPath, setUniqueNavigationPath] = useState<string[]>([]);
 
   const fetchAppData = async (url) => {
     setLoading(true);
@@ -510,9 +511,56 @@ const ExternalAppPage = () => {
         }
       }
     }
-  };
+  }; 
+
+  const updateUniqueNavigationPath = (newPath: string[]) => {
+    if (newPath.length === 0) return; // Early exit if the newPath is empty
+
+    // Case: If uniqueNavigationPath is empty, initialize it with newPath
+    if (uniqueNavigationPath.length === 0) {
+        setUniqueNavigationPath(newPath);
+        return;
+    }
+
+    // Check if the last element of uniqueNavigationPath is the same as the first of newPath
+    const lastUnique = uniqueNavigationPath[uniqueNavigationPath.length - 1];
+    const firstNew = newPath[0];
+
+    if (lastUnique === firstNew) {
+        // If they are the same, merge the newPath into uniqueNavigationPath
+        const mergedPath = [...uniqueNavigationPath, ...newPath.slice(1)]; // Remove the first element of newPath to avoid duplication
+        setUniqueNavigationPath(mergedPath);
+    } else {
+        // If they are different, we need to check for divergence
+        let divergenceIndex = -1;
+
+        for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
+            if (uniqueNavigationPath[i] !== newPath[i]) {
+                divergenceIndex = i;
+                break;
+            }
+        }
+
+        // If paths diverged, or if `newPath` is shorter than `uniqueNavigationPath`, trim the `uniqueNavigationPath`.
+        if (divergenceIndex !== -1 || uniqueNavigationPath.length > newPath.length) {
+            // Truncate the path up to the divergence or reset to `newPath`.
+            const updatedPath = newPath;
+            setUniqueNavigationPath(updatedPath);
+        } else if (newPath.length > uniqueNavigationPath.length) {
+            // If the new path extends the current unique path without divergence, append new elements.
+            const updatedPath = [...uniqueNavigationPath, ...newPath.slice(uniqueNavigationPath.length)];
+            setUniqueNavigationPath(updatedPath);
+        }
+    }
+};
+  
+  // Call the function in useEffect when navigationPath changes
+  useEffect(() => {
+    updateUniqueNavigationPath(navigationPath);
+  }, [navigationPath]);
   
   console.log("navigationPath:", navigationPath);
+  console.log("uniqueNavigationPath:", uniqueNavigationPath);
   
 
   // function submitFeedback() {
@@ -635,20 +683,21 @@ const ExternalAppPage = () => {
             {(appList.type === 'list' || appList.parent) && (
               <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
                 <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
-                  {navigationPath.map((item, index) => (
+                  {/* {navigationPath.map((item, index) => ( */}
+                  {uniqueNavigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
                       <a
-                        className={`${index < navigationPath.length - 1
+                        className={`${index < uniqueNavigationPath.length - 1
                           ? "text-yellow-600 cursor-pointer hover:underline hover:text-yellow-700"
                           : "text-yellow-600 cursor-default"
                           } transition-all duration-300 font-medium`}
-                        onClick={() => index < navigationPath.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
-                        {...(index < navigationPath.length - 1 && { title: `Go to ${item}` })} // Add title only for non-last items
+                        onClick={() => index < uniqueNavigationPath.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
+                        {...(index < uniqueNavigationPath.length - 1 && { title: `Go to ${item}` })} // Add title only for non-last items
                       >
                         {item}
                       </a>
-                      {index < navigationPath.length - 1 && (
-                        <span className="mx-2 text-gray-600 font-bold">›</span> //&gt;
+                      {index < uniqueNavigationPath.length - 1 && (
+                        <span className="mx-2 text-gray-600 font-bold">›</span> //&gt; Arrow separator
                       )}
                     </div>
                   ))}
