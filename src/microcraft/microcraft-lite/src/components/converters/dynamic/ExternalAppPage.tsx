@@ -558,8 +558,8 @@ const ExternalAppPage = () => {
           {(output.approval_status || "pending") === "pending" && (
             <div className="bg-yellow-200 text-yellow-800 p-2 rounded-md md:text-sm flex justify-center items-center animate-pulse">
               <p>
-                <span className="font-bold text-lg mr-2">⚠️ Caution:</span>
-                This is an external app, use it at your own risk.
+                <span className="font-bold text-lg mr-2">⚠️ Wallet Support:</span>
+                This page currently works only with Metamask wallet extension on desktop browser. If you are loading this page from mobile browser, please install Metamask app, and open the link from Metamask browser.
               </p>
             </div>
           )}
