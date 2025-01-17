@@ -53,7 +53,6 @@ const ExternalAppPage = () => {
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
   const [navigationPath, setNavigationPath] = useState<string[]>([]);
-  const [uniqueNavigationPath, setUniqueNavigationPath] = useState<string[]>([]);
 
   const fetchAppData = async (url) => {
     setLoading(true);
@@ -512,64 +511,8 @@ const ExternalAppPage = () => {
       }
     }
   };
-
-  // const updateUniqueNavigationPath = (newPath: string[]) => {
-  //   if (newPath.length === 0) return; // Early exit if the newPath is empty
-  
-  //   // Case: Compare current unique path and the new path element by element.
-  //   let divergenceIndex = -1;
-  
-  //   for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
-  //     if (uniqueNavigationPath[i] !== newPath[i]) {
-  //       divergenceIndex = i;
-  //       break;
-  //     }
-  //   }
-  
-  //   // If paths diverged, or if `newPath` is shorter than `uniqueNavigationPath`, trim the `uniqueNavigationPath`.
-  //   if (divergenceIndex !== -1 || uniqueNavigationPath.length > newPath.length) {
-  //     // Truncate the path up to the divergence or reset to `newPath`.
-  //     const updatedPath = newPath;
-  //     setUniqueNavigationPath(updatedPath);
-  //     return;
-  //   }
-  
-  //   // If the new path extends the current unique path without divergence, append new elements.
-  //   if (newPath.length > uniqueNavigationPath.length) {
-  //     const updatedPath = [...uniqueNavigationPath, ...newPath.slice(uniqueNavigationPath.length)];
-  //     setUniqueNavigationPath(updatedPath);
-  //     return;
-  //   }
-  
-  //   // If the paths match or overlap entirely, no update is needed.
-  // }; 
-
-  const updateUniqueNavigationPath = (newPath: string[]) => {
-    if (newPath.length === 0) return; // Early exit if the new path is empty
-  
-    // Initialize an empty variable for the updated unique navigation path
-    let updatedPath: string[] = [];
-  
-    for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
-      if (uniqueNavigationPath[i] !== newPath[i]) {
-        break; // Stop adding once a divergence is found
-      }
-      updatedPath.push(uniqueNavigationPath[i]);
-    }
-  
-    // Replace all paths beyond the point of divergence with newPath content
-    updatedPath = [...updatedPath, ...newPath.slice(updatedPath.length)];
-  
-    setUniqueNavigationPath(updatedPath); // Update the state with the calculated new path
-  };
-  
-  // Call the function in useEffect when navigationPath changes
-  useEffect(() => {
-    updateUniqueNavigationPath(navigationPath);
-  }, [navigationPath]);
   
   console.log("navigationPath:", navigationPath);
-  console.log("uniqueNavigationPath:", uniqueNavigationPath);
   
 
   // function submitFeedback() {
@@ -692,8 +635,7 @@ const ExternalAppPage = () => {
             {(appList.type === 'list' || appList.parent) && (
               <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
                 <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
-                  {/* {navigationPath.map((item, index) => ( */}
-                  {uniqueNavigationPath.map((item, index) => (
+                  {navigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
                       <a
                         className={`${index < navigationPath.length - 1
