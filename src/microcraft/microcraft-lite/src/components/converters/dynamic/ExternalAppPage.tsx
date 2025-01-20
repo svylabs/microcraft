@@ -52,33 +52,7 @@ const ExternalAppPage = () => {
   const [selectedAppIndex, setSelectedAppIndex] = useState(-1);
   const [dropdownWidth, setDropdownWidth] = useState("18rem");
   const [wasms, setWasms] = useState<{}>({});
-  const [navigationPath, setNavigationPath] = useState<string[]>([]);
-  const [uniqueNavigationPath, setUniqueNavigationPath] = useState<string[]>([]);
-
-  const fetchAppData = async (url) => {
-    setLoading(true);
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setAppList(data);
-      setNavigationPath([data.name]);
-    } catch (error) {
-      toast.error("Error loading app data.");
-      console.error("Fetch error: ", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const urlPath = queryParams.get("path");
-    if (urlPath) {
-      fetchAppData(urlPath + "/app.json");
-    }
-  }, [location]);
+  const [navigationPaths, setNavigationPaths] = useState<{ path: string; name: string }[]>([]);
 
   const isAuthenticated = () => {
     if (localStorage.getItem("userDetails")) {
@@ -147,12 +121,6 @@ const ExternalAppPage = () => {
 
     await loadApp(resolvedPath);
 
-    if (app.type === 'list') {
-      setNavigationPath((prev) => [appList.name, app.name]); // navigation path to include parent list and current app
-    } else {
-      setNavigationPath((prev) => [appList.name, app.name]); // navigation path to include parent list and current app
-    }
-
     // Update recent apps logic
     const newApp: RecentApp = {
       name: app.name,
@@ -169,9 +137,11 @@ const ExternalAppPage = () => {
   const loadAppList = async (data: any) => {
     if (data.type === 'list') {
       console.log("Loading app list: ", data);
-
       setAppList(data);
 
+      // Add the app to navigation paths
+      const newPath = { path: data.path, name: data.name };
+      setNavigationPaths(prev => [...prev, newPath]);
 
       // Update the last used time for the list
       const newList: RecentApp = {
@@ -337,6 +307,7 @@ const ExternalAppPage = () => {
       if (data.type === 'list') {
         data.path = path;
         await loadAppList(data);
+
         if (subAppPath) {
           console.log("Sub app path: ", subAppPath);
           const subAppIndex = data.apps.findIndex((app: any) => {
@@ -422,7 +393,6 @@ const ExternalAppPage = () => {
         setComponents(components);
         setContracts(contractDetails);
         setNetworks(networkDetails);
-        setNavigationPath((prev) => [...prev.slice(0, 1), appName]);
 
         // Add the app to recent apps after loading
         const newApp: RecentApp = {
@@ -433,6 +403,10 @@ const ExternalAppPage = () => {
           type: 'app'
         };
         updateRecentApps(newApp);
+
+        // Add the app to navigation paths
+        const newPath = { path: path, name: appName };
+        setNavigationPaths(prev => [...prev, newPath]);
 
       }
     } catch (error) {
@@ -467,101 +441,12 @@ const ExternalAppPage = () => {
     return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
   }, []);
 
-  const handleNavigationClick = async (index: number) => {
-    console.log("Navigation path: ", navigationPath);
-
-    // If the clicked item is not the last one, we can navigate back to the previous app
-    if (index < navigationPath.length - 1) {
-      const selectedName = navigationPath[index];
-      console.log("Navigating back to: ", selectedName);
-      console.log("applist", appList);
-
-      // Check if the selected item is the parent list
-      if (appList.name === selectedName) {
-        // Load the parent list
-        await loadApp(appList.path); // Load the parent list
-        console.log("Loading parent list: ", appList.path);
-
-        // After loading, set the selected app index to the first item in the list
-        if (appList.apps && appList.apps.length > 0) {
-          setSelectedAppIndex(0); // Select the first item
-          onAppSelected(0); // Automatically open the first app
-          setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
-        }
-        console.log("Navigation path after update: ", navigationPath);
-      } else {
-        // Try to find the selected list in appList.apps
-        const selectedList = appList.apps.find(app => app.name === selectedName);
-        console.log("Selected list: ", selectedList);
-
-        if (selectedList && selectedList.type === 'list') {
-          // Load the selected list
-          await loadApp(selectedList.path); // Load the selected list
-          console.log("Loading list: ", selectedList.path);
-
-          // After loading, set the selected app index to the first item in the list
-          if (selectedList.apps && selectedList.apps.length > 0) {
-            setSelectedAppIndex(0); // Select the first item
-            onAppSelected(0); // Automatically open the first app
-            setNavigationPath((prev) => prev.slice(0, index + 1)); // Update navigation path to the clicked item
-          }
-          console.log("Navigation path after update: ", navigationPath);
-        } else {
-          console.error("Selected item is not a valid list.");
-        }
-      }
-    }
-  }; 
-
-  const updateUniqueNavigationPath = (newPath: string[]) => {
-    if (newPath.length === 0) return; // Early exit if the newPath is empty
-
-    // Case: If uniqueNavigationPath is empty, initialize it with newPath
-    if (uniqueNavigationPath.length === 0) {
-        setUniqueNavigationPath(newPath);
-        return;
-    }
-
-    // Check if the last element of uniqueNavigationPath is the same as the first of newPath
-    const lastUnique = uniqueNavigationPath[uniqueNavigationPath.length - 1];
-    const firstNew = newPath[0];
-
-    if (lastUnique === firstNew) {
-        // If they are the same, merge the newPath into uniqueNavigationPath
-        const mergedPath = [...uniqueNavigationPath, ...newPath.slice(1)]; // Remove the first element of newPath to avoid duplication
-        setUniqueNavigationPath(mergedPath);
-    } else {
-        // If they are different, we need to check for divergence
-        let divergenceIndex = -1;
-
-        for (let i = 0; i < Math.min(uniqueNavigationPath.length, newPath.length); i++) {
-            if (uniqueNavigationPath[i] !== newPath[i]) {
-                divergenceIndex = i;
-                break;
-            }
-        }
-
-        // If paths diverged, or if `newPath` is shorter than `uniqueNavigationPath`, trim the `uniqueNavigationPath`.
-        if (divergenceIndex !== -1 || uniqueNavigationPath.length > newPath.length) {
-            // Truncate the path up to the divergence or reset to `newPath`.
-            const updatedPath = newPath;
-            setUniqueNavigationPath(updatedPath);
-        } else if (newPath.length > uniqueNavigationPath.length) {
-            // If the new path extends the current unique path without divergence, append new elements.
-            const updatedPath = [...uniqueNavigationPath, ...newPath.slice(uniqueNavigationPath.length)];
-            setUniqueNavigationPath(updatedPath);
-        }
-    }
-};
-  
-  // Call the function in useEffect when navigationPath changes
-  useEffect(() => {
-    updateUniqueNavigationPath(navigationPath);
-  }, [navigationPath]);
-  
-  console.log("navigationPath:", navigationPath);
-  console.log("uniqueNavigationPath:", uniqueNavigationPath);
-  
+  const resolvePathToName = (path: string) => {
+    // Logic to resolve the path to a name
+    const found = navigationPaths.find(nav => nav.path === path);
+    return found ? found.name : path; // Return the name if found, otherwise return the path
+  };
+  console.log("navigationPaths:- ",navigationPaths);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -680,24 +565,46 @@ const ExternalAppPage = () => {
           )}
           <div className="px-2 text-wrap">
             {/* Conditional Navigation Path */}
-            {(appList.type === 'list' || appList.parent) && (
+            {/* {(appList.type === 'list' || appList.parent) && (
               <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
                 <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
-                  {/* {navigationPath.map((item, index) => ( */}
-                  {uniqueNavigationPath.map((item, index) => (
+                  {navigationPath.map((item, index) => (
                     <div key={index} className="flex items-center">
                       <a
-                        className={`${index < uniqueNavigationPath.length - 1
+                        className={`${index < navigationPath.length - 1
                           ? "text-yellow-600 cursor-pointer hover:underline hover:text-yellow-700"
                           : "text-yellow-600 cursor-default"
                           } transition-all duration-300 font-medium`}
-                        onClick={() => index < uniqueNavigationPath.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
-                        {...(index < uniqueNavigationPath.length - 1 && { title: `Go to ${item}` })} // Add title only for non-last items
+                        onClick={() => index < navigationPath.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
+                        {...(index < navigationPath.length - 1 && { title: `Go to ${item}` })} // Add title only for non-last items
                       >
                         {item}
                       </a>
-                      {index < uniqueNavigationPath.length - 1 && (
-                        <span className="mx-2 text-gray-600 font-bold">›</span> //&gt; Arrow separator
+                      {index < navigationPath.length - 1 && (
+                        <span className="mx-2 text-gray-600 font-bold">›</span> //&gt;
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </nav>
+            )} */}
+
+            {(appList.type === 'list' || appList.parent) && (
+              <nav className="mb-4 bg-gray-100 p-2 rounded-md shadow-sm" title='Navigation Path'>
+                <div className="flex flex-wrap items-center gap-2 text-sm md:text-base">
+                  {navigationPaths.map((item, index) => (
+                    <div key={index} className="flex items-center">
+                      <a
+                        className={`${index < navigationPaths.length - 1
+                          ? "text-yellow-600 cursor-pointer hover:underline hover:text-yellow-700"
+                          : "text-yellow-600 cursor-default"
+                          } transition-all duration-300 font-medium`}
+                        // onClick={() => index < navigationPaths.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
+                      >
+                        {resolvePathToName(item.path)}
+                      </a>
+                      {index < navigationPaths.length - 1 && (
+                        <span className="mx-2 text-gray-600 font-bold">›</span>
                       )}
                     </div>
                   ))}
