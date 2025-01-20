@@ -447,20 +447,26 @@ const ExternalAppPage = () => {
   }, []);
 
   const resolvePathToName = (path: string) => {
-    const parts = path.split('/'); // Assuming paths are separated by '/'
-    let fullPath = '';
-    const names: string[] = [];
+  const parts = path.split('/'); // Split the path into parts
+  console.log("parts:- ", parts);
+  let currentPath = '';
+  const hierarchy: string[] = [];
 
-    for (const part of parts) {
-      fullPath += (fullPath ? '/' : '') + part; // Build the full path
-      const found = navigationPaths.find(nav => nav.path === fullPath);
-      if (found) {
-        names.push(found.name); // Add the name to the list
-      }
+  // Iterate through each part of the path
+  for (const part of parts) {
+    currentPath += currentPath ? `/${part}` : part; // Build the full path
+    console.log("currentPath:- ", currentPath);
+    const found = navigationPaths.find(nav => nav.path === currentPath);
+    console.log("found:- ", found);
+    if (found) {
+      hierarchy.push(found.name); // Add to hierarchy if path exists
+      console.log("hierarchy:- ", hierarchy);
     }
+  }
 
-    return names.join(' › '); // Join names with the separator
-  };
+  return hierarchy.join(' › '); // Return joined names for display
+};
+
   console.log("navigationPaths:- ", navigationPaths);
 
   // function submitFeedback() {
