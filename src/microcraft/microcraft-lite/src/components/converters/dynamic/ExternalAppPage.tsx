@@ -139,9 +139,11 @@ const ExternalAppPage = () => {
       console.log("Loading app list: ", data);
       setAppList(data);
 
-      // Add the app to navigation paths
+      // Add the list to navigation paths without duplicates
       const newPath = { path: data.path, name: data.name };
-      setNavigationPaths(prev => [...prev, newPath]);
+      if (!navigationPaths.some(nav => nav.path === newPath.path)) {
+        setNavigationPaths(prev => [...prev, newPath]);
+      }
 
       // Update the last used time for the list
       const newList: RecentApp = {
@@ -404,9 +406,12 @@ const ExternalAppPage = () => {
         };
         updateRecentApps(newApp);
 
-        // Add the app to navigation paths
+        // Add the app to navigation paths without duplicates
         const newPath = { path: path, name: appName };
-        setNavigationPaths(prev => [...prev, newPath]);
+        if (!navigationPaths.some(nav => nav.path === newPath.path)) {
+          setNavigationPaths(prev => [...prev, newPath]);
+        }
+
 
       }
     } catch (error) {
@@ -442,11 +447,21 @@ const ExternalAppPage = () => {
   }, []);
 
   const resolvePathToName = (path: string) => {
-    // Logic to resolve the path to a name
-    const found = navigationPaths.find(nav => nav.path === path);
-    return found ? found.name : path; // Return the name if found, otherwise return the path
+    const parts = path.split('/'); // Assuming paths are separated by '/'
+    let fullPath = '';
+    const names: string[] = [];
+
+    for (const part of parts) {
+      fullPath += (fullPath ? '/' : '') + part; // Build the full path
+      const found = navigationPaths.find(nav => nav.path === fullPath);
+      if (found) {
+        names.push(found.name); // Add the name to the list
+      }
+    }
+
+    return names.join(' › '); // Join names with the separator
   };
-  console.log("navigationPaths:- ",navigationPaths);
+  console.log("navigationPaths:- ", navigationPaths);
 
   // function submitFeedback() {
   //   setFeedback(false);
@@ -599,7 +614,7 @@ const ExternalAppPage = () => {
                           ? "text-yellow-600 cursor-pointer hover:underline hover:text-yellow-700"
                           : "text-yellow-600 cursor-default"
                           } transition-all duration-300 font-medium`}
-                        // onClick={() => index < navigationPaths.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
+                      // onClick={() => index < navigationPaths.length - 1 && handleNavigationClick(index)} // Prevent click for the last item
                       >
                         {resolvePathToName(item.path)}
                       </a>
