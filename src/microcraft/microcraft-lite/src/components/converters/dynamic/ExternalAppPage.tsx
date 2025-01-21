@@ -446,26 +446,61 @@ const ExternalAppPage = () => {
     return () => window.removeEventListener("resize", adjustDropdownWidth); // Cleanup
   }, []);
 
-  const resolvePathToName = (path: string) => {
+//   const resolvePathToName = (path: string) => {
+//     console.log("path:- ",path);
+//   const parts = path.split('/'); // Split the path into parts
+//   console.log("parts:- ", parts);
+//   let currentPath = '';
+//   const hierarchy: string[] = [];
+
+//   // Iterate through each part of the path
+//   for (const part of parts) {
+//     currentPath += currentPath ? `/${part}` : part; // Build the full path
+//     console.log("currentPath:- ", currentPath);
+//     const found = navigationPaths.find(nav => nav.path === currentPath);
+//     console.log("found:- ", found);
+//     if (found) {
+//       hierarchy.push(found.name); // Add to hierarchy if path exists
+//       console.log("hierarchy:- ", hierarchy);
+//     }
+//   }
+
+//   return hierarchy.join(' › '); // Return joined names for display
+// };
+
+const resolvePathToName = (path: string) => {
+  console.log("path:- ", path);
   const parts = path.split('/'); // Split the path into parts
   console.log("parts:- ", parts);
   let currentPath = '';
   const hierarchy: string[] = [];
+  let lastPushedPath = '';
 
-  // Iterate through each part of the path
   for (const part of parts) {
     currentPath += currentPath ? `/${part}` : part; // Build the full path
     console.log("currentPath:- ", currentPath);
+    
     const found = navigationPaths.find(nav => nav.path === currentPath);
     console.log("found:- ", found);
+    
     if (found) {
-      hierarchy.push(found.name); // Add to hierarchy if path exists
-      console.log("hierarchy:- ", hierarchy);
+      if (!lastPushedPath || currentPath.startsWith(lastPushedPath)) {
+        // Add the name to the hierarchy only if it's part of the path
+        hierarchy.push(found.name);
+        lastPushedPath = currentPath; // Update the last pushed path
+        console.log("hierarchy (pushed):- ", hierarchy);
+      } else {
+        // Handle when previous path should be removed
+        hierarchy.splice(-1, 1, found.name); // Replace the last entry
+        lastPushedPath = currentPath;
+        console.log("hierarchy (replaced):- ", hierarchy);
+      }
     }
   }
 
   return hierarchy.join(' › '); // Return joined names for display
 };
+
 
   console.log("navigationPaths:- ", navigationPaths);
 
