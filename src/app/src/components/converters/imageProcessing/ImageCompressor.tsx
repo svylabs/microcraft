@@ -6,7 +6,7 @@ const ImageCompressor: React.FC = () => {
   const [image, setImage] = useState<File | null>(null);
   const [compressedImage, setCompressedImage] = useState<string | null>(null);
   const [compressedSize, setCompressedSize] = useState<number | null>(null);
-  const [desiredSizeMB, setDesiredSizeMB] = useState<number>(1);
+  const [desiredSizeMB, setDesiredSizeMB] = useState<number>(0.04);
   const [uploadedSize, setUploadedSize] = useState<number | null>(null);
   const [compressing, setCompressing] = useState<boolean>(false);
 
@@ -45,21 +45,39 @@ const ImageCompressor: React.FC = () => {
       const img = new Image();
       img.src = reader.result as string;
       img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d")!;
+        let canvas = document.createElement("canvas");
+        let ctx = canvas.getContext("2d")!;
         const width = img.width;
         const height = img.height;
         canvas.width = width;
         canvas.height = height;
         ctx.drawImage(img, 0, 0, width, height);
 
-        const desiredSizeBytes = desiredSizeMB * 1024 * 1024;
+        const desiredSizeBytes = Math.floor(desiredSizeMB * 1024 * 1024);
+        console.log(`Desired Size in Bytes: ${desiredSizeBytes}`);
         let quality = 1;
         let compressedDataURL = canvas.toDataURL("image/jpeg", quality);
+        let maxTries = 200;
 
         while (compressedDataURL.length > desiredSizeBytes && quality > 0) {
-          quality -= 0.01;
-          compressedDataURL = canvas.toDataURL("image/jpeg", quality);
+          if (quality < 0.01) {
+            /*
+             const tempImg = new Image();
+             tempImg.src = compressedDataURL;
+             canvas = document.createElement("canvas");
+             let ctx = canvas.getContext("2d")!;
+             canvas.width = width;
+             canvas.height = height;
+             ctx.drawImage(tempImg, 0, 0, width, height);
+             quality = 1;
+             */
+            break;
+          } else {
+            quality -= 0.01;
+            maxTries--;
+            compressedDataURL = canvas.toDataURL("image/jpeg", quality);
+          }
+          console.log(`Quality: ${quality}`, compressedDataURL.length);
         }
 
         setCompressedImage(compressedDataURL);
@@ -124,9 +142,9 @@ const ImageCompressor: React.FC = () => {
           <p className="">Desired Compressed Size (MB): {desiredSizeMB}</p>
           <input
             type="range"
-            min="0.1"
+            min="0.04"
             max="10"
-            step="0.1"
+            step="0.01"
             value={desiredSizeMB}
             onChange={(e) => setDesiredSizeMB(Number(e.target.value))}
           />
